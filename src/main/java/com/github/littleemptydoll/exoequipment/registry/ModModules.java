@@ -6,6 +6,8 @@ import com.github.littleemptydoll.exoequipment.module.ModuleCategory;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import com.github.littleemptydoll.exoequipment.module.ModuleSize;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,37 +15,45 @@ import java.util.Map;
 public class ModModules {
     private  ModModules() {}
 
-    private static final Map<ResourceLocation, ModuleDefinition> MODULES = new HashMap<>();
+    public static final DeferredRegister<ModuleDefinition> MODULES =
+            DeferredRegister.create(
+                    ModRegistries.MODULE_REGISTRY,
+                    ExoEquipment.MODID
+            );
 
-    public static ModuleDefinition register(
+    public static final DeferredHolder<
+            ModuleDefinition,
+            ModuleDefinition
+    > TEST_MODULE = register(
+            "test_module",
+            new ModuleDefinition(
+                    ResourceLocation.fromNamespaceAndPath(
+                            ExoEquipment.MODID,
+                            "test_module"
+                    ),
+                    new ModuleSize(2,2),
+                    ModuleCategory.UTILITY,
+                    ModuleBranch.BASIC
+            )
+    );
+
+    private static DeferredHolder<
+            ModuleDefinition,
+            ModuleDefinition
+            > register(
             String id,
-            ModuleSize size,
-            ModuleCategory category,
-            ModuleBranch branch
+            ModuleDefinition definition
     ) {
-        ResourceLocation location = ResourceLocation.fromNamespaceAndPath(
-                ExoEquipment.MODID,
-                id
+        return MODULES.register(
+                id,
+                () -> definition
         );
-
-        ModuleDefinition definition = new ModuleDefinition(
-                location,
-                size,
-                category,
-                branch
-        );
-
-        if (MODULES.putIfAbsent(location, definition) != null) {
-            throw new IllegalStateException("Duplicate module id: " + location);
-        }
-
-        return definition;
     }
 
     public static ModuleDefinition getDefinition(
             ResourceLocation id
     ) {
-        ModuleDefinition definition = MODULES.get(id);
+        ModuleDefinition definition = ModRegistries.MODULE_REGISTRY.get(id);
 
         if (definition == null) {
             throw new IllegalArgumentException("Unknown module: " + id);
@@ -51,18 +61,4 @@ public class ModModules {
 
         return definition;
     }
-
-    public static final ModuleDefinition TEST_MODULE = register(
-            "test_module",
-            new ModuleSize(2,2),
-            ModuleCategory.UTILITY,
-            ModuleBranch.BASIC
-    );
-
-    public static final ModuleDefinition TEST_RECT_MODULE = register(
-            "test_rect_module",
-            new ModuleSize(2,3),
-            ModuleCategory.UTILITY,
-            ModuleBranch.BASIC
-    );
 }

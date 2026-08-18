@@ -25,17 +25,16 @@ public record ModuleSize(int width, int height) {
         return width * height;
     }
 
-    public static ModuleSize rotateSize(
-            ModuleDefinition definition,
+    public ModuleSize rotated(
             int rotation
     ) {
         if (rotation % 180 == 0) {
-            return definition.size();
+            return this;
         }
 
         return new ModuleSize(
-                definition.size().height(),
-                definition.size().width()
+                height,
+                width
         );
     }
 }

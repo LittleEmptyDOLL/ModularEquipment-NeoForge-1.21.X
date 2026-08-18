@@ -3,17 +3,45 @@ package com.github.littleemptydoll.exoequipment.registry;
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixType;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.function.Supplier;
 
 public final class ModMatrices {
     private ModMatrices() {}
 
-    private static final Map<ResourceLocation, MatrixDefinition> MATRICES = new HashMap<>();
+    public static final DeferredRegister<MatrixDefinition> MATRICES =
+            DeferredRegister.create(
+                    ModRegistries.MATRIX_REGISTRY_KEY,
+                    ExoEquipment.MODID
+            );
 
-    private static MatrixDefinition register(
+    public static final DeferredHolder<MatrixDefinition, MatrixDefinition> CIVILIAN = register(
+            "civilian",
+            MatrixType.CIVILIAN,
+            5,
+            5
+    );
+
+    public static final DeferredHolder<MatrixDefinition, MatrixDefinition> MILITARY = register(
+            "military",
+            MatrixType.MILITARY,
+            7,
+            7
+    );
+
+    public static final DeferredHolder<MatrixDefinition, MatrixDefinition> EXPERIMENTAL = register(
+            "experimental",
+            MatrixType.EXPERIMENTAL,
+            9,
+            9
+    );
+
+    private static DeferredHolder<MatrixDefinition, MatrixDefinition> register(
             String id,
             MatrixType type,
             int width,
@@ -25,58 +53,14 @@ public final class ModMatrices {
                         id
                 );
 
-        MatrixDefinition definition =
-                new MatrixDefinition(
+        return MATRICES.register(
+                id,
+                () -> new MatrixDefinition(
+                        location,
                         type,
                         width,
                         height
-                );
-
-        if (MATRICES.putIfAbsent(
-                location,
-                definition
-        ) != null) {
-            throw new IllegalStateException(
-                    "Duplicate matrix id: "
-                            + location
-            );
-        }
-
-        return  definition;
+                )
+        );
     }
-
-    public static MatrixDefinition getDefinition(
-            ResourceLocation id
-    ) {
-        MatrixDefinition definition = MATRICES.get(id);
-
-        if (definition == null) {
-            throw new IllegalArgumentException(
-                    "Unknown matrix: " + id
-            );
-        }
-
-        return definition;
-    }
-
-    private static final MatrixDefinition CIVILIAN = register(
-            "civilian",
-            MatrixType.CIVILIAN,
-            5,
-            5
-    );
-
-    private static final MatrixDefinition MILITARY = register(
-            "military",
-            MatrixType.MILITARY,
-            5,
-            5
-    );
-
-    private static final MatrixDefinition EXPERIMENTAL = register(
-            "experimental",
-            MatrixType.EXPERIMENTAL,
-            5,
-            5
-    );
 }

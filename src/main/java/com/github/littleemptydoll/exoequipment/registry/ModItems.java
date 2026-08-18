@@ -3,7 +3,6 @@ package com.github.littleemptydoll.exoequipment.registry;
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
-import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -25,15 +24,19 @@ public final class ModItems {
             () -> new Item(new Item.Properties())
     );
 
-    public static final Supplier<Item> MATRIX = ITEMS.register(
-            "matrix",
-            () -> new MatrixItem(
-                    new Item.Properties()
-                            .component(
-                                    ModDataComponents.MATRIX_DATA.get(),
-                                    MatrixData.empty(6, 6)
-                            )
-            )
+    public static final Supplier<Item> CIVILIAN_MATRIX = ITEMS.register(
+            "civilian_matrix",
+            () -> new MatrixItem(ModMatrices.CIVILIAN)
+    );
+
+    public static final Supplier<Item> MILITARY_MATRIX = ITEMS.register(
+            "military_matrix",
+            () -> new MatrixItem(ModMatrices.MILITARY)
+    );
+
+    public static final Supplier<Item> EXPERIMENTAL_MATRIX = ITEMS.register(
+            "experimental_matrix",
+            () -> new MatrixItem(ModMatrices.EXPERIMENTAL)
     );
 
     public static final Supplier<Item> ENERGY_SYSTEM = ITEMS.register(

@@ -1,5 +1,7 @@
 package com.github.littleemptydoll.exoequipment.command;
 
+import com.github.littleemptydoll.exoequipment.item.MatrixItem;
+import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
@@ -159,18 +161,17 @@ public final class ModCommands {
             int x,
             int y
     ) {
-        MatrixData matrix = stack.get(
-                ModDataComponents.MATRIX_DATA.get()
-        );
-
-        if (matrix == null) {
+        if (!(stack.getItem() instanceof MatrixItem matrixItem)) {
             return 0;
         }
 
+        MatrixData matrix = matrixItem.getMatrixData(stack);
+
         MatrixData updated = MatrixOperations.addModule(
                 matrix,
+                matrixItem.getDefinition(),
                 new InstalledModule(
-                        ModModules.TEST_MODULE.id(),
+                        ModModules.TEST_MODULE.getId(),
                         x,
                         y,
                         0
@@ -217,9 +218,11 @@ public final class ModCommands {
             int x,
             int y
     ) {
-        MatrixData matrix = stack.get(
-                ModDataComponents.MATRIX_DATA.get()
-        );
+        if (!(stack.getItem() instanceof MatrixItem matrixItem)) {
+            return 0;
+        }
+
+        MatrixData matrix = matrixItem.getMatrixData(stack);
 
         if (matrix == null) {
             return 0;
@@ -227,6 +230,7 @@ public final class ModCommands {
 
         MatrixData updated = MatrixOperations.rotateModule(
                 matrix,
+                matrixItem.getDefinition(),
                 x,
                 y
         );
@@ -246,9 +250,11 @@ public final class ModCommands {
             int toX,
             int toY
     ) {
-        MatrixData matrix = stack.get(
-                ModDataComponents.MATRIX_DATA.get()
-        );
+        if (!(stack.getItem() instanceof MatrixItem matrixItem)) {
+            return 0;
+        }
+
+        MatrixData matrix = matrixItem.getMatrixData(stack);
 
         if (matrix == null) {
             return 0;
@@ -256,6 +262,7 @@ public final class ModCommands {
 
         MatrixData updated = MatrixOperations.moveModule(
                 matrix,
+                matrixItem.getDefinition(),
                 fromX,
                 fromY,
                 toX,

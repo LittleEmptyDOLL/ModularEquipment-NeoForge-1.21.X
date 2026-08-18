@@ -13,23 +13,30 @@ public final class MatrixOperations {
 
     public static boolean canPlace(
             MatrixData matrix,
-            ModuleDefinition definition,
+            MatrixDefinition matrixDefinition,
+            ModuleDefinition moduleDefinition,
             int x,
             int y,
             int rotation
     ) {
         ModuleSize size = getRotatedSize(
-                definition.size(),
+                moduleDefinition.size(),
                 rotation
         );
 
-        if (!isInsideMatrix(matrix, size, x, y)) {
+        if (!matrixDefinition.contains(
+                size,
+                x,
+                y
+        )) {
             return false;
         }
 
         for (InstalledModule installedModule : matrix.modules()) {
             ModuleDefinition installedDefinition =
-                    ModModules.getDefinition(installedModule.id());
+                    ModModules.getDefinition(
+                            installedModule.id()
+                    );
 
             ModuleSize installedSize = getRotatedSize(
                     installedDefinition.size(),
@@ -53,12 +60,14 @@ public final class MatrixOperations {
 
     public static MatrixData addModule(
             MatrixData matrix,
+            MatrixDefinition matrixDefinition,
             InstalledModule module
     ) {
         ModuleDefinition definition = ModModules.getDefinition(module.id());
 
         if (!canPlace(
                 matrix,
+                matrixDefinition,
                 definition,
                 module.x(),
                 module.y(),
@@ -77,7 +86,7 @@ public final class MatrixOperations {
 
         modules.add(module);
 
-        return createMatrix(matrix, modules);
+        return createMatrix(modules);
     }
 
     public static MatrixData removeModule(
@@ -95,7 +104,7 @@ public final class MatrixOperations {
 
         modules.remove(module);
 
-        return createMatrix(matrix, modules);
+        return createMatrix(modules);
     }
 
     public static InstalledModule getModuleAt(
@@ -103,13 +112,6 @@ public final class MatrixOperations {
             int x,
             int y
     ) {
-        if (x < 0
-                || y < 0
-                || x >= matrix.width()
-                || y >= matrix.height()) {
-            return null;
-        }
-
         for (InstalledModule module : matrix.modules()) {
             ModuleDefinition definition = ModModules.getDefinition(module.id());
 
@@ -134,6 +136,7 @@ public final class MatrixOperations {
 
     public static MatrixData rotateModule(
             MatrixData matrix,
+            MatrixDefinition matrixDefinition,
             int x,
             int y
     ) {
@@ -159,6 +162,7 @@ public final class MatrixOperations {
 
         return replaceModule(
                 matrix,
+                matrixDefinition,
                 module,
                 rotatedModule
         );
@@ -166,6 +170,7 @@ public final class MatrixOperations {
 
     public static MatrixData moveModule(
             MatrixData matrix,
+            MatrixDefinition matrixDefinition,
             int fromX,
             int fromY,
             int toX,
@@ -191,6 +196,7 @@ public final class MatrixOperations {
 
         return replaceModule(
                 matrix,
+                matrixDefinition,
                 module,
                 movedModule
         );
@@ -198,6 +204,7 @@ public final class MatrixOperations {
 
     private static MatrixData replaceModule(
             MatrixData matrix,
+            MatrixDefinition matrixDefinition,
             InstalledModule oldModule,
             InstalledModule newModule
     ) {
@@ -205,12 +212,13 @@ public final class MatrixOperations {
 
         modules.remove(oldModule);
 
-        MatrixData withoutModule = createMatrix(matrix, modules);
+        MatrixData withoutModule = createMatrix(modules);
 
         ModuleDefinition definition = ModModules.getDefinition(newModule.id());
 
         if (!canPlace(
                 withoutModule,
+                matrixDefinition,
                 definition,
                 newModule.x(),
                 newModule.y(),
@@ -227,18 +235,13 @@ public final class MatrixOperations {
 
         modules.add(newModule);
 
-        return createMatrix(matrix, modules);
+        return createMatrix(modules);
     }
 
     private static MatrixData createMatrix(
-            MatrixData source,
             List<InstalledModule> modules
     ) {
-        return new MatrixData(
-                source.width(),
-                source.height(),
-                modules
-        );
+        return new MatrixData(modules);
     }
 
     public static ModuleSize getRotatedSize(
@@ -269,18 +272,6 @@ public final class MatrixOperations {
         }
 
         return normalized;
-    }
-
-    private static boolean isInsideMatrix(
-            MatrixData matrix,
-            ModuleSize size,
-            int x,
-            int y
-    ) {
-        return x >= 0
-                && y >= 0
-                && x + size.width() <= matrix.width()
-                && y + size.height() <= matrix.height();
     }
 
     private static boolean intersects(

@@ -1,8 +1,7 @@
 package com.github.littleemptydoll.exoequipment;
 
 import com.github.littleemptydoll.exoequipment.command.ModCommands;
-import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
-import com.github.littleemptydoll.exoequipment.registry.ModItems;
+import com.github.littleemptydoll.exoequipment.registry.*;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,7 +17,12 @@ public class ExoEquipment {
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public ExoEquipment(IEventBus eventBus) {
+        eventBus.addListener(ModRegistries::register);
+
         ModItems.register(eventBus);
         ModDataComponents.register(eventBus);
+
+        ModMatrices.MATRICES.register(eventBus);
+        ModModules.MODULES.register(eventBus);
     }
 }

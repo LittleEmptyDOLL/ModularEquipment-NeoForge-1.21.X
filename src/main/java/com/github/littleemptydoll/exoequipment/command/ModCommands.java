@@ -2,14 +2,17 @@ package com.github.littleemptydoll.exoequipment.command;
 
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
+import com.github.littleemptydoll.exoequipment.matrix.MatrixState;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
@@ -153,6 +156,12 @@ public final class ModCommands {
                                                 )
                                         )
                         )
+                        .then(
+                                Commands.literal("stats")
+                                        .executes(context ->
+                                                showMatrixStats(context.getSource())
+                                        )
+                        )
         );
     }
 
@@ -272,6 +281,74 @@ public final class ModCommands {
         stack.set(
                 ModDataComponents.MATRIX_DATA.get(),
                 updated
+        );
+
+        return 1;
+    }
+
+    private static int showMatrixStats(
+            CommandSourceStack source
+    ) {
+        ServerPlayer player = source.getPlayer();
+
+        if (player == null) {
+            source.sendFailure(
+                    Component.literal(
+                            "This command can only be used by a player."
+                    )
+            );
+
+            return 0;
+        }
+
+        ItemStack stack = player.getMainHandItem();
+
+        if (!(stack.getItem() instanceof MatrixItem matrixItem)) {
+            source.sendFailure(
+                    Component.literal(
+                            "You must hold a matrix in your main hand."
+                    )
+            );
+
+            return 0;
+        }
+
+        MatrixData data = matrixItem.getMatrixData(stack);
+        MatrixState state = MatrixOperations.calculateState(data);
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "=== Matrix Stats ==="
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Energy consumption: " + state.energyConsumption() + " FE/t"
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Heat generation: " + state.heatGeneration()
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Cooling: " + state.cooling()
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Thermal balance: " + state.thermalBalance()
+                ),
+                false
         );
 
         return 1;

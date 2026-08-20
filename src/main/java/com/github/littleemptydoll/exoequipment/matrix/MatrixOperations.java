@@ -1,8 +1,6 @@
 package com.github.littleemptydoll.exoequipment.matrix;
 
-import com.github.littleemptydoll.exoequipment.module.InstalledModule;
-import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
-import com.github.littleemptydoll.exoequipment.module.ModuleSize;
+import com.github.littleemptydoll.exoequipment.module.*;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
 
 import java.util.ArrayList;
@@ -299,5 +297,64 @@ public final class MatrixOperations {
                 && x < moduleX + size.width()
                 && y >= moduleY
                 && y < moduleY + size.height();
+    }
+
+    public static int calculateEnergyConsumption(
+            MatrixData matrix
+    ) {
+        return matrix.modules().stream()
+                .mapToInt(module ->
+                        ModModules.getDefinition(module.id())
+                                .energy()
+                                .map(EnergyProperties::consumption)
+                                .orElse(0)
+                )
+                .sum();
+    }
+
+    public static int calculateThermalBalance(
+            MatrixData matrix
+    ) {
+        return calculateHeatGeneration(matrix) - calculateCooling(matrix);
+    }
+
+    public static int calculateHeatGeneration(
+            MatrixData matrix
+    ) {
+        return matrix.modules().stream()
+                .mapToInt(module ->
+                        ModModules.getDefinition(module.id())
+                                .thermal()
+                                .map(ThermalProperties::heatGeneration)
+                                .orElse(0)
+                )
+                .sum();
+    }
+
+    public static int calculateCooling(
+            MatrixData matrix
+    ) {
+        return matrix.modules().stream()
+                .mapToInt(module ->
+                        ModModules.getDefinition(module.id())
+                                .thermal()
+                                .map(ThermalProperties::cooling)
+                                .orElse(0)
+                )
+                .sum();
+    }
+
+    public static MatrixState calculateState(
+            MatrixData matrix
+    ) {
+        int energyConsumption = calculateEnergyConsumption(matrix);
+        int heatGeneration = calculateHeatGeneration(matrix);
+        int cooling = calculateCooling(matrix);
+
+        return new MatrixState(
+                energyConsumption,
+                heatGeneration,
+                cooling
+        );
     }
 }

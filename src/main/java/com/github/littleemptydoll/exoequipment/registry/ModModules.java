@@ -1,16 +1,12 @@
 package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
-import com.github.littleemptydoll.exoequipment.module.ModuleBranch;
-import com.github.littleemptydoll.exoequipment.module.ModuleCategory;
-import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
-import com.github.littleemptydoll.exoequipment.module.ModuleSize;
+import com.github.littleemptydoll.exoequipment.module.*;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 public class ModModules {
     private  ModModules() {}
@@ -33,7 +29,9 @@ public class ModModules {
                     ),
                     new ModuleSize(2,2),
                     ModuleCategory.UTILITY,
-                    ModuleBranch.BASIC
+                    ModuleBranch.BASIC,
+                    Optional.of(new EnergyProperties(20)),
+                    Optional.of(new ThermalProperties(2, 15))
             )
     );
 

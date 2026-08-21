@@ -46,7 +46,7 @@ public final class ModItems {
     // Энергетическая система
     public static final Supplier<Item> CIVILIAN_ENERGY_SYSTEM = ITEMS.register(
             "civilian_energy_system",
-            () -> new EnergySystemItem(new Item.Properties())
+            () -> new EnergySystemItem(ModEnergySystems.CIVILIAN)
     );
 
     // Контроллер

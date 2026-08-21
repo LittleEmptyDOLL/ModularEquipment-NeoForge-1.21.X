@@ -1,11 +1,12 @@
 package com.github.littleemptydoll.exoequipment.matrix;
 
 import com.github.littleemptydoll.exoequipment.module.ModuleSize;
+import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
 
 public record MatrixDefinition(
         ResourceLocation id,
-        MatrixType type,
+        EquipmentTier tier,
         int width,
         int height
 ) {

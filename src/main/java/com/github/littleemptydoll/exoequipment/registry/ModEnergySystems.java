@@ -2,9 +2,7 @@ package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.energy.EnergySystemDefinition;
-import com.github.littleemptydoll.exoequipment.energy.EnergySystemType;
-import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
-import com.github.littleemptydoll.exoequipment.matrix.MatrixType;
+import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -20,7 +18,7 @@ public class ModEnergySystems {
 
     private static DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> register(
             String id,
-            EnergySystemType type,
+            EquipmentTier tier,
             int maxInput,
             int maxOutput,
             double efficiency
@@ -35,7 +33,7 @@ public class ModEnergySystems {
                 id,
                 () -> new EnergySystemDefinition(
                         location,
-                        type,
+                        tier,
                         maxInput,
                         maxOutput,
                         efficiency
@@ -43,9 +41,10 @@ public class ModEnergySystems {
         );
     }
 
+    // ToDo: Определить подходящие характеристики
     public static final DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> CIVILIAN = register(
             "civilian",
-            EnergySystemType.CIVILIAN,
+            EquipmentTier.CIVILIAN,
             100,
             100,
             1.0
@@ -53,7 +52,7 @@ public class ModEnergySystems {
 
     public static final DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> MILITARY = register(
             "military",
-            EnergySystemType.MILITARY,
+            EquipmentTier.MILITARY,
             200,
             200,
             1.0
@@ -61,7 +60,7 @@ public class ModEnergySystems {
 
     public static final DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> EXPERIMENTAL = register(
             "experimental",
-            EnergySystemType.EXPERIMENTAL,
+            EquipmentTier.EXPERIMENTAL,
             300,
             300,
             1.1

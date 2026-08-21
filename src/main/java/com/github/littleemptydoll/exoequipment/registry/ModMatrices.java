@@ -2,7 +2,7 @@ package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
-import com.github.littleemptydoll.exoequipment.matrix.MatrixType;
+import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -18,28 +18,28 @@ public final class ModMatrices {
 
     public static final DeferredHolder<MatrixDefinition, MatrixDefinition> CIVILIAN = register(
             "civilian",
-            MatrixType.CIVILIAN,
+            EquipmentTier.CIVILIAN,
             5,
             5
     );
 
     public static final DeferredHolder<MatrixDefinition, MatrixDefinition> MILITARY = register(
             "military",
-            MatrixType.MILITARY,
+            EquipmentTier.MILITARY,
             7,
             7
     );
 
     public static final DeferredHolder<MatrixDefinition, MatrixDefinition> EXPERIMENTAL = register(
             "experimental",
-            MatrixType.EXPERIMENTAL,
+            EquipmentTier.EXPERIMENTAL,
             9,
             9
     );
 
     private static DeferredHolder<MatrixDefinition, MatrixDefinition> register(
             String id,
-            MatrixType type,
+            EquipmentTier tier,
             int width,
             int height
     ) {
@@ -53,7 +53,7 @@ public final class ModMatrices {
                 id,
                 () -> new MatrixDefinition(
                         location,
-                        type,
+                        tier,
                         width,
                         height
                 )

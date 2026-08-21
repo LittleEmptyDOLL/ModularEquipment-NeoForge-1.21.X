@@ -1,12 +1,13 @@
 package com.github.littleemptydoll.exoequipment.energy;
 
+import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
 
 public record EnergySystemDefinition(
         ResourceLocation id,
-        EnergySystemType type,
+        EquipmentTier tier,
         int maxInput,
         int maxOutput,
         double efficiency
@@ -17,9 +18,9 @@ public record EnergySystemDefinition(
                             ResourceLocation.CODEC
                                     .fieldOf("id")
                                     .forGetter(EnergySystemDefinition::id),
-                            EnergySystemType.CODEC
-                                    .fieldOf("type")
-                                    .forGetter(EnergySystemDefinition::type),
+                            EquipmentTier.CODEC
+                                    .fieldOf("tier")
+                                    .forGetter(EnergySystemDefinition::tier),
                             Codec.INT
                                     .fieldOf("max_input")
                                     .forGetter(EnergySystemDefinition::maxInput),

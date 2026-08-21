@@ -1,28 +1,28 @@
-package com.github.littleemptydoll.exoequipment.energy;
+package com.github.littleemptydoll.exoequipment.registry.types;
 
-import com.github.littleemptydoll.exoequipment.module.ModuleCategory;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
 import java.util.Locale;
 
-public enum EnergySystemType {
+public enum EquipmentTier {
     CIVILIAN,
     MILITARY,
+    ENGINEERING,
     EXPERIMENTAL;
 
-    public static final Codec<EnergySystemType> CODEC =
+    public static final Codec<EquipmentTier> CODEC =
             Codec.STRING.comapFlatMap(
                     value -> {
                         try {
                             return DataResult.success(
-                                    EnergySystemType.valueOf(
+                                    EquipmentTier.valueOf(
                                             value.toUpperCase(Locale.ROOT)
                                     )
                             );
                         } catch (IllegalArgumentException exception) {
                             return DataResult.error(
-                                    () -> "Unknown energy system type: " + value
+                                    () -> "Unknown equipment tier: " + value
                             );
                         }
                     },

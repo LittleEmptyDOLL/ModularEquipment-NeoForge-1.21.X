@@ -1,5 +1,6 @@
 package com.github.littleemptydoll.exoequipment.module;
 
+import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
@@ -10,7 +11,7 @@ public record ModuleDefinition(
         ResourceLocation id,
         ModuleSize size,
         ModuleCategory category,
-        ModuleBranch branch,
+        EquipmentTier tier,
         Optional<EnergyProperties> energy,
         Optional<ThermalProperties> thermal
 ) {
@@ -26,9 +27,9 @@ public record ModuleDefinition(
                             ModuleCategory.CODEC
                                     .fieldOf("category")
                                     .forGetter(ModuleDefinition::category),
-                            ModuleBranch.CODEC
+                            EquipmentTier.CODEC
                                     .fieldOf("branch")
-                                    .forGetter(ModuleDefinition::branch),
+                                    .forGetter(ModuleDefinition::tier),
                             EnergyProperties.CODEC
                                     .optionalFieldOf("energy")
                                     .forGetter(ModuleDefinition::energy),
@@ -45,13 +46,13 @@ public record ModuleDefinition(
             ResourceLocation id,
             ModuleSize size,
             ModuleCategory category,
-            ModuleBranch branch
+            EquipmentTier tier
     ) {
         this(
                 id,
                 size,
                 category,
-                branch,
+                tier,
                 Optional.empty(),
                 Optional.empty()
         );

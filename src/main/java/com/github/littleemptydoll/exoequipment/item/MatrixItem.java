@@ -80,7 +80,7 @@ public class MatrixItem extends Item {
 
         tooltip.add(
                 Component.literal(
-                        "Type: " + definition.type()
+                        "Tier: " + definition.tier()
                 )
         );
 

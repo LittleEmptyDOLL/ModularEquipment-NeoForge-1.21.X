@@ -24,5 +24,6 @@ public class ExoEquipment {
 
         ModMatrices.MATRICES.register(eventBus);
         ModModules.MODULES.register(eventBus);
+        ModEnergySystems.ENERGY_SYSTEMS.register(eventBus);
     }
 }

@@ -1,5 +1,8 @@
 package com.github.littleemptydoll.exoequipment.command;
 
+import com.github.littleemptydoll.exoequipment.energy.EnergySystem;
+import com.github.littleemptydoll.exoequipment.energy.EnergySystemDefinition;
+import com.github.littleemptydoll.exoequipment.item.EnergySystemItem;
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixState;
@@ -161,6 +164,15 @@ public final class ModCommands {
                                         .executes(context ->
                                                 showMatrixStats(context.getSource())
                                         )
+                        )
+        );
+
+        event.getDispatcher().register(
+                Commands.literal("exo_energy_system")
+                        .then(
+                                Commands.literal("stats")
+                                        .executes(context ->
+                                                showEnergySystemStats(context.getSource()))
                         )
         );
     }
@@ -347,6 +359,80 @@ public final class ModCommands {
         source.sendSuccess(
                 () -> Component.literal(
                         "Thermal balance: " + state.thermalBalance()
+                ),
+                false
+        );
+
+        return 1;
+    }
+
+    private static int showEnergySystemStats(
+            CommandSourceStack source
+    ) {
+        ServerPlayer player = source.getPlayer();
+
+        if (player == null) {
+            source.sendFailure(
+                    Component.literal(
+                            "This command can only be used by a player."
+                    )
+            );
+
+            return 0;
+        }
+
+        ItemStack stack = player.getMainHandItem();
+
+        if (!(stack.getItem() instanceof EnergySystemItem energySystemItem)) {
+            source.sendFailure(
+                    Component.literal(
+                            "You must hold an energy system in your main hand."
+                    )
+            );
+
+            return 0;
+        }
+
+        EnergySystemDefinition definition = energySystemItem.getDefinition(stack);
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "=== Energy System Stats ==="
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "ID: " + definition.id()
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Tier: " + definition.tier()
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Max energy input: " + definition.maxInput() + " FE/t"
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Max energy output: " + definition.maxInput() + " FE/t"
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Efficiency: " + definition.efficiency()
                 ),
                 false
         );

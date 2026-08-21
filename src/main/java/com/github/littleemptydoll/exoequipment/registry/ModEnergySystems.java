@@ -41,6 +41,22 @@ public class ModEnergySystems {
         );
     }
 
+    public static EnergySystemDefinition getDefinition(
+            ResourceLocation id
+    ) {
+        return ENERGY_SYSTEMS
+                .getEntries()
+                .stream()
+                .filter(entry -> entry.getId().equals(id))
+                .findFirst()
+                .map(DeferredHolder::get)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Unknown energy system: " + id
+                        )
+                );
+    }
+
     // ToDo: Определить подходящие характеристики
     public static final DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> CIVILIAN = register(
             "civilian",

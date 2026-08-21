@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.energy.EnergySystem;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -22,6 +23,13 @@ public final class ModDataComponents {
                     "matrix_data",
                     builder -> builder
                             .persistent(MatrixData.CODEC)
+            );
+
+    public static final Supplier<DataComponentType<EnergySystem>> ENERGY_SYSTEM =
+            COMPONENTS.registerComponentType(
+                    "energy_system",
+                    builder -> builder
+                            .persistent(EnergySystem.CODEC)
             );
 
     public static void register(

@@ -3,13 +3,9 @@ package com.github.littleemptydoll.exoequipment.registry;
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixType;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
-import java.util.function.Supplier;
 
 public final class ModMatrices {
     private ModMatrices() {}

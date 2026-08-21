@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.energy.EnergySystemDefinition;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import net.minecraft.core.Registry;
@@ -11,6 +12,12 @@ import net.neoforged.neoforge.registries.RegistryBuilder;
 
 public final class ModRegistries {
     private ModRegistries() {}
+
+    public static void register(NewRegistryEvent event) {
+        event.register(MATRIX_REGISTRY);
+        event.register(MODULE_REGISTRY);
+        event.register(ENERGY_SYSTEM_REGISTRY);
+    }
 
     public static final ResourceKey<Registry<MatrixDefinition>> MATRIX_REGISTRY_KEY =
             ResourceKey.createRegistryKey(
@@ -42,8 +49,18 @@ public final class ModRegistries {
                     .sync(true)
                     .create();
 
-    public static void register(NewRegistryEvent event) {
-        event.register(MATRIX_REGISTRY);
-        event.register(MODULE_REGISTRY);
-    }
+    public static final ResourceKey<Registry<EnergySystemDefinition>> ENERGY_SYSTEM_REGISTRY_KEY =
+            ResourceKey.createRegistryKey(
+                    ResourceLocation.fromNamespaceAndPath(
+                            ExoEquipment.MODID,
+                            "energy_system"
+                    )
+            );
+
+    public static final Registry<EnergySystemDefinition> ENERGY_SYSTEM_REGISTRY =
+            new RegistryBuilder<EnergySystemDefinition>(
+                    ENERGY_SYSTEM_REGISTRY_KEY
+            )
+                    .sync(true)
+                    .create();
 }

@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.item.EnergySystemItem;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
 import net.minecraft.world.item.Item;
@@ -14,16 +15,19 @@ public final class ModItems {
 
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ExoEquipment.MODID);
 
+    // Экзоскелет
     public static final Supplier<Item> EXOSKELETON = ITEMS.register(
             "exoskeleton",
             () -> new ExoskeletonItem(new Item.Properties())
     );
 
+    // Рама
     public static final Supplier<Item> FRAME = ITEMS.register(
             "frame",
             () -> new Item(new Item.Properties())
     );
 
+    // Матрица
     public static final Supplier<Item> CIVILIAN_MATRIX = ITEMS.register(
             "civilian_matrix",
             () -> new MatrixItem(ModMatrices.CIVILIAN)
@@ -39,11 +43,13 @@ public final class ModItems {
             () -> new MatrixItem(ModMatrices.EXPERIMENTAL)
     );
 
-    public static final Supplier<Item> ENERGY_SYSTEM = ITEMS.register(
-            "energy_system",
-            () -> new Item(new Item.Properties())
+    // Энергетическая система
+    public static final Supplier<Item> CIVILIAN_ENERGY_SYSTEM = ITEMS.register(
+            "civilian_energy_system",
+            () -> new EnergySystemItem(new Item.Properties())
     );
 
+    // Контроллер
     public static final Supplier<Item> CONTROLLER = ITEMS.register(
             "controller",
             () -> new Item(new Item.Properties())

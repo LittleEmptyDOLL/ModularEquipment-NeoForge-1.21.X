@@ -1,4 +1,65 @@
 package com.github.littleemptydoll.exoequipment.item;
 
-public class ControllerItem {
+import com.github.littleemptydoll.exoequipment.controller.Controller;
+import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
+import com.github.littleemptydoll.exoequipment.registry.ModControllers;
+import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.registries.DeferredHolder;
+
+public class ControllerItem extends Item {
+
+    public ControllerItem(
+            DeferredHolder<
+                    ControllerDefinition,
+                    ControllerDefinition
+                    > definition
+    ) {
+        super(
+                new Properties()
+                        .component(
+                                ModDataComponents.CONTROLLER.get(),
+                                new Controller(
+                                        definition.getId()
+                                )
+                        )
+        );
+    }
+
+    public ControllerDefinition getDefinition(ItemStack stack) {
+        Controller controller = getController(stack);
+
+        if (controller == null) {
+            return null;
+        }
+
+        return ModControllers.getDefinition(
+                controller.definitionId()
+        );
+    }
+
+    public Controller getController(ItemStack stack) {
+        Controller data = stack.get(
+                ModDataComponents.CONTROLLER.get()
+        );
+
+        if (data == null) {
+            throw new IllegalStateException(
+                    "Controller item does not contain controller data"
+            );
+        }
+
+        return data;
+    }
+
+    public static ControllerItem get(ItemStack stack) {
+        if (!(stack.getItem() instanceof ControllerItem controllerItem)) {
+            throw new IllegalArgumentException(
+                    "ItemStack is not an controller"
+            );
+        }
+
+        return controllerItem;
+    }
 }

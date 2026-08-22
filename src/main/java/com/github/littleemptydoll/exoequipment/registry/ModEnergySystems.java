@@ -74,6 +74,14 @@ public class ModEnergySystems {
             1.0
     );
 
+    public static final DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> ENGINEERING = register(
+            "engineering",
+            EquipmentTier.ENGINEERING,
+            300,
+            200,
+            1.0
+    );
+
     public static final DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> EXPERIMENTAL = register(
             "experimental",
             EquipmentTier.EXPERIMENTAL,

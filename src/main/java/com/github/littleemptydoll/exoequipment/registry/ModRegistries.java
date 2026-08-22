@@ -1,7 +1,10 @@
 package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
 import com.github.littleemptydoll.exoequipment.energy.EnergySystemDefinition;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonDefinition;
+import com.github.littleemptydoll.exoequipment.frame.FrameDefinition;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import net.minecraft.core.Registry;
@@ -19,6 +22,7 @@ public final class ModRegistries {
         event.register(ENERGY_SYSTEM_REGISTRY);
     }
 
+    // Матрица
     public static final ResourceKey<Registry<MatrixDefinition>> MATRIX_REGISTRY_KEY =
             ResourceKey.createRegistryKey(
                     ResourceLocation.fromNamespaceAndPath(
@@ -34,6 +38,7 @@ public final class ModRegistries {
                     .sync(true)
                     .create();
 
+    // Модуль
     public static final ResourceKey<Registry<ModuleDefinition>> MODULE_REGISTRY_KEY =
             ResourceKey.createRegistryKey(
                     ResourceLocation.fromNamespaceAndPath(
@@ -49,6 +54,7 @@ public final class ModRegistries {
                     .sync(true)
                     .create();
 
+    // Энергосистема
     public static final ResourceKey<Registry<EnergySystemDefinition>> ENERGY_SYSTEM_REGISTRY_KEY =
             ResourceKey.createRegistryKey(
                     ResourceLocation.fromNamespaceAndPath(
@@ -60,6 +66,54 @@ public final class ModRegistries {
     public static final Registry<EnergySystemDefinition> ENERGY_SYSTEM_REGISTRY =
             new RegistryBuilder<EnergySystemDefinition>(
                     ENERGY_SYSTEM_REGISTRY_KEY
+            )
+                    .sync(true)
+                    .create();
+
+    // Рама
+    public static final ResourceKey<Registry<FrameDefinition>> FRAME_REGISTRY_KEY =
+            ResourceKey.createRegistryKey(
+                    ResourceLocation.fromNamespaceAndPath(
+                            ExoEquipment.MODID,
+                            "frame"
+                    )
+            );
+
+    public static final Registry<FrameDefinition> FRAME_REGISTRY =
+            new RegistryBuilder<FrameDefinition>(
+                    FRAME_REGISTRY_KEY
+            )
+                    .sync(true)
+                    .create();
+
+    // Контроллер
+    public static final ResourceKey<Registry<ControllerDefinition>> CONTROLLER_REGISTRY_KEY =
+            ResourceKey.createRegistryKey(
+                    ResourceLocation.fromNamespaceAndPath(
+                            ExoEquipment.MODID,
+                            "controller"
+                    )
+            );
+
+    public static final Registry<ControllerDefinition> CONTROLLER_REGISTRY =
+            new RegistryBuilder<ControllerDefinition>(
+                    CONTROLLER_REGISTRY_KEY
+            )
+                    .sync(true)
+                    .create();
+
+    // Экзоскелет
+    public static final ResourceKey<Registry<ExoskeletonDefinition>> EXOSKELETON_REGISTRY_KEY =
+            ResourceKey.createRegistryKey(
+                    ResourceLocation.fromNamespaceAndPath(
+                            ExoEquipment.MODID,
+                            "exoskeleton"
+                    )
+            );
+
+    public static final Registry<ExoskeletonDefinition> EXOSKELETON_REGISTRY =
+            new RegistryBuilder<ExoskeletonDefinition>(
+                    EXOSKELETON_REGISTRY_KEY
             )
                     .sync(true)
                     .create();

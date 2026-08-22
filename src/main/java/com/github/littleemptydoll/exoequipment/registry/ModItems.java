@@ -1,9 +1,7 @@
 package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
-import com.github.littleemptydoll.exoequipment.item.EnergySystemItem;
-import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
-import com.github.littleemptydoll.exoequipment.item.MatrixItem;
+import com.github.littleemptydoll.exoequipment.item.*;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -18,13 +16,28 @@ public final class ModItems {
     // Экзоскелет
     public static final Supplier<Item> EXOSKELETON = ITEMS.register(
             "exoskeleton",
-            () -> new ExoskeletonItem(new Item.Properties())
+            () -> new ExoskeletonItem(ModExoskeletons.BASIC)
     );
 
     // Рама
-    public static final Supplier<Item> FRAME = ITEMS.register(
-            "frame",
-            () -> new Item(new Item.Properties())
+    public static final Supplier<Item> CIVILIAN_FRAME = ITEMS.register(
+            "civilian_frame",
+            () -> new FrameItem(ModFrames.CIVILIAN)
+    );
+
+    public static final Supplier<Item> MILITARY_FRAME = ITEMS.register(
+            "military_frame",
+            () -> new FrameItem(ModFrames.MILITARY)
+    );
+
+    public static final Supplier<Item> ENGINEERING_FRAME = ITEMS.register(
+            "engineering_frame",
+            () -> new FrameItem(ModFrames.ENGINEERING)
+    );
+
+    public static final Supplier<Item> EXPERIMENTAL_FRAME = ITEMS.register(
+            "experimental_frame",
+            () -> new FrameItem(ModFrames.EXPERIMENTAL)
     );
 
     // Матрица
@@ -38,6 +51,11 @@ public final class ModItems {
             () -> new MatrixItem(ModMatrices.MILITARY)
     );
 
+    public static final Supplier<Item> ENGINEERING_MATRIX = ITEMS.register(
+            "engineering_matrix",
+            () -> new MatrixItem(ModMatrices.ENGINEERING)
+    );
+
     public static final Supplier<Item> EXPERIMENTAL_MATRIX = ITEMS.register(
             "experimental_matrix",
             () -> new MatrixItem(ModMatrices.EXPERIMENTAL)
@@ -49,10 +67,40 @@ public final class ModItems {
             () -> new EnergySystemItem(ModEnergySystems.CIVILIAN)
     );
 
+    public static final Supplier<Item> MILITARY_ENERGY_SYSTEM = ITEMS.register(
+            "military_energy_system",
+            () -> new EnergySystemItem(ModEnergySystems.MILITARY)
+    );
+
+    public static final Supplier<Item> ENGINEERING_ENERGY_SYSTEM = ITEMS.register(
+            "engineering_energy_system",
+            () -> new EnergySystemItem(ModEnergySystems.ENGINEERING)
+    );
+
+    public static final Supplier<Item> EXPERIMENTAL_ENERGY_SYSTEM = ITEMS.register(
+            "experimental_energy_system",
+            () -> new EnergySystemItem(ModEnergySystems.EXPERIMENTAL)
+    );
+
     // Контроллер
-    public static final Supplier<Item> CONTROLLER = ITEMS.register(
-            "controller",
-            () -> new Item(new Item.Properties())
+    public static final Supplier<Item> CIVILIAN_CONTROLLER = ITEMS.register(
+            "civilian_controller",
+            () -> new ControllerItem(ModControllers.CIVILIAN)
+    );
+
+    public static final Supplier<Item> MILITARY_CONTROLLER = ITEMS.register(
+            "military_controller",
+            () -> new ControllerItem(ModControllers.MILITARY)
+    );
+
+    public static final Supplier<Item> ENGINEERING_CONTROLLER = ITEMS.register(
+            "engineering_controller",
+            () -> new ControllerItem(ModControllers.ENGINEERING)
+    );
+
+    public static final Supplier<Item> EXPERIMENTAL_CONTROLLER = ITEMS.register(
+            "experimental_controller",
+            () -> new ControllerItem(ModControllers.EXPERIMENTAL)
     );
 
     public static void register(IEventBus eventBus) {

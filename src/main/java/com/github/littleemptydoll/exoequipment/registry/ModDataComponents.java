@@ -1,7 +1,10 @@
 package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.controller.Controller;
 import com.github.littleemptydoll.exoequipment.energy.EnergySystem;
+import com.github.littleemptydoll.exoequipment.exoskeleton.Exoskeleton;
+import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -30,6 +33,27 @@ public final class ModDataComponents {
                     "energy_system",
                     builder -> builder
                             .persistent(EnergySystem.CODEC)
+            );
+
+    public static final Supplier<DataComponentType<Frame>> FRAME =
+            COMPONENTS.registerComponentType(
+                    "frame",
+                    builder -> builder
+                            .persistent(Frame.CODEC)
+            );
+
+    public static final Supplier<DataComponentType<Controller>> CONTROLLER =
+            COMPONENTS.registerComponentType(
+                    "controller",
+                    builder -> builder
+                            .persistent(Controller.CODEC)
+            );
+
+    public static final Supplier<DataComponentType<Exoskeleton>> EXOSKELETON =
+            COMPONENTS.registerComponentType(
+                    "exoskeleton",
+                    builder -> builder
+                            .persistent(Exoskeleton.CODEC)
             );
 
     public static void register(

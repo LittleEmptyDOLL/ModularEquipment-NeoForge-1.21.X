@@ -30,6 +30,13 @@ public final class ModMatrices {
             7
     );
 
+    public static final DeferredHolder<MatrixDefinition, MatrixDefinition> ENGINEERING = register(
+            "engineering",
+            EquipmentTier.ENGINEERING,
+            7,
+            8
+    );
+
     public static final DeferredHolder<MatrixDefinition, MatrixDefinition> EXPERIMENTAL = register(
             "experimental",
             EquipmentTier.EXPERIMENTAL,

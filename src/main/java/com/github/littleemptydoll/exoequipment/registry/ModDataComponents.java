@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.controller.Controller;
 import com.github.littleemptydoll.exoequipment.energy.EnergySystem;
 import com.github.littleemptydoll.exoequipment.exoskeleton.Exoskeleton;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import net.minecraft.core.component.DataComponentType;
@@ -54,6 +55,13 @@ public final class ModDataComponents {
                     "exoskeleton",
                     builder -> builder
                             .persistent(Exoskeleton.CODEC)
+            );
+
+    public static final Supplier<DataComponentType<ExoskeletonData>> EXOSKELETON_DATA =
+            COMPONENTS.registerComponentType(
+                    "exoskeleton_data",
+                    builder -> builder
+                            .persistent(ExoskeletonData.CODEC)
             );
 
     public static void register(

@@ -96,5 +96,11 @@ public class ControllerItem extends Item {
                         "Max profiles: " + definition.maxProfiles()
                 )
         );
+
+        tooltip.add(
+                Component.literal(
+                        "Max active matrices: " + definition.maxActiveMatrices()
+                )
+        );
     }
 }

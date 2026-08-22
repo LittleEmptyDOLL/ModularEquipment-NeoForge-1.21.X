@@ -19,7 +19,8 @@ public class ModControllers {
     private static DeferredHolder<ControllerDefinition, ControllerDefinition> register(
             String id,
             EquipmentTier tier,
-            int maxProfiles
+            int maxProfiles,
+            int maxActiveMatrices
     ) {
         ResourceLocation location =
                 ResourceLocation.fromNamespaceAndPath(
@@ -32,7 +33,8 @@ public class ModControllers {
                 () -> new ControllerDefinition(
                         location,
                         tier,
-                        maxProfiles
+                        maxProfiles,
+                        maxActiveMatrices
                 )
         );
     }
@@ -56,24 +58,28 @@ public class ModControllers {
     public static final DeferredHolder<ControllerDefinition, ControllerDefinition> CIVILIAN = register(
             "civilian",
             EquipmentTier.CIVILIAN,
+            1,
             1
     );
 
     public static final DeferredHolder<ControllerDefinition, ControllerDefinition> MILITARY = register(
             "military",
             EquipmentTier.MILITARY,
+            2,
             2
     );
 
     public static final DeferredHolder<ControllerDefinition, ControllerDefinition> ENGINEERING = register(
             "engineering",
             EquipmentTier.ENGINEERING,
+            2,
             2
     );
 
     public static final DeferredHolder<ControllerDefinition, ControllerDefinition> EXPERIMENTAL = register(
             "experimental",
             EquipmentTier.EXPERIMENTAL,
+            3,
             3
     );
 }

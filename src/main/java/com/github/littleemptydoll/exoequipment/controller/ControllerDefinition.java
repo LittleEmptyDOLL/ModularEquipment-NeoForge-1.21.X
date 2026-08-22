@@ -8,7 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 public record ControllerDefinition(
         ResourceLocation id,
         EquipmentTier tier,
-        int maxProfiles
+        int maxProfiles,
+        int maxActiveMatrices
 ) {
     public static final Codec<ControllerDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -21,7 +22,10 @@ public record ControllerDefinition(
                                     .forGetter(ControllerDefinition::tier),
                             Codec.INT
                                     .fieldOf("max_profiles")
-                                    .forGetter(ControllerDefinition::maxProfiles)
+                                    .forGetter(ControllerDefinition::maxProfiles),
+                            Codec.INT
+                                    .fieldOf("max_active_matrices")
+                                    .forGetter(ControllerDefinition::maxActiveMatrices)
                     ).apply(
                             instance,
                             ControllerDefinition::new
@@ -32,6 +36,12 @@ public record ControllerDefinition(
         if (maxProfiles < 1) {
             throw new IllegalArgumentException(
                     "The maximum number of profiles must be greater than 0."
+            );
+        }
+
+        if (maxActiveMatrices < 1) {
+            throw new IllegalArgumentException(
+                    "The maximum number of active matrices must be greater than 0."
             );
         }
     }

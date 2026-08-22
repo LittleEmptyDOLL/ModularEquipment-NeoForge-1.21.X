@@ -1,11 +1,10 @@
 package com.github.littleemptydoll.exoequipment.item;
 
-import com.github.littleemptydoll.exoequipment.controller.Controller;
-import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
 import com.github.littleemptydoll.exoequipment.exoskeleton.Exoskeleton;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonDefinition;
+import com.github.littleemptydoll.exoequipment.exoskeleton.MatrixSlot;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
-import com.github.littleemptydoll.exoequipment.registry.ModExoskeletons;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -15,12 +14,16 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import java.util.List;
 
 public class ExoskeletonItem extends Item {
+    private final DeferredHolder<
+            ExoskeletonDefinition,
+            ExoskeletonDefinition
+    > definition;
 
     public ExoskeletonItem(
             DeferredHolder<
                     ExoskeletonDefinition,
                     ExoskeletonDefinition
-                    > definition
+            > definition
     ) {
         super(
                 new Properties()
@@ -30,24 +33,18 @@ public class ExoskeletonItem extends Item {
                                         definition.getId()
                                 )
                         )
+                        .component(
+                                ModDataComponents.EXOSKELETON_DATA.get(),
+                                ExoskeletonData.empty()
+                        )
         );
+
+        this.definition = definition;
     }
 
-    public ExoskeletonDefinition getDefinition(ItemStack stack) {
-        Exoskeleton exoskeleton = getExoskeleton(stack);
-
-        if (exoskeleton == null) {
-            return null;
-        }
-
-        return ModExoskeletons.getDefinition(
-                exoskeleton.definitionId()
-        );
-    }
-
-    public Exoskeleton getExoskeleton(ItemStack stack) {
-        Exoskeleton data = stack.get(
-                ModDataComponents.EXOSKELETON.get()
+    public ExoskeletonData getData(ItemStack stack) {
+        ExoskeletonData data = stack.get(
+                ModDataComponents.EXOSKELETON_DATA.get()
         );
 
         if (data == null) {
@@ -69,6 +66,24 @@ public class ExoskeletonItem extends Item {
         return exoskeletonItem;
     }
 
+    public ExoskeletonDefinition getDefinition() {
+        return definition.get();
+    }
+
+    public Exoskeleton getExoskeleton(ItemStack stack) {
+        Exoskeleton data = stack.get(
+                ModDataComponents.EXOSKELETON.get()
+        );
+
+        if (data == null) {
+            throw new IllegalStateException(
+                    "Exoskeleton item does not contain exoskeleton data"
+            );
+        }
+
+        return data;
+    }
+
     @Override
     public void appendHoverText(
             ItemStack stack,
@@ -85,13 +100,47 @@ public class ExoskeletonItem extends Item {
             return;
         }
 
-        ExoskeletonDefinition definition = getDefinition(stack);
+        ExoskeletonData data = getData(stack);
 
-        // ToDo
-//        tooltip.add(
-//                Component.literal(
-//                        "???: " + definition.???()
-//                )
-//        );
+        tooltip.add(
+                Component.literal(
+                        "Frame: " + (data.frame().isPresent() ? data.frame() : "None")
+                )
+        );
+
+        tooltip.add(
+                Component.literal(
+                        "Controller: " + (data.controller().isPresent() ? data.frame() : "None")
+                )
+        );
+
+        tooltip.add(
+                Component.literal(
+                        "Energy system: " + (data.energySystem().isPresent() ? data.frame() : "None")
+                )
+        );
+
+        tooltip.add(
+                Component.literal(
+                        "Matrices:"
+                )
+        );
+
+        for (int i = 0; i < data.matrices().size(); i++) {
+            MatrixSlot slot = data.matrices().get(i);
+
+            tooltip.add(
+                    Component.literal(
+                            "  " + (i + 1) + ": " +
+                                    (slot.matrix().isPresent() ? slot.matrix().toString() : "Empty")
+                    )
+            );
+        }
+
+        tooltip.add(
+                Component.literal(
+                        "Profiles: " + data.profiles().size()
+                )
+        );
     }
 }

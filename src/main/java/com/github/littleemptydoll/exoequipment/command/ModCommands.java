@@ -2,7 +2,9 @@ package com.github.littleemptydoll.exoequipment.command;
 
 import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
 import com.github.littleemptydoll.exoequipment.energy.EnergySystemDefinition;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonDefinition;
+import com.github.littleemptydoll.exoequipment.exoskeleton.MatrixSlot;
 import com.github.littleemptydoll.exoequipment.frame.FrameDefinition;
 import com.github.littleemptydoll.exoequipment.item.*;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixState;
@@ -524,6 +526,13 @@ public final class ModCommands {
                 false
         );
 
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Max active matrices: " + definition.maxActiveMatrices()
+                ),
+                false
+        );
+
         return 1;
     }
 
@@ -554,7 +563,8 @@ public final class ModCommands {
             return 0;
         }
 
-        ExoskeletonDefinition definition = exoskeletonItem.getDefinition(stack);
+        ExoskeletonDefinition definition = exoskeletonItem.getDefinition();
+        ExoskeletonData data = exoskeletonItem.getData(stack);
 
         source.sendSuccess(
                 () -> Component.literal(
@@ -566,6 +576,54 @@ public final class ModCommands {
         source.sendSuccess(
                 () -> Component.literal(
                         "ID: " + definition.id()
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Frame: " + (data.frame().isPresent() ? data.frame() : "None")
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Controller: " + (data.controller().isPresent() ? data.frame() : "None")
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Energy system: " + (data.energySystem().isPresent() ? data.frame() : "None")
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Matrices:"
+                ),
+                false
+        );
+
+        for (int i = 0; i < data.matrices().size(); i++) {
+            MatrixSlot slot = data.matrices().get(i);
+
+            int finalI = i;
+            source.sendSuccess(
+                    () -> Component.literal(
+                            "  " + (finalI + 1) + ": " +
+                                    (slot.matrix().isPresent() ? slot.matrix().toString() : "Empty")
+                    ),
+                    false
+            );
+        }
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Profiles: " + data.profiles().size()
                 ),
                 false
         );

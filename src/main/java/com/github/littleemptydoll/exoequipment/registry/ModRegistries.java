@@ -20,6 +20,9 @@ public final class ModRegistries {
         event.register(MATRIX_REGISTRY);
         event.register(MODULE_REGISTRY);
         event.register(ENERGY_SYSTEM_REGISTRY);
+        event.register(FRAME_REGISTRY);
+        event.register(CONTROLLER_REGISTRY);
+        event.register(EXOSKELETON_REGISTRY);
     }
 
     // Матрица

@@ -1,10 +1,10 @@
 package com.github.littleemptydoll.exoequipment.command;
 
-import com.github.littleemptydoll.exoequipment.energy.EnergySystem;
+import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
 import com.github.littleemptydoll.exoequipment.energy.EnergySystemDefinition;
-import com.github.littleemptydoll.exoequipment.item.EnergySystemItem;
-import com.github.littleemptydoll.exoequipment.item.MatrixItem;
-import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonDefinition;
+import com.github.littleemptydoll.exoequipment.frame.FrameDefinition;
+import com.github.littleemptydoll.exoequipment.item.*;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixState;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
@@ -173,6 +173,33 @@ public final class ModCommands {
                                 Commands.literal("stats")
                                         .executes(context ->
                                                 showEnergySystemStats(context.getSource()))
+                        )
+        );
+
+        event.getDispatcher().register(
+                Commands.literal("exo_exoskeleton")
+                        .then(
+                                Commands.literal("stats")
+                                        .executes(context ->
+                                                showExoskeletonStats(context.getSource()))
+                        )
+        );
+
+        event.getDispatcher().register(
+                Commands.literal("exo_controller")
+                        .then(
+                                Commands.literal("stats")
+                                        .executes(context ->
+                                                showControllerStats(context.getSource()))
+                        )
+        );
+
+        event.getDispatcher().register(
+                Commands.literal("exo_frame")
+                        .then(
+                                Commands.literal("stats")
+                                        .executes(context ->
+                                                showFrameStats(context.getSource()))
                         )
         );
     }
@@ -433,6 +460,173 @@ public final class ModCommands {
         source.sendSuccess(
                 () -> Component.literal(
                         "Efficiency: " + definition.efficiency()
+                ),
+                false
+        );
+
+        return 1;
+    }
+
+    private static int showControllerStats(
+            CommandSourceStack source
+    ) {
+        ServerPlayer player = source.getPlayer();
+
+        if (player == null) {
+            source.sendFailure(
+                    Component.literal(
+                            "This command can only be used by a player."
+                    )
+            );
+
+            return 0;
+        }
+
+        ItemStack stack = player.getMainHandItem();
+
+        if (!(stack.getItem() instanceof ControllerItem controllerItem)) {
+            source.sendFailure(
+                    Component.literal(
+                            "You must hold an controller in your main hand."
+                    )
+            );
+
+            return 0;
+        }
+
+        ControllerDefinition definition = controllerItem.getDefinition(stack);
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "=== Controller Stats ==="
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "ID: " + definition.id()
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Tier: " + definition.tier()
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Max profiles: " + definition.maxProfiles()
+                ),
+                false
+        );
+
+        return 1;
+    }
+
+    private static int showExoskeletonStats(
+            CommandSourceStack source
+    ) {
+        ServerPlayer player = source.getPlayer();
+
+        if (player == null) {
+            source.sendFailure(
+                    Component.literal(
+                            "This command can only be used by a player."
+                    )
+            );
+
+            return 0;
+        }
+
+        ItemStack stack = player.getMainHandItem();
+
+        if (!(stack.getItem() instanceof ExoskeletonItem exoskeletonItem)) {
+            source.sendFailure(
+                    Component.literal(
+                            "You must hold an exoskeleton in your main hand."
+                    )
+            );
+
+            return 0;
+        }
+
+        ExoskeletonDefinition definition = exoskeletonItem.getDefinition(stack);
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "=== Exoskeleton Stats ==="
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "ID: " + definition.id()
+                ),
+                false
+        );
+
+        return 1;
+    }
+
+    private static int showFrameStats(
+            CommandSourceStack source
+    ) {
+        ServerPlayer player = source.getPlayer();
+
+        if (player == null) {
+            source.sendFailure(
+                    Component.literal(
+                            "This command can only be used by a player."
+                    )
+            );
+
+            return 0;
+        }
+
+        ItemStack stack = player.getMainHandItem();
+
+        if (!(stack.getItem() instanceof FrameItem frameItem)) {
+            source.sendFailure(
+                    Component.literal(
+                            "You must hold an energy system in your main hand."
+                    )
+            );
+
+            return 0;
+        }
+
+        FrameDefinition definition = frameItem.getDefinition(stack);
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "=== Frame Stats ==="
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "ID: " + definition.id()
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Tier: " + definition.tier()
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Max module size: "
+                                + definition.maxModuleSize().width() + "x" + definition.maxModuleSize().height()
                 ),
                 false
         );

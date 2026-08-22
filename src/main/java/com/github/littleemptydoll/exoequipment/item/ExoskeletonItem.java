@@ -1,12 +1,18 @@
 package com.github.littleemptydoll.exoequipment.item;
 
+import com.github.littleemptydoll.exoequipment.controller.Controller;
+import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
 import com.github.littleemptydoll.exoequipment.exoskeleton.Exoskeleton;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonDefinition;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.ModExoskeletons;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.registries.DeferredHolder;
+
+import java.util.List;
 
 public class ExoskeletonItem extends Item {
 
@@ -61,5 +67,31 @@ public class ExoskeletonItem extends Item {
         }
 
         return exoskeletonItem;
+    }
+
+    @Override
+    public void appendHoverText(
+            ItemStack stack,
+            TooltipContext context,
+            List<Component> tooltip,
+            TooltipFlag flag
+    ) {
+        Exoskeleton exoskeleton = getExoskeleton(stack);
+
+        if (exoskeleton == null) {
+            tooltip.add(
+                    Component.literal("No exoskeleton data")
+            );
+            return;
+        }
+
+        ExoskeletonDefinition definition = getDefinition(stack);
+
+        // ToDo
+//        tooltip.add(
+//                Component.literal(
+//                        "???: " + definition.???()
+//                )
+//        );
     }
 }

@@ -4,9 +4,13 @@ import com.github.littleemptydoll.exoequipment.controller.Controller;
 import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
 import com.github.littleemptydoll.exoequipment.registry.ModControllers;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.registries.DeferredHolder;
+
+import java.util.List;
 
 public class ControllerItem extends Item {
 
@@ -61,5 +65,36 @@ public class ControllerItem extends Item {
         }
 
         return controllerItem;
+    }
+
+    @Override
+    public void appendHoverText(
+            ItemStack stack,
+            TooltipContext context,
+            List<Component> tooltip,
+            TooltipFlag flag
+    ) {
+        Controller controller = getController(stack);
+
+        if (controller == null) {
+            tooltip.add(
+                    Component.literal("No controller data")
+            );
+            return;
+        }
+
+        ControllerDefinition definition = getDefinition(stack);
+
+        tooltip.add(
+                Component.literal(
+                        "Tier: " + definition.tier()
+                )
+        );
+
+        tooltip.add(
+                Component.literal(
+                        "Max profiles: " + definition.maxProfiles()
+                )
+        );
     }
 }

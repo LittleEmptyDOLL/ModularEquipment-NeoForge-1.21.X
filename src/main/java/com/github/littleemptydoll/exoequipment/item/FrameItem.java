@@ -1,12 +1,18 @@
 package com.github.littleemptydoll.exoequipment.item;
 
+import com.github.littleemptydoll.exoequipment.controller.Controller;
+import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
 import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.frame.FrameDefinition;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.ModFrames;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.registries.DeferredHolder;
+
+import java.util.List;
 
 public class FrameItem extends Item {
 
@@ -61,5 +67,37 @@ public class FrameItem extends Item {
         }
 
         return frameItem;
+    }
+
+    @Override
+    public void appendHoverText(
+            ItemStack stack,
+            TooltipContext context,
+            List<Component> tooltip,
+            TooltipFlag flag
+    ) {
+        Frame frame = getFrame(stack);
+
+        if (frame == null) {
+            tooltip.add(
+                    Component.literal("No frame data")
+            );
+            return;
+        }
+
+        FrameDefinition definition = getDefinition(stack);
+
+        tooltip.add(
+                Component.literal(
+                        "Tier: " + definition.tier()
+                )
+        );
+
+        tooltip.add(
+                Component.literal(
+                        "Max module size: "
+                                + definition.maxModuleSize().width() + "x" + definition.maxModuleSize().height()
+                )
+        );
     }
 }

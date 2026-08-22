@@ -104,19 +104,22 @@ public class ExoskeletonItem extends Item {
 
         tooltip.add(
                 Component.literal(
-                        "Frame: " + (data.frame().isPresent() ? data.frame() : "None")
+                        "Frame: "
+                                + (data.frame().isPresent() ? data.frame().get().definitionId() : "None")
                 )
         );
 
         tooltip.add(
                 Component.literal(
-                        "Controller: " + (data.controller().isPresent() ? data.frame() : "None")
+                        "Controller: "
+                                + (data.controller().isPresent() ? data.controller().get().definitionId() : "None")
                 )
         );
 
         tooltip.add(
                 Component.literal(
-                        "Energy system: " + (data.energySystem().isPresent() ? data.frame() : "None")
+                        "Energy system: "
+                                + (data.energySystem().isPresent() ? data.energySystem().get().definitionId() : "None")
                 )
         );
 

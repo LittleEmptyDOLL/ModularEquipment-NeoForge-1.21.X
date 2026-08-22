@@ -1,18 +1,21 @@
 package com.github.littleemptydoll.exoequipment.command;
 
+import com.github.littleemptydoll.exoequipment.controller.Controller;
 import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
+import com.github.littleemptydoll.exoequipment.energy.EnergySystem;
 import com.github.littleemptydoll.exoequipment.energy.EnergySystemDefinition;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonDefinition;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonOperations;
 import com.github.littleemptydoll.exoequipment.exoskeleton.MatrixSlot;
+import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.frame.FrameDefinition;
 import com.github.littleemptydoll.exoequipment.item.*;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixState;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
-import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import com.github.littleemptydoll.exoequipment.registry.*;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -184,6 +187,105 @@ public final class ModCommands {
                                 Commands.literal("stats")
                                         .executes(context ->
                                                 showExoskeletonStats(context.getSource()))
+                        )
+                        .then(
+                                Commands.literal("install_frame")
+                                        .executes(context ->
+                                                addFrame(
+                                                        context.getSource()
+                                                                .getPlayerOrException()
+                                                                .getMainHandItem()
+                                                )
+                                        )
+                        )
+                        .then(
+                                Commands.literal("remove_frame")
+                                        .executes(context ->
+                                                removeFrame(
+                                                        context.getSource()
+                                                                .getPlayerOrException()
+                                                                .getMainHandItem()
+                                                )
+                                        )
+                        )
+                        .then(
+                                Commands.literal("install_controller")
+                                        .executes(context ->
+                                                addController(
+                                                        context.getSource()
+                                                                .getPlayerOrException()
+                                                                .getMainHandItem()
+                                                )
+                                        )
+                        )
+                        .then(
+                                Commands.literal("remove_controller")
+                                        .executes(context ->
+                                                removeController(
+                                                        context.getSource()
+                                                                .getPlayerOrException()
+                                                                .getMainHandItem()
+                                                )
+                                        )
+                        )
+                        .then(
+                                Commands.literal("install_energy_system")
+                                        .executes(context ->
+                                                addEnergySystem(
+                                                        context.getSource()
+                                                                .getPlayerOrException()
+                                                                .getMainHandItem()
+                                                )
+                                        )
+                        )
+                        .then(
+                                Commands.literal("remove_energy_system")
+                                        .executes(context ->
+                                                removeEnergySystem(
+                                                        context.getSource()
+                                                                .getPlayerOrException()
+                                                                .getMainHandItem()
+                                                )
+                                        )
+                        )
+                        .then(
+                                Commands.literal("install_matrix")
+                                        .then(
+                                                Commands.argument(
+                                                        "slot",
+                                                        IntegerArgumentType.integer()
+                                                ).executes(context ->
+                                                        addMatrix(
+                                                                context.getSource()
+                                                                        .getPlayerOrException(),
+                                                                IntegerArgumentType.getInteger(
+                                                                        context,
+                                                                        "slot"
+                                                                )
+
+                                                        )
+                                                )
+                                        )
+                        )
+                        .then(
+                                Commands.literal("remove_matrix")
+                                        .then(
+                                                Commands.argument(
+                                                        "slot",
+                                                        IntegerArgumentType.integer()
+                                                )
+                                                .executes(context ->
+                                                        removeMatrix(
+                                                                context.getSource()
+                                                                        .getPlayerOrException()
+                                                                        .getMainHandItem(),
+                                                                IntegerArgumentType.getInteger(
+                                                                        context,
+                                                                        "slot"
+                                                                )
+                                                        )
+                                                )
+                                        )
                         )
         );
 
@@ -687,6 +789,172 @@ public final class ModCommands {
                                 + definition.maxModuleSize().width() + "x" + definition.maxModuleSize().height()
                 ),
                 false
+        );
+
+        return 1;
+    }
+
+    private static int addFrame(
+            ItemStack stack
+    ) {
+        Frame frame = new Frame(ModFrames.CIVILIAN.getId());
+
+        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
+
+        data = ExoskeletonOperations.installFrame(
+                data,
+                frame
+        );
+
+        stack.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                data
+        );
+
+        return 1;
+    }
+
+    private static int removeFrame(
+            ItemStack stack
+    ) {
+        Frame frame = new Frame(ModFrames.CIVILIAN.getId());
+
+        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
+
+        data = ExoskeletonOperations.removeFrame(
+                data
+        );
+
+        stack.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                data
+        );
+
+        return 1;
+    }
+
+    private static int addController(
+            ItemStack stack
+    ) {
+        Controller controller = new Controller(ModControllers.CIVILIAN.getId());
+
+        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
+
+        data = ExoskeletonOperations.installController(
+                data,
+                controller
+        );
+
+        stack.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                data
+        );
+
+        return 1;
+    }
+
+    private static int removeController(
+            ItemStack stack
+    ) {
+        Controller controller = new Controller(ModControllers.CIVILIAN.getId());
+
+        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
+
+        data = ExoskeletonOperations.removeController(
+                data
+        );
+
+        stack.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                data
+        );
+
+        return 1;
+    }
+
+    private static int addEnergySystem(
+            ItemStack stack
+    ) {
+        EnergySystem energySystem = new EnergySystem(ModEnergySystems.CIVILIAN.getId());
+
+        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
+
+        data = ExoskeletonOperations.installEnergySystem(
+                data,
+                energySystem
+        );
+
+        stack.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                data
+        );
+
+        return 1;
+    }
+
+    private static int removeEnergySystem(
+            ItemStack stack
+    ) {
+        EnergySystem energySystem = new EnergySystem(ModEnergySystems.CIVILIAN.getId());
+
+        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
+
+        data = ExoskeletonOperations.removeEnergySystem(
+                data
+        );
+
+        stack.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                data
+        );
+
+        return 1;
+    }
+
+    private static int addMatrix(
+            ServerPlayer player,
+            int slot
+    ) {
+        ItemStack matrixStack = player.getOffhandItem();
+
+        MatrixItem.get(matrixStack);
+
+        MatrixData matrix = matrixStack.get(
+                ModDataComponents.MATRIX_DATA.get()
+        );
+
+        ItemStack exoskeletonStack = player.getMainHandItem();
+
+        ExoskeletonData exoskeletonData = ExoskeletonItem.get(exoskeletonStack).getData(exoskeletonStack);
+
+        exoskeletonData = ExoskeletonOperations.installMatrix(
+                exoskeletonData,
+                slot,
+                matrix
+        );
+
+        exoskeletonStack.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                exoskeletonData
+        );
+
+        return 1;
+    }
+
+    private static int removeMatrix(
+            ItemStack stack,
+            int slot
+    ) {
+        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
+
+        data = ExoskeletonOperations.removeMatrix(
+                data,
+                slot
+        );
+
+        stack.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                data
         );
 
         return 1;

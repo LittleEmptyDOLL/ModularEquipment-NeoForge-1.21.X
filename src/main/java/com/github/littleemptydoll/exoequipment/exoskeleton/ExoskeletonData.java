@@ -180,4 +180,62 @@ public record ExoskeletonData(
                 activeProfile
         );
     }
+
+    public ExoskeletonData withProfiles(
+            List<ExoskeletonProfile> profiles
+    ) {
+        return new ExoskeletonData(
+                frame,
+                controller,
+                energySystem,
+                matrices,
+                List.copyOf(profiles),
+                activeProfile
+        );
+    }
+
+    public ExoskeletonData withProfiles(
+            List<ExoskeletonProfile> profiles,
+            int activeProfile
+    ) {
+        return new ExoskeletonData(
+                frame,
+                controller,
+                energySystem,
+                matrices,
+                List.copyOf(profiles),
+                activeProfile
+        );
+    }
+
+    public ExoskeletonData withProfiles(
+            int index,
+            ExoskeletonProfile profile
+    ) {
+        List<ExoskeletonProfile> profiles = new ArrayList<>(this.profiles);
+
+        profiles.set(index, profile);
+
+        return new ExoskeletonData(
+                frame,
+                controller,
+                energySystem,
+                matrices,
+                List.copyOf(profiles),
+                activeProfile
+        );
+    }
+
+    public ExoskeletonData withActiveProfile(
+            int activeProfile
+    ) {
+        return new ExoskeletonData(
+                frame,
+                controller,
+                energySystem,
+                matrices,
+                profiles,
+                activeProfile
+        );
+    }
 }

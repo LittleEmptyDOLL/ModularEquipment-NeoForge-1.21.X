@@ -49,11 +49,7 @@ public final class ExoskeletonOperations {
     public static ExoskeletonData removeController(
             ExoskeletonData data
     ) {
-        if (data.controller().isEmpty()) {
-            throw new IllegalStateException(
-                    "Exoskeleton does not have a controller installed"
-            );
-        }
+        ExoskeletonValidation.validateController(data);
 
         return data.withoutController();
     }
@@ -88,7 +84,7 @@ public final class ExoskeletonOperations {
             int slot,
             MatrixData matrix
     ) {
-        validateMatrixSlot(slot);
+        ExoskeletonValidation.validateMatrixSlot(slot);
 
         if (data.matrices().get(slot).matrix().isPresent()) {
             throw new IllegalStateException(
@@ -103,7 +99,7 @@ public final class ExoskeletonOperations {
             ExoskeletonData data,
             int slot
     ) {
-        validateMatrixSlot(slot);
+        ExoskeletonValidation.validateMatrixSlot(slot);
 
         if (data.matrices().get(slot).matrix().isEmpty()) {
             throw new IllegalStateException(
@@ -112,13 +108,5 @@ public final class ExoskeletonOperations {
         }
 
         return data.withoutMatrix(slot);
-    }
-
-    private static void validateMatrixSlot(int slot) {
-        if (slot < 0 || slot >= ExoskeletonData.MAX_MATRICES) {
-            throw new IllegalArgumentException(
-                    "Invalid matrix slot: " + slot
-            );
-        }
     }
 }

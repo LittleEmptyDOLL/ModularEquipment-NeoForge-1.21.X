@@ -4,10 +4,7 @@ import com.github.littleemptydoll.exoequipment.controller.Controller;
 import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
 import com.github.littleemptydoll.exoequipment.energy.EnergySystem;
 import com.github.littleemptydoll.exoequipment.energy.EnergySystemDefinition;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonDefinition;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonOperations;
-import com.github.littleemptydoll.exoequipment.exoskeleton.MatrixSlot;
+import com.github.littleemptydoll.exoequipment.exoskeleton.*;
 import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.frame.FrameDefinition;
 import com.github.littleemptydoll.exoequipment.item.*;
@@ -23,6 +20,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+
+import java.util.List;
 
 public final class ModCommands {
     private ModCommands() {}
@@ -284,6 +283,14 @@ public final class ModCommands {
                                                                         "slot"
                                                                 )
                                                         )
+                                                )
+                                        )
+                        )
+                        .then(
+                                Commands.literal("state")
+                                        .executes(context ->
+                                                exoskeletonState(
+                                                        context.getSource()
                                                 )
                                         )
                         )
@@ -710,22 +717,33 @@ public final class ModCommands {
                 false
         );
 
-        for (int i = 0; i < data.matrices().size(); i++) {
-            MatrixSlot slot = data.matrices().get(i);
+        List<Integer> activeSlots = ExoskeletonState.activeMatrixSlots(data);
 
-            int finalI = i;
-            source.sendSuccess(
-                    () -> Component.literal(
-                            "  " + (finalI + 1) + ": " +
-                                    (slot.matrix().isPresent() ? slot.matrix().toString() : "Empty")
-                    ),
-                    false
-            );
+        for (int slot : activeSlots) {
+            MatrixSlot matrixSlot = data.matrices().get(slot);
+
+            if (matrixSlot.matrix().isPresent()) {
+                source.sendSuccess(
+                        () -> Component.literal(
+                                "Slot " + slot + ": installed"
+                        ),
+                        false
+                );
+            } else {
+                source.sendSuccess(
+                        () -> Component.literal(
+                                "Slot " + slot + ": empty"
+                        ),
+                        false
+                );
+            }
         }
+
+        List<MatrixData> activeMatrices = ExoskeletonState.activeMatrices(data);
 
         source.sendSuccess(
                 () -> Component.literal(
-                        "Profiles: " + data.profiles().size()
+                        "Profiles: " + activeMatrices
                 ),
                 false
         );
@@ -956,6 +974,95 @@ public final class ModCommands {
                 ModDataComponents.EXOSKELETON_DATA.get(),
                 data
         );
+
+        return 1;
+    }
+
+    private static int exoskeletonState(
+            CommandSourceStack source
+    ) {
+        ServerPlayer player = source.getPlayer();
+
+        if (player == null) {
+            source.sendFailure(
+                    Component.literal(
+                            "This command can only be used by a player."
+                    )
+            );
+            return 0;
+        }
+
+        ItemStack stack = player.getMainHandItem();
+
+        if (!(stack.getItem() instanceof ExoskeletonItem)) {
+            source.sendFailure(
+                    Component.literal(
+                            "You must hold an exoskeleton in your main hand."
+                    )
+            );
+            return 0;
+        }
+
+        ExoskeletonData data = stack.get(ModDataComponents.EXOSKELETON_DATA.get());
+
+        if (data == null) {
+            source.sendFailure(
+                    Component.literal(
+                            "Exoskeleton does not contain data"
+                    )
+            );
+        }
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Active profile: " + data.activeProfile()
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Has active profile: " + ExoskeletonState.hasActiveProfile(data)
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Can activate: " + ExoskeletonState.canActivate(data)
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Active matrix slots: " + ExoskeletonState.activeMatrixSlots(data)
+                ),
+                false
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Active matrix count: " + ExoskeletonState.activeMatrixCount(data)
+                ),
+                false
+        );
+
+        for (int slot = 0; slot < ExoskeletonData.MAX_MATRICES; slot++) {
+            final int currentSlot = slot;
+
+            source.sendSuccess(
+                    () -> Component.literal(
+                            "Matrix slot: "
+                                    + currentSlot
+                                    + " active: "
+                                    + ExoskeletonState.isMatrixActive(
+                                            data,currentSlot
+                                    )
+                    ),
+                    false
+            );
+        }
 
         return 1;
     }

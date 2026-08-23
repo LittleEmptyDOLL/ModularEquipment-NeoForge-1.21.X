@@ -1,8 +1,15 @@
 package com.github.littleemptydoll.exoequipment.datagen;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
+import com.github.littleemptydoll.exoequipment.registry.ModControllers;
+import com.github.littleemptydoll.exoequipment.registry.ModItems;
+import com.github.littleemptydoll.exoequipment.util.NameUtils;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class ModLanguageProvider extends LanguageProvider {
     public ModLanguageProvider(
@@ -17,6 +24,15 @@ public class ModLanguageProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
+        for (DeferredHolder<Item, ? extends Item> holder : ModItems.ITEMS.getEntries()) {
+            ResourceLocation id = holder.getId();
+
+            add(
+                    "item." + id.getNamespace() + "." + id.getPath(),
+                    NameUtils.toDisplayName(id.getPath())
+            );
+        }
+
         add(
                 "tooltip.exoequipment.type",
                 "Type: %s"

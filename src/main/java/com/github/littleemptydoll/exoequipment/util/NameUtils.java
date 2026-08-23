@@ -1,11 +1,17 @@
 package com.github.littleemptydoll.exoequipment.util;
 
+import net.minecraft.resources.ResourceLocation;
+
 public class NameUtils {
     private NameUtils() {
     }
 
-    public static String toDisplayName(String name) {
-        String[] words = name.toLowerCase().split("_");
+    public static String toDisplayName(ResourceLocation id) {
+        return toDisplayName(id.getPath());
+    }
+
+    public static String toDisplayName(String value) {
+        String[] words = value.toLowerCase().split("_");
         StringBuilder result = new StringBuilder();
 
         for (String word : words) {

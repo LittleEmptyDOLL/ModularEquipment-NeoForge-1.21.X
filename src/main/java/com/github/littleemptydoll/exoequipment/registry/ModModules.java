@@ -14,7 +14,7 @@ public class ModModules {
 
     public static final DeferredRegister<ModuleDefinition> MODULES =
             DeferredRegister.create(
-                    ModRegistries.MODULE_REGISTRY,
+                    ModRegistryKeys.MODULE_REGISTRY,
                     ExoEquipment.MODID
             );
 
@@ -52,7 +52,7 @@ public class ModModules {
     public static ModuleDefinition getDefinition(
             ResourceLocation id
     ) {
-        ModuleDefinition definition = ModRegistries.MODULE_REGISTRY.get(id);
+        ModuleDefinition definition = ModRegistryKeys.MODULE_REGISTRY.get(id);
 
         if (definition == null) {
             throw new IllegalArgumentException("Unknown module: " + id);

@@ -1,5 +1,6 @@
 package com.github.littleemptydoll.exoequipment.item;
 
+import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
@@ -79,39 +80,16 @@ public class MatrixItem extends Item {
         }
 
         tooltip.add(
-                Component.literal(
-                        "Tier: " + definition.tier()
+                TooltipHelper.tier(
+                        definition.tier()
                 )
         );
 
         tooltip.add(
-                Component.literal(
-                        "Size: "
-                                + definition.width()
-                                + "x"
-                                + definition.height()
+                TooltipHelper.size(
+                        definition.width(),
+                        definition.height()
                 )
         );
-
-        tooltip.add(
-                Component.literal(
-                        "Modules: "
-                                + data.modules().size()
-                )
-        );
-
-        for (var module : data.modules()) {
-            tooltip.add(
-                    Component.literal(
-                            module.id()
-                                    + " @ "
-                                    + module.x()
-                                    + ","
-                                    + module.y()
-                                    + " rot="
-                                    + module.rotation()
-                    )
-            );
-        }
     }
 }

@@ -1,5 +1,6 @@
 package com.github.littleemptydoll.exoequipment.item;
 
+import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.energy.EnergySystem;
 import com.github.littleemptydoll.exoequipment.energy.EnergySystemDefinition;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
@@ -86,26 +87,26 @@ public class EnergySystemItem extends Item {
         EnergySystemDefinition definition = getDefinition(stack);
 
         tooltip.add(
-                Component.literal(
-                        "Tier: " + definition.tier()
+                TooltipHelper.tier(
+                        definition.tier()
                 )
         );
 
         tooltip.add(
-                Component.literal(
-                        "Max input: " + definition.maxInput() + " FE/t"
+                TooltipHelper.input(
+                        definition.maxInput()
                 )
         );
 
         tooltip.add(
-                Component.literal(
-                        "Max output: " + definition.maxOutput() + " FE/t"
+                TooltipHelper.output(
+                        definition.maxOutput()
                 )
         );
 
         tooltip.add(
-                Component.literal(
-                        "Efficiency: " + definition.efficiency()
+                TooltipHelper.efficiency(
+                        definition.efficiency()
                 )
         );
     }

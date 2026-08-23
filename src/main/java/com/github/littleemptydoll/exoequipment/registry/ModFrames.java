@@ -13,7 +13,7 @@ public class ModFrames {
 
     public static final DeferredRegister<FrameDefinition> FRAMES =
             DeferredRegister.create(
-                    ModRegistries.FRAME_REGISTRY_KEY,
+                    ModRegistryKeys.FRAME_REGISTRY_KEY,
                     ExoEquipment.MODID
             );
 

@@ -1,7 +1,6 @@
 package com.github.littleemptydoll.exoequipment.item;
 
-import com.github.littleemptydoll.exoequipment.controller.Controller;
-import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
+import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.frame.FrameDefinition;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
@@ -88,15 +87,15 @@ public class FrameItem extends Item {
         FrameDefinition definition = getDefinition(stack);
 
         tooltip.add(
-                Component.literal(
-                        "Tier: " + definition.tier()
+                TooltipHelper.tier(
+                        definition.tier()
                 )
         );
 
         tooltip.add(
-                Component.literal(
-                        "Max module size: "
-                                + definition.maxModuleSize().width() + "x" + definition.maxModuleSize().height()
+                TooltipHelper.maxModuleSize(
+                        definition.maxModuleSize().width(),
+                        definition.maxModuleSize().height()
                 )
         );
     }

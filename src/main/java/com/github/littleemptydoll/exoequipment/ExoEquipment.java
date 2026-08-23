@@ -13,11 +13,14 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 public class ExoEquipment {
     // Define mod id in a common place for everything to reference
     public static final String MODID = "exoequipment";
+    public static final String LOCALE = "en_us";
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public ExoEquipment(IEventBus eventBus) {
-        eventBus.addListener(ModRegistries::register);
+        // Регистрируем абсолютно всё именно тут, что бы не грузить главный класс
+        ModRegistries.register(eventBus);
+        eventBus.addListener(ModRegistryKeys::register);
 
         ModItems.register(eventBus);
         ModDataComponents.register(eventBus);

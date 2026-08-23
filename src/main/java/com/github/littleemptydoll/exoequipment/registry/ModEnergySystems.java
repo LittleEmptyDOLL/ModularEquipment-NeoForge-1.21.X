@@ -12,7 +12,7 @@ public class ModEnergySystems {
 
     public static final DeferredRegister<EnergySystemDefinition> ENERGY_SYSTEMS =
             DeferredRegister.create(
-                    ModRegistries.ENERGY_SYSTEM_REGISTRY_KEY,
+                    ModRegistryKeys.ENERGY_SYSTEM_REGISTRY_KEY,
                     ExoEquipment.MODID
             );
 

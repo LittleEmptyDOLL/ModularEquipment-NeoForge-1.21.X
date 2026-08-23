@@ -294,6 +294,101 @@ public final class ModCommands {
                                                 )
                                         )
                         )
+                        .then(
+                                Commands.literal("profile_create")
+                                        .executes(context ->
+                                                createProfile(
+                                                        context.getSource()
+                                                )
+                                        )
+                        )
+                        .then(
+                                Commands.literal("profile_remove")
+                                        .then(
+                                                Commands.argument(
+                                                        "profile",
+                                                        IntegerArgumentType.integer()
+                                                ).executes(context ->
+                                                        removeProfile(
+                                                                context.getSource(),
+                                                                IntegerArgumentType.getInteger(
+                                                                        context,
+                                                                        "profile"
+                                                                )
+                                                        )
+                                                )
+                                        )
+                        )
+                        .then(
+                                Commands.literal("profile_activate")
+                                        .then(
+                                                Commands.argument(
+                                                        "profile",
+                                                        IntegerArgumentType.integer()
+                                                ).executes(context ->
+                                                        activateProfile(
+                                                                context.getSource(),
+                                                                IntegerArgumentType.getInteger(
+                                                                        context,
+                                                                        "profile"
+                                                                )
+                                                        )
+                                                )
+                                        )
+                        )
+                        .then(
+                                Commands.literal("profile_set_matrices")
+                                        .then(
+                                                Commands.argument(
+                                                        "profile",
+                                                        IntegerArgumentType.integer()
+                                                ).then(
+                                                        Commands.argument(
+                                                                "slot1",
+                                                                IntegerArgumentType.integer()
+                                                        ).then(
+                                                                Commands.argument(
+                                                                        "slot2",
+                                                                        IntegerArgumentType.integer()
+                                                                ).then(
+                                                                        Commands.argument(
+                                                                                "slot3",
+                                                                                IntegerArgumentType.integer()
+                                                                        ).then(
+                                                                                Commands.argument(
+                                                                                        "slot4",
+                                                                                        IntegerArgumentType.integer()
+                                                                                ).executes(context ->
+                                                                                        setProfileMatrices(
+                                                                                                context.getSource(),
+                                                                                                IntegerArgumentType.getInteger(
+                                                                                                        context,
+                                                                                                        "profile"
+                                                                                                ),
+                                                                                                IntegerArgumentType.getInteger(
+                                                                                                        context,
+                                                                                                        "slot1"
+                                                                                                ),
+                                                                                                IntegerArgumentType.getInteger(
+                                                                                                        context,
+                                                                                                        "slot2"
+                                                                                                ),
+                                                                                                IntegerArgumentType.getInteger(
+                                                                                                        context,
+                                                                                                        "slot3"
+                                                                                                ),
+                                                                                                IntegerArgumentType.getInteger(
+                                                                                                        context,
+                                                                                                        "slot4"
+                                                                                                )
+                                                                                        )
+                                                                                )
+                                                                        )
+                                                                )
+                                                        )
+                                                )
+                                        )
+                        )
         );
 
         event.getDispatcher().register(
@@ -698,14 +793,14 @@ public final class ModCommands {
 
         source.sendSuccess(
                 () -> Component.literal(
-                        "Controller: " + (data.controller().isPresent() ? data.frame() : "None")
+                        "Controller: " + (data.controller().isPresent() ? data.controller() : "None")
                 ),
                 false
         );
 
         source.sendSuccess(
                 () -> Component.literal(
-                        "Energy system: " + (data.energySystem().isPresent() ? data.frame() : "None")
+                        "Energy system: " + (data.energySystem().isPresent() ? data.energySystem() : "None")
                 ),
                 false
         );
@@ -739,11 +834,11 @@ public final class ModCommands {
             }
         }
 
-        List<MatrixData> activeMatrices = ExoskeletonState.activeMatrices(data);
+        ExoskeletonProfile profile = ExoskeletonState.activeProfile(data);
 
         source.sendSuccess(
                 () -> Component.literal(
-                        "Profiles: " + activeMatrices
+                        "Profiles: " + profile
                 ),
                 false
         );
@@ -1063,6 +1158,203 @@ public final class ModCommands {
                     false
             );
         }
+
+        return 1;
+    }
+
+    private static int createProfile(
+            CommandSourceStack source
+    ) {
+        ServerPlayer player = source.getPlayer();
+
+        if (player == null) {
+            source.sendFailure(
+                    Component.literal(
+                            "This command can only be used by a player."
+                    )
+            );
+            return 0;
+        }
+
+        ItemStack stack = player.getMainHandItem();
+
+        if (!(stack.getItem() instanceof ExoskeletonItem)) {
+            source.sendFailure(
+                    Component.literal(
+                            "You must hold an exoskeleton in your main hand."
+                    )
+            );
+            return 0;
+        }
+
+        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
+
+        data = ExoskeletonProfileOperations.createProfile(data);
+
+        stack.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                data
+        );
+
+        ExoskeletonData finalData = data;
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Profile created. Total profiles: " + finalData.profiles().size()
+                ),
+                false
+        );
+
+        return 1;
+    }
+
+    private static int removeProfile(
+            CommandSourceStack source,
+            int profile
+    ) {
+        ServerPlayer player = source.getPlayer();
+
+        if (player == null) {
+            source.sendFailure(
+                    Component.literal(
+                            "This command can only be used by a player."
+                    )
+            );
+            return 0;
+        }
+
+        ItemStack stack = player.getMainHandItem();
+
+        if (!(stack.getItem() instanceof ExoskeletonItem)) {
+            source.sendFailure(
+                    Component.literal(
+                            "You must hold an exoskeleton in your main hand."
+                    )
+            );
+            return 0;
+        }
+
+        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
+
+        data = ExoskeletonProfileOperations.removeProfile(
+                data,
+                profile
+        );
+
+        stack.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                data
+        );
+
+        return 1;
+    }
+
+    private static int activateProfile(
+            CommandSourceStack source,
+            int profile
+    ) {
+        ServerPlayer player = source.getPlayer();
+
+        if (player == null) {
+            source.sendFailure(
+                    Component.literal(
+                            "This command can only be used by a player."
+                    )
+            );
+            return 0;
+        }
+
+        ItemStack stack = player.getMainHandItem();
+
+        if (!(stack.getItem() instanceof ExoskeletonItem)) {
+            source.sendFailure(
+                    Component.literal(
+                            "You must hold an exoskeleton in your main hand."
+                    )
+            );
+            return 0;
+        }
+
+        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
+
+        data = ExoskeletonProfileOperations.activateProfile(
+                data,
+                profile
+        );
+
+        stack.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                data
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Activate profile: " + profile
+                ),
+                false
+        );
+
+        return 1;
+    }
+
+    private static int setProfileMatrices(
+            CommandSourceStack source,
+            int profile,
+            int slot1,
+            int slot2,
+            int slot3,
+            int slot4
+    ) {
+        ServerPlayer player = source.getPlayer();
+
+        if (player == null) {
+            source.sendFailure(
+                    Component.literal(
+                            "This command can only be used by a player."
+                    )
+            );
+            return 0;
+        }
+
+        ItemStack stack = player.getMainHandItem();
+
+        if (!(stack.getItem() instanceof ExoskeletonItem)) {
+            source.sendFailure(
+                    Component.literal(
+                            "You must hold an exoskeleton in your main hand."
+                    )
+            );
+            return 0;
+        }
+
+        List<Integer> matrices = List.of(
+                slot1,
+                slot2,
+                slot3,
+                slot4
+        ).stream()
+                .filter(slot -> slot >= 0)
+                .toList();
+
+        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
+
+        data = ExoskeletonProfileOperations.setProfileMatrices(
+                data,
+                profile,
+                matrices
+        );
+
+        stack.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                data
+        );
+
+        source.sendSuccess(
+                () -> Component.literal(
+                        "Profile " + profile
+                                + " matrices: " + matrices
+                ),
+                false
+        );
 
         return 1;
     }

@@ -11,7 +11,7 @@ public class ModExoskeletons {
 
     public static final DeferredRegister<ExoskeletonDefinition> EXOSKELETONS =
             DeferredRegister.create(
-                    ModRegistries.EXOSKELETON_REGISTRY_KEY,
+                    ModRegistryKeys.EXOSKELETON_REGISTRY_KEY,
                     ExoEquipment.MODID
             );
 

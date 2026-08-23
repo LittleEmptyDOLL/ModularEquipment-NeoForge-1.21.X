@@ -12,7 +12,7 @@ public final class ModMatrices {
 
     public static final DeferredRegister<MatrixDefinition> MATRICES =
             DeferredRegister.create(
-                    ModRegistries.MATRIX_REGISTRY_KEY,
+                    ModRegistryKeys.MATRIX_REGISTRY_KEY,
                     ExoEquipment.MODID
             );
 

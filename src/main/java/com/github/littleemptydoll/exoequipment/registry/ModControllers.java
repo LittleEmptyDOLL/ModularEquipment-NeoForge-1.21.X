@@ -12,7 +12,7 @@ public class ModControllers {
 
     public static final DeferredRegister<ControllerDefinition> CONTROLLERS =
             DeferredRegister.create(
-                    ModRegistries.CONTROLLER_REGISTRY_KEY,
+                    ModRegistryKeys.CONTROLLER_REGISTRY_KEY,
                     ExoEquipment.MODID
             );
 

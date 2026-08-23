@@ -1,9 +1,7 @@
 package com.github.littleemptydoll.exoequipment.item;
 
-import com.github.littleemptydoll.exoequipment.exoskeleton.Exoskeleton;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonDefinition;
-import com.github.littleemptydoll.exoequipment.exoskeleton.MatrixSlot;
+import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
+import com.github.littleemptydoll.exoequipment.exoskeleton.*;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -102,48 +100,46 @@ public class ExoskeletonItem extends Item {
 
         ExoskeletonData data = getData(stack);
 
-        tooltip.add(
-                Component.literal(
-                        "Frame: "
-                                + (data.frame().isPresent() ? data.frame().get().definitionId() : "None")
-                )
-        );
-
-        tooltip.add(
-                Component.literal(
-                        "Controller: "
-                                + (data.controller().isPresent() ? data.controller().get().definitionId() : "None")
-                )
-        );
-
-        tooltip.add(
-                Component.literal(
-                        "Energy system: "
-                                + (data.energySystem().isPresent() ? data.energySystem().get().definitionId() : "None")
-                )
-        );
-
-        tooltip.add(
-                Component.literal(
-                        "Matrices:"
-                )
-        );
-
-        for (int i = 0; i < data.matrices().size(); i++) {
-            MatrixSlot slot = data.matrices().get(i);
-
+        if (data.frame().isPresent()) {
             tooltip.add(
-                    Component.literal(
-                            "  " + (i + 1) + ": " +
-                                    (slot.matrix().isPresent() ? slot.matrix().toString() : "Empty")
+                    Component.translatable(
+                            "tooltip.exoequipment.frame",
+                            data.frame().get().definitionId().toString()
+                    )
+            );
+        }
+
+        if (data.controller().isPresent()) {
+            tooltip.add(
+                    Component.translatable(
+                            "tooltip.exoequipment.controller",
+                            data.controller().get().definitionId().toString()
+                    )
+            );
+        }
+
+        if (data.energySystem().isPresent()) {
+            tooltip.add(
+                    Component.translatable(
+                            "tooltip.exoequipment.energy_system",
+                            data.energySystem().get().definitionId().toString()
                     )
             );
         }
 
         tooltip.add(
-                Component.literal(
-                        "Profiles: " + data.profiles().size()
+                TooltipHelper.matrices(
+                        data.matrices().size(),
+                        ExoskeletonData.MAX_MATRICES
                 )
         );
+
+        if (ExoskeletonState.hasActiveProfile(data)) {
+            tooltip.add(
+                    TooltipHelper.activeProfile(
+                            data.activeProfile()
+                    )
+            );
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.github.littleemptydoll.exoequipment.item;
 
+import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.controller.Controller;
 import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
 import com.github.littleemptydoll.exoequipment.registry.ModControllers;
@@ -86,20 +87,20 @@ public class ControllerItem extends Item {
         ControllerDefinition definition = getDefinition(stack);
 
         tooltip.add(
-                Component.literal(
-                        "Tier: " + definition.tier()
+                TooltipHelper.tier(
+                        definition.tier()
                 )
         );
 
         tooltip.add(
-                Component.literal(
-                        "Max profiles: " + definition.maxProfiles()
+                TooltipHelper.maxProfiles(
+                        definition.maxProfiles()
                 )
         );
 
         tooltip.add(
-                Component.literal(
-                        "Max active matrices: " + definition.maxActiveMatrices()
+                TooltipHelper.maxActiveMatrices(
+                        definition.maxActiveMatrices()
                 )
         );
     }

@@ -2,16 +2,67 @@ package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.item.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public final class ModItems {
     private ModItems() {}
 
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ExoEquipment.MODID);
+
+    public static Optional<FrameItem> findFrame(
+            ResourceLocation definitionId
+    ) {
+        return ITEMS.getEntries()
+                .stream()
+                .map(DeferredHolder::get)
+                .filter(item -> item instanceof FrameItem)
+                .map(item -> (FrameItem) item)
+                .filter(item -> item.getDefinition().id().equals(definitionId))
+                .findFirst();
+    }
+
+    public static Optional<ControllerItem> findController(
+            ResourceLocation definitionId
+    ) {
+        return ITEMS.getEntries()
+                .stream()
+                .map(DeferredHolder::get)
+                .filter(item -> item instanceof ControllerItem)
+                .map(item -> (ControllerItem) item)
+                .filter(item -> item.getDefinition().id().equals(definitionId))
+                .findFirst();
+    }
+
+    public static Optional<EnergySystemItem> findEnergySystem(
+            ResourceLocation definitionId
+    ) {
+        return ITEMS.getEntries()
+                .stream()
+                .map(DeferredHolder::get)
+                .filter(item -> item instanceof EnergySystemItem)
+                .map(item -> (EnergySystemItem) item)
+                .filter(item -> item.getDefinition().id().equals(definitionId))
+                .findFirst();
+    }
+
+    public static Optional<MatrixItem> findMatrix(
+            ResourceLocation definitionId
+    ) {
+        return ITEMS.getEntries()
+                .stream()
+                .map(DeferredHolder::get)
+                .filter(item -> item instanceof MatrixItem)
+                .map(item -> (MatrixItem) item)
+                .filter(item -> item.getDefinition().id().equals(definitionId))
+                .findFirst();
+    }
 
     // Экзоскелет
     public static final Supplier<Item> EXOSKELETON = ITEMS.register(

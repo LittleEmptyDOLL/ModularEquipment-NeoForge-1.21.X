@@ -15,6 +15,11 @@ import java.util.List;
 
 public class EnergySystemItem extends Item {
 
+    private final DeferredHolder<
+            EnergySystemDefinition,
+            EnergySystemDefinition
+            > definition;
+
     public EnergySystemItem(
             DeferredHolder<
                     EnergySystemDefinition,
@@ -30,6 +35,12 @@ public class EnergySystemItem extends Item {
                                 )
                         )
         );
+
+        this.definition = definition;
+    }
+
+    public EnergySystemDefinition getDefinition() {
+        return definition.get();
     }
 
     public EnergySystemDefinition getDefinition(ItemStack stack) {

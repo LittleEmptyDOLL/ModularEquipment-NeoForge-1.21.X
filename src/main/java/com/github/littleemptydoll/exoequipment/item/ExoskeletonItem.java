@@ -3,6 +3,7 @@ package com.github.littleemptydoll.exoequipment.item;
 import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.exoskeleton.*;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import com.github.littleemptydoll.exoequipment.util.EquipmentItemUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -104,7 +105,9 @@ public class ExoskeletonItem extends Item {
             tooltip.add(
                     Component.translatable(
                             "tooltip.exoequipment.frame",
-                            data.frame().get().definitionId().toString()
+                            EquipmentItemUtils.frameName(
+                                    data.frame().get().definitionId()
+                            )
                     )
             );
         }
@@ -113,7 +116,9 @@ public class ExoskeletonItem extends Item {
             tooltip.add(
                     Component.translatable(
                             "tooltip.exoequipment.controller",
-                            data.controller().get().definitionId().toString()
+                            EquipmentItemUtils.controllerName(
+                                    data.controller().get().definitionId()
+                            )
                     )
             );
         }
@@ -122,7 +127,9 @@ public class ExoskeletonItem extends Item {
             tooltip.add(
                     Component.translatable(
                             "tooltip.exoequipment.energy_system",
-                            data.energySystem().get().definitionId().toString()
+                            EquipmentItemUtils.energySystemName(
+                                    data.energySystem().get().definitionId()
+                            )
                     )
             );
         }

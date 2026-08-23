@@ -15,6 +15,11 @@ import java.util.List;
 
 public class ControllerItem extends Item {
 
+    private final DeferredHolder<
+            ControllerDefinition,
+            ControllerDefinition
+            > definition;
+
     public ControllerItem(
             DeferredHolder<
                     ControllerDefinition,
@@ -30,6 +35,12 @@ public class ControllerItem extends Item {
                                 )
                         )
         );
+
+        this.definition = definition;
+    }
+
+    public ControllerDefinition getDefinition() {
+        return definition.get();
     }
 
     public ControllerDefinition getDefinition(ItemStack stack) {

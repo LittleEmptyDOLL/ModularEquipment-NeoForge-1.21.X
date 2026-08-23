@@ -15,6 +15,11 @@ import java.util.List;
 
 public class FrameItem extends Item {
 
+    private final DeferredHolder<
+            FrameDefinition,
+            FrameDefinition
+            > definition;
+
     public FrameItem(
             DeferredHolder<
                     FrameDefinition,
@@ -30,6 +35,12 @@ public class FrameItem extends Item {
                                 )
                         )
         );
+
+        this.definition = definition;
+    }
+
+    public FrameDefinition getDefinition() {
+        return definition.get();
     }
 
     public FrameDefinition getDefinition(ItemStack stack) {

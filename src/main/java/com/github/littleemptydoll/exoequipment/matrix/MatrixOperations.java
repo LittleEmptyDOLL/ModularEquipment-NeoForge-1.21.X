@@ -84,7 +84,10 @@ public final class MatrixOperations {
 
         modules.add(module);
 
-        return createMatrix(modules);
+        return createMatrix(
+                matrix,
+                modules
+        );
     }
 
     public static MatrixData removeModule(
@@ -102,7 +105,10 @@ public final class MatrixOperations {
 
         modules.remove(module);
 
-        return createMatrix(modules);
+        return createMatrix(
+                matrix,
+                modules
+        );
     }
 
     public static InstalledModule getModuleAt(
@@ -210,7 +216,10 @@ public final class MatrixOperations {
 
         modules.remove(oldModule);
 
-        MatrixData withoutModule = createMatrix(modules);
+        MatrixData withoutModule = createMatrix(
+                matrix,
+                modules
+        );
 
         ModuleDefinition definition = ModModules.getDefinition(newModule.id());
 
@@ -233,13 +242,20 @@ public final class MatrixOperations {
 
         modules.add(newModule);
 
-        return createMatrix(modules);
+        return createMatrix(
+                matrix,
+                modules
+        );
     }
 
     private static MatrixData createMatrix(
+            MatrixData matrix,
             List<InstalledModule> modules
     ) {
-        return new MatrixData(modules);
+        return new MatrixData(
+                matrix.definition(),
+                modules
+        );
     }
 
     public static ModuleSize getRotatedSize(

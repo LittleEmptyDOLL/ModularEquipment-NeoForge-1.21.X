@@ -64,6 +64,18 @@ public final class ModItems {
                 .findFirst();
     }
 
+    public static Optional<ModuleItem> findModule(
+            ResourceLocation definitionId
+    ) {
+        return ITEMS.getEntries()
+                .stream()
+                .map(DeferredHolder::get)
+                .filter(item -> item instanceof ModuleItem)
+                .map(item -> (ModuleItem) item)
+                .filter(item -> item.getDefinition().id().equals(definitionId))
+                .findFirst();
+    }
+
     // Экзоскелет
     public static final Supplier<Item> EXOSKELETON = ITEMS.register(
             "exoskeleton",

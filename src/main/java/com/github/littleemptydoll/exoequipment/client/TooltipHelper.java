@@ -110,4 +110,13 @@ public final class TooltipHelper {
                 height
         );
     }
+
+    public static Component modules(
+            int count
+    ) {
+        return Component.translatable(
+                "tooltip.exoequipment.modules",
+                count
+        );
+    }
 }

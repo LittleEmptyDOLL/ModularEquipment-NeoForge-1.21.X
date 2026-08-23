@@ -7,6 +7,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.Exoskeleton;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
+import com.github.littleemptydoll.exoequipment.module.Module;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -62,6 +63,13 @@ public final class ModDataComponents {
                     "exoskeleton_data",
                     builder -> builder
                             .persistent(ExoskeletonData.CODEC)
+            );
+
+    public static final Supplier<DataComponentType<Module>> MODULE =
+            COMPONENTS.registerComponentType(
+                    "module",
+                    builder -> builder
+                            .persistent(Module.CODEC)
             );
 
     public static void register(

@@ -3,7 +3,10 @@ package com.github.littleemptydoll.exoequipment.item;
 import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
+import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import com.github.littleemptydoll.exoequipment.util.EquipmentItemUtils;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +32,10 @@ public class MatrixItem extends Item {
                 new Properties()
                         .component(
                                 ModDataComponents.MATRIX_DATA.get(),
-                                MatrixData.empty()
+                                new MatrixData(
+                                        definition.getId(),
+                                        List.of()
+                                )
                         )
         );
 
@@ -72,13 +78,6 @@ public class MatrixItem extends Item {
         MatrixData data = getMatrixData(stack);
         MatrixDefinition definition = getDefinition();
 
-        if (data == null) {
-            tooltip.add(
-                    Component.literal("No matrix data")
-            );
-            return;
-        }
-
         tooltip.add(
                 TooltipHelper.tier(
                         definition.tier()
@@ -91,5 +90,32 @@ public class MatrixItem extends Item {
                         definition.height()
                 )
         );
+
+        int moduleCount = data.modules().size();
+
+        tooltip.add(
+                TooltipHelper.modules(
+                        moduleCount
+                )
+        );
+
+        if (Screen.hasShiftDown()) {
+            tooltip.add(
+                    Component.translatable(
+                            "tooltip.exoequipment.installed_modules"
+                    )
+            );
+
+            for (InstalledModule module : data.modules()) {
+                tooltip.add(
+                        Component.translatable(
+                                "tooltip.exoequipment.module_entry",
+                                EquipmentItemUtils.moduleName(
+                                        module.id()
+                                )
+                        )
+                );
+            }
+        }
     }
 }

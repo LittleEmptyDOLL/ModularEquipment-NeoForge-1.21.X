@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.exoskeleton.*;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.util.EquipmentItemUtils;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -11,6 +12,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class ExoskeletonItem extends Item {
     private final DeferredHolder<
@@ -134,9 +137,14 @@ public class ExoskeletonItem extends Item {
             );
         }
 
+        long installedMatrices = (int) data.matrices()
+                .stream()
+                .filter(slot -> slot.matrix().isPresent())
+                .count();
+
         tooltip.add(
                 TooltipHelper.matrices(
-                        data.matrices().size(),
+                        (int) installedMatrices,
                         ExoskeletonData.MAX_MATRICES
                 )
         );
@@ -147,6 +155,43 @@ public class ExoskeletonItem extends Item {
                             data.activeProfile()
                     )
             );
+        }
+
+        if (Screen.hasShiftDown()) {
+            tooltip.add(
+                    Component.translatable(
+                            "tooltip.exoequipment.installed_matrices"
+                    )
+            );
+
+            for (int slot = 0;
+                 slot < ExoskeletonData.MAX_MATRICES;
+                 slot++) {
+                final int currentSlot = slot;
+
+                Component matrixName =
+                        data.matrices()
+                                .get(currentSlot)
+                                .matrix()
+                                .map(matrix ->
+                                        EquipmentItemUtils.matrixName(
+                                                matrix.definition()
+                                        )
+                                )
+                                .orElse(
+                                        Component.translatable(
+                                                "tooltip.exoequipment.empty"
+                                        )
+                                );
+
+                tooltip.add(
+                        Component.translatable(
+                                "tooltip.exoequipment.matrix_slot",
+                                currentSlot + 1,
+                                matrixName
+                        )
+                );
+            }
         }
     }
 }

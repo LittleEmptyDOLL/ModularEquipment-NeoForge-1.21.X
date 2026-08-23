@@ -112,5 +112,25 @@ public class ModLanguageProvider extends LanguageProvider {
                 "tooltip.exoequipment.max_module_size",
                 "Max Module Size: %s x %s"
         );
+
+        add(
+                "tooltip.exoequipment.matrix_slot",
+                "Matrix %s: %s"
+        );
+
+        add(
+                "tooltip.exoequipment.modules",
+                "Modules: %s"
+        );
+
+        add(
+                "tooltip.exoequipment.installed_modules",
+                "Installed Modules:"
+        );
+
+        add(
+                "tooltip.exoequipment.module_entry",
+                "  %s"
+        );
     }
 }

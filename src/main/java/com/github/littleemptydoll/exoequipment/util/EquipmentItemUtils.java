@@ -66,4 +66,19 @@ public final class EquipmentItemUtils {
                         )
                 );
     }
+
+    public static Component moduleName(
+            ResourceLocation id
+    ) {
+        return ModItems.findModule(id)
+                .map(item ->
+                        item.getDefaultInstance()
+                                .getHoverName()
+                )
+                .orElse(
+                        Component.literal(
+                                id.toString()
+                        )
+                );
+    }
 }

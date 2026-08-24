@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.item.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -148,22 +149,34 @@ public final class ModItems {
     // Контроллер
     public static final Supplier<Item> CIVILIAN_CONTROLLER = ITEMS.register(
             "civilian_controller",
-            () -> new ControllerItem(ModControllers.CIVILIAN)
+            () -> new ControllerItem(
+                    ModControllers.CIVILIAN,
+                    Rarity.COMMON
+            )
     );
 
     public static final Supplier<Item> MILITARY_CONTROLLER = ITEMS.register(
             "military_controller",
-            () -> new ControllerItem(ModControllers.MILITARY)
+            () -> new ControllerItem(
+                    ModControllers.MILITARY,
+                    Rarity.RARE
+            )
     );
 
     public static final Supplier<Item> ENGINEERING_CONTROLLER = ITEMS.register(
             "engineering_controller",
-            () -> new ControllerItem(ModControllers.ENGINEERING)
+            () -> new ControllerItem(
+                    ModControllers.ENGINEERING,
+                    Rarity.RARE
+            )
     );
 
     public static final Supplier<Item> EXPERIMENTAL_CONTROLLER = ITEMS.register(
             "experimental_controller",
-            () -> new ControllerItem(ModControllers.EXPERIMENTAL)
+            () -> new ControllerItem(
+                    ModControllers.EXPERIMENTAL,
+                    Rarity.EPIC
+            )
     );
 
     public static void register(IEventBus eventBus) {

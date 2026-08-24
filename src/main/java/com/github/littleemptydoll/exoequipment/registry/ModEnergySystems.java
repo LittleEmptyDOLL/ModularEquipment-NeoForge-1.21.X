@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.energy.EnergySystemDefinition;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -19,6 +20,7 @@ public class ModEnergySystems {
     private static DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> register(
             String id,
             EquipmentTier tier,
+            Rarity rarity,
             int maxInput,
             int maxOutput,
             double efficiency
@@ -34,6 +36,7 @@ public class ModEnergySystems {
                 () -> new EnergySystemDefinition(
                         location,
                         tier,
+                        rarity,
                         maxInput,
                         maxOutput,
                         efficiency
@@ -61,6 +64,7 @@ public class ModEnergySystems {
     public static final DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> CIVILIAN = register(
             "civilian",
             EquipmentTier.CIVILIAN,
+            Rarity.UNCOMMON,
             100,
             100,
             1.0
@@ -69,6 +73,7 @@ public class ModEnergySystems {
     public static final DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> MILITARY = register(
             "military",
             EquipmentTier.MILITARY,
+            Rarity.RARE,
             200,
             200,
             1.0
@@ -77,6 +82,7 @@ public class ModEnergySystems {
     public static final DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> ENGINEERING = register(
             "engineering",
             EquipmentTier.ENGINEERING,
+            Rarity.RARE,
             300,
             200,
             1.0
@@ -85,8 +91,9 @@ public class ModEnergySystems {
     public static final DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> EXPERIMENTAL = register(
             "experimental",
             EquipmentTier.EXPERIMENTAL,
-            300,
-            300,
+            Rarity.EPIC,
+            400,
+            500,
             1.1
     );
 }

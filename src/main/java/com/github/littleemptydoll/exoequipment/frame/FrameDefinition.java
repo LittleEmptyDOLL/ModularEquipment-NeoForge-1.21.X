@@ -5,10 +5,12 @@ import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Rarity;
 
 public record FrameDefinition(
         ResourceLocation id,
         EquipmentTier tier,
+        Rarity rarity,
         ModuleSize maxModuleSize
 ) {
     public static final Codec<FrameDefinition> CODEC =
@@ -20,6 +22,9 @@ public record FrameDefinition(
                             EquipmentTier.CODEC
                                     .fieldOf("tier")
                                     .forGetter(FrameDefinition::tier),
+                            Rarity.CODEC
+                                    .fieldOf("rarity")
+                                    .forGetter(FrameDefinition::rarity),
                             ModuleSize.CODEC
                                     .fieldOf("max_module_size")
                                     .forGetter(FrameDefinition::maxModuleSize)

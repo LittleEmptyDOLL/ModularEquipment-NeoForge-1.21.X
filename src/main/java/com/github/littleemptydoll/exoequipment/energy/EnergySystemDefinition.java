@@ -4,10 +4,12 @@ import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Rarity;
 
 public record EnergySystemDefinition(
         ResourceLocation id,
         EquipmentTier tier,
+        Rarity rarity,
         int maxInput,
         int maxOutput,
         double efficiency
@@ -21,6 +23,9 @@ public record EnergySystemDefinition(
                             EquipmentTier.CODEC
                                     .fieldOf("tier")
                                     .forGetter(EnergySystemDefinition::tier),
+                            Rarity.CODEC
+                                    .fieldOf("rarity")
+                                    .forGetter(EnergySystemDefinition::rarity),
                             Codec.INT
                                     .fieldOf("max_input")
                                     .forGetter(EnergySystemDefinition::maxInput),

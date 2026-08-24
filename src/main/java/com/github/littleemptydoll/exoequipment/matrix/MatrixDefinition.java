@@ -3,10 +3,12 @@ package com.github.littleemptydoll.exoequipment.matrix;
 import com.github.littleemptydoll.exoequipment.module.ModuleSize;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Rarity;
 
 public record MatrixDefinition(
         ResourceLocation id,
         EquipmentTier tier,
+        Rarity rarity,
         int width,
         int height
 ) {

@@ -3,6 +3,7 @@ package com.github.littleemptydoll.exoequipment.registry;
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonDefinition;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -16,7 +17,8 @@ public class ModExoskeletons {
             );
 
     private static DeferredHolder<ExoskeletonDefinition, ExoskeletonDefinition> register(
-            String id
+            String id,
+            Rarity rarity
     ) {
         ResourceLocation location =
                 ResourceLocation.fromNamespaceAndPath(
@@ -27,7 +29,8 @@ public class ModExoskeletons {
         return EXOSKELETONS.register(
                 id,
                 () -> new ExoskeletonDefinition(
-                        location
+                        location,
+                        rarity
                 )
         );
     }
@@ -49,6 +52,7 @@ public class ModExoskeletons {
     }
 
     public static final DeferredHolder<ExoskeletonDefinition, ExoskeletonDefinition> BASIC = register(
-            "basic"
+            "basic",
+            Rarity.RARE
     );
 }

@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -19,6 +20,7 @@ public class ModControllers {
     private static DeferredHolder<ControllerDefinition, ControllerDefinition> register(
             String id,
             EquipmentTier tier,
+            Rarity rarity,
             int maxProfiles,
             int maxActiveMatrices
     ) {
@@ -33,6 +35,7 @@ public class ModControllers {
                 () -> new ControllerDefinition(
                         location,
                         tier,
+                        rarity,
                         maxProfiles,
                         maxActiveMatrices
                 )
@@ -58,6 +61,7 @@ public class ModControllers {
     public static final DeferredHolder<ControllerDefinition, ControllerDefinition> CIVILIAN = register(
             "civilian",
             EquipmentTier.CIVILIAN,
+            Rarity.UNCOMMON,
             1,
             1
     );
@@ -65,6 +69,7 @@ public class ModControllers {
     public static final DeferredHolder<ControllerDefinition, ControllerDefinition> MILITARY = register(
             "military",
             EquipmentTier.MILITARY,
+            Rarity.RARE,
             2,
             2
     );
@@ -72,6 +77,7 @@ public class ModControllers {
     public static final DeferredHolder<ControllerDefinition, ControllerDefinition> ENGINEERING = register(
             "engineering",
             EquipmentTier.ENGINEERING,
+            Rarity.RARE,
             2,
             2
     );
@@ -79,6 +85,7 @@ public class ModControllers {
     public static final DeferredHolder<ControllerDefinition, ControllerDefinition> EXPERIMENTAL = register(
             "experimental",
             EquipmentTier.EXPERIMENTAL,
+            Rarity.EPIC,
             3,
             3
     );

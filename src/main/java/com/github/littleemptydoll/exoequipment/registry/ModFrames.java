@@ -5,6 +5,7 @@ import com.github.littleemptydoll.exoequipment.frame.FrameDefinition;
 import com.github.littleemptydoll.exoequipment.module.ModuleSize;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -20,6 +21,7 @@ public class ModFrames {
     private static DeferredHolder<FrameDefinition, FrameDefinition> register(
             String id,
             EquipmentTier tier,
+            Rarity rarity,
             ModuleSize maxModuleSize
     ) {
         ResourceLocation location =
@@ -33,6 +35,7 @@ public class ModFrames {
                 () -> new FrameDefinition(
                         location,
                         tier,
+                        rarity,
                         maxModuleSize
                 )
         );
@@ -57,24 +60,28 @@ public class ModFrames {
     public static final DeferredHolder<FrameDefinition, FrameDefinition> CIVILIAN = register(
             "civilian",
             EquipmentTier.CIVILIAN,
+            Rarity.UNCOMMON,
             new ModuleSize(2, 2)
     );
 
     public static final DeferredHolder<FrameDefinition, FrameDefinition> MILITARY = register(
             "military",
             EquipmentTier.MILITARY,
+            Rarity.RARE,
             new ModuleSize(3, 3)
     );
 
     public static final DeferredHolder<FrameDefinition, FrameDefinition> ENGINEERING = register(
             "engineering",
             EquipmentTier.ENGINEERING,
+            Rarity.RARE,
             new ModuleSize(3, 3)
     );
 
     public static final DeferredHolder<FrameDefinition, FrameDefinition> EXPERIMENTAL = register(
             "experimental",
             EquipmentTier.EXPERIMENTAL,
+            Rarity.EPIC,
             new ModuleSize(4, 4)
     );
 }

@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.module.*;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -31,6 +32,7 @@ public class ModModules {
                     new ModuleSize(2,2),
                     ModuleCategory.UTILITY,
                     EquipmentTier.CIVILIAN,
+                    Rarity.COMMON,
                     Optional.of(new EnergyProperties(20)),
                     Optional.of(new ThermalProperties(2, 15))
             )

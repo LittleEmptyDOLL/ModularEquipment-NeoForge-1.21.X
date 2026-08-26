@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.frame;
 
 import com.github.littleemptydoll.exoequipment.module.ModuleSize;
+import com.github.littleemptydoll.exoequipment.registry.EquipmentDefinition;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -12,7 +13,7 @@ public record FrameDefinition(
         EquipmentTier tier,
         Rarity rarity,
         ModuleSize maxModuleSize
-) {
+) implements EquipmentDefinition {
     public static final Codec<FrameDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
                     instance.group(

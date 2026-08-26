@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.matrix;
 
 import com.github.littleemptydoll.exoequipment.module.ModuleSize;
+import com.github.littleemptydoll.exoequipment.registry.EquipmentDefinition;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
@@ -11,7 +12,7 @@ public record MatrixDefinition(
         Rarity rarity,
         int width,
         int height
-) {
+) implements EquipmentDefinition {
     public MatrixDefinition {
         if (width <= 0 || height <= 0) {
             throw new IllegalArgumentException("Matrix size must be positive");

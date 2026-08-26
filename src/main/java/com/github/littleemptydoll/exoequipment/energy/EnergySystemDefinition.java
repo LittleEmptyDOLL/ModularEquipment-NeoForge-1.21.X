@@ -1,5 +1,6 @@
 package com.github.littleemptydoll.exoequipment.energy;
 
+import com.github.littleemptydoll.exoequipment.registry.EquipmentDefinition;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,7 +14,7 @@ public record EnergySystemDefinition(
         int maxInput,
         int maxOutput,
         double efficiency
-) {
+) implements EquipmentDefinition {
     public static final Codec<EnergySystemDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
                     instance.group(

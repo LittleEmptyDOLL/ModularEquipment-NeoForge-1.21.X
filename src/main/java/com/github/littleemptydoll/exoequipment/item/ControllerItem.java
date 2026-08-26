@@ -25,12 +25,10 @@ public class ControllerItem extends Item {
             DeferredHolder<
                     ControllerDefinition,
                     ControllerDefinition
-                    > definition,
-            Rarity rarity
+                    > definition
     ) {
         super(
                 new Properties()
-                        .rarity(rarity)
                         .component(
                                 ModDataComponents.CONTROLLER.get(),
                                 new Controller(

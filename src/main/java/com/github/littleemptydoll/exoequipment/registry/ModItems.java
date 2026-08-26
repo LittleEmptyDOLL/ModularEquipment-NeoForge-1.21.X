@@ -149,34 +149,22 @@ public final class ModItems {
     // Контроллер
     public static final Supplier<Item> CIVILIAN_CONTROLLER = ITEMS.register(
             "civilian_controller",
-            () -> new ControllerItem(
-                    ModControllers.CIVILIAN,
-                    Rarity.COMMON
-            )
+            () -> new ControllerItem(ModControllers.CIVILIAN)
     );
 
     public static final Supplier<Item> MILITARY_CONTROLLER = ITEMS.register(
             "military_controller",
-            () -> new ControllerItem(
-                    ModControllers.MILITARY,
-                    Rarity.RARE
-            )
+            () -> new ControllerItem(ModControllers.MILITARY)
     );
 
     public static final Supplier<Item> ENGINEERING_CONTROLLER = ITEMS.register(
             "engineering_controller",
-            () -> new ControllerItem(
-                    ModControllers.ENGINEERING,
-                    Rarity.RARE
-            )
+            () -> new ControllerItem(ModControllers.ENGINEERING)
     );
 
     public static final Supplier<Item> EXPERIMENTAL_CONTROLLER = ITEMS.register(
             "experimental_controller",
-            () -> new ControllerItem(
-                    ModControllers.EXPERIMENTAL,
-                    Rarity.EPIC
-            )
+            () -> new ControllerItem(ModControllers.EXPERIMENTAL)
     );
 
     public static void register(IEventBus eventBus) {

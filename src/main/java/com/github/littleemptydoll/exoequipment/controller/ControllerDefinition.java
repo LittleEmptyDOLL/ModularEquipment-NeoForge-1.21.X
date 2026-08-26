@@ -1,18 +1,19 @@
 package com.github.littleemptydoll.exoequipment.controller;
 
+import com.github.littleemptydoll.exoequipment.registry.EquipmentDefinition;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
 
-public record ControllerDefinition(
+public record ControllerDefinition (
         ResourceLocation id,
         EquipmentTier tier,
         Rarity rarity,
         int maxProfiles,
         int maxActiveMatrices
-) {
+) implements EquipmentDefinition {
     public static final Codec<ControllerDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
                     instance.group(

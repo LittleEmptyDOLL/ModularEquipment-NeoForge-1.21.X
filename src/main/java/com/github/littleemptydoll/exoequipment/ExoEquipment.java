@@ -21,6 +21,7 @@ public class ExoEquipment {
         // Регистрируем абсолютно всё именно тут, что бы не грузить главный класс
         ModRegistries.register(eventBus);
         eventBus.addListener(ModRegistryKeys::register);
+        eventBus.register(ModItemComponents.class);
 
         ModItems.register(eventBus);
         ModDataComponents.register(eventBus);

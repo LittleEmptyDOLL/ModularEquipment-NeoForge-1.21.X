@@ -1,5 +1,6 @@
 package com.github.littleemptydoll.exoequipment.module;
 
+import com.github.littleemptydoll.exoequipment.registry.EquipmentDefinition;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -16,7 +17,7 @@ public record ModuleDefinition(
         Rarity rarity,
         Optional<EnergyProperties> energy,
         Optional<ThermalProperties> thermal
-) {
+) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
                     instance.group(

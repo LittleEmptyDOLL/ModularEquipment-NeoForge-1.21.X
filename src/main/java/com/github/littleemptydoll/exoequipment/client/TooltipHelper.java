@@ -1,26 +1,23 @@
 package com.github.littleemptydoll.exoequipment.client;
 
+import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import com.github.littleemptydoll.exoequipment.util.NameUtils;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 public final class TooltipHelper {
     private TooltipHelper() {}
 
-    public static Component type(
-            String type
-    ) {
-        return Component.translatable(
-                "tooltip.exoequipment.type",
-                type
-        );
+    public static boolean isShiftDown() {
+        return Screen.hasShiftDown();
     }
 
     public static Component tier(
-            Object tier
+            EquipmentTier tier
     ) {
         return Component.translatable(
                 "tooltip.exoequipment.tier",
-                NameUtils.toDisplayName(tier.toString())
+                NameUtils.toDisplayName(tier.name())
         );
     }
 
@@ -117,6 +114,71 @@ public final class TooltipHelper {
         return Component.translatable(
                 "tooltip.exoequipment.modules",
                 count
+        );
+    }
+
+    public static Component installedModules() {
+        return Component.translatable(
+                "tooltip.exoequipment.installed_modules"
+        );
+    }
+
+    public static Component moduleEntry(
+            Component module
+    ) {
+        return Component.translatable(
+                "tooltip.exoequipment.module_entry",
+                module
+        );
+    }
+
+    public static Component frame(
+            Component frame
+    ) {
+        return Component.translatable(
+                "tooltip.exoequipment.frame",
+                frame
+        );
+    }
+
+    public static Component controller(
+            Component controller
+    ) {
+        return Component.translatable(
+                "tooltip.exoequipment.controller",
+                controller
+        );
+    }
+
+    public static Component energySystem(
+            Component energySystem
+    ) {
+        return Component.translatable(
+                "tooltip.exoequipment.energy_system",
+                energySystem
+        );
+    }
+
+    public static Component installedMatrices() {
+        return Component.translatable(
+                "tooltip.exoequipment.installed_matrices"
+        );
+    }
+
+    public static Component empty() {
+        return Component.translatable(
+                "tooltip.exoequipment.empty"
+        );
+    }
+
+    public static Component matrixSlot(
+            int slot,
+            Component matrixName
+    ) {
+        return Component.translatable(
+                "tooltip.exoequipment.matrix_slot",
+                slot,
+                matrixName
         );
     }
 }

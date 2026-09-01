@@ -58,13 +58,9 @@ public class FrameItem extends EquipmentItem<FrameDefinition> {
             List<Component> tooltip,
             TooltipFlag flag
     ) {
-        FrameDefinition definition = getDefinition();
+        appendEquipmentTooltip(tooltip);
 
-        tooltip.add(
-                TooltipHelper.tier(
-                        definition.tier()
-                )
-        );
+        FrameDefinition definition = getDefinition();
 
         tooltip.add(
                 TooltipHelper.maxModuleSize(

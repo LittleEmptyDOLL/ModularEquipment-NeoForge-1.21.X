@@ -57,7 +57,10 @@ public class ModFrames {
                     new FrameDefinition(
                             id,
                             properties,
-                            new ModuleSize(2, 2)
+                            new ModuleSize(
+                                    2,
+                                    2
+                            )
                     )
     );
 
@@ -74,7 +77,10 @@ public class ModFrames {
                     new FrameDefinition(
                             id,
                             properties,
-                            new ModuleSize(3, 3)
+                            new ModuleSize(
+                                    3,
+                                    3
+                            )
                     )
     );
 
@@ -91,7 +97,10 @@ public class ModFrames {
                     new FrameDefinition(
                             id,
                             properties,
-                            new ModuleSize(3, 3)
+                            new ModuleSize(
+                                    3,
+                                    3
+                            )
                     )
     );
 
@@ -108,7 +117,10 @@ public class ModFrames {
                     new FrameDefinition(
                             id,
                             properties,
-                            new ModuleSize(4, 4)
+                            new ModuleSize(
+                                    4,
+                                    4
+                            )
                     )
     );
 }

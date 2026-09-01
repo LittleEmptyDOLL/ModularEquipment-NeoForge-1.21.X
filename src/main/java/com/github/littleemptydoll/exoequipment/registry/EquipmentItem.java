@@ -1,7 +1,11 @@
 package com.github.littleemptydoll.exoequipment.registry;
 
+import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredHolder;
+
+import java.util.List;
 
 public abstract class EquipmentItem<D extends EquipmentDefinition> extends Item {
 
@@ -23,9 +27,13 @@ public abstract class EquipmentItem<D extends EquipmentDefinition> extends Item 
         return definition;
     }
 
-    protected static Properties equipmentProperties(
-            EquipmentProperties properties
+    protected void appendEquipmentTooltip(
+            List<Component> tooltip
     ) {
-        return new Properties().rarity(properties.rarity());
+        tooltip.add(
+                TooltipHelper.tier(
+                        getDefinition().tier()
+                )
+        );
     }
 }

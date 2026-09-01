@@ -5,7 +5,6 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.*;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.util.EquipmentItemUtils;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -69,12 +68,13 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> {
             List<Component> tooltip,
             TooltipFlag flag
     ) {
+        appendEquipmentTooltip(tooltip);
+
         ExoskeletonData data = getData(stack);
 
         if (data.frame().isPresent()) {
             tooltip.add(
-                    Component.translatable(
-                            "tooltip.exoequipment.frame",
+                    TooltipHelper.frame(
                             EquipmentItemUtils.frameName(
                                     data.frame().get().definitionId()
                             )
@@ -84,8 +84,7 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> {
 
         if (data.controller().isPresent()) {
             tooltip.add(
-                    Component.translatable(
-                            "tooltip.exoequipment.controller",
+                    TooltipHelper.controller(
                             EquipmentItemUtils.controllerName(
                                     data.controller().get().definitionId()
                             )
@@ -95,8 +94,7 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> {
 
         if (data.energySystem().isPresent()) {
             tooltip.add(
-                    Component.translatable(
-                            "tooltip.exoequipment.energy_system",
+                    TooltipHelper.energySystem(
                             EquipmentItemUtils.energySystemName(
                                     data.energySystem().get().definitionId()
                             )
@@ -124,11 +122,9 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> {
             );
         }
 
-        if (Screen.hasShiftDown()) {
+        if (TooltipHelper.isShiftDown()) {
             tooltip.add(
-                    Component.translatable(
-                            "tooltip.exoequipment.installed_matrices"
-                    )
+                    TooltipHelper.installedMatrices()
             );
 
             for (int slot = 0;
@@ -146,14 +142,11 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> {
                                         )
                                 )
                                 .orElse(
-                                        Component.translatable(
-                                                "tooltip.exoequipment.empty"
-                                        )
+                                        TooltipHelper.empty()
                                 );
 
                 tooltip.add(
-                        Component.translatable(
-                                "tooltip.exoequipment.matrix_slot",
+                        TooltipHelper.matrixSlot(
                                 currentSlot + 1,
                                 matrixName
                         )

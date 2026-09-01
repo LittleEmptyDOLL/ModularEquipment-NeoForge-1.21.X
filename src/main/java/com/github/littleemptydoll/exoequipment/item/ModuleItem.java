@@ -42,12 +42,6 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
             List<Component> tooltip,
             TooltipFlag flag
     ) {
-        ModuleDefinition definition = getDefinition();
-
-        tooltip.add(
-                TooltipHelper.tier(
-                        definition.tier()
-                )
-        );
+        appendEquipmentTooltip(tooltip);
     }
 }

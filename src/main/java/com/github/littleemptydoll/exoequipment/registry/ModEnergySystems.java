@@ -43,7 +43,6 @@ public class ModEnergySystems {
         return REGISTRY.find(id);
     }
 
-    // ToDo: Определить подходящие характеристики
     public static final EquipmentEntry<
             EnergySystemDefinition,
             EnergySystemItem

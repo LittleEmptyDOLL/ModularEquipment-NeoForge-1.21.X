@@ -23,7 +23,7 @@ public final class EquipmentRegistry<
             DeferredHolder<D, D>,
             Item.Properties,
             I
-            > itemFactory;
+    > itemFactory;
 
     private final Map<
             ResourceLocation,
@@ -103,7 +103,7 @@ public final class EquipmentRegistry<
         return entries.get(id);
     }
 
-    public D getDefinition(
+    private EquipmentEntry<D, I> require(
             ResourceLocation id
     ) {
         EquipmentEntry<D, I> entry = find(id);
@@ -114,20 +114,18 @@ public final class EquipmentRegistry<
             );
         }
 
-        return entry.getDefinition();
+        return entry;
+    }
+
+    public D getDefinition(
+            ResourceLocation id
+    ) {
+        return require(id).getDefinition();
     }
 
     public I getItem(
             ResourceLocation id
     ) {
-        EquipmentEntry<D, I> entry = find(id);
-
-        if (entry == null) {
-            throw new IllegalArgumentException(
-                    "Unknown equipment: " + id
-            );
-        }
-
-        return entry.getItem();
+        return require(id).getItem();
     }
 }

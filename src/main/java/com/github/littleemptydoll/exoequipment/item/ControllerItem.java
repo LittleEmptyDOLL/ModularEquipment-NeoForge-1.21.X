@@ -42,13 +42,9 @@ public class ControllerItem extends EquipmentItem<ControllerDefinition> {
             List<Component> tooltip,
             TooltipFlag flag
     ) {
-        ControllerDefinition definition = getDefinition();
+        appendEquipmentTooltip(tooltip);
 
-        tooltip.add(
-                TooltipHelper.tier(
-                        definition.tier()
-                )
-        );
+        ControllerDefinition definition = getDefinition();
 
         tooltip.add(
                 TooltipHelper.maxProfiles(

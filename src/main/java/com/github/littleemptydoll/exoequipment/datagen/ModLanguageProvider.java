@@ -1,8 +1,6 @@
 package com.github.littleemptydoll.exoequipment.datagen;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
-import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
-import com.github.littleemptydoll.exoequipment.registry.ModControllers;
 import com.github.littleemptydoll.exoequipment.registry.ModItems;
 import com.github.littleemptydoll.exoequipment.util.NameUtils;
 import net.minecraft.data.PackOutput;
@@ -75,7 +73,7 @@ public class ModLanguageProvider extends LanguageProvider {
 
         add(
                 "tooltip.exoequipment.energy_system",
-                "Energy System: %s"
+                "Energy system: %s"
         );
 
         add(
@@ -90,7 +88,7 @@ public class ModLanguageProvider extends LanguageProvider {
 
         add(
                 "tooltip.exoequipment.installed_matrices",
-                "Installed Matrices:"
+                "Installed matrices:"
         );
 
         add(
@@ -105,12 +103,12 @@ public class ModLanguageProvider extends LanguageProvider {
 
         add(
                 "tooltip.exoequipment.max_active_matrices",
-                "Max Active Matrices: %s"
+                "Max active matrices: %s"
         );
 
         add(
                 "tooltip.exoequipment.max_module_size",
-                "Max Module Size: %s x %s"
+                "Max module size: %s x %s"
         );
 
         add(
@@ -125,7 +123,7 @@ public class ModLanguageProvider extends LanguageProvider {
 
         add(
                 "tooltip.exoequipment.installed_modules",
-                "Installed Modules:"
+                "Installed modules:"
         );
 
         add(

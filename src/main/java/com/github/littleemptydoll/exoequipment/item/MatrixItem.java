@@ -7,7 +7,6 @@ import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.util.EquipmentItemUtils;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -63,14 +62,10 @@ public class MatrixItem extends EquipmentItem<MatrixDefinition> {
             List<Component> tooltip,
             TooltipFlag flag
     ) {
+        appendEquipmentTooltip(tooltip);
+
         MatrixData data = getMatrixData(stack);
         MatrixDefinition definition = getDefinition();
-
-        tooltip.add(
-                TooltipHelper.tier(
-                        definition.tier()
-                )
-        );
 
         tooltip.add(
                 TooltipHelper.size(
@@ -87,17 +82,14 @@ public class MatrixItem extends EquipmentItem<MatrixDefinition> {
                 )
         );
 
-        if (Screen.hasShiftDown()) {
+        if (TooltipHelper.isShiftDown()) {
             tooltip.add(
-                    Component.translatable(
-                            "tooltip.exoequipment.installed_modules"
-                    )
+                    TooltipHelper.installedModules()
             );
 
             for (InstalledModule module : data.modules()) {
                 tooltip.add(
-                        Component.translatable(
-                                "tooltip.exoequipment.module_entry",
+                        TooltipHelper.moduleEntry(
                                 EquipmentItemUtils.moduleName(
                                         module.id()
                                 )

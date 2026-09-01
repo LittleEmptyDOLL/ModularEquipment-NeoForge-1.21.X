@@ -42,13 +42,9 @@ public class EnergySystemItem extends EquipmentItem<EnergySystemDefinition> {
             List<Component> tooltip,
             TooltipFlag flag
     ) {
-        EnergySystemDefinition definition = getDefinition();
+        appendEquipmentTooltip(tooltip);
 
-        tooltip.add(
-                TooltipHelper.tier(
-                        definition.tier()
-                )
-        );
+        EnergySystemDefinition definition = getDefinition();
 
         tooltip.add(
                 TooltipHelper.input(

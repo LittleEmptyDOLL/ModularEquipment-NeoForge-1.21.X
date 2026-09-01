@@ -2,44 +2,43 @@ package com.github.littleemptydoll.exoequipment.matrix;
 
 import com.github.littleemptydoll.exoequipment.module.ModuleSize;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentDefinition;
-import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
+import com.github.littleemptydoll.exoequipment.registry.EquipmentProperties;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Rarity;
 
 public record MatrixDefinition(
         ResourceLocation id,
-        EquipmentTier tier,
-        Rarity rarity,
+        EquipmentProperties properties,
         int width,
         int height
 ) implements EquipmentDefinition {
+
+    public static final Codec<MatrixDefinition> CODEC =
+            RecordCodecBuilder.create(instance ->
+                    instance.group(
+                            ResourceLocation.CODEC
+                                    .fieldOf("id")
+                                    .forGetter(MatrixDefinition::id),
+                            EquipmentProperties.CODEC
+                                    .fieldOf("properties")
+                                    .forGetter(MatrixDefinition::properties),
+                            Codec.INT
+                                    .fieldOf("width")
+                                    .forGetter(MatrixDefinition::width),
+                            Codec.INT
+                                    .fieldOf("height")
+                                    .forGetter(MatrixDefinition::height)
+                    ).apply(
+                            instance,
+                            MatrixDefinition::new
+                    )
+            );
+
     public MatrixDefinition {
         if (width <= 0 || height <= 0) {
             throw new IllegalArgumentException("Matrix size must be positive");
         }
-    }
-
-    public int area() {
-        return width * height;
-    }
-
-    public boolean contains(int x, int y) {
-        return x >= 0
-                && y >= 0
-                && x < width
-                && y < height;
-    }
-
-    public boolean contains(
-            int x,
-            int y,
-            int objectWidth,
-            int objectHeight
-    ) {
-        return x >= 0
-                && y >= 0
-                && x + objectWidth <= width
-                && y + objectHeight <= height;
     }
 
     public boolean contains(
@@ -47,11 +46,9 @@ public record MatrixDefinition(
             int x,
             int y
     ) {
-        return contains(
-                x,
-                y,
-                size.width(),
-                size.height()
-        );
+        return x >= 0
+                && y >= 0
+                && x + size.width() <= width
+                && y + size.height() <= height;
     }
 }

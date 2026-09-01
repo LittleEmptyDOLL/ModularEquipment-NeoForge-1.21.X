@@ -2,16 +2,14 @@ package com.github.littleemptydoll.exoequipment.frame;
 
 import com.github.littleemptydoll.exoequipment.module.ModuleSize;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentDefinition;
-import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
+import com.github.littleemptydoll.exoequipment.registry.EquipmentProperties;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Rarity;
 
 public record FrameDefinition(
         ResourceLocation id,
-        EquipmentTier tier,
-        Rarity rarity,
+        EquipmentProperties properties,
         ModuleSize maxModuleSize
 ) implements EquipmentDefinition {
     public static final Codec<FrameDefinition> CODEC =
@@ -20,12 +18,9 @@ public record FrameDefinition(
                             ResourceLocation.CODEC
                                     .fieldOf("id")
                                     .forGetter(FrameDefinition::id),
-                            EquipmentTier.CODEC
-                                    .fieldOf("tier")
-                                    .forGetter(FrameDefinition::tier),
-                            Rarity.CODEC
-                                    .fieldOf("rarity")
-                                    .forGetter(FrameDefinition::rarity),
+                            EquipmentProperties.CODEC
+                                    .fieldOf("properties")
+                                    .forGetter(FrameDefinition::properties),
                             ModuleSize.CODEC
                                     .fieldOf("max_module_size")
                                     .forGetter(FrameDefinition::maxModuleSize)
@@ -34,6 +29,4 @@ public record FrameDefinition(
                             FrameDefinition::new
                     )
             );
-
-    public FrameDefinition {}
 }

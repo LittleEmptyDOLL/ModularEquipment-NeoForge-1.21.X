@@ -253,7 +253,7 @@ public final class MatrixOperations {
             List<InstalledModule> modules
     ) {
         return new MatrixData(
-                matrix.definition(),
+                matrix.id(),
                 modules
         );
     }

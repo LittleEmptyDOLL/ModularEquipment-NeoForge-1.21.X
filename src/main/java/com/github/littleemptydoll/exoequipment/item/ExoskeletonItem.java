@@ -2,33 +2,29 @@ package com.github.littleemptydoll.exoequipment.item;
 
 import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.exoskeleton.*;
+import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.util.EquipmentItemUtils;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
-public class ExoskeletonItem extends Item {
-    private final DeferredHolder<
-            ExoskeletonDefinition,
-            ExoskeletonDefinition
-    > definition;
+public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> {
 
     public ExoskeletonItem(
             DeferredHolder<
                     ExoskeletonDefinition,
                     ExoskeletonDefinition
-            > definition
+            > definition,
+            Properties properties
     ) {
         super(
-                new Properties()
+                definition,
+                properties
                         .component(
                                 ModDataComponents.EXOSKELETON.get(),
                                 new Exoskeleton(
@@ -40,8 +36,6 @@ public class ExoskeletonItem extends Item {
                                 ExoskeletonData.empty()
                         )
         );
-
-        this.definition = definition;
     }
 
     public ExoskeletonData getData(ItemStack stack) {
@@ -66,10 +60,6 @@ public class ExoskeletonItem extends Item {
         }
 
         return exoskeletonItem;
-    }
-
-    public ExoskeletonDefinition getDefinition() {
-        return definition.get();
     }
 
     public Exoskeleton getExoskeleton(ItemStack stack) {
@@ -175,7 +165,7 @@ public class ExoskeletonItem extends Item {
                                 .matrix()
                                 .map(matrix ->
                                         EquipmentItemUtils.matrixName(
-                                                matrix.definition()
+                                                matrix.id()
                                         )
                                 )
                                 .orElse(

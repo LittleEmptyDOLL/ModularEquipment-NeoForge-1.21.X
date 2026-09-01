@@ -6,6 +6,7 @@ import com.mojang.serialization.DataResult;
 import java.util.Locale;
 
 public enum EquipmentTier {
+    BASIC,
     CIVILIAN,
     MILITARY,
     ENGINEERING,

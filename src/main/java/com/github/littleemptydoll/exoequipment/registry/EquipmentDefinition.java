@@ -6,6 +6,14 @@ import net.minecraft.world.item.Rarity;
 
 public interface EquipmentDefinition {
     ResourceLocation id();
-    EquipmentTier tier();
-    Rarity rarity();
+
+    EquipmentProperties properties();
+
+    default EquipmentTier tier() {
+        return properties().tier();
+    }
+
+    default Rarity rarity() {
+        return properties().rarity();
+    }
 }

@@ -1,73 +1,28 @@
 package com.github.littleemptydoll.exoequipment.item;
 
 import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
-import com.github.littleemptydoll.exoequipment.controller.Controller;
 import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
-import com.github.littleemptydoll.exoequipment.registry.ModControllers;
-import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.List;
 
-public class ControllerItem extends Item {
-
-    private final DeferredHolder<
-            ControllerDefinition,
-            ControllerDefinition
-            > definition;
+public class ControllerItem extends EquipmentItem<ControllerDefinition> {
 
     public ControllerItem(
             DeferredHolder<
                     ControllerDefinition,
                     ControllerDefinition
-                    > definition
+                    > definition,
+            Properties properties
     ) {
         super(
-                new Properties()
-                        .component(
-                                ModDataComponents.CONTROLLER.get(),
-                                new Controller(
-                                        definition.getId()
-                                )
-                        )
+                definition,
+                properties
         );
-
-        this.definition = definition;
-    }
-
-    public ControllerDefinition getDefinition() {
-        return definition.get();
-    }
-
-    public ControllerDefinition getDefinition(ItemStack stack) {
-        Controller controller = getController(stack);
-
-        if (controller == null) {
-            return null;
-        }
-
-        return ModControllers.getDefinition(
-                controller.definitionId()
-        );
-    }
-
-    public Controller getController(ItemStack stack) {
-        Controller data = stack.get(
-                ModDataComponents.CONTROLLER.get()
-        );
-
-        if (data == null) {
-            throw new IllegalStateException(
-                    "Controller item does not contain controller data"
-            );
-        }
-
-        return data;
     }
 
     public static ControllerItem get(ItemStack stack) {
@@ -87,16 +42,7 @@ public class ControllerItem extends Item {
             List<Component> tooltip,
             TooltipFlag flag
     ) {
-        Controller controller = getController(stack);
-
-        if (controller == null) {
-            tooltip.add(
-                    Component.literal("No controller data")
-            );
-            return;
-        }
-
-        ControllerDefinition definition = getDefinition(stack);
+        ControllerDefinition definition = getDefinition();
 
         tooltip.add(
                 TooltipHelper.tier(

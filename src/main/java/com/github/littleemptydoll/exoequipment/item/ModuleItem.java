@@ -1,38 +1,53 @@
 package com.github.littleemptydoll.exoequipment.item;
 
-import com.github.littleemptydoll.exoequipment.module.Module;
+import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
-import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
-import net.minecraft.world.item.Item;
+import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
-public class ModuleItem extends Item {
+import java.util.List;
 
-    private final DeferredHolder<
-            ModuleDefinition,
-            ModuleDefinition
-            > definition;
+public class ModuleItem extends EquipmentItem<ModuleDefinition> {
 
     public ModuleItem(
             DeferredHolder<
                     ModuleDefinition,
                     ModuleDefinition
-                    > definition
+                    > definition,
+            Properties properties
     ) {
         super(
-                new Properties()
-                        .component(
-                                ModDataComponents.MODULE.get(),
-                                new Module(
-                                        definition.getId()
-                                )
-                        )
+                definition,
+                properties
         );
-
-        this.definition = definition;
     }
 
-    public ModuleDefinition getDefinition() {
-        return definition.get();
+    public static ModuleItem get(ItemStack stack) {
+        if (!(stack.getItem() instanceof ModuleItem moduleItem)) {
+            throw new IllegalArgumentException(
+                    "ItemStack is not an module"
+            );
+        }
+
+        return moduleItem;
+    }
+
+    @Override
+    public void appendHoverText(
+            ItemStack stack,
+            TooltipContext context,
+            List<Component> tooltip,
+            TooltipFlag flag
+    ) {
+        ModuleDefinition definition = getDefinition();
+
+        tooltip.add(
+                TooltipHelper.tier(
+                        definition.tier()
+                )
+        );
     }
 }

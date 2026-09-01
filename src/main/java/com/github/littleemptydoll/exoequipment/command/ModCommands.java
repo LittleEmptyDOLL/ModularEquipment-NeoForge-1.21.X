@@ -419,23 +419,23 @@ public final class ModCommands {
             return 0;
         }
 
-        MatrixData matrix = matrixItem.getMatrixData(stack);
+//        MatrixData matrix = matrixItem.getMatrixData(stack);
 
-        MatrixData updated = MatrixOperations.addModule(
-                matrix,
-                matrixItem.getDefinition(),
-                new InstalledModule(
-                        ModModules.TEST_MODULE.getId(),
-                        x,
-                        y,
-                        0
-                )
-        );
+//        MatrixData updated = MatrixOperations.addModule(
+//                matrix,
+//                matrixItem.getDefinition(),
+//                new InstalledModule(
+//                        ModModules.TEST_MODULE.getId(),
+//                        x,
+//                        y,
+//                        0
+//                )
+//        );
 
-        stack.set(
-                ModDataComponents.MATRIX_DATA.get(),
-                updated
-        );
+//        stack.set(
+//                ModDataComponents.MATRIX_DATA.get(),
+//                updated
+//        );
 
         return 1;
     }
@@ -626,7 +626,7 @@ public final class ModCommands {
             return 0;
         }
 
-        EnergySystemDefinition definition = energySystemItem.getDefinition(stack);
+        EnergySystemDefinition definition = energySystemItem.getDefinition();
 
         source.sendSuccess(
                 () -> Component.literal(
@@ -700,7 +700,7 @@ public final class ModCommands {
             return 0;
         }
 
-        ControllerDefinition definition = controllerItem.getDefinition(stack);
+        ControllerDefinition definition = controllerItem.getDefinition();
 
         source.sendSuccess(
                 () -> Component.literal(
@@ -873,7 +873,7 @@ public final class ModCommands {
             return 0;
         }
 
-        FrameDefinition definition = frameItem.getDefinition(stack);
+//        FrameDefinition definition = frameItem.getDefinition(stack);
 
         source.sendSuccess(
                 () -> Component.literal(
@@ -882,27 +882,27 @@ public final class ModCommands {
                 false
         );
 
-        source.sendSuccess(
-                () -> Component.literal(
-                        "ID: " + definition.id()
-                ),
-                false
-        );
+//        source.sendSuccess(
+//                () -> Component.literal(
+//                        "ID: " + definition.id()
+//                ),
+//                false
+//        );
 
-        source.sendSuccess(
-                () -> Component.literal(
-                        "Tier: " + definition.tier()
-                ),
-                false
-        );
+//        source.sendSuccess(
+//                () -> Component.literal(
+//                        "Tier: " + definition.tier()
+//                ),
+//                false
+//        );
 
-        source.sendSuccess(
-                () -> Component.literal(
-                        "Max module size: "
-                                + definition.maxModuleSize().width() + "x" + definition.maxModuleSize().height()
-                ),
-                false
-        );
+//        source.sendSuccess(
+//                () -> Component.literal(
+//                        "Max module size: "
+//                                + definition.maxModuleSize().width() + "x" + definition.maxModuleSize().height()
+//                ),
+//                false
+//        );
 
         return 1;
     }
@@ -910,19 +910,19 @@ public final class ModCommands {
     private static int addFrame(
             ItemStack stack
     ) {
-        Frame frame = new Frame(ModFrames.CIVILIAN.getId());
+//        Frame frame = new Frame(ModFrames.CIVILIAN.getId());
 
-        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
+//        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
 
-        data = ExoskeletonOperations.installFrame(
-                data,
-                frame
-        );
+//        data = ExoskeletonOperations.installFrame(
+//                data,
+//                frame
+//        );
 
-        stack.set(
-                ModDataComponents.EXOSKELETON_DATA.get(),
-                data
-        );
+//        stack.set(
+//                ModDataComponents.EXOSKELETON_DATA.get(),
+//                data
+//        );
 
         return 1;
     }
@@ -930,8 +930,6 @@ public final class ModCommands {
     private static int removeFrame(
             ItemStack stack
     ) {
-        Frame frame = new Frame(ModFrames.CIVILIAN.getId());
-
         ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
 
         data = ExoskeletonOperations.removeFrame(
@@ -949,19 +947,19 @@ public final class ModCommands {
     private static int addController(
             ItemStack stack
     ) {
-        Controller controller = new Controller(ModControllers.CIVILIAN.getId());
+//        Controller controller = new Controller(ModControllers.CIVILIAN.getId());
 
-        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
+//        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
 
-        data = ExoskeletonOperations.installController(
-                data,
-                controller
-        );
+//        data = ExoskeletonOperations.installController(
+//                data,
+//                controller
+//        );
 
-        stack.set(
-                ModDataComponents.EXOSKELETON_DATA.get(),
-                data
-        );
+//        stack.set(
+//                ModDataComponents.EXOSKELETON_DATA.get(),
+//                data
+//        );
 
         return 1;
     }
@@ -969,8 +967,6 @@ public final class ModCommands {
     private static int removeController(
             ItemStack stack
     ) {
-        Controller controller = new Controller(ModControllers.CIVILIAN.getId());
-
         ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
 
         data = ExoskeletonOperations.removeController(
@@ -988,19 +984,19 @@ public final class ModCommands {
     private static int addEnergySystem(
             ItemStack stack
     ) {
-        EnergySystem energySystem = new EnergySystem(ModEnergySystems.CIVILIAN.getId());
+//        EnergySystem energySystem = new EnergySystem(ModEnergySystems.CIVILIAN.getId());
 
-        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
+//        ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
 
-        data = ExoskeletonOperations.installEnergySystem(
-                data,
-                energySystem
-        );
+//        data = ExoskeletonOperations.installEnergySystem(
+//                data,
+//                energySystem
+//        );
 
-        stack.set(
-                ModDataComponents.EXOSKELETON_DATA.get(),
-                data
-        );
+//        stack.set(
+//                ModDataComponents.EXOSKELETON_DATA.get(),
+//                data
+//        );
 
         return 1;
     }
@@ -1008,8 +1004,6 @@ public final class ModCommands {
     private static int removeEnergySystem(
             ItemStack stack
     ) {
-        EnergySystem energySystem = new EnergySystem(ModEnergySystems.CIVILIAN.getId());
-
         ExoskeletonData data = ExoskeletonItem.get(stack).getData(stack);
 
         data = ExoskeletonOperations.removeEnergySystem(

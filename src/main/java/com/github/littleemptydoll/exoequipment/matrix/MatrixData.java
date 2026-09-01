@@ -8,15 +8,15 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.List;
 
 public record MatrixData(
-        ResourceLocation definition,
+        ResourceLocation id,
         List<InstalledModule> modules
 ) {
     public static final Codec<MatrixData> CODEC =
             RecordCodecBuilder.create(instance ->
                     instance.group(
                             ResourceLocation.CODEC
-                                    .fieldOf("definition")
-                                    .forGetter(MatrixData::definition),
+                                    .fieldOf("id")
+                                    .forGetter(MatrixData::id),
                             InstalledModule.CODEC
                                     .listOf()
                                     .fieldOf("modules")
@@ -29,5 +29,20 @@ public record MatrixData(
 
     public MatrixData {
         modules = List.copyOf(modules);
+    }
+
+    public static MatrixData empty(
+            ResourceLocation id
+    ) {
+        return new MatrixData(
+                id,
+                List.of()
+        );
+    }
+
+    public boolean isMatrix(
+            ResourceLocation id
+    ) {
+        return this.id.equals(id);
     }
 }

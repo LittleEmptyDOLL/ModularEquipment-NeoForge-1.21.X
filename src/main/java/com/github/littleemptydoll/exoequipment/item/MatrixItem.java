@@ -4,46 +4,34 @@ import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
+import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.util.EquipmentItemUtils;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.List;
 
-public class MatrixItem extends Item {
-
-    private final DeferredHolder<
-            MatrixDefinition,
-            MatrixDefinition
-    > definition;
+public class MatrixItem extends EquipmentItem<MatrixDefinition> {
 
     public MatrixItem(
             DeferredHolder<
                     MatrixDefinition,
                     MatrixDefinition
-            > definition
+            > definition,
+            Properties properties
     ) {
         super(
-                new Properties()
+                definition,
+                properties
                         .component(
                                 ModDataComponents.MATRIX_DATA.get(),
-                                new MatrixData(
-                                        definition.getId(),
-                                        List.of()
-                                )
+                                MatrixData.empty(definition.getId())
                         )
         );
-
-        this.definition = definition;
-    }
-
-    public MatrixDefinition getDefinition() {
-        return definition.get();
     }
 
     public MatrixData getMatrixData(ItemStack stack) {

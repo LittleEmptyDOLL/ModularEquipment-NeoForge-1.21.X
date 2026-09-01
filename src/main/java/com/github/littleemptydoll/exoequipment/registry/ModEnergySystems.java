@@ -2,11 +2,17 @@ package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.energy.EnergySystemDefinition;
+import com.github.littleemptydoll.exoequipment.item.EnergySystemItem;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class ModEnergySystems {
     private ModEnergySystems() {}
@@ -17,31 +23,62 @@ public class ModEnergySystems {
                     ExoEquipment.MODID
             );
 
-    private static DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> register(
+    private static final Map<ResourceLocation,
+            EquipmentEntry<EnergySystemDefinition, EnergySystemItem>> BY_ID
+            = new HashMap<>();
+
+    private static EquipmentEntry<EnergySystemDefinition, EnergySystemItem> register(
             String id,
-            EquipmentTier tier,
-            Rarity rarity,
+            EquipmentProperties properties,
             int maxInput,
             int maxOutput,
             double efficiency
     ) {
-        ResourceLocation location =
+        ResourceLocation resourceLocation =
                 ResourceLocation.fromNamespaceAndPath(
                         ExoEquipment.MODID,
                         id
                 );
 
-        return ENERGY_SYSTEMS.register(
-                id,
-                () -> new EnergySystemDefinition(
-                        location,
-                        tier,
-                        rarity,
-                        maxInput,
-                        maxOutput,
-                        efficiency
-                )
+        DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> definition =
+                ENERGY_SYSTEMS.register(
+                        id,
+                        () -> new EnergySystemDefinition(
+                                resourceLocation,
+                                properties,
+                                maxInput,
+                                maxOutput,
+                                efficiency
+                        )
+                );
+
+        Item.Properties itemProperties = new Item.Properties().rarity(properties.rarity());
+
+        DeferredHolder<Item, EnergySystemItem> item =
+                ModItems.ITEMS.register(
+                        id + "_energy_system",
+                        () -> new EnergySystemItem(
+                                definition,
+                                itemProperties
+                        )
+                );
+
+        EquipmentEntry<EnergySystemDefinition, EnergySystemItem> entry =
+                new EquipmentEntry<>(
+                        definition,
+                        item
+                );
+
+        BY_ID.put(
+                resourceLocation,
+                entry
         );
+
+        return entry;
+    }
+
+    public static EquipmentEntry<EnergySystemDefinition, EnergySystemItem> getEntry(ResourceLocation id) {
+        return BY_ID.get(id);
     }
 
     public static EnergySystemDefinition getDefinition(
@@ -60,38 +97,54 @@ public class ModEnergySystems {
                 );
     }
 
+    public static Optional<
+            EquipmentEntry<EnergySystemDefinition, EnergySystemItem>
+            > find(ResourceLocation id) {
+        return Optional.ofNullable(
+                BY_ID.get(id)
+        );
+    }
+
     // ToDo: Определить подходящие характеристики
-    public static final DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> CIVILIAN = register(
+    public static final EquipmentEntry<EnergySystemDefinition, EnergySystemItem> CIVILIAN = register(
             "civilian",
-            EquipmentTier.CIVILIAN,
-            Rarity.UNCOMMON,
+            new EquipmentProperties(
+                    EquipmentTier.CIVILIAN,
+                    Rarity.UNCOMMON
+            ),
             100,
             100,
             1.0
     );
 
-    public static final DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> MILITARY = register(
+    public static final EquipmentEntry<EnergySystemDefinition, EnergySystemItem> MILITARY = register(
             "military",
-            EquipmentTier.MILITARY,
-            Rarity.RARE,
+            new EquipmentProperties(
+                    EquipmentTier.MILITARY,
+                    Rarity.RARE
+            ),
             200,
             200,
             1.0
     );
 
-    public static final DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> ENGINEERING = register(
+    public static final EquipmentEntry<EnergySystemDefinition, EnergySystemItem> ENGINEERING = register(
             "engineering",
-            EquipmentTier.ENGINEERING,
-            Rarity.RARE,
+            new EquipmentProperties(
+                    EquipmentTier.ENGINEERING,
+                    Rarity.RARE
+            ),
             300,
             200,
             1.0
     );
 
-    public static final DeferredHolder<EnergySystemDefinition, EnergySystemDefinition> EXPERIMENTAL = register(
+    public static final EquipmentEntry<EnergySystemDefinition, EnergySystemItem> EXPERIMENTAL = register(
             "experimental",
-            EquipmentTier.EXPERIMENTAL,
-            Rarity.EPIC,
+            new EquipmentProperties(
+                    EquipmentTier.EXPERIMENTAL,
+                    Rarity.EPIC
+            ),
             400,
             500,
             1.1

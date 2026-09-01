@@ -2,11 +2,17 @@ package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
+import com.github.littleemptydoll.exoequipment.item.ControllerItem;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class ModControllers {
     private ModControllers() {}
@@ -17,29 +23,60 @@ public class ModControllers {
                     ExoEquipment.MODID
             );
 
-    private static DeferredHolder<ControllerDefinition, ControllerDefinition> register(
+    private static final Map<ResourceLocation,
+            EquipmentEntry<ControllerDefinition, ControllerItem>> BY_ID
+            = new HashMap<>();
+
+    private static EquipmentEntry<ControllerDefinition, ControllerItem> register(
             String id,
-            EquipmentTier tier,
-            Rarity rarity,
+            EquipmentProperties properties,
             int maxProfiles,
             int maxActiveMatrices
     ) {
-        ResourceLocation location =
+        ResourceLocation resourceLocation =
                 ResourceLocation.fromNamespaceAndPath(
                         ExoEquipment.MODID,
                         id
                 );
 
-        return CONTROLLERS.register(
-                id,
-                () -> new ControllerDefinition(
-                        location,
-                        tier,
-                        rarity,
-                        maxProfiles,
-                        maxActiveMatrices
-                )
+        DeferredHolder<ControllerDefinition, ControllerDefinition> definition =
+                CONTROLLERS.register(
+                        id,
+                        () -> new ControllerDefinition(
+                                resourceLocation,
+                                properties,
+                                maxProfiles,
+                                maxActiveMatrices
+                        )
+                );
+
+        Item.Properties itemProperties = new Item.Properties().rarity(properties.rarity());
+
+        DeferredHolder<Item, ControllerItem> item =
+                ModItems.ITEMS.register(
+                        id + "_controller",
+                        () -> new ControllerItem(
+                                definition,
+                                itemProperties
+                        )
+                );
+
+        EquipmentEntry<ControllerDefinition, ControllerItem> entry =
+                new EquipmentEntry<>(
+                        definition,
+                        item
+                );
+
+        BY_ID.put(
+                resourceLocation,
+                entry
         );
+
+        return entry;
+    }
+
+    public static EquipmentEntry<ControllerDefinition, ControllerItem> getEntry(ResourceLocation id) {
+        return BY_ID.get(id);
     }
 
     public static ControllerDefinition getDefinition(
@@ -58,34 +95,50 @@ public class ModControllers {
                 );
     }
 
-    public static final DeferredHolder<ControllerDefinition, ControllerDefinition> CIVILIAN = register(
+    public static Optional<
+            EquipmentEntry<ControllerDefinition, ControllerItem>
+            > find(ResourceLocation id) {
+        return Optional.ofNullable(
+                BY_ID.get(id)
+        );
+    }
+
+    public static final EquipmentEntry<ControllerDefinition, ControllerItem> CIVILIAN = register(
             "civilian",
-            EquipmentTier.CIVILIAN,
-            Rarity.UNCOMMON,
+            new EquipmentProperties(
+                    EquipmentTier.CIVILIAN,
+                    Rarity.UNCOMMON
+            ),
             1,
             1
     );
 
-    public static final DeferredHolder<ControllerDefinition, ControllerDefinition> MILITARY = register(
+    public static final EquipmentEntry<ControllerDefinition, ControllerItem> MILITARY = register(
             "military",
-            EquipmentTier.MILITARY,
-            Rarity.RARE,
+            new EquipmentProperties(
+                    EquipmentTier.MILITARY,
+                    Rarity.RARE
+            ),
             2,
             2
     );
 
-    public static final DeferredHolder<ControllerDefinition, ControllerDefinition> ENGINEERING = register(
+    public static final EquipmentEntry<ControllerDefinition, ControllerItem> ENGINEERING = register(
             "engineering",
-            EquipmentTier.ENGINEERING,
-            Rarity.RARE,
+            new EquipmentProperties(
+                    EquipmentTier.ENGINEERING,
+                    Rarity.RARE
+            ),
             2,
             2
     );
 
-    public static final DeferredHolder<ControllerDefinition, ControllerDefinition> EXPERIMENTAL = register(
+    public static final EquipmentEntry<ControllerDefinition, ControllerItem> EXPERIMENTAL = register(
             "experimental",
-            EquipmentTier.EXPERIMENTAL,
-            Rarity.EPIC,
+            new EquipmentProperties(
+                    EquipmentTier.EXPERIMENTAL,
+                    Rarity.EPIC
+            ),
             3,
             3
     );

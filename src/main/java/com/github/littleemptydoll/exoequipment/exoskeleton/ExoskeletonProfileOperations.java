@@ -1,12 +1,8 @@
 package com.github.littleemptydoll.exoequipment.exoskeleton;
 
-import com.github.littleemptydoll.exoequipment.controller.Controller;
 import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
-import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
-import com.github.littleemptydoll.exoequipment.registry.ModControllers;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public final class ExoskeletonProfileOperations {

@@ -1,16 +1,14 @@
 package com.github.littleemptydoll.exoequipment.controller;
 
 import com.github.littleemptydoll.exoequipment.registry.EquipmentDefinition;
-import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
+import com.github.littleemptydoll.exoequipment.registry.EquipmentProperties;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Rarity;
 
 public record ControllerDefinition (
         ResourceLocation id,
-        EquipmentTier tier,
-        Rarity rarity,
+        EquipmentProperties properties,
         int maxProfiles,
         int maxActiveMatrices
 ) implements EquipmentDefinition {
@@ -20,12 +18,9 @@ public record ControllerDefinition (
                             ResourceLocation.CODEC
                                     .fieldOf("id")
                                     .forGetter(ControllerDefinition::id),
-                            EquipmentTier.CODEC
-                                    .fieldOf("tier")
-                                    .forGetter(ControllerDefinition::tier),
-                            Rarity.CODEC
-                                    .fieldOf("rarity")
-                                    .forGetter(ControllerDefinition::rarity),
+                            EquipmentProperties.CODEC
+                                    .fieldOf("properties")
+                                    .forGetter(ControllerDefinition::properties),
                             Codec.INT
                                     .fieldOf("max_profiles")
                                     .forGetter(ControllerDefinition::maxProfiles),

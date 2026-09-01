@@ -1,6 +1,6 @@
 package com.github.littleemptydoll.exoequipment.util;
 
-import com.github.littleemptydoll.exoequipment.registry.ModItems;
+import com.github.littleemptydoll.exoequipment.registry.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -10,9 +10,10 @@ public final class EquipmentItemUtils {
     public static Component frameName(
             ResourceLocation id
     ) {
-        return ModItems.findFrame(id)
-                .map(item ->
-                        item.getDefaultInstance()
+        return ModFrames.find(id)
+                .map(entry ->
+                        entry.getItem()
+                                .getDefaultInstance()
                                 .getHoverName()
                 )
                 .orElse(
@@ -25,9 +26,10 @@ public final class EquipmentItemUtils {
     public static Component controllerName(
             ResourceLocation id
     ) {
-        return ModItems.findController(id)
-                .map(item ->
-                        item.getDefaultInstance()
+        return ModControllers.find(id)
+                .map(entry ->
+                        entry.getItem()
+                                .getDefaultInstance()
                                 .getHoverName()
                 )
                 .orElse(
@@ -40,9 +42,10 @@ public final class EquipmentItemUtils {
     public static Component energySystemName(
             ResourceLocation id
     ) {
-        return ModItems.findEnergySystem(id)
-                .map(item ->
-                        item.getDefaultInstance()
+        return ModEnergySystems.find(id)
+                .map(entry ->
+                        entry.getItem()
+                                .getDefaultInstance()
                                 .getHoverName()
                 )
                 .orElse(
@@ -55,9 +58,10 @@ public final class EquipmentItemUtils {
     public static Component matrixName(
             ResourceLocation id
     ) {
-        return ModItems.findMatrix(id)
-                .map(item ->
-                        item.getDefaultInstance()
+        return ModMatrices.find(id)
+                .map(entry ->
+                        entry.getItem()
+                                .getDefaultInstance()
                                 .getHoverName()
                 )
                 .orElse(
@@ -70,9 +74,10 @@ public final class EquipmentItemUtils {
     public static Component moduleName(
             ResourceLocation id
     ) {
-        return ModItems.findModule(id)
-                .map(item ->
-                        item.getDefaultInstance()
+        return ModModules.find(id)
+                .map(entry ->
+                        entry.getItem()
+                                .getDefaultInstance()
                                 .getHoverName()
                 )
                 .orElse(

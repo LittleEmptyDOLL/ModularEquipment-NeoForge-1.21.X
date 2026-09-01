@@ -5,14 +5,8 @@ import com.github.littleemptydoll.exoequipment.item.MatrixItem;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 public final class ModMatrices {
     private ModMatrices() {}
@@ -23,119 +17,101 @@ public final class ModMatrices {
                     ExoEquipment.MODID
             );
 
-    private static final Map<ResourceLocation,
-            EquipmentEntry<MatrixDefinition, MatrixItem>> BY_ID
-            = new HashMap<>();
-
-    private static EquipmentEntry<MatrixDefinition, MatrixItem> register(
-            String id,
-            EquipmentProperties properties,
-            int width,
-            int height
-    ) {
-        ResourceLocation resourceLocation =
-                ResourceLocation.fromNamespaceAndPath(
-                        ExoEquipment.MODID,
-                        id
-                );
-
-        DeferredHolder<MatrixDefinition, MatrixDefinition> definition =
-                MATRICES.register(
-                        id,
-                        () -> new MatrixDefinition(
-                                resourceLocation,
-                                properties,
-                                width,
-                                height
-                        )
-                );
-
-        Item.Properties itemProperties = new Item.Properties().rarity(properties.rarity());
-
-        DeferredHolder<Item, MatrixItem> item =
-                ModItems.ITEMS.register(
-                        id + "_matrix",
-                        () -> new MatrixItem(
-                                definition,
-                                itemProperties
-                        )
-                );
-
-        EquipmentEntry<MatrixDefinition, MatrixItem> entry =
-                new EquipmentEntry<>(
-                        definition,
-                        item
-                );
-
-        BY_ID.put(
-                resourceLocation,
-                entry
-        );
-
-        return entry;
-    }
-
-    public static EquipmentEntry<MatrixDefinition, MatrixItem> getEntry(ResourceLocation id) {
-        return BY_ID.get(id);
-    }
-
-    public static MatrixDefinition getDefinition(ResourceLocation id) {
-        EquipmentEntry<MatrixDefinition, MatrixItem> entry = getEntry(id);
-
-        if (entry == null) {
-            throw new IllegalArgumentException(
-                    "Unknown matrix: " + id
+    private static final EquipmentRegistry<
+            MatrixDefinition,
+            MatrixItem
+    > REGISTRY =
+            new EquipmentRegistry<>(
+                    MATRICES,
+                    ModItems.ITEMS,
+                    "_matrix",
+                    MatrixItem::new
             );
-        }
 
-        return entry.getDefinition();
+    public static MatrixDefinition getDefinition(
+            ResourceLocation id
+    ) {
+        return REGISTRY.getDefinition(id);
     }
 
-    public static Optional<
-            EquipmentEntry<MatrixDefinition, MatrixItem>
-    > find(ResourceLocation id) {
-        return Optional.ofNullable(
-                BY_ID.get(id)
-        );
+    public static EquipmentEntry<
+            MatrixDefinition,
+            MatrixItem
+    > find(
+            ResourceLocation id
+    ) {
+        return REGISTRY.find(id);
     }
 
-    public static final EquipmentEntry<MatrixDefinition, MatrixItem> CIVILIAN = register(
+    public static final EquipmentEntry<
+            MatrixDefinition,
+            MatrixItem
+    > CIVILIAN = REGISTRY.register(
             "civilian",
             new EquipmentProperties(
                     EquipmentTier.CIVILIAN,
                     Rarity.UNCOMMON
             ),
-            5,
-            5
+            (id, properties) ->
+                    new MatrixDefinition(
+                            id,
+                            properties,
+                            5,
+                            5
+                    )
     );
 
-    public static final EquipmentEntry<MatrixDefinition, MatrixItem> MILITARY = register(
+    public static final EquipmentEntry<
+            MatrixDefinition,
+            MatrixItem
+    > MILITARY = REGISTRY.register(
             "military",
             new EquipmentProperties(
                     EquipmentTier.MILITARY,
                     Rarity.RARE
             ),
-            7,
-            7
+            (id, properties) ->
+                    new MatrixDefinition(
+                            id,
+                            properties,
+                            7,
+                            7
+                    )
     );
 
-    public static final EquipmentEntry<MatrixDefinition, MatrixItem> ENGINEERING = register(
+    public static final EquipmentEntry<
+            MatrixDefinition,
+            MatrixItem
+    > ENGINEERING = REGISTRY.register(
             "engineering",
             new EquipmentProperties(
                     EquipmentTier.ENGINEERING,
                     Rarity.RARE
             ),
-            7,
-            8
+            (id, properties) ->
+                    new MatrixDefinition(
+                            id,
+                            properties,
+                            7,
+                            8
+                    )
     );
 
-    public static final EquipmentEntry<MatrixDefinition, MatrixItem> EXPERIMENTAL = register(
+    public static final EquipmentEntry<
+            MatrixDefinition,
+            MatrixItem
+    > EXPERIMENTAL = REGISTRY.register(
             "experimental",
             new EquipmentProperties(
                     EquipmentTier.EXPERIMENTAL,
                     Rarity.EPIC
             ),
-            9,
-            9
+            (id, properties) ->
+                    new MatrixDefinition(
+                            id,
+                            properties,
+                            9,
+                            9
+                    )
     );
 }

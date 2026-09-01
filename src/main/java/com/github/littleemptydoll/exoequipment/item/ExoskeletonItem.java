@@ -62,20 +62,6 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> {
         return exoskeletonItem;
     }
 
-    public Exoskeleton getExoskeleton(ItemStack stack) {
-        Exoskeleton data = stack.get(
-                ModDataComponents.EXOSKELETON.get()
-        );
-
-        if (data == null) {
-            throw new IllegalStateException(
-                    "Exoskeleton item does not contain exoskeleton data"
-            );
-        }
-
-        return data;
-    }
-
     @Override
     public void appendHoverText(
             ItemStack stack,
@@ -83,15 +69,6 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> {
             List<Component> tooltip,
             TooltipFlag flag
     ) {
-        Exoskeleton exoskeleton = getExoskeleton(stack);
-
-        if (exoskeleton == null) {
-            tooltip.add(
-                    Component.literal("No exoskeleton data")
-            );
-            return;
-        }
-
         ExoskeletonData data = getData(stack);
 
         if (data.frame().isPresent()) {
@@ -127,14 +104,14 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> {
             );
         }
 
-        long installedMatrices = (int) data.matrices()
+        int installedMatrices = (int) data.matrices()
                 .stream()
                 .filter(slot -> slot.matrix().isPresent())
                 .count();
 
         tooltip.add(
                 TooltipHelper.matrices(
-                        (int) installedMatrices,
+                        installedMatrices,
                         ExoskeletonData.MAX_MATRICES
                 )
         );

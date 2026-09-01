@@ -5,14 +5,8 @@ import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
 import com.github.littleemptydoll.exoequipment.item.ControllerItem;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 public class ModControllers {
     private ModControllers() {}
@@ -23,123 +17,101 @@ public class ModControllers {
                     ExoEquipment.MODID
             );
 
-    private static final Map<ResourceLocation,
-            EquipmentEntry<ControllerDefinition, ControllerItem>> BY_ID
-            = new HashMap<>();
-
-    private static EquipmentEntry<ControllerDefinition, ControllerItem> register(
-            String id,
-            EquipmentProperties properties,
-            int maxProfiles,
-            int maxActiveMatrices
-    ) {
-        ResourceLocation resourceLocation =
-                ResourceLocation.fromNamespaceAndPath(
-                        ExoEquipment.MODID,
-                        id
-                );
-
-        DeferredHolder<ControllerDefinition, ControllerDefinition> definition =
-                CONTROLLERS.register(
-                        id,
-                        () -> new ControllerDefinition(
-                                resourceLocation,
-                                properties,
-                                maxProfiles,
-                                maxActiveMatrices
-                        )
-                );
-
-        Item.Properties itemProperties = new Item.Properties().rarity(properties.rarity());
-
-        DeferredHolder<Item, ControllerItem> item =
-                ModItems.ITEMS.register(
-                        id + "_controller",
-                        () -> new ControllerItem(
-                                definition,
-                                itemProperties
-                        )
-                );
-
-        EquipmentEntry<ControllerDefinition, ControllerItem> entry =
-                new EquipmentEntry<>(
-                        definition,
-                        item
-                );
-
-        BY_ID.put(
-                resourceLocation,
-                entry
-        );
-
-        return entry;
-    }
-
-    public static EquipmentEntry<ControllerDefinition, ControllerItem> getEntry(ResourceLocation id) {
-        return BY_ID.get(id);
-    }
+    private static final EquipmentRegistry<
+            ControllerDefinition,
+            ControllerItem
+            > REGISTRY =
+            new EquipmentRegistry<>(
+                    CONTROLLERS,
+                    ModItems.ITEMS,
+                    "_controller",
+                    ControllerItem::new
+            );
 
     public static ControllerDefinition getDefinition(
             ResourceLocation id
     ) {
-        return CONTROLLERS
-                .getEntries()
-                .stream()
-                .filter(entry -> entry.getId().equals(id))
-                .findFirst()
-                .map(DeferredHolder::get)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Unknown controller: " + id
-                        )
-                );
+        return REGISTRY.getDefinition(id);
     }
 
-    public static Optional<
-            EquipmentEntry<ControllerDefinition, ControllerItem>
-            > find(ResourceLocation id) {
-        return Optional.ofNullable(
-                BY_ID.get(id)
-        );
+    public static EquipmentEntry<
+            ControllerDefinition,
+            ControllerItem
+    > find(
+            ResourceLocation id
+    ) {
+        return REGISTRY.find(id);
     }
 
-    public static final EquipmentEntry<ControllerDefinition, ControllerItem> CIVILIAN = register(
+    public static final EquipmentEntry<
+            ControllerDefinition,
+            ControllerItem
+    > CIVILIAN = REGISTRY.register(
             "civilian",
             new EquipmentProperties(
                     EquipmentTier.CIVILIAN,
                     Rarity.UNCOMMON
             ),
-            1,
-            1
+            (id, properties) ->
+                    new ControllerDefinition(
+                            id,
+                            properties,
+                            1,
+                            1
+                    )
     );
 
-    public static final EquipmentEntry<ControllerDefinition, ControllerItem> MILITARY = register(
+    public static final EquipmentEntry<
+            ControllerDefinition,
+            ControllerItem
+    > MILITARY = REGISTRY.register(
             "military",
             new EquipmentProperties(
                     EquipmentTier.MILITARY,
                     Rarity.RARE
             ),
-            2,
-            2
+            (id, properties) ->
+                    new ControllerDefinition(
+                            id,
+                            properties,
+                            2,
+                            2
+                    )
     );
 
-    public static final EquipmentEntry<ControllerDefinition, ControllerItem> ENGINEERING = register(
+    public static final EquipmentEntry<
+            ControllerDefinition,
+            ControllerItem
+    > ENGINEERING = REGISTRY.register(
             "engineering",
             new EquipmentProperties(
                     EquipmentTier.ENGINEERING,
                     Rarity.RARE
             ),
-            2,
-            2
+            (id, properties) ->
+                    new ControllerDefinition(
+                            id,
+                            properties,
+                            2,
+                            2
+                    )
     );
 
-    public static final EquipmentEntry<ControllerDefinition, ControllerItem> EXPERIMENTAL = register(
+    public static final EquipmentEntry<
+            ControllerDefinition,
+            ControllerItem
+    > EXPERIMENTAL = REGISTRY.register(
             "experimental",
             new EquipmentProperties(
                     EquipmentTier.EXPERIMENTAL,
                     Rarity.EPIC
             ),
-            3,
-            3
+            (id, properties) ->
+                    new ControllerDefinition(
+                            id,
+                            properties,
+                            3,
+                            3
+                    )
     );
 }

@@ -16,7 +16,19 @@ public class DataGenerators {
         PackOutput output = generator.getPackOutput();
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
 
-        generator.addProvider( event.includeClient(), new ModLanguageProvider(output));
+        generator.addProvider(
+                event.includeClient(),
+                new ModLanguageProvider(
+                        output
+                )
+        );
+        generator.addProvider(
+                event.includeClient(),
+                new ModItemModelProvider(
+                        output,
+                        existingFileHelper
+                )
+        );
     }
 
     private DataGenerators() {

@@ -72,6 +72,7 @@ public final class EquipmentRegistry<
 
         Item.Properties itemProperties =
                 new Item.Properties()
+                        .stacksTo(1)
                         .rarity(properties.rarity());
 
         DeferredHolder<Item, I> item =

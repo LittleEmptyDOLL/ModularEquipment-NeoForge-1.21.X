@@ -2,12 +2,19 @@ package com.github.littleemptydoll.exoequipment.item;
 
 import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.exoskeleton.*;
+import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenu;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.util.EquipmentItemUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.List;
@@ -59,6 +66,54 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> {
         }
 
         return exoskeletonItem;
+    }
+
+    private static int getInventorySlot(
+            Player player,
+            InteractionHand hand
+    ) {
+        if (hand == InteractionHand.MAIN_HAND) {
+            return player.getInventory().selected;
+        }
+
+        return 40;
+    }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(
+            Level level,
+            Player player,
+            InteractionHand hand
+    ) {
+        ItemStack stack = player.getItemInHand(hand);
+
+        if (!level.isClientSide()
+                && player instanceof ServerPlayer serverPlayer) {
+            int slot = getInventorySlot(
+                    player,
+                    hand
+            );
+
+            serverPlayer.openMenu(
+                    new SimpleMenuProvider(
+                            (containerId, inventory, menuPlayer) ->
+                                    new ExoskeletonMenu(
+                                            containerId,
+                                            inventory,
+                                            slot
+                                    ),
+                            Component.translatable(
+                                    "menu.exoequipment.exoskeleton"
+                            )
+                    ),
+                    buffer -> buffer.writeInt(slot)
+            );
+        }
+
+        return InteractionResultHolder.sidedSuccess(
+                stack,
+                level.isClientSide()
+        );
     }
 
     @Override

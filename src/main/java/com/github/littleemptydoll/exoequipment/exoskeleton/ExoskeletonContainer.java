@@ -152,25 +152,28 @@ public class ExoskeletonContainer implements Container {
             );
         }
 
-        if (slot == FRAME_SLOT) {
-            setFrame(stack);
-            return;
-        }
+        ExoskeletonData data = getData();
 
-        if (slot == CONTROLLER_SLOT) {
-            setController(stack);
-            return;
-        }
+        ExoskeletonData newData = switch (slot) {
+            case FRAME_SLOT -> setFrame(data, stack);
 
-        if (slot == ENERGY_SYSTEM_SLOT) {
-            setEnergySystem(stack);
-            return;
-        }
+            case CONTROLLER_SLOT -> setController(data, stack);
 
-        setMatrix(
-                slot - MATRIX_START_SLOT,
-                stack
+            case ENERGY_SYSTEM_SLOT -> setEnergySystem(data, stack);
+
+            default -> setMatrix(
+                    data,
+                    slot - MATRIX_START_SLOT,
+                    stack
+            );
+        };
+
+        exoskeleton.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                newData
         );
+
+        setChanged();
     }
 
     @Override
@@ -186,105 +189,78 @@ public class ExoskeletonContainer implements Container {
     public void clearContent() {
     }
 
-    private void setFrame(ItemStack stack) {
-        ExoskeletonData data = getData();
-
+    private ExoskeletonData setFrame(
+            ExoskeletonData data,
+            ItemStack stack
+    ) {
         if (stack.isEmpty()) {
-            exoskeleton.set(
-                    ModDataComponents.EXOSKELETON_DATA.get(),
-                    data.withoutFrame()
-            );
-            return;
+            return ExoskeletonOperations.removeFrame(data);
         }
 
-        FrameItem frameItem = FrameItem.get(stack);
+        FrameItem item = FrameItem.get(stack);
 
-        exoskeleton.set(
-                ModDataComponents.EXOSKELETON_DATA.get(),
-                data.withFrame(
-                        new Frame(
-                                frameItem.getDefinition().id()
-                        )
+        return ExoskeletonOperations.installFrame(
+                data,
+                new Frame(
+                        item.getDefinition().id()
                 )
         );
     }
 
-    private void setController(ItemStack stack) {
-        ExoskeletonData data = getData();
-
+    private ExoskeletonData setController(
+            ExoskeletonData data,
+            ItemStack stack
+    ) {
         if (stack.isEmpty()) {
-            exoskeleton.set(
-                    ModDataComponents.EXOSKELETON_DATA.get(),
-                    data.withoutController()
-            );
-            return;
+            return ExoskeletonOperations.removeController(data);
         }
 
-        ControllerItem controllerItem = ControllerItem.get(stack);
+        ControllerItem item = ControllerItem.get(stack);
 
-        exoskeleton.set(
-                ModDataComponents.EXOSKELETON_DATA.get(),
-                data.withController(
-                        new Controller(
-                                controllerItem.getDefinition().id()
-                        )
+        return ExoskeletonOperations.installController(
+                data,
+                new Controller(
+                        item.getDefinition().id()
                 )
         );
     }
 
-    private void setEnergySystem(ItemStack stack) {
-        ExoskeletonData data = getData();
-
+    private ExoskeletonData setEnergySystem(
+            ExoskeletonData data,
+            ItemStack stack
+    ) {
         if (stack.isEmpty()) {
-            exoskeleton.set(
-                    ModDataComponents.EXOSKELETON_DATA.get(),
-                    data.withoutEnergySystem()
-            );
-            return;
+            return ExoskeletonOperations.removeEnergySystem(data);
         }
 
-        EnergySystemItem energySystemItem = EnergySystemItem.get(stack);
+        EnergySystemItem item = EnergySystemItem.get(stack);
 
-        exoskeleton.set(
-                ModDataComponents.EXOSKELETON_DATA.get(),
-                data.withEnergySystem(
-                        new EnergySystem(
-                                energySystemItem.getDefinition().id()
-                        )
+        return ExoskeletonOperations.installEnergySystem(
+                data,
+                new EnergySystem(
+                        item.getDefinition().id()
                 )
         );
     }
 
-    private void setMatrix(
+    private ExoskeletonData setMatrix(
+            ExoskeletonData data,
             int matrixSlot,
             ItemStack stack
     ) {
-        if (matrixSlot < 0 || matrixSlot >= MATRIX_COUNT) {
-            throw new IndexOutOfBoundsException(
-                    "Invalid matrix slot: " + matrixSlot
-            );
-        }
-
-        ExoskeletonData data = getData();
-
         if (stack.isEmpty()) {
-            exoskeleton.set(
-                    ModDataComponents.EXOSKELETON_DATA.get(),
-                    data.withoutMatrix(matrixSlot)
+            return ExoskeletonOperations.removeMatrix(
+                    data,
+                    matrixSlot
             );
-            return;
         }
 
-        MatrixItem matrixItem = MatrixItem.get(stack);
+        MatrixItem item = MatrixItem.get(stack);
 
-        MatrixData matrixData = matrixItem.getMatrixData(stack);
-
-        exoskeleton.set(
-                ModDataComponents.EXOSKELETON_DATA.get(),
-                data.withMatrix(
-                        matrixSlot,
-                        matrixData
-                )
+        return ExoskeletonOperations.installMatrix(
+                data,
+                matrixSlot,
+                item.getMatrixData(stack)
         );
     }
 }

@@ -10,6 +10,8 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Optional;
+
 public class ExoskeletonContainer implements Container {
 
     public static final int FRAME_SLOT = 0;
@@ -61,71 +63,88 @@ public class ExoskeletonContainer implements Container {
 
     @Override
     public ItemStack getItem(int slot) {
+        checkSlot(slot);
+
         return switch (slot) {
             case FRAME_SLOT -> getFrameStack();
             case CONTROLLER_SLOT -> getControllerStack();
             case ENERGY_SYSTEM_SLOT -> getEnergySystemStack();
-            default -> getMatrixStack(slot);
+            default -> getMatrixStack(slot - MATRIX_START_SLOT);
         };
     }
 
     private ItemStack getFrameStack() {
-        return getData()
-                .frame()
-                .map(frame ->
-                        ModFrames.find(frame.definitionId())
-                                .getItem()
-                                .getDefaultInstance()
-                )
-                .orElse(ItemStack.EMPTY);
-    }
+        Optional<Frame> frame = getData().frame();
 
-    private ItemStack getControllerStack() {
-        return getData()
-                .controller()
-                .map(controller ->
-                        ModControllers.find(controller.definitionId())
-                                .getItem()
-                                .getDefaultInstance()
-                )
-                .orElse(ItemStack.EMPTY);
-    }
-
-    private ItemStack getEnergySystemStack() {
-        return getData()
-                .energySystem()
-                .map(energySystem ->
-                        ModEnergySystems.find(energySystem.definitionId())
-                                .getItem()
-                                .getDefaultInstance()
-                )
-                .orElse(ItemStack.EMPTY);
-    }
-
-    private ItemStack getMatrixStack(int slot) {
-        int matrixSlot = slot - MATRIX_START_SLOT;
-
-        if (matrixSlot < 0 || matrixSlot >= MATRIX_COUNT) {
+        if (frame.isEmpty()) {
             return ItemStack.EMPTY;
         }
 
-        return getData()
-                .matrices()
-                .get(matrixSlot)
-                .matrix()
-                .map(matrix -> {
-                    ItemStack stack =
-                            ModMatrices.find(matrix.id())
-                                    .getItem()
-                                    .getDefaultInstance();
-                    stack.set(
-                            ModDataComponents.MATRIX_DATA.get(),
-                            matrix
-                    );
+        var entry = ModFrames.find(frame.get().definitionId());
 
-                    return stack;
-                })
-                .orElse(ItemStack.EMPTY);
+        if (entry == null) {
+            return ItemStack.EMPTY;
+        }
+
+        return entry.getItem().getDefaultInstance();
+    }
+
+    private ItemStack getControllerStack() {
+        Optional<Controller> controller = getData().controller();
+
+        if (controller.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+
+        var entry = ModControllers.find(controller.get().definitionId());
+
+        if (entry == null) {
+            return ItemStack.EMPTY;
+        }
+
+        return entry.getItem().getDefaultInstance();
+    }
+
+    private ItemStack getEnergySystemStack() {
+        Optional<EnergySystem> energySystem = getData().energySystem();
+
+        if (energySystem.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+
+        var entry = ModEnergySystems.find(energySystem.get().definitionId());
+
+        if (entry == null) {
+            return ItemStack.EMPTY;
+        }
+
+        return entry.getItem().getDefaultInstance();
+    }
+
+    private ItemStack getMatrixStack(int slot) {
+        MatrixData matrix = null;
+        if (getData().matrices().get(slot).matrix().isPresent()) {
+            matrix = getData().matrices().get(slot).matrix().get();
+        }
+
+        if (matrix == null) {
+            return ItemStack.EMPTY;
+        }
+
+        var entry = ModMatrices.find(matrix.id());
+
+        if (entry == null) {
+            return ItemStack.EMPTY;
+        }
+
+        ItemStack stack = entry.getItem().getDefaultInstance();
+
+        stack.set(
+                ModDataComponents.MATRIX_DATA.get(),
+                matrix
+        );
+
+        return stack;
     }
 
     @Override
@@ -133,12 +152,49 @@ public class ExoskeletonContainer implements Container {
             int slot,
             int amount
     ) {
-        return ItemStack.EMPTY;
+        checkSlot(slot);
+
+        ItemStack current = getItem(slot);
+
+        if (current.isEmpty() || amount <= 0) {
+            return ItemStack.EMPTY;
+        }
+
+        setItem(slot, ItemStack.EMPTY);
+
+        return current;
     }
 
     @Override
     public ItemStack removeItemNoUpdate(int slot) {
-        return ItemStack.EMPTY;
+        checkSlot(slot);
+
+        ItemStack current = getItem(slot);
+
+        if (current.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+
+        ExoskeletonData data = getData();
+
+        ExoskeletonData newData = switch (slot) {
+            case FRAME_SLOT -> ExoskeletonOperations.removeFrame(data);
+            case CONTROLLER_SLOT -> ExoskeletonOperations.removeController(data);
+            case ENERGY_SYSTEM_SLOT -> ExoskeletonOperations.removeEnergySystem(data);
+            default -> ExoskeletonOperations.removeMatrix(
+                    data,
+                    slot - MATRIX_START_SLOT
+            );
+        };
+
+        exoskeleton.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                newData
+        );
+
+        setChanged();
+
+        return current;
     }
 
     @Override
@@ -146,21 +202,14 @@ public class ExoskeletonContainer implements Container {
             int slot,
             ItemStack stack
     ) {
-        if (slot < 0 || slot >= SLOT_COUNT) {
-            throw new IndexOutOfBoundsException(
-                    "Invalid exoskeleton slot: " + slot
-            );
-        }
+        checkSlot(slot);
 
         ExoskeletonData data = getData();
 
         ExoskeletonData newData = switch (slot) {
             case FRAME_SLOT -> setFrame(data, stack);
-
             case CONTROLLER_SLOT -> setController(data, stack);
-
             case ENERGY_SYSTEM_SLOT -> setEnergySystem(data, stack);
-
             default -> setMatrix(
                     data,
                     slot - MATRIX_START_SLOT,
@@ -182,11 +231,51 @@ public class ExoskeletonContainer implements Container {
 
     @Override
     public boolean stillValid(Player player) {
-        return true;
+        return player.isAlive();
     }
 
     @Override
     public void clearContent() {
+        ExoskeletonData data = getData();
+
+        data = ExoskeletonOperations.removeFrame(data);
+        data = ExoskeletonOperations.removeController(data);
+        data = ExoskeletonOperations.removeEnergySystem(data);
+
+        for (int i = 0; i < MATRIX_COUNT; i++) {
+            data = ExoskeletonOperations.removeMatrix(data, i);
+        }
+
+        exoskeleton.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                data
+        );
+
+        setChanged();
+    }
+
+    @Override
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        if (stack.isEmpty()) {
+            return false;
+        }
+
+        checkSlot(slot);
+
+        return switch (slot) {
+            case FRAME_SLOT -> stack.getItem() instanceof FrameItem;
+            case CONTROLLER_SLOT -> stack.getItem() instanceof ControllerItem;
+            case ENERGY_SYSTEM_SLOT -> stack.getItem() instanceof EnergySystemItem;
+            default -> stack.getItem() instanceof MatrixItem;
+        };
+    }
+
+    private void checkSlot(int slot) {
+        if (slot < 0 || slot >= SLOT_COUNT) {
+            throw new IndexOutOfBoundsException(
+                    "Invalid exoskeleton slot: " + slot
+            );
+        }
     }
 
     private ExoskeletonData setFrame(
@@ -198,6 +287,10 @@ public class ExoskeletonContainer implements Container {
         }
 
         FrameItem item = FrameItem.get(stack);
+
+        if (item == null) {
+            return data;
+        }
 
         return ExoskeletonOperations.installFrame(
                 data,
@@ -217,6 +310,10 @@ public class ExoskeletonContainer implements Container {
 
         ControllerItem item = ControllerItem.get(stack);
 
+        if (item == null) {
+            return data;
+        }
+
         return ExoskeletonOperations.installController(
                 data,
                 new Controller(
@@ -234,6 +331,10 @@ public class ExoskeletonContainer implements Container {
         }
 
         EnergySystemItem item = EnergySystemItem.get(stack);
+
+        if (item == null) {
+            return data;
+        }
 
         return ExoskeletonOperations.installEnergySystem(
                 data,
@@ -256,6 +357,10 @@ public class ExoskeletonContainer implements Container {
         }
 
         MatrixItem item = MatrixItem.get(stack);
+
+        if (item == null) {
+            return data;
+        }
 
         return ExoskeletonOperations.installMatrix(
                 data,

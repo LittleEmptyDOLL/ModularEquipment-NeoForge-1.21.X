@@ -2,7 +2,7 @@ package com.github.littleemptydoll.exoequipment.item;
 
 import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.exoskeleton.*;
-import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenu;
+import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenuProvider;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.util.EquipmentItemUtils;
@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -87,26 +86,12 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> {
     ) {
         ItemStack stack = player.getItemInHand(hand);
 
-        if (!level.isClientSide()
-                && player instanceof ServerPlayer serverPlayer) {
-            int slot = getInventorySlot(
-                    player,
-                    hand
-            );
+        if (!level.isClientSide() &&
+                player instanceof ServerPlayer serverPlayer) {
 
-            serverPlayer.openMenu(
-                    new SimpleMenuProvider(
-                            (containerId, inventory, menuPlayer) ->
-                                    new ExoskeletonMenu(
-                                            containerId,
-                                            inventory,
-                                            slot
-                                    ),
-                            Component.translatable(
-                                    "menu.exoequipment.exoskeleton"
-                            )
-                    ),
-                    buffer -> buffer.writeInt(slot)
+            ExoskeletonMenuProvider.open(
+                    serverPlayer,
+                    getInventorySlot(player, hand)
             );
         }
 

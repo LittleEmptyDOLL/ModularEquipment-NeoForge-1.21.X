@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonContainer;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.item.*;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -38,6 +39,20 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
 
     private final ExoskeletonContainer exoskeletonContainer;
 
+    // Client
+    public ExoskeletonMenu(
+            int containerId,
+            Inventory playerInventory,
+            RegistryFriendlyByteBuf buffer
+    ) {
+        this(
+                containerId,
+                playerInventory,
+                buffer.readVarInt()
+        );
+    }
+
+    // Server
     public ExoskeletonMenu(
             int containerId,
             Inventory playerInventory,
@@ -262,6 +277,10 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
+        if (player.level().isClientSide) {
+            return true;
+        }
+
         if (!player.isAlive()) {
             return false;
         }

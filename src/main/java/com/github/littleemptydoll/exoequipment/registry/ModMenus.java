@@ -19,19 +19,19 @@ public final class ModMenus {
                     ExoEquipment.MODID
             );
 
-    public static final DeferredHolder<
-            MenuType<?>,
-            MenuType<ExoskeletonMenu>
-    > EXOSKELETON = MENUS.register(
+    public static final DeferredHolder<MenuType<?>, MenuType<ExoskeletonMenu>> EXOSKELETON = MENUS.register(
             "exoskeleton",
             () -> IMenuTypeExtension.create(
-                    ExoskeletonMenu::new
+                    (containerId, inventory, buffer) ->
+                            new ExoskeletonMenu(
+                                    containerId,
+                                    inventory,
+                                    buffer.readVarInt()
+                            )
             )
     );
 
-    public static void register(
-            IEventBus eventBus
-    ) {
+    public static void register(IEventBus eventBus) {
         MENUS.register(eventBus);
     }
 }

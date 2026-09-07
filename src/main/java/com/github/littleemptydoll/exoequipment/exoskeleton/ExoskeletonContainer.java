@@ -238,12 +238,22 @@ public class ExoskeletonContainer implements Container {
     public void clearContent() {
         ExoskeletonData data = getData();
 
-        data = ExoskeletonOperations.removeFrame(data);
-        data = ExoskeletonOperations.removeController(data);
-        data = ExoskeletonOperations.removeEnergySystem(data);
+        if (data.frame().isPresent()) {
+            data = ExoskeletonOperations.removeFrame(data);
+        }
+
+        if (data.controller().isPresent()) {
+            data = ExoskeletonOperations.removeController(data);
+        }
+
+        if (data.energySystem().isPresent()) {
+            data = ExoskeletonOperations.removeEnergySystem(data);
+        }
 
         for (int i = 0; i < MATRIX_COUNT; i++) {
-            data = ExoskeletonOperations.removeMatrix(data, i);
+            if (data.matrices().get(i).matrix().isPresent()) {
+                data = ExoskeletonOperations.removeMatrix(data, i);
+            }
         }
 
         exoskeleton.set(
@@ -283,14 +293,18 @@ public class ExoskeletonContainer implements Container {
             ItemStack stack
     ) {
         if (stack.isEmpty()) {
+            if (data.frame().isEmpty()) {
+                return data;
+            }
+
             return ExoskeletonOperations.removeFrame(data);
         }
 
-        FrameItem item = FrameItem.get(stack);
-
-        if (item == null) {
+        if (data.frame().isPresent()) {
             return data;
         }
+
+        FrameItem item = FrameItem.get(stack);
 
         return ExoskeletonOperations.installFrame(
                 data,
@@ -305,14 +319,17 @@ public class ExoskeletonContainer implements Container {
             ItemStack stack
     ) {
         if (stack.isEmpty()) {
+            if (data.controller().isEmpty()) {
+                return data;
+            }
+
             return ExoskeletonOperations.removeController(data);
+        }
+        if (data.controller().isPresent()) {
+            return data;
         }
 
         ControllerItem item = ControllerItem.get(stack);
-
-        if (item == null) {
-            return data;
-        }
 
         return ExoskeletonOperations.installController(
                 data,
@@ -327,14 +344,18 @@ public class ExoskeletonContainer implements Container {
             ItemStack stack
     ) {
         if (stack.isEmpty()) {
+            if (data.energySystem().isEmpty()) {
+                return data;
+            }
+
             return ExoskeletonOperations.removeEnergySystem(data);
         }
 
-        EnergySystemItem item = EnergySystemItem.get(stack);
-
-        if (item == null) {
+        if (data.energySystem().isPresent()) {
             return data;
         }
+
+        EnergySystemItem item = EnergySystemItem.get(stack);
 
         return ExoskeletonOperations.installEnergySystem(
                 data,
@@ -349,18 +370,24 @@ public class ExoskeletonContainer implements Container {
             int matrixSlot,
             ItemStack stack
     ) {
+        MatrixSlot current = data.matrices().get(matrixSlot);
+
         if (stack.isEmpty()) {
+            if (current.matrix().isEmpty()) {
+                return data;
+            }
+
             return ExoskeletonOperations.removeMatrix(
                     data,
                     matrixSlot
             );
         }
 
-        MatrixItem item = MatrixItem.get(stack);
-
-        if (item == null) {
+        if (current.matrix().isPresent()) {
             return data;
         }
+
+        MatrixItem item = MatrixItem.get(stack);
 
         return ExoskeletonOperations.installMatrix(
                 data,

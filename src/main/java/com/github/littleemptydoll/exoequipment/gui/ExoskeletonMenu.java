@@ -9,6 +9,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -146,28 +147,52 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
             for (int column = 0; column < 9; column++) {
                 int inventorySlot = column + row * 9 + 9;
 
-                addSlot(
-                        new Slot(
-                                playerInventory,
-                                inventorySlot,
-                                8 + column * 18,
-                                84 + row * 18
-                        )
-                );
+                Slot slot;
+
+                if (inventorySlot == sourceInventorySlot) {
+                    slot = new ExoskeletonInventorySlot(
+                            playerInventory,
+                            inventorySlot,
+                            8 + column * 18,
+                            84 + row * 18,
+                            exoskeleton
+                    );
+                } else {
+                    slot = new Slot(
+                            playerInventory,
+                            inventorySlot,
+                            8 + column * 18,
+                            84 + row * 18
+                    );
+                }
+
+                addSlot(slot);
             }
         }
 
         // Hotbar
         for (int column = 0; column < 9; column++) {
 
-            addSlot(
-                    new Slot(
-                            playerInventory,
-                            column,
-                            8 + column * 18,
-                            142
-                    )
-            );
+            Slot slot;
+
+            if (column == sourceInventorySlot) {
+                slot = new ExoskeletonInventorySlot(
+                        playerInventory,
+                        column,
+                        8 + column * 18,
+                        142,
+                        exoskeleton
+                );
+            } else {
+                slot = new Slot(
+                        playerInventory,
+                        column,
+                        8 + column * 18,
+                        142
+                );
+            }
+
+            addSlot(slot);
         }
     }
 
@@ -179,6 +204,10 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
         Slot slot = slots.get(index);
 
         if (!slot.hasItem()) {
+            return ItemStack.EMPTY;
+        }
+
+        if (slot instanceof ExoskeletonInventorySlot) {
             return ItemStack.EMPTY;
         }
 
@@ -204,7 +233,7 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
             if (!moveItemStackTo(
                     stack,
                     PLAYER_INVENTORY_START,
-                    HOTBAR_END,
+                    PLAYER_INVENTORY_END,
                     true
             )) {
                 return ItemStack.EMPTY;
@@ -299,6 +328,24 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
         if (!player.level().isClientSide()) {
             exoskeletonContainer.setChanged();
         }
+    }
+
+    private boolean isExoskeletonSourceSlot(int index) {
+        return slots.get(index) instanceof ExoskeletonInventorySlot;
+    }
+
+    @Override
+    public void clicked(
+            int slotId,
+            int button,
+            ClickType clickType,
+            Player player
+    ) {
+        if (slotId >= 0 && isExoskeletonSourceSlot(slotId)) {
+            return;
+        }
+
+        super.clicked(slotId, button, clickType, player);
     }
 
     private static class SingleStackContainer implements Container {

@@ -12,9 +12,9 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
         modid = ExoEquipment.MODID,
         value = Dist.CLIENT
 )
-public final class ModClient {
+public final class ClientModEvents {
 
-    private ModClient() {}
+    private ClientModEvents() {}
 
     @SubscribeEvent
     public static void registerScreens(

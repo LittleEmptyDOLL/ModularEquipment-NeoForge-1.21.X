@@ -1,6 +1,7 @@
-package com.github.littleemptydoll.exoequipment.client;
+package com.github.littleemptydoll.exoequipment.event;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.gui.ExoskeletonScreen;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;

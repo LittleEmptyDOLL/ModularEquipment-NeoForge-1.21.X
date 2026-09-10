@@ -130,5 +130,30 @@ public class ModLanguageProvider extends LanguageProvider {
                 "tooltip.exoequipment.module_entry",
                 "  %s"
         );
+
+        add(
+                "gui.exoequipment.exoskeleton",
+                "Exoskeleton"
+        );
+
+        add(
+                "gui.exoequipment.components",
+                "Components"
+        );
+
+        add(
+                "gui.exoequipment.matrices",
+                "Matrices"
+        );
+
+        add(
+                "gui.exoequipment.system",
+                "System status"
+        );
+
+        add(
+                "gui.exoequipment.inventory",
+                "Inventory"
+        );
     }
 }

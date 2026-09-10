@@ -43,7 +43,7 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> {
         );
     }
 
-    public ExoskeletonData getData(ItemStack stack) {
+    public static ExoskeletonData getData(ItemStack stack) {
         ExoskeletonData data = stack.get(
                 ModDataComponents.EXOSKELETON_DATA.get()
         );

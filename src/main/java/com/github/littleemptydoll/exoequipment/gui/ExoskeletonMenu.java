@@ -89,8 +89,8 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
                 new ExoskeletonSourceSlot(
                         new SingleStackContainer(exoskeleton),
                         0,
-                        8,
-                        8
+                        0,
+                        0
                 )
         );
 
@@ -99,8 +99,8 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
                 new ExoskeletonComponentSlot(
                         exoskeletonContainer,
                         ExoskeletonContainer.FRAME_SLOT,
-                        44,
-                        8,
+                        67,
+                        43,
                         FrameItem.class
                 )
         );
@@ -110,8 +110,8 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
                 new ExoskeletonComponentSlot(
                         exoskeletonContainer,
                         ExoskeletonContainer.CONTROLLER_SLOT,
-                        62,
-                        8,
+                        94,
+                        43,
                         ControllerItem.class
                 )
         );
@@ -121,8 +121,8 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
                 new ExoskeletonComponentSlot(
                         exoskeletonContainer,
                         ExoskeletonContainer.ENERGY_SYSTEM_SLOT,
-                        80,
-                        8,
+                        121,
+                        43,
                         EnergySystemItem.class
                 )
         );
@@ -133,8 +133,8 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
                     new ExoskeletonComponentSlot(
                             exoskeletonContainer,
                             ExoskeletonContainer.MATRIX_START_SLOT + i,
-                            44 + i * 18,
-                            30,
+                            67 + i * 18,
+                            78,
                             MatrixItem.class
                     )
             );
@@ -153,16 +153,16 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
                     slot = new ExoskeletonInventorySlot(
                             playerInventory,
                             inventorySlot,
-                            8 + column * 18,
-                            84 + row * 18,
+                            42 + column * 18,
+                            126 + row * 18,
                             exoskeleton
                     );
                 } else {
                     slot = new Slot(
                             playerInventory,
                             inventorySlot,
-                            8 + column * 18,
-                            84 + row * 18
+                            42 + column * 18,
+                            126 + row * 18
                     );
                 }
 
@@ -179,16 +179,16 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
                 slot = new ExoskeletonInventorySlot(
                         playerInventory,
                         column,
-                        8 + column * 18,
-                        142,
+                        42 + column * 18,
+                        184,
                         exoskeleton
                 );
             } else {
                 slot = new Slot(
                         playerInventory,
                         column,
-                        8 + column * 18,
-                        142
+                        42 + column * 18,
+                        184
                 );
             }
 

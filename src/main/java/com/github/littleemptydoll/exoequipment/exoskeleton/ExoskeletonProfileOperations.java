@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.exoskeleton;
 
 import com.github.littleemptydoll.exoequipment.controller.ControllerDefinition;
+import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,5 +85,33 @@ public final class ExoskeletonProfileOperations {
         ExoskeletonValidation.validateProfileIndex(data, profile);
 
         return data.withActiveProfile(profile);
+    }
+
+    public static ExoskeletonProfile getActiveProfile(
+            ExoskeletonData data
+    ) {
+        ExoskeletonValidation.validateProfile(
+                data,
+                data.activeProfile()
+        );
+
+        return data.profiles().get(data.activeProfile());
+    }
+
+    public static List<MatrixData> getActiveMatrices(
+            ExoskeletonData data
+    ) {
+        ExoskeletonProfile profile = getActiveProfile(data);
+
+        List<MatrixData> matrices = new ArrayList<>();
+
+        for (int slot : profile.activeMatrices()) {
+            data.matrices()
+                    .get(slot)
+                    .matrix()
+                    .ifPresent(matrices::add);
+        }
+
+        return List.copyOf(matrices);
     }
 }

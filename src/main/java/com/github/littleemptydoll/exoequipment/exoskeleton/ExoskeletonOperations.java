@@ -5,6 +5,8 @@ import com.github.littleemptydoll.exoequipment.energy.EnergySystem;
 import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 
+import java.util.List;
+
 public final class ExoskeletonOperations {
     private ExoskeletonOperations() {}
 
@@ -43,7 +45,12 @@ public final class ExoskeletonOperations {
             );
         }
 
-        return data.withController(controller);
+        return data
+                .withController(controller)
+                .withProfiles(
+                        List.of(new ExoskeletonProfile(List.of())),
+                        0
+                );
     }
 
     public static ExoskeletonData removeController(
@@ -51,7 +58,12 @@ public final class ExoskeletonOperations {
     ) {
         ExoskeletonValidation.validateController(data);
 
-        return data.withoutController();
+        return data
+                .withoutController()
+                .withProfiles(
+                        List.of(),
+                        -1
+                );
     }
 
     public static ExoskeletonData installEnergySystem(

@@ -163,4 +163,38 @@ public final class ExoskeletonValidation {
 
         return true;
     }
+
+    public static void validateProfiles(
+            ExoskeletonData data
+    ) {
+        if (data.controller().isEmpty()) {
+            if (!data.profiles().isEmpty() || data.activeProfile() != -1) {
+                throw new IllegalStateException(
+                        "Exoskeleton without controller cannot have profiles"
+                );
+            }
+
+            return;
+        }
+
+        ControllerDefinition controller = getControllerDefinition(data);
+
+        if (data.profiles().isEmpty()) {
+            throw new IllegalStateException(
+                    "Exoskeleton with controller must have at least one profile"
+            );
+        }
+
+        if (data.profiles().size() > controller.maxProfiles()) {
+            throw new IllegalStateException(
+                    "Exoskeleton has more profiles than the controller allows"
+            );
+        }
+
+        if (!isValidProfile(data, data.activeProfile())) {
+            throw new IllegalStateException(
+                    "Exoskeleton has an invalid active profile"
+            );
+        }
+    }
 }

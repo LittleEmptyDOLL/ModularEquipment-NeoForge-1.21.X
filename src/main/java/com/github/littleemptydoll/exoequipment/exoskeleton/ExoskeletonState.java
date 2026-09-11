@@ -10,16 +10,12 @@ import java.util.List;
 public final class ExoskeletonState {
     private ExoskeletonState() {}
 
-    public static boolean hasActiveProfile(
-            ExoskeletonData data
-    ) {
+    public static boolean hasActiveProfile(ExoskeletonData data) {
         return data.activeProfile() >= 0
                 && data.activeProfile() < data.profiles().size();
     }
 
-    public static ExoskeletonProfile activeProfile(
-            ExoskeletonData data
-    ) {
+    public static ExoskeletonProfile activeProfile(ExoskeletonData data) {
         if (!hasActiveProfile(data)) {
             throw new IllegalStateException(
                     "Exoskeleton does not have an active profile"
@@ -29,21 +25,15 @@ public final class ExoskeletonState {
         return data.profiles().get(data.activeProfile());
     }
 
-    public static List<Integer> activeMatrixSlots(
-            ExoskeletonData data
-    ) {
+    public static List<Integer> activeMatrixSlots(ExoskeletonData data) {
         if (!hasActiveProfile(data)) {
             return List.of();
         }
 
-        return List.copyOf(
-                activeProfile(data).activeMatrices()
-        );
+        return List.copyOf(activeProfile(data).activeMatrices());
     }
 
-    public static boolean canActivate(
-            ExoskeletonData data
-    ) {
+    public static boolean canActivate(ExoskeletonData data) {
         if (!hasActiveProfile(data)) {
             return false;
         }
@@ -54,9 +44,7 @@ public final class ExoskeletonState {
         );
     }
 
-    public static List<MatrixData> activeMatrices(
-            ExoskeletonData data
-    ) {
+    public static List<MatrixData> activeMatrices(ExoskeletonData data) {
         if (!canActivate(data)) {
             return List.of();
         }
@@ -73,17 +61,12 @@ public final class ExoskeletonState {
         return List.copyOf(result);
     }
 
-    public static int activeMatrixCount(
-            ExoskeletonData data
-    ) {
+    public static int activeMatrixCount(ExoskeletonData data) {
         return activeMatrices(data).size();
     }
 
-    public static boolean isMatrixActive(
-            ExoskeletonData data,
-            int slot
-    ) {
-        if (!canActivate(data)){
+    public static boolean isMatrixActive(ExoskeletonData data, int slot) {
+        if (!canActivate(data)) {
             return false;
         }
 
@@ -94,10 +77,12 @@ public final class ExoskeletonState {
                 .isPresent();
     }
 
-    public static MatrixState calculateState(
-            ExoskeletonData data
-    ) {
+    public static MatrixState calculateState(ExoskeletonData data) {
         int energyConsumption = 0;
+        int energyGeneration = 0;
+        int energyStorageCapacity = 0;
+        int energyStorageInput = 0;
+        int energyStorageOutput = 0;
         int heatGeneration = 0;
         int cooling = 0;
 
@@ -105,12 +90,20 @@ public final class ExoskeletonState {
             MatrixState state = MatrixOperations.calculateState(matrix);
 
             energyConsumption += state.energyConsumption();
+            energyGeneration += state.energyGeneration();
+            energyStorageCapacity += state.energyStorageCapacity();
+            energyStorageInput += state.energyStorageInput();
+            energyStorageOutput += state.energyStorageOutput();
             heatGeneration += state.heatGeneration();
             cooling += state.cooling();
         }
 
         return new MatrixState(
                 energyConsumption,
+                energyGeneration,
+                energyStorageCapacity,
+                energyStorageInput,
+                energyStorageOutput,
                 heatGeneration,
                 cooling
         );

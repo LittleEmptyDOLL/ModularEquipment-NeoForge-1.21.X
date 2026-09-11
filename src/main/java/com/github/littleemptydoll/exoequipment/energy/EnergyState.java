@@ -2,7 +2,6 @@ package com.github.littleemptydoll.exoequipment.energy;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
-import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModEnergySystems;
 import net.minecraft.resources.ResourceLocation;
@@ -19,6 +18,8 @@ public record EnergyState(
         int storageCapacity,
         int maxInput,
         int maxOutput,
+        int storageInput,
+        int storageOutput,
         int generation,
         int consumption
 ) {
@@ -35,6 +36,12 @@ public record EnergyState(
         if (maxOutput < 0) {
             throw new IllegalArgumentException("Max output cannot be negative");
         }
+        if (storageInput < 0) {
+            throw new IllegalArgumentException("Storage input cannot be negative");
+        }
+        if (storageOutput < 0) {
+            throw new IllegalArgumentException("Storage output cannot be negative");
+        }
         if (generation < 0) {
             throw new IllegalArgumentException("Generation cannot be negative");
         }
@@ -48,7 +55,7 @@ public record EnergyState(
 
     public static EnergyState calculate(ExoskeletonData data) {
         if (data.energySystem().isEmpty()) {
-            return new EnergyState(0, 0, 0, 0, 0, 0);
+            return new EnergyState(0, 0, 0, 0, 0, 0, 0, 0);
         }
 
         ResourceLocation energySystemId = data.energySystem().get().definitionId();
@@ -62,8 +69,10 @@ public record EnergyState(
         return new EnergyState(
                 storedEnergy,
                 state.energyStorageCapacity(),
-                Math.min(definition.maxInput(), state.energyStorageInput()),
-                Math.min(definition.maxOutput(), state.energyStorageOutput()),
+                definition.maxInput(),
+                definition.maxOutput(),
+                state.energyStorageInput(),
+                state.energyStorageOutput(),
                 state.energyGeneration(),
                 state.energyConsumption()
         );
@@ -78,19 +87,18 @@ public record EnergyState(
     }
 
     public int availableInput() {
-        return Math.min(maxInput, Math.max(0, storageCapacity - storedEnergy));
+        return Math.min(
+                maxInput,
+                Math.min(storageInput, Math.max(0, storageCapacity - storedEnergy))
+        );
     }
 
     public int availableOutput() {
-        return Math.min(maxOutput, storedEnergy);
-    }
-
-    public boolean hasEnergySystem() {
-        return maxInput > 0 || maxOutput > 0;
+        return Math.min(maxOutput, Math.min(storageOutput, storedEnergy));
     }
 
     public boolean canOperate() {
-        return hasEnergySystem()
-                && (generation > 0 || storedEnergy > 0);
+        return (generation > 0 || storedEnergy > 0)
+                && (consumption == 0 || generation > 0 || storedEnergy > 0);
     }
 }

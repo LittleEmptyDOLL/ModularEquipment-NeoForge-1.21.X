@@ -8,8 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import java.util.Optional;
-
 public class ModModules {
     private ModModules() {}
 
@@ -55,16 +53,12 @@ public class ModModules {
                     Rarity.EPIC
             ),
             (id, properties) ->
-                    new ModuleDefinition(
+                    ModuleDefinition.builder(
                             id,
                             properties,
                             ModuleCategory.UTILITY,
-                            new ModuleSize(2, 2),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.empty()
-                    )
+                            new ModuleSize(2, 2)
+                    ).build()
     );
 
     public static final EquipmentEntry<
@@ -77,16 +71,15 @@ public class ModModules {
                     Rarity.EPIC
             ),
             (id, properties) ->
-                    new ModuleDefinition(
+                    ModuleDefinition.builder(
                             id,
                             properties,
                             ModuleCategory.UTILITY,
-                            new ModuleSize(3, 3),
-                            Optional.of(new EnergyProperties(20)),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.of(new ThermalProperties(10, 5))
+                            new ModuleSize(3, 3)
                     )
+                            .energy(new EnergyProperties(20))
+                            .thermal(new ThermalProperties(10, 5))
+                            .build()
     );
 
     public static final EquipmentEntry<
@@ -99,16 +92,14 @@ public class ModModules {
                     Rarity.EPIC
             ),
             (id, properties) ->
-                    new ModuleDefinition(
+                    ModuleDefinition.builder(
                             id,
                             properties,
                             ModuleCategory.UTILITY,
-                            new ModuleSize(3, 3),
-                            Optional.empty(),
-                            Optional.of(new GenerationProperties(40, 40)),
-                            Optional.empty(),
-                            Optional.empty()
+                            new ModuleSize(3, 3)
                     )
+                            .generation(new GenerationProperties(40))
+                            .build()
     );
 
     public static final EquipmentEntry<
@@ -121,15 +112,13 @@ public class ModModules {
                     Rarity.EPIC
             ),
             (id, properties) ->
-                    new ModuleDefinition(
+                    ModuleDefinition.builder(
                             id,
                             properties,
                             ModuleCategory.UTILITY,
-                            new ModuleSize(3, 3),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.of(new StorageProperties(10_000, 100, 200)),
-                            Optional.empty()
+                            new ModuleSize(3, 3)
                     )
+                            .storage(new StorageProperties(10_000, 100, 200))
+                            .build()
     );
 }

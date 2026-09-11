@@ -1,6 +1,8 @@
 package com.github.littleemptydoll.exoequipment.exoskeleton;
 
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
+import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
+import com.github.littleemptydoll.exoequipment.matrix.MatrixState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,5 +92,27 @@ public final class ExoskeletonState {
                 .get(slot)
                 .matrix()
                 .isPresent();
+    }
+
+    public static MatrixState calculateState(
+            ExoskeletonData data
+    ) {
+        int energyConsumption = 0;
+        int heatGeneration = 0;
+        int cooling = 0;
+
+        for (MatrixData matrix : activeMatrices(data)) {
+            MatrixState state = MatrixOperations.calculateState(matrix);
+
+            energyConsumption += state.energyConsumption();
+            heatGeneration += state.heatGeneration();
+            cooling += state.cooling();
+        }
+
+        return new MatrixState(
+                energyConsumption,
+                heatGeneration,
+                cooling
+        );
     }
 }

@@ -107,7 +107,7 @@ public final class MatrixOperations {
 
         int newRotation = (module.rotation() + 90) % 360;
         InstalledModule rotatedModule = new InstalledModule(
-                module.id(), module.x(), module.y(), newRotation
+                module.id(), module.x(), module.y(), newRotation, module.storedEnergy()
         );
 
         return replaceModule(matrix, matrixDefinition, module, rotatedModule);
@@ -127,7 +127,7 @@ public final class MatrixOperations {
         }
 
         InstalledModule movedModule = new InstalledModule(
-                module.id(), toX, toY, module.rotation()
+                module.id(), toX, toY, module.rotation(), module.storedEnergy()
         );
 
         return replaceModule(matrix, matrixDefinition, module, movedModule);
@@ -262,8 +262,10 @@ public final class MatrixOperations {
                 .sum();
     }
 
-    public static int calculateThermalBalance(MatrixData matrix) {
-        return calculateHeatGeneration(matrix) - calculateCooling(matrix);
+    public static int calculateStoredEnergy(MatrixData matrix) {
+        return matrix.modules().stream()
+                .mapToInt(InstalledModule::storedEnergy)
+                .sum();
     }
 
     public static int calculateHeatGeneration(MatrixData matrix) {

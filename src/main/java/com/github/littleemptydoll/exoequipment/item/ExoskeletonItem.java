@@ -1,6 +1,8 @@
 package com.github.littleemptydoll.exoequipment.item;
 
 import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
+import com.github.littleemptydoll.exoequipment.energy.EnergyOperations;
+import com.github.littleemptydoll.exoequipment.energy.EnergyTickResult;
 import com.github.littleemptydoll.exoequipment.exoskeleton.*;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenuProvider;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
@@ -15,10 +17,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import top.theillusivec4.curios.api.SlotContext;
+import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import java.util.List;
 
-public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> {
+public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implements ICurioItem {
 
     public ExoskeletonItem(
             DeferredHolder<
@@ -76,6 +80,25 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> {
         }
 
         return 40;
+    }
+
+    @Override
+    public void curioTick(
+            SlotContext slotContext,
+            ItemStack stack
+    ) {
+        if (slotContext.entity().level().isClientSide()) {
+            return;
+        }
+
+        EnergyTickResult result = EnergyOperations.tick(getData(stack));
+
+        if (!result.data().equals(getData(stack))) {
+            stack.set(
+                    ModDataComponents.EXOSKELETON_DATA.get(),
+                    result.data()
+            );
+        }
     }
 
     @Override

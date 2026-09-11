@@ -14,6 +14,8 @@ public record ModuleDefinition(
         ModuleCategory category,
         ModuleSize size,
         Optional<EnergyProperties> energy,
+        Optional<GenerationProperties> generation,
+        Optional<StorageProperties> storage,
         Optional<ThermalProperties> thermal
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
@@ -34,6 +36,12 @@ public record ModuleDefinition(
                             EnergyProperties.CODEC
                                     .optionalFieldOf("energy")
                                     .forGetter(ModuleDefinition::energy),
+                            GenerationProperties.CODEC
+                                    .optionalFieldOf("generation")
+                                    .forGetter(ModuleDefinition::generation),
+                            StorageProperties.CODEC
+                                    .optionalFieldOf("storage")
+                                    .forGetter(ModuleDefinition::storage),
                             ThermalProperties.CODEC
                                     .optionalFieldOf("thermal")
                                     .forGetter(ModuleDefinition::thermal)

@@ -51,5 +51,69 @@ public record ModuleDefinition(
                     )
             );
 
-    public ModuleDefinition {}
+    public static Builder builder(
+            ResourceLocation id,
+            EquipmentProperties properties,
+            ModuleCategory category,
+            ModuleSize size
+    ) {
+        return new Builder(id, properties, category, size);
+    }
+
+    public static final class Builder {
+        private final ResourceLocation id;
+        private final EquipmentProperties properties;
+        private final ModuleCategory category;
+        private final ModuleSize size;
+
+        private EnergyProperties energy;
+        private GenerationProperties generation;
+        private StorageProperties storage;
+        private ThermalProperties thermal;
+
+        private Builder(
+                ResourceLocation id,
+                EquipmentProperties properties,
+                ModuleCategory category,
+                ModuleSize size
+        ) {
+            this.id = id;
+            this.properties = properties;
+            this.category = category;
+            this.size = size;
+        }
+
+        public Builder energy(EnergyProperties energy) {
+            this.energy = energy;
+            return this;
+        }
+
+        public Builder generation(GenerationProperties generation) {
+            this.generation = generation;
+            return this;
+        }
+
+        public Builder storage(StorageProperties storage) {
+            this.storage = storage;
+            return this;
+        }
+
+        public Builder thermal(ThermalProperties thermal) {
+            this.thermal = thermal;
+            return this;
+        }
+
+        public ModuleDefinition build() {
+            return new ModuleDefinition(
+                    id,
+                    properties,
+                    category,
+                    size,
+                    Optional.ofNullable(energy),
+                    Optional.ofNullable(generation),
+                    Optional.ofNullable(storage),
+                    Optional.ofNullable(thermal)
+            );
+        }
+    }
 }

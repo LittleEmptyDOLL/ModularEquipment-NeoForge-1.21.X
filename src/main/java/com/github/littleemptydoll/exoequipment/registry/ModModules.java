@@ -11,7 +11,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.Optional;
 
 public class ModModules {
-    private  ModModules() {}
+    private ModModules() {}
 
     public static final DeferredRegister<ModuleDefinition> MODULES =
             DeferredRegister.create(
@@ -59,7 +59,9 @@ public class ModModules {
                             id,
                             properties,
                             ModuleCategory.UTILITY,
-                            new ModuleSize(2,2),
+                            new ModuleSize(2, 2),
+                            Optional.empty(),
+                            Optional.empty(),
                             Optional.empty(),
                             Optional.empty()
                     )
@@ -79,9 +81,55 @@ public class ModModules {
                             id,
                             properties,
                             ModuleCategory.UTILITY,
-                            new ModuleSize(3,3),
+                            new ModuleSize(3, 3),
                             Optional.of(new EnergyProperties(20)),
+                            Optional.empty(),
+                            Optional.empty(),
                             Optional.of(new ThermalProperties(10, 5))
+                    )
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+    > TEST_GENERATOR = REGISTRY.register(
+            "test_generator",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    new ModuleDefinition(
+                            id,
+                            properties,
+                            ModuleCategory.UTILITY,
+                            new ModuleSize(3, 3),
+                            Optional.empty(),
+                            Optional.of(new GenerationProperties(40, 40)),
+                            Optional.empty(),
+                            Optional.empty()
+                    )
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+    > TEST_BATTERY = REGISTRY.register(
+            "test_battery",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    new ModuleDefinition(
+                            id,
+                            properties,
+                            ModuleCategory.UTILITY,
+                            new ModuleSize(3, 3),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.of(new StorageProperties(10_000, 100, 200)),
+                            Optional.empty()
                     )
     );
 }

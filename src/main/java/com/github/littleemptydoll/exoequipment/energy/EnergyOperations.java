@@ -75,12 +75,13 @@ public final class EnergyOperations {
         int consumed = 0;
         int discharged = 0;
         int charged = 0;
+        int generatedCharged = 0;
 
         ExoskeletonData updatedData = data;
 
         // 1. Built-in generators have the highest priority. Only the amount
         // that actually enters the bus consumes maxInput; excess generation
-        // never reaches the bus and is therefore wasted.
+        // never reaches the bus and is wasted.
         int generatedIntoBus = Math.min(generated, remainingInput);
         generated = generatedIntoBus;
         remainingInput -= generatedIntoBus;
@@ -140,6 +141,7 @@ public final class EnergyOperations {
                 StorageTransferResult result = charge(updatedData, charge);
                 updatedData = result.data();
                 charged += result.amount();
+                generatedCharged = result.amount();
                 generated -= result.amount();
                 remainingOutput -= result.amount();
             }
@@ -169,7 +171,7 @@ public final class EnergyOperations {
         }
 
         int deficit = remainingDemand;
-        int wasted = generated;
+        int wasted = state.energyGeneration() - generatedToConsumers - generatedCharged;
 
         return new EnergyTickResult(
                 updatedData,

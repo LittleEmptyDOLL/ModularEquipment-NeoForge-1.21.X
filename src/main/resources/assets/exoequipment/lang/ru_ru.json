@@ -19,6 +19,8 @@
   "item.exoequipment.test_energy_module": "Тестовый Энерго Модуль",
   "item.exoequipment.test_module": "Тестовый Модуль",
   "menu.exoequipment.exoskeleton": "Экзоскелет",
+  "key.exoequipment.open_exoskeleton": "Открыть экзоскелет",
+  "key.categories.exoequipment": "Экзооборудование",
   "tooltip.exoequipment.active_profile": "Активный профиль: %s",
   "tooltip.exoequipment.controller": "Контроллер: %s",
   "tooltip.exoequipment.efficiency": "Эффективность: %s%%",

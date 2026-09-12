@@ -34,7 +34,7 @@ public final class ExoskeletonMenuProvider {
                                 "menu.exoequipment.exoskeleton"
                         )
                 ),
-                buffer -> buffer.writeItem(stack.copy())
+                buffer -> ItemStack.STREAM_CODEC.encode(buffer, stack.copy())
         );
     }
 

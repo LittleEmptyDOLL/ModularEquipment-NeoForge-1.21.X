@@ -43,8 +43,7 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
         this(
                 containerId,
                 playerInventory,
-                ExoskeletonMenuProvider.findBodyExoskeleton(playerInventory.player)
-                        .orElse(ItemStack.EMPTY)
+                ItemStack.STREAM_CODEC.decode(buffer)
         );
     }
 

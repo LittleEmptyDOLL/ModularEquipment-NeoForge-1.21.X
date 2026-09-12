@@ -155,5 +155,15 @@ public class ModLanguageProvider extends LanguageProvider {
                 "gui.exoequipment.inventory",
                 "Inventory"
         );
+
+        add(
+                "key.exoequipment.open_exoskeleton",
+                "Open exoskeleton"
+        );
+
+        add(
+                "key.categories.exoequipment",
+                "ExoEquipment"
+        );
     }
 }

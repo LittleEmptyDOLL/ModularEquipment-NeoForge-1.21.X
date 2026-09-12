@@ -33,7 +33,8 @@ public final class ExoskeletonMenuProvider {
                         Component.translatable(
                                 "menu.exoequipment.exoskeleton"
                         )
-                )
+                ),
+                buffer -> buffer.writeItem(stack.copy())
         );
     }
 

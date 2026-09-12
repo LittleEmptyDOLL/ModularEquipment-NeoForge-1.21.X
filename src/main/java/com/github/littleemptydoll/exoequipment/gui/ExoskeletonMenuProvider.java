@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.extensions.IPlayerExtension;
 import top.theillusivec4.curios.api.CuriosApi;
@@ -32,13 +33,12 @@ public final class ExoskeletonMenuProvider {
                         Component.translatable(
                                 "menu.exoequipment.exoskeleton"
                         )
-                ),
-                buffer -> buffer.writeItem(stack.copy())
+                )
         );
     }
 
-    public static Optional<ItemStack> findBodyExoskeleton(ServerPlayer player) {
-        return CuriosApi.getCuriosInventory(player)
+    public static Optional<ItemStack> findBodyExoskeleton(LivingEntity entity) {
+        return CuriosApi.getCuriosInventory(entity)
                 .flatMap(handler -> handler.getStacksHandler("body"))
                 .flatMap(stacks -> {
                     for (int slot = 0; slot < stacks.getStacks().getSlots(); slot++) {

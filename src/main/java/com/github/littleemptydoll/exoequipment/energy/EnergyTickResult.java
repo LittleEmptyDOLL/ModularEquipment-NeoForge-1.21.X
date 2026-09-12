@@ -11,6 +11,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 public record EnergyTickResult(
         ExoskeletonData data,
         int generated,
+        int externalInput,
         int consumed,
         int charged,
         int discharged,
@@ -19,6 +20,7 @@ public record EnergyTickResult(
 ) {
     public EnergyTickResult {
         if (generated < 0) throw new IllegalArgumentException("Generated energy cannot be negative");
+        if (externalInput < 0) throw new IllegalArgumentException("External input cannot be negative");
         if (consumed < 0) throw new IllegalArgumentException("Consumed energy cannot be negative");
         if (charged < 0) throw new IllegalArgumentException("Charged energy cannot be negative");
         if (discharged < 0) throw new IllegalArgumentException("Discharged energy cannot be negative");

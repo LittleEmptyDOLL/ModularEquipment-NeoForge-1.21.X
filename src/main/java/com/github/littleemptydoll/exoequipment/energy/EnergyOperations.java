@@ -78,18 +78,24 @@ public final class EnergyOperations {
 
         ExoskeletonData updatedData = data;
 
-        // 1. Built-in generators have the highest priority.
+        // 1. Built-in generators have the highest priority. Only the amount
+        // that actually enters the bus consumes maxInput; excess generation
+        // never reaches the bus and is therefore wasted.
+        int generatedIntoBus = Math.min(generated, remainingInput);
+        generated = generatedIntoBus;
+        remainingInput -= generatedIntoBus;
+
         int generatedToConsumers = Math.min(
                 generated,
-                Math.min(remainingDemand, Math.min(remainingInput, remainingOutput))
+                Math.min(remainingDemand, remainingOutput)
         );
         generated -= generatedToConsumers;
         consumed += generatedToConsumers;
         remainingDemand -= generatedToConsumers;
-        remainingInput -= generatedToConsumers;
         remainingOutput -= generatedToConsumers;
 
-        // 2. External energy is the second-priority source.
+        // 2. External energy is the second-priority source. It can only use
+        // input capacity left by higher-priority internal generation.
         int externalToConsumers = Math.min(
                 externalAvailable,
                 Math.min(remainingDemand, Math.min(remainingInput, remainingOutput))
@@ -122,7 +128,7 @@ public final class EnergyOperations {
             }
         }
 
-        // The remaining generator energy is still inside the bus and can be
+        // The remaining generator energy is already inside the bus and can be
         // sent to a battery. Charging is a bus output, therefore it consumes
         // maxOutput. The battery also applies its own maxInput.
         if (generated > 0 && remainingOutput > 0) {

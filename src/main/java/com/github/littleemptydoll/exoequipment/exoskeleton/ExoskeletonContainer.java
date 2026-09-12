@@ -300,11 +300,11 @@ public class ExoskeletonContainer implements Container {
             return ExoskeletonOperations.removeFrame(data);
         }
 
-        if (data.frame().isPresent()) {
-            return data;
-        }
-
         FrameItem item = FrameItem.get(stack);
+
+        if (data.frame().isPresent()) {
+            data = ExoskeletonOperations.removeFrame(data);
+        }
 
         return ExoskeletonOperations.installFrame(
                 data,
@@ -325,11 +325,12 @@ public class ExoskeletonContainer implements Container {
 
             return ExoskeletonOperations.removeController(data);
         }
-        if (data.controller().isPresent()) {
-            return data;
-        }
 
         ControllerItem item = ControllerItem.get(stack);
+
+        if (data.controller().isPresent()) {
+            data = ExoskeletonOperations.removeController(data);
+        }
 
         return ExoskeletonOperations.installController(
                 data,
@@ -351,11 +352,11 @@ public class ExoskeletonContainer implements Container {
             return ExoskeletonOperations.removeEnergySystem(data);
         }
 
-        if (data.energySystem().isPresent()) {
-            return data;
-        }
-
         EnergySystemItem item = EnergySystemItem.get(stack);
+
+        if (data.energySystem().isPresent()) {
+            data = ExoskeletonOperations.removeEnergySystem(data);
+        }
 
         return ExoskeletonOperations.installEnergySystem(
                 data,
@@ -383,11 +384,14 @@ public class ExoskeletonContainer implements Container {
             );
         }
 
-        if (current.matrix().isPresent()) {
-            return data;
-        }
-
         MatrixItem item = MatrixItem.get(stack);
+
+        if (current.matrix().isPresent()) {
+            data = ExoskeletonOperations.removeMatrix(
+                    data,
+                    matrixSlot
+            );
+        }
 
         return ExoskeletonOperations.installMatrix(
                 data,

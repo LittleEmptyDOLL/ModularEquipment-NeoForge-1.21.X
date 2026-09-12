@@ -168,7 +168,7 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
             if (!moveItemStackTo(
                     stack,
                     PLAYER_INVENTORY_START,
-                    HOTBAR_END,
+                    PLAYER_INVENTORY_END,
                     true
             )) {
                 return ItemStack.EMPTY;

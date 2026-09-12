@@ -22,12 +22,7 @@ public final class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<ExoskeletonMenu>> EXOSKELETON = MENUS.register(
             "exoskeleton",
             () -> IMenuTypeExtension.create(
-                    (containerId, inventory, buffer) ->
-                            new ExoskeletonMenu(
-                                    containerId,
-                                    inventory,
-                                    buffer.readVarInt()
-                            )
+                    ExoskeletonMenu::new
             )
     );
 

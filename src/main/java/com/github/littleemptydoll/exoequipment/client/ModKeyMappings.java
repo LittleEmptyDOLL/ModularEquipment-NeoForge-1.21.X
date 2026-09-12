@@ -12,7 +12,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
-@EventBusSubscriber(modid = ExoEquipment.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = ExoEquipment.MODID, value = Dist.CLIENT)
 public final class ModKeyMappings {
 
     public static final KeyMapping OPEN_EXOSKELETON = new KeyMapping(
@@ -30,7 +30,7 @@ public final class ModKeyMappings {
     private ModKeyMappings() {}
 }
 
-@EventBusSubscriber(modid = ExoEquipment.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = ExoEquipment.MODID, value = Dist.CLIENT)
 final class ModKeyMappingHandler {
 
     @SubscribeEvent

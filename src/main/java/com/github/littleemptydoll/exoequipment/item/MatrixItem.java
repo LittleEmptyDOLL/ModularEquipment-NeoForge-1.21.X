@@ -10,11 +10,13 @@ import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.util.EquipmentItemUtils;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.List;
@@ -58,11 +60,13 @@ public class MatrixItem extends EquipmentItem<MatrixDefinition> {
     }
 
     @Override
-    public InteractionResult use(
-            net.minecraft.world.level.Level level,
+    public InteractionResultHolder<ItemStack> use(
+            Level level,
             Player player,
             InteractionHand hand
     ) {
+        ItemStack stack = player.getItemInHand(hand);
+
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
             int inventorySlot = hand == InteractionHand.MAIN_HAND
                     ? player.getInventory().selected
@@ -74,7 +78,10 @@ public class MatrixItem extends EquipmentItem<MatrixDefinition> {
             );
         }
 
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return InteractionResultHolder.sidedSuccess(
+                stack,
+                level.isClientSide()
+        );
     }
 
     @Override

@@ -22,11 +22,19 @@ public class MatrixMenu extends AbstractContainerMenu {
     public static final int PLAYER_INVENTORY_START = 0;
     public static final int PLAYER_INVENTORY_END = 36;
 
+    public static final int CELL_SIZE = 18;
+    public static final int GRID_X = 12;
+    public static final int GRID_Y = 22;
+    public static final int INVENTORY_X = 12;
+    public static final int INVENTORY_GAP = 18;
+
     private final ItemStack matrixStack;
     private final int sourceType;
     private final int sourceIndex;
     private final int width;
     private final int height;
+    private final int imageWidth;
+    private final int imageHeight;
 
     // Client
     public MatrixMenu(
@@ -65,17 +73,21 @@ public class MatrixMenu extends AbstractContainerMenu {
         this.width = definition.width();
         this.height = definition.height();
 
-        addPlayerInventory(playerInventory);
+        this.imageWidth = Math.max(176, GRID_X * 2 + width * CELL_SIZE);
+        int inventoryY = GRID_Y + height * CELL_SIZE + INVENTORY_GAP;
+        this.imageHeight = inventoryY + 76;
+
+        addPlayerInventory(playerInventory, inventoryY);
     }
 
-    private void addPlayerInventory(Inventory inventory) {
+    private void addPlayerInventory(Inventory inventory, int inventoryY) {
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
                 addSlot(new Slot(
                         inventory,
                         column + row * 9 + 9,
-                        0,
-                        0
+                        INVENTORY_X + column * CELL_SIZE,
+                        inventoryY + row * CELL_SIZE
                 ));
             }
         }
@@ -84,8 +96,8 @@ public class MatrixMenu extends AbstractContainerMenu {
             addSlot(new Slot(
                     inventory,
                     column,
-                    0,
-                    0
+                    INVENTORY_X + column * CELL_SIZE,
+                    inventoryY + 58
             ));
         }
     }
@@ -112,6 +124,18 @@ public class MatrixMenu extends AbstractContainerMenu {
 
     public int getMatrixHeight() {
         return height;
+    }
+
+    public int getImageWidth() {
+        return imageWidth;
+    }
+
+    public int getImageHeight() {
+        return imageHeight;
+    }
+
+    public int getInventoryY() {
+        return GRID_Y + height * CELL_SIZE + INVENTORY_GAP;
     }
 
     public int getSourceType() {

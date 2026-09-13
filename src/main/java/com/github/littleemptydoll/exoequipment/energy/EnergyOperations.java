@@ -43,21 +43,53 @@ public final class EnergyOperations {
     }
 
     /**
+     * Simulates a tick with an external energy provider.
+     *
+     * <p>The provider is responsible for the actual extraction. This keeps
+     * the energy bus independent from NeoForge Energy and allows integrations
+     * to adapt any external energy API to {@link ExternalEnergyProvider}.</p>
+     */
+    public static EnergyTickResult tick(
+            ExoskeletonData data,
+            ExternalEnergyProvider externalProvider
+    ) {
+        if (externalProvider == null) {
+            return tick(data, 0);
+        }
+
+        int externalAvailable = externalProvider.availableEnergy();
+        if (externalAvailable < 0) {
+            throw new IllegalArgumentException("External available energy cannot be negative");
+        }
+
+        return tick(
+                data,
+                externalAvailable,
+                amount -> externalProvider.extractEnergy(amount, false)
+        );
+    }
+
+    /**
      * Simulates a tick with an amount of external energy available to the
      * exoskeleton during this tick.
      *
-     * <p>The caller/integration is responsible for obtaining this amount
-     * from an external energy provider. This core operation only decides how
-     * much of it the bus actually accepts.</p>
-     *
-     * @param data exoskeleton state
-     * @param externalAvailable external energy available this tick
+     * <p>This overload is retained for callers that already have a numeric
+     * amount rather than an external storage object. No external storage is
+     * mutated by this overload.</p>
      */
     public static EnergyTickResult tick(ExoskeletonData data, int externalAvailable) {
         if (externalAvailable < 0) {
             throw new IllegalArgumentException("External available energy cannot be negative");
         }
 
+        return tick(data, externalAvailable, amount -> amount);
+    }
+
+    private static EnergyTickResult tick(
+            ExoskeletonData data,
+            int externalAvailable,
+            ExternalEnergyExtractor externalExtractor
+    ) {
         if (data.energySystem().isEmpty()) {
             return new EnergyTickResult(data, 0, 0, 0, 0, 0, 0, 0);
         }
@@ -97,13 +129,16 @@ public final class EnergyOperations {
 
         // 2. External energy is the second-priority source. It can only use
         // input capacity left by higher-priority internal generation.
-        int externalToConsumers = Math.min(
+        int externalToConsumersRequested = Math.min(
                 externalAvailable,
                 Math.min(remainingDemand, Math.min(remainingInput, remainingOutput))
         );
+        int externalToConsumers = externalExtractor.extract(externalToConsumersRequested);
+        externalToConsumers = Math.min(externalToConsumers, externalToConsumersRequested);
         externalInput += externalToConsumers;
         consumed += externalToConsumers;
         remainingDemand -= externalToConsumers;
+        externalAvailable -= externalToConsumers;
         remainingInput -= externalToConsumers;
         remainingOutput -= externalToConsumers;
 
@@ -151,20 +186,22 @@ public final class EnergyOperations {
         // higher-priority generator surplus has been handled. It still enters
         // the bus, so the remaining maxInput budget applies, and charging is
         // subject to maxOutput and the battery's own maxInput.
-        int externalRemaining = Math.max(0, externalAvailable - externalToConsumers);
-        if (externalRemaining > 0 && remainingInput > 0 && remainingOutput > 0) {
-            int charge = Math.min(
-                    externalRemaining,
+        if (externalAvailable > 0 && remainingInput > 0 && remainingOutput > 0) {
+            int chargeRequested = Math.min(
+                    externalAvailable,
                     Math.min(
                             remainingInput,
                             Math.min(remainingOutput, state.energyStorageInput())
                     )
             );
-            if (charge > 0) {
-                StorageTransferResult result = charge(updatedData, charge);
+            int externalCharge = externalExtractor.extract(chargeRequested);
+            externalCharge = Math.min(externalCharge, chargeRequested);
+            if (externalCharge > 0) {
+                StorageTransferResult result = charge(updatedData, externalCharge);
                 updatedData = result.data();
                 charged += result.amount();
                 externalInput += result.amount();
+                externalAvailable -= result.amount();
                 remainingInput -= result.amount();
                 remainingOutput -= result.amount();
             }
@@ -288,6 +325,11 @@ public final class EnergyOperations {
         }
 
         return new StorageTransferResult(updated, transferred);
+    }
+
+    @FunctionalInterface
+    private interface ExternalEnergyExtractor {
+        int extract(int amount);
     }
 
     private record StorageTransferResult(ExoskeletonData data, int amount) {}

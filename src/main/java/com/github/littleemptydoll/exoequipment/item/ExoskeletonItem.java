@@ -3,6 +3,7 @@ package com.github.littleemptydoll.exoequipment.item;
 import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.energy.EnergyOperations;
 import com.github.littleemptydoll.exoequipment.energy.EnergyTickResult;
+import com.github.littleemptydoll.exoequipment.energy.NeoForgeEnergyProvider;
 import com.github.littleemptydoll.exoequipment.exoskeleton.*;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
@@ -74,7 +75,13 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
             return;
         }
 
-        EnergyTickResult result = EnergyOperations.tick(getData(stack));
+        NeoForgeEnergyProvider externalEnergy =
+                NeoForgeEnergyProvider.fromEntity(slotContext.entity());
+
+        EnergyTickResult result = EnergyOperations.tick(
+                getData(stack),
+                externalEnergy
+        );
 
         if (!result.data().equals(getData(stack))) {
             stack.set(

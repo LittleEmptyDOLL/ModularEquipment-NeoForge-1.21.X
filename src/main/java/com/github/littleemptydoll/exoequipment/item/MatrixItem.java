@@ -1,15 +1,20 @@
 package com.github.littleemptydoll.exoequipment.item;
 
 import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
+import com.github.littleemptydoll.exoequipment.gui.MatrixMenuProvider;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.util.EquipmentItemUtils;
-import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.List;
@@ -17,10 +22,7 @@ import java.util.List;
 public class MatrixItem extends EquipmentItem<MatrixDefinition> {
 
     public MatrixItem(
-            DeferredHolder<
-                    MatrixDefinition,
-                    MatrixDefinition
-            > definition,
+            DeferredHolder<MatrixDefinition, MatrixDefinition> definition,
             Properties properties
     ) {
         super(
@@ -53,6 +55,26 @@ public class MatrixItem extends EquipmentItem<MatrixDefinition> {
         }
 
         return matrixItem;
+    }
+
+    @Override
+    public InteractionResult use(
+            net.minecraft.world.level.Level level,
+            Player player,
+            InteractionHand hand
+    ) {
+        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
+            int inventorySlot = hand == InteractionHand.MAIN_HAND
+                    ? player.getInventory().selected
+                    : 40;
+
+            MatrixMenuProvider.openFromHand(
+                    serverPlayer,
+                    inventorySlot
+            );
+        }
+
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     @Override

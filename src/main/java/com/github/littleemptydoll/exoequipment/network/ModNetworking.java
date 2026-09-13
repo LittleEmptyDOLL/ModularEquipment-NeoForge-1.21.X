@@ -5,7 +5,6 @@ import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenuProvider;
 import com.github.littleemptydoll.exoequipment.gui.MatrixMenu;
 import com.github.littleemptydoll.exoequipment.gui.MatrixMenuProvider;
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.bus.api.IEventBus;
@@ -101,8 +100,8 @@ public final class ModNetworking {
                 MatrixSyncPayload.TYPE,
                 MatrixSyncPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {
-                    if (Minecraft.getInstance().player != null
-                            && Minecraft.getInstance().player.containerMenu instanceof MatrixMenu menu) {
+                    if (context.player() != null
+                            && context.player().containerMenu instanceof MatrixMenu menu) {
                         menu.setMatrixStack(payload.matrix());
                     }
                 })

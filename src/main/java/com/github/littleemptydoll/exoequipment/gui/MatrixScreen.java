@@ -23,6 +23,7 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     private static final int MODULE_BORDER_COLOR = 0xFF76B5C9;
 
     private boolean draggingModule;
+    private InstalledModule draggedModule;
     private int dragStartX;
     private int dragStartY;
 
@@ -36,10 +37,10 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
         guiGraphics.fill(leftPos, topPos, leftPos + imageWidth, topPos + imageHeight,
                 BACKGROUND_FALLBACK_COLOR);
-        renderMatrixGrid(guiGraphics);
+        renderMatrixGrid(guiGraphics, mouseX, mouseY);
     }
 
-    private void renderMatrixGrid(GuiGraphics guiGraphics) {
+    private void renderMatrixGrid(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         int x = leftPos + MatrixMenu.GRID_X;
         int y = topPos + MatrixMenu.GRID_Y;
         int width = menu.getMatrixWidth() * MatrixMenu.CELL_SIZE;
@@ -56,17 +57,23 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
             guiGraphics.fill(x, lineY, x + width, lineY + 1, GRID_LINE_COLOR);
         }
 
+        int[] previewCell = draggingModule ? getCellAtMouse(mouseX, mouseY) : null;
         for (InstalledModule module : menu.getMatrixData().modules()) {
-            renderModule(guiGraphics, module, x, y);
+            if (draggingModule && module.equals(draggedModule) && previewCell != null) {
+                renderModule(guiGraphics, module, x, y, previewCell[0], previewCell[1]);
+            } else {
+                renderModule(guiGraphics, module, x, y, module.x(), module.y());
+            }
         }
     }
 
-    private void renderModule(GuiGraphics guiGraphics, InstalledModule module, int gridX, int gridY) {
+    private void renderModule(GuiGraphics guiGraphics, InstalledModule module,
+                              int gridX, int gridY, int moduleX, int moduleY) {
         ModuleDefinition definition = ModModules.getDefinition(module.id());
         ModuleSize size = MatrixOperations.getRotatedSize(definition.size(), module.rotation());
 
-        int x = gridX + module.x() * MatrixMenu.CELL_SIZE + 2;
-        int y = gridY + module.y() * MatrixMenu.CELL_SIZE + 2;
+        int x = gridX + moduleX * MatrixMenu.CELL_SIZE + 2;
+        int y = gridY + moduleY * MatrixMenu.CELL_SIZE + 2;
         int width = size.width() * MatrixMenu.CELL_SIZE - 3;
         int height = size.height() * MatrixMenu.CELL_SIZE - 3;
 
@@ -128,6 +135,17 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         return new int[]{cellX, cellY};
     }
 
+    private boolean isInsideDraggedModule(int x, int y) {
+        if (draggedModule == null) return false;
+
+        ModuleDefinition definition = ModModules.getDefinition(draggedModule.id());
+        ModuleSize size = MatrixOperations.getRotatedSize(definition.size(), draggedModule.rotation());
+        return x >= dragStartX
+                && x < dragStartX + size.width()
+                && y >= dragStartY
+                && y < dragStartY + size.height();
+    }
+
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         int[] cell = getCellAtMouse((int) mouseX, (int) mouseY);
@@ -140,6 +158,7 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
                 }
                 if (module != null) {
                     draggingModule = true;
+                    draggedModule = module;
                     dragStartX = module.x();
                     dragStartY = module.y();
                     return true;
@@ -158,9 +177,12 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         if (button == 0 && draggingModule) {
             draggingModule = false;
             int[] cell = getCellAtMouse((int) mouseX, (int) mouseY);
+            InstalledModule module = draggedModule;
+            draggedModule = null;
+
             if (cell == null) return true;
 
-            if (cell[0] == dragStartX && cell[1] == dragStartY) {
+            if (isInsideDraggedModule(cell[0], cell[1])) {
                 sendAction(MatrixMenu.ACTION_REMOVE, dragStartX, dragStartY, dragStartX, dragStartY);
             } else {
                 sendAction(MatrixMenu.ACTION_MOVE, dragStartX, dragStartY, cell[0], cell[1]);

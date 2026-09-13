@@ -68,9 +68,6 @@ public class MatrixMenu extends AbstractContainerMenu {
         if (sourceType != SOURCE_HAND && sourceType != SOURCE_EXOSKELETON) {
             throw new IllegalArgumentException("Unknown matrix source type: " + sourceType);
         }
-        if (sourceType == SOURCE_EXOSKELETON && sourceExoskeleton == null) {
-            throw new IllegalArgumentException("Exoskeleton source is required");
-        }
 
         this.matrixStack = matrixStack;
         this.sourceExoskeleton = sourceExoskeleton;
@@ -155,10 +152,10 @@ public class MatrixMenu extends AbstractContainerMenu {
     }
 
     public boolean handleAction(ServerPlayer player, int action, int x, int y, int targetX, int targetY) {
-        MatrixData matrix = getServerMatrixData(player);
-        MatrixDefinition definition = getMatrixDefinition();
-
         try {
+            MatrixData matrix = getServerMatrixData(player);
+            MatrixDefinition definition = getMatrixDefinition();
+
             return switch (action) {
                 case ACTION_PLACE -> placeModule(player, matrix, definition, x, y);
                 case ACTION_REMOVE -> removeModule(player, matrix, x, y);

@@ -3,11 +3,17 @@ package com.github.littleemptydoll.exoequipment.gui;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
+import com.github.littleemptydoll.exoequipment.item.ModuleItem;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
+import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
+import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
+import com.github.littleemptydoll.exoequipment.registry.ModModules;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -28,7 +34,8 @@ public class MatrixMenu extends AbstractContainerMenu {
     public static final int INVENTORY_X = 12;
     public static final int INVENTORY_GAP = 18;
 
-    private final ItemStack matrixStack;
+    private ItemStack matrixStack;
+    private final ItemStack sourceExoskeleton;
     private final int sourceType;
     private final int sourceIndex;
     private final int width;
@@ -36,7 +43,6 @@ public class MatrixMenu extends AbstractContainerMenu {
     private final int imageWidth;
     private final int imageHeight;
 
-    // Client
     public MatrixMenu(
             int containerId,
             Inventory playerInventory,
@@ -47,25 +53,33 @@ public class MatrixMenu extends AbstractContainerMenu {
                 playerInventory,
                 ItemStack.STREAM_CODEC.decode(buffer),
                 buffer.readByte(),
-                buffer.readByte()
+                buffer.readByte(),
+                null
         );
     }
 
-    // Server
     public MatrixMenu(
             int containerId,
             Inventory playerInventory,
             ItemStack matrixStack,
             int sourceType,
-            int sourceIndex
+            int sourceIndex,
+            ItemStack sourceExoskeleton
     ) {
         super(ModMenus.MATRIX.get(), containerId);
 
         if (!(matrixStack.getItem() instanceof MatrixItem matrixItem)) {
             throw new IllegalArgumentException("Source stack does not contain a matrix");
         }
+        if (sourceType != SOURCE_HAND && sourceType != SOURCE_EXOSKELETON) {
+            throw new IllegalArgumentException("Unknown matrix source type: " + sourceType);
+        }
+        if (sourceType == SOURCE_EXOSKELETON && sourceExoskeleton == null) {
+            throw new IllegalArgumentException("Exoskeleton source is required");
+        }
 
         this.matrixStack = matrixStack;
+        this.sourceExoskeleton = sourceExoskeleton;
         this.sourceType = sourceType;
         this.sourceIndex = sourceIndex;
 
@@ -104,6 +118,12 @@ public class MatrixMenu extends AbstractContainerMenu {
 
     public ItemStack getMatrixStack() {
         return matrixStack;
+    }
+
+    public void setMatrixStack(ItemStack matrixStack) {
+        if (matrixStack.getItem() instanceof MatrixItem) {
+            this.matrixStack = matrixStack;
+        }
     }
 
     public MatrixData getMatrixData() {
@@ -156,7 +176,9 @@ public class MatrixMenu extends AbstractContainerMenu {
             if (sourceIndex < 0 || sourceIndex >= player.getInventory().getContainerSize()) {
                 return false;
             }
-            return player.getInventory().getItem(sourceIndex).getItem() instanceof MatrixItem;
+            ItemStack stack = player.getInventory().getItem(sourceIndex);
+            return stack.getItem() instanceof MatrixItem
+                    && MatrixItem.get(stack).getDefinition().id().equals(getMatrixData().id());
         }
 
         if (sourceType == SOURCE_EXOSKELETON) {
@@ -173,7 +195,204 @@ public class MatrixMenu extends AbstractContainerMenu {
         if (sourceIndex < 0 || sourceIndex >= ExoskeletonData.MAX_MATRICES) {
             return false;
         }
-        return data.matrices().get(sourceIndex).matrix().isPresent();
+        return data.matrices().get(sourceIndex).matrix()
+                .map(matrix -> matrix.id().equals(getMatrixData().id()))
+                .orElse(false);
+    }
+
+    public boolean handleAction(
+            ServerPlayer player,
+            int action,
+            int x,
+            int y,
+            int targetX,
+            int targetY
+    ) {
+        MatrixData matrix = getServerMatrixData(player);
+        MatrixDefinition definition = getMatrixDefinition();
+
+        try {
+            return switch (action) {
+                case 0 -> placeModule(player, matrix, definition, x, y);
+                case 1 -> removeModule(player, matrix, x, y);
+                case 2 -> rotateModule(player, matrix, definition, x, y);
+                case 3 -> moveModule(matrix, definition, x, y, targetX, targetY);
+                default -> false;
+            };
+        } catch (IllegalArgumentException | IllegalStateException exception) {
+            return false;
+        }
+    }
+
+    private boolean placeModule(
+            ServerPlayer player,
+            MatrixData matrix,
+            MatrixDefinition definition,
+            int x,
+            int y
+    ) {
+        ItemStack carried = getCarried();
+        if (!(carried.getItem() instanceof ModuleItem moduleItem)) {
+            return false;
+        }
+
+        InstalledModule module = new InstalledModule(
+                moduleItem.getDefinition().id(),
+                x,
+                y,
+                0
+        );
+
+        MatrixData updated = MatrixOperations.addModule(
+                matrix,
+                definition,
+                module
+        );
+
+        applyMatrixData(player, updated);
+        carried.shrink(1);
+        setCarried(carried);
+        return true;
+    }
+
+    private boolean removeModule(
+            ServerPlayer player,
+            MatrixData matrix,
+            int x,
+            int y
+    ) {
+        InstalledModule module = MatrixOperations.getModuleAt(matrix, x, y);
+        if (module == null) {
+            return false;
+        }
+
+        ItemStack moduleStack = ModModules.find(module.id()).getItem().getDefaultInstance();
+        if (!giveModule(player, moduleStack)) {
+            return false;
+        }
+
+        applyMatrixData(player, MatrixOperations.removeModule(matrix, x, y));
+        return true;
+    }
+
+    private boolean rotateModule(
+            ServerPlayer player,
+            MatrixData matrix,
+            MatrixDefinition definition,
+            int x,
+            int y
+    ) {
+        MatrixData updated = MatrixOperations.rotateModule(
+                matrix,
+                definition,
+                x,
+                y
+        );
+        if (updated.equals(matrix)) {
+            return false;
+        }
+
+        applyMatrixData(player, updated);
+        return true;
+    }
+
+    private boolean moveModule(
+            MatrixData matrix,
+            MatrixDefinition definition,
+            int fromX,
+            int fromY,
+            int toX,
+            int toY
+    ) {
+        if (fromX == toX && fromY == toY) {
+            return false;
+        }
+
+        MatrixData updated = MatrixOperations.moveModule(
+                matrix,
+                definition,
+                fromX,
+                fromY,
+                toX,
+                toY
+        );
+        if (updated.equals(matrix)) {
+            return false;
+        }
+
+        if (!(getPlayer() instanceof ServerPlayer player)) {
+            return false;
+        }
+
+        applyMatrixData(player, updated);
+        return true;
+    }
+
+    private boolean giveModule(ServerPlayer player, ItemStack moduleStack) {
+        if (getCarried().isEmpty()) {
+            setCarried(moduleStack);
+            return true;
+        }
+
+        return player.getInventory().add(moduleStack);
+    }
+
+    private MatrixData getServerMatrixData(ServerPlayer player) {
+        ItemStack stack = getServerMatrixStack(player);
+        MatrixData data = stack.get(ModDataComponents.MATRIX_DATA.get());
+        if (data == null) {
+            throw new IllegalStateException("Matrix stack does not contain matrix data");
+        }
+        return data;
+    }
+
+    private ItemStack getServerMatrixStack(ServerPlayer player) {
+        if (sourceType == SOURCE_HAND) {
+            if (sourceIndex < 0 || sourceIndex >= player.getInventory().getContainerSize()) {
+                throw new IllegalStateException("Invalid matrix inventory slot");
+            }
+            ItemStack stack = player.getInventory().getItem(sourceIndex);
+            if (!(stack.getItem() instanceof MatrixItem)) {
+                throw new IllegalStateException("Matrix is no longer in the source slot");
+            }
+            return stack;
+        }
+
+        ItemStack exoskeleton = ExoskeletonMenuProvider.findBodyExoskeleton(player)
+                .orElseThrow(() -> new IllegalStateException("Exoskeleton is no longer equipped"));
+        ExoskeletonData data = ExoskeletonItem.getData(exoskeleton);
+        if (sourceIndex < 0 || sourceIndex >= ExoskeletonData.MAX_MATRICES) {
+            throw new IllegalStateException("Invalid exoskeleton matrix slot");
+        }
+
+        return data.matrices().get(sourceIndex).matrix()
+                .orElseThrow(() -> new IllegalStateException("Matrix is no longer installed"));
+    }
+
+    private void applyMatrixData(ServerPlayer player, MatrixData data) {
+        if (sourceType == SOURCE_HAND) {
+            ItemStack stack = getServerMatrixStack(player);
+            stack.set(ModDataComponents.MATRIX_DATA.get(), data);
+            this.matrixStack = stack;
+            return;
+        }
+
+        ItemStack exoskeleton = ExoskeletonMenuProvider.findBodyExoskeleton(player)
+                .orElseThrow(() -> new IllegalStateException("Exoskeleton is no longer equipped"));
+        ExoskeletonData exoskeletonData = ExoskeletonItem.getData(exoskeleton);
+        exoskeleton.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                exoskeletonData.withMatrix(sourceIndex, data)
+        );
+
+        this.matrixStack = exoskeletonData.matrices().get(sourceIndex).matrix()
+                .map(ItemStack::copy)
+                .orElseThrow(() -> new IllegalStateException("Matrix is no longer installed"));
+        this.matrixStack.set(ModDataComponents.MATRIX_DATA.get(), data);
+    }
+
+    private Player getPlayer() {
+        return getCarried().isEmpty() ? null : null;
     }
 
     @Override

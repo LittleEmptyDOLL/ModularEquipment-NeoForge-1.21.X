@@ -160,8 +160,9 @@ public class MatrixMenu extends AbstractContainerMenu {
 
         var moduleDefinition = moduleItem.getDefinition();
         int storedEnergy = carried.getOrDefault(ModDataComponents.MODULE_STORED_ENERGY.get(), 0);
+        int finalStoredEnergy = storedEnergy;
         storedEnergy = moduleDefinition.storage()
-                .map(storage -> Math.min(storedEnergy, storage.capacity()))
+                .map(storage -> Math.min(finalStoredEnergy, storage.capacity()))
                 .orElse(0);
 
         InstalledModule module = new InstalledModule(

@@ -88,15 +88,24 @@ public class MatrixMenu extends AbstractContainerMenu {
     private void addPlayerInventory(Inventory inventory, int inventoryY) {
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(inventory, column + row * 9 + 9,
+                int inventorySlot = column + row * 9 + 9;
+                addSlot(createInventorySlot(inventory, inventorySlot,
                         INVENTORY_X + column * CELL_SIZE, inventoryY + row * CELL_SIZE));
             }
         }
 
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column,
+            int inventorySlot = column;
+            addSlot(createInventorySlot(inventory, inventorySlot,
                     INVENTORY_X + column * CELL_SIZE, inventoryY + 58));
         }
+    }
+
+    private Slot createInventorySlot(Inventory inventory, int inventorySlot, int x, int y) {
+        if (sourceType == SOURCE_HAND && inventorySlot == sourceIndex) {
+            return new MatrixSourceSlot(inventory, inventorySlot, x, y);
+        }
+        return new Slot(inventory, inventorySlot, x, y);
     }
 
     public ItemStack getMatrixStack() { return matrixStack; }
@@ -151,16 +160,17 @@ public class MatrixMenu extends AbstractContainerMenu {
         return false;
     }
 
-    public boolean handleAction(ServerPlayer player, int action, int x, int y, int targetX, int targetY) {
+    public boolean handleAction(ServerPlayer player, int action, int x, int y, int targetX, int targetY,
+                                int rotation) {
         try {
             MatrixData matrix = getServerMatrixData(player);
             MatrixDefinition definition = getMatrixDefinition();
 
             return switch (action) {
-                case ACTION_PLACE -> placeModule(player, matrix, definition, x, y);
+                case ACTION_PLACE -> placeModule(player, matrix, definition, x, y, rotation);
                 case ACTION_REMOVE -> removeModule(player, matrix, x, y);
                 case ACTION_ROTATE -> rotateModule(player, matrix, definition, x, y);
-                case ACTION_MOVE -> moveModule(player, matrix, definition, x, y, targetX, targetY);
+                case ACTION_MOVE -> moveModule(player, matrix, definition, x, y, targetX, targetY, rotation);
                 default -> false;
             };
         } catch (IllegalArgumentException | IllegalStateException exception) {
@@ -169,11 +179,11 @@ public class MatrixMenu extends AbstractContainerMenu {
     }
 
     private boolean placeModule(ServerPlayer player, MatrixData matrix, MatrixDefinition definition,
-                                int x, int y) {
+                                int x, int y, int rotation) {
         ItemStack carried = getCarried();
         if (!(carried.getItem() instanceof ModuleItem moduleItem)) return false;
 
-        InstalledModule module = new InstalledModule(moduleItem.getDefinition().id(), x, y, 0);
+        InstalledModule module = new InstalledModule(moduleItem.getDefinition().id(), x, y, rotation);
         MatrixData updated = MatrixOperations.addModule(matrix, definition, module);
 
         applyMatrixData(player, updated);
@@ -202,13 +212,38 @@ public class MatrixMenu extends AbstractContainerMenu {
     }
 
     private boolean moveModule(ServerPlayer player, MatrixData matrix, MatrixDefinition definition,
-                               int fromX, int fromY, int toX, int toY) {
-        if (fromX == toX && fromY == toY) return false;
+                               int fromX, int fromY, int toX, int toY, int rotation) {
+        InstalledModule module = MatrixOperations.getModuleAt(matrix, fromX, fromY);
+        if (module == null) return false;
 
-        MatrixData updated = MatrixOperations.moveModule(matrix, definition, fromX, fromY, toX, toY);
+        InstalledModule movedModule = new InstalledModule(
+                module.id(), toX, toY, rotation, module.storedEnergy()
+        );
+        MatrixData updated = replaceModule(matrix, definition, module, movedModule);
         if (updated.equals(matrix)) return false;
         applyMatrixData(player, updated);
         return true;
+    }
+
+    private MatrixData replaceModule(MatrixData matrix, MatrixDefinition definition,
+                                     InstalledModule oldModule, InstalledModule newModule) {
+        var modules = new java.util.ArrayList<>(matrix.modules());
+        modules.remove(oldModule);
+        MatrixData withoutModule = new MatrixData(matrix.id(), modules);
+
+        if (!MatrixOperations.canPlace(
+                withoutModule,
+                definition,
+                ModModules.getDefinition(newModule.id()),
+                newModule.x(),
+                newModule.y(),
+                newModule.rotation()
+        )) {
+            throw new IllegalArgumentException("Module cannot be placed at the requested position");
+        }
+
+        modules.add(newModule);
+        return new MatrixData(matrix.id(), modules);
     }
 
     private boolean giveModule(ServerPlayer player, ItemStack moduleStack) {
@@ -285,6 +320,7 @@ public class MatrixMenu extends AbstractContainerMenu {
         if (index < PLAYER_INVENTORY_START || index >= PLAYER_INVENTORY_END) return ItemStack.EMPTY;
 
         Slot slot = slots.get(index);
+        if (slot instanceof MatrixSourceSlot) return ItemStack.EMPTY;
         if (!slot.hasItem()) return ItemStack.EMPTY;
 
         ItemStack stack = slot.getItem();

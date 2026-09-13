@@ -116,7 +116,7 @@ public class ModModules {
                             id,
                             properties,
                             ModuleCategory.UTILITY,
-                            new ModuleSize(3, 3)
+                            new ModuleSize(2, 3)
                     )
                             .storage(new StorageProperties(10_000, 100, 200))
                             .build()

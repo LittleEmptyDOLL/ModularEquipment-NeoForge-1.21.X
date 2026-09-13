@@ -139,26 +139,17 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
     @Override
     protected void renderTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        super.renderTooltip(guiGraphics, mouseX, mouseY);
-    }
-
-    private void renderMatrixTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        if (menu.getCarried().getItem() instanceof ModuleItem) {
-            int[] cell = getCellAtMouse(mouseX, mouseY);
-            if (cell != null) {
-                guiGraphics.renderTooltip(font, menu.getCarried(), mouseX, mouseY);
-                return;
-            }
-        }
-
         InstalledModule module = getModuleAtMouse(mouseX, mouseY);
         if (module == null) {
+            super.renderTooltip(guiGraphics, mouseX, mouseY);
             return;
         }
 
         var entry = ModModules.find(module.id());
         if (entry != null) {
             guiGraphics.renderTooltip(font, entry.getItem().getDefaultInstance(), mouseX, mouseY);
+        } else {
+            super.renderTooltip(guiGraphics, mouseX, mouseY);
         }
     }
 
@@ -355,6 +346,6 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
-        renderMatrixTooltip(guiGraphics, mouseX, mouseY);
+        renderTooltip(guiGraphics, mouseX, mouseY);
     }
 }

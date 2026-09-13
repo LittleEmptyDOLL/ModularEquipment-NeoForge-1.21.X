@@ -1,5 +1,6 @@
 package com.github.littleemptydoll.exoequipment.client;
 
+import com.github.littleemptydoll.exoequipment.module.ModuleCategory;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import com.github.littleemptydoll.exoequipment.util.NameUtils;
 import net.minecraft.client.gui.screens.Screen;
@@ -179,6 +180,60 @@ public final class TooltipHelper {
                 "tooltip.exoequipment.matrix_slot",
                 slot,
                 matrixName
+        );
+    }
+
+    public static Component category(
+            ModuleCategory category
+    ) {
+        return Component.translatable(
+                "tooltip.exoequipment.category",
+                NameUtils.toDisplayName(category.name())
+        );
+    }
+
+    public static Component energyConsumption(
+            int consumption
+    ) {
+        return Component.translatable(
+                "tooltip.exoequipment.consumption",
+                consumption
+        );
+    }
+
+    public static Component energyGeneration(
+            int generation
+    ) {
+        return Component.translatable(
+                "tooltip.exoequipment.generation",
+                generation
+        );
+    }
+
+    public static Component capacity(
+            int capacity
+    ) {
+        return Component.translatable(
+                "tooltip.exoequipment.capacity",
+                capacity
+        );
+    }
+
+    public static Component cooling(
+            int cooling
+    ) {
+        return Component.translatable(
+                "tooltip.exoequipment.cooling",
+                cooling
+        );
+    }
+
+    public static Component heatGeneration(
+            int heatGeneration
+    ) {
+        return Component.translatable(
+                "tooltip.exoequipment.heat_generation",
+                heatGeneration
         );
     }
 }

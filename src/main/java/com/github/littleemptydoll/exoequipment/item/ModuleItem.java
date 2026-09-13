@@ -42,6 +42,72 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
             List<Component> tooltip,
             TooltipFlag flag
     ) {
+        ModuleDefinition definition = getDefinition();
+
         appendEquipmentTooltip(tooltip);
+
+        tooltip.add(
+                TooltipHelper.category(
+                        definition.category()
+                )
+        );
+
+        tooltip.add(
+                TooltipHelper.size(
+                        definition.size().width(),
+                        definition.size().height()
+                )
+        );
+
+        if (definition.energy().isPresent()) {
+            tooltip.add(
+                    TooltipHelper.energyConsumption(
+                            definition.energy().get().consumption()
+                    )
+            );
+        }
+
+        if (definition.generation().isPresent()) {
+            tooltip.add(
+                    TooltipHelper.energyGeneration(
+                            definition.generation().get().generation()
+                    )
+            );
+        }
+
+        if (definition.storage().isPresent()) {
+            tooltip.add(
+                    TooltipHelper.input(
+                            definition.storage().get().maxInput()
+                    )
+            );
+
+            tooltip.add(
+                    TooltipHelper.output(
+                            definition.storage().get().maxOutput()
+                    )
+            );
+
+            //ToDo дополнить описание текущим зарядом
+            tooltip.add(
+                    TooltipHelper.capacity(
+                            definition.storage().get().capacity()
+                    )
+            );
+        }
+
+        if (definition.thermal().isPresent()) {
+            tooltip.add(
+                    TooltipHelper.cooling(
+                            definition.thermal().get().cooling()
+                    )
+            );
+
+            tooltip.add(
+                    TooltipHelper.heatGeneration(
+                            definition.thermal().get().heatGeneration()
+                    )
+            );
+        }
     }
 }

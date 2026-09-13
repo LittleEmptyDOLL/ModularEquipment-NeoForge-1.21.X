@@ -175,5 +175,35 @@ public class ModLanguageProvider extends LanguageProvider {
                 "key.categories.exoequipment",
                 "ExoEquipment"
         );
+
+        add(
+                "tooltip.exoequipment.category",
+                "Category: %s"
+        );
+
+        add(
+                "tooltip.exoequipment.consumption",
+                "Consumption: %s FE/t"
+        );
+
+        add(
+                "tooltip.exoequipment.generation",
+                "Generation: %s FE/t"
+        );
+
+        add(
+                "tooltip.exoequipment.capacity",
+                "Capacity: 0/%s FE"
+        );
+
+        add(
+                "tooltip.exoequipment.cooling",
+                "Сooling: %s°C"
+        );
+
+        add(
+                "tooltip.exoequipment.heat_generation",
+                "Heat generation: %s°C"
+        );
     }
 }

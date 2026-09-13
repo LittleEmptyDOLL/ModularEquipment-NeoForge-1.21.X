@@ -25,7 +25,8 @@ public final class MatrixMenuProvider {
                 player,
                 stack,
                 MatrixMenu.SOURCE_HAND,
-                inventorySlot
+                inventorySlot,
+                null
         );
     }
 
@@ -52,15 +53,6 @@ public final class MatrixMenuProvider {
             ServerPlayer player,
             ItemStack matrix,
             int sourceType,
-            int sourceIndex
-    ) {
-        open(player, matrix, sourceType, sourceIndex, null);
-    }
-
-    private static void open(
-            ServerPlayer player,
-            ItemStack matrix,
-            int sourceType,
             int sourceIndex,
             ItemStack exoskeleton
     ) {
@@ -72,7 +64,8 @@ public final class MatrixMenuProvider {
                                         inventory,
                                         matrix,
                                         sourceType,
-                                        sourceIndex
+                                        sourceIndex,
+                                        exoskeleton
                                 ),
                         Component.translatable("menu.exoequipment.matrix")
                 ),

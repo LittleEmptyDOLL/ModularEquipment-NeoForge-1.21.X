@@ -84,7 +84,8 @@ public final class ModNetworking {
                             payload.x(),
                             payload.y(),
                             payload.targetX(),
-                            payload.targetY()
+                            payload.targetY(),
+                            payload.rotation()
                     );
 
                     if (changed) {

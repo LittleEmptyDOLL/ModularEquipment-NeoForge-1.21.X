@@ -26,55 +26,52 @@ public final class ModDataComponents {
     public static final Supplier<DataComponentType<MatrixData>> MATRIX_DATA =
             COMPONENTS.registerComponentType(
                     "matrix_data",
-                    builder -> builder
-                            .persistent(MatrixData.CODEC)
+                    builder -> builder.persistent(MatrixData.CODEC)
             );
 
     public static final Supplier<DataComponentType<EnergySystem>> ENERGY_SYSTEM =
             COMPONENTS.registerComponentType(
                     "energy_system",
-                    builder -> builder
-                            .persistent(EnergySystem.CODEC)
+                    builder -> builder.persistent(EnergySystem.CODEC)
             );
 
     public static final Supplier<DataComponentType<Frame>> FRAME =
             COMPONENTS.registerComponentType(
                     "frame",
-                    builder -> builder
-                            .persistent(Frame.CODEC)
+                    builder -> builder.persistent(Frame.CODEC)
             );
 
     public static final Supplier<DataComponentType<Controller>> CONTROLLER =
             COMPONENTS.registerComponentType(
                     "controller",
-                    builder -> builder
-                            .persistent(Controller.CODEC)
+                    builder -> builder.persistent(Controller.CODEC)
             );
 
     public static final Supplier<DataComponentType<Exoskeleton>> EXOSKELETON =
             COMPONENTS.registerComponentType(
                     "exoskeleton",
-                    builder -> builder
-                            .persistent(Exoskeleton.CODEC)
+                    builder -> builder.persistent(Exoskeleton.CODEC)
             );
 
     public static final Supplier<DataComponentType<ExoskeletonData>> EXOSKELETON_DATA =
             COMPONENTS.registerComponentType(
                     "exoskeleton_data",
-                    builder -> builder
-                            .persistent(ExoskeletonData.CODEC)
+                    builder -> builder.persistent(ExoskeletonData.CODEC)
             );
 
     public static final Supplier<DataComponentType<Module>> MODULE =
             COMPONENTS.registerComponentType(
                     "module",
-                    builder -> builder
-                            .persistent(Module.CODEC)
+                    builder -> builder.persistent(Module.CODEC)
             );
 
-    public static void register(
-            net.neoforged.bus.api.IEventBus eventBus
-    ) {
+    public static final Supplier<DataComponentType<Integer>> MODULE_STORED_ENERGY =
+            COMPONENTS.registerComponentType(
+                    "module_stored_energy",
+                    builder -> builder.persistent(com.mojang.serialization.Codec.INT)
+            );
+
+    public static void register(net.neoforged.bus.api.IEventBus eventBus) {
         COMPONENTS.register(eventBus);
     }
 }

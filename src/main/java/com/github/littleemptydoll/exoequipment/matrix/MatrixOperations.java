@@ -9,62 +9,24 @@ import java.util.List;
 public final class MatrixOperations {
     private MatrixOperations() {}
 
-    public static boolean canPlace(
-            MatrixData matrix,
-            MatrixDefinition matrixDefinition,
-            ModuleDefinition moduleDefinition,
-            int x,
-            int y,
-            int rotation
-    ) {
+    public static boolean canPlace(MatrixData matrix, MatrixDefinition matrixDefinition,
+                                   ModuleDefinition moduleDefinition, int x, int y, int rotation) {
         ModuleSize size = getRotatedSize(moduleDefinition.size(), rotation);
-
-        if (!matrixDefinition.contains(size, x, y)) {
-            return false;
-        }
-
+        if (!matrixDefinition.contains(size, x, y)) return false;
         for (InstalledModule installedModule : matrix.modules()) {
             ModuleDefinition installedDefinition = ModModules.getDefinition(installedModule.id());
-            ModuleSize installedSize = getRotatedSize(
-                    installedDefinition.size(),
-                    installedModule.rotation()
-            );
-
-            if (intersects(
-                    x, y, size,
-                    installedModule.x(), installedModule.y(), installedSize
-            )) {
-                return false;
-            }
+            ModuleSize installedSize = getRotatedSize(installedDefinition.size(), installedModule.rotation());
+            if (intersects(x, y, size, installedModule.x(), installedModule.y(), installedSize)) return false;
         }
-
         return true;
     }
 
-    public static MatrixData addModule(
-            MatrixData matrix,
-            MatrixDefinition matrixDefinition,
-            InstalledModule module
-    ) {
+    public static MatrixData addModule(MatrixData matrix, MatrixDefinition matrixDefinition, InstalledModule module) {
         ModuleDefinition definition = ModModules.getDefinition(module.id());
-
-        if (!canPlace(
-                matrix,
-                matrixDefinition,
-                definition,
-                module.x(),
-                module.y(),
-                module.rotation()
-        )) {
-            throw new IllegalArgumentException(
-                    "Module " + module.id()
-                            + " cannot be placed at "
-                            + module.x()
-                            + ", "
-                            + module.y()
-            );
+        if (!canPlace(matrix, matrixDefinition, definition, module.x(), module.y(), module.rotation())) {
+            throw new IllegalArgumentException("Module " + module.id() + " cannot be placed at "
+                    + module.x() + ", " + module.y());
         }
-
         List<InstalledModule> modules = new ArrayList<>(matrix.modules());
         modules.add(module);
         return createMatrix(matrix, modules);
@@ -72,10 +34,7 @@ public final class MatrixOperations {
 
     public static MatrixData removeModule(MatrixData matrix, int x, int y) {
         InstalledModule module = getModuleAt(matrix, x, y);
-        if (module == null) {
-            return matrix;
-        }
-
+        if (module == null) return matrix;
         List<InstalledModule> modules = new ArrayList<>(matrix.modules());
         modules.remove(module);
         return createMatrix(matrix, modules);
@@ -85,83 +44,39 @@ public final class MatrixOperations {
         for (InstalledModule module : matrix.modules()) {
             ModuleDefinition definition = ModModules.getDefinition(module.id());
             ModuleSize size = getRotatedSize(definition.size(), module.rotation());
-
-            if (isInside(x, y, module.x(), module.y(), size)) {
-                return module;
-            }
+            if (isInside(x, y, module.x(), module.y(), size)) return module;
         }
-
         return null;
     }
 
-    public static MatrixData rotateModule(
-            MatrixData matrix,
-            MatrixDefinition matrixDefinition,
-            int x,
-            int y
-    ) {
+    public static MatrixData rotateModule(MatrixData matrix, MatrixDefinition matrixDefinition, int x, int y) {
         InstalledModule module = getModuleAt(matrix, x, y);
-        if (module == null) {
-            return matrix;
-        }
-
+        if (module == null) return matrix;
         int newRotation = (module.rotation() + 90) % 360;
-        InstalledModule rotatedModule = new InstalledModule(
-                module.id(), module.x(), module.y(), newRotation, module.storedEnergy()
-        );
-
+        InstalledModule rotatedModule = new InstalledModule(module.id(), module.x(), module.y(), newRotation,
+                module.storedEnergy());
         return replaceModule(matrix, matrixDefinition, module, rotatedModule);
     }
 
-    public static MatrixData moveModule(
-            MatrixData matrix,
-            MatrixDefinition matrixDefinition,
-            int fromX,
-            int fromY,
-            int toX,
-            int toY
-    ) {
+    public static MatrixData moveModule(MatrixData matrix, MatrixDefinition matrixDefinition,
+                                        int fromX, int fromY, int toX, int toY) {
         InstalledModule module = getModuleAt(matrix, fromX, fromY);
-        if (module == null) {
-            return matrix;
-        }
-
-        InstalledModule movedModule = new InstalledModule(
-                module.id(), toX, toY, module.rotation(), module.storedEnergy()
-        );
-
+        if (module == null) return matrix;
+        InstalledModule movedModule = new InstalledModule(module.id(), toX, toY, module.rotation(),
+                module.storedEnergy());
         return replaceModule(matrix, matrixDefinition, module, movedModule);
     }
 
-    private static MatrixData replaceModule(
-            MatrixData matrix,
-            MatrixDefinition matrixDefinition,
-            InstalledModule oldModule,
-            InstalledModule newModule
-    ) {
+    private static MatrixData replaceModule(MatrixData matrix, MatrixDefinition matrixDefinition,
+                                            InstalledModule oldModule, InstalledModule newModule) {
         List<InstalledModule> modules = new ArrayList<>(matrix.modules());
         modules.remove(oldModule);
-
         MatrixData withoutModule = createMatrix(matrix, modules);
         ModuleDefinition definition = ModModules.getDefinition(newModule.id());
-
-        if (!canPlace(
-                withoutModule,
-                matrixDefinition,
-                definition,
-                newModule.x(),
-                newModule.y(),
-                newModule.rotation()
-        )) {
-            throw new IllegalArgumentException(
-                    "Module " + newModule.id()
-                            + " cannot be placed at "
-                            + newModule.x()
-                            + ", "
-                            + newModule.y()
-            );
+        if (!canPlace(withoutModule, matrixDefinition, definition, newModule.x(), newModule.y(), newModule.rotation())) {
+            throw new IllegalArgumentException("Module " + newModule.id() + " cannot be placed at "
+                    + newModule.x() + ", " + newModule.y());
         }
-
         modules.add(newModule);
         return createMatrix(matrix, modules);
     }
@@ -171,130 +86,76 @@ public final class MatrixOperations {
     }
 
     public static ModuleSize getRotatedSize(ModuleSize size, int rotation) {
-        int normalizedRotation = normalizeRotation(rotation);
-        return switch (normalizedRotation) {
+        return switch (normalizeRotation(rotation)) {
             case 0, 180 -> size;
             case 90, 270 -> new ModuleSize(size.height(), size.width());
-            default -> throw new IllegalArgumentException(
-                    "Invalid module rotation: " + normalizedRotation
-            );
+            default -> throw new IllegalArgumentException("Invalid module rotation: " + rotation);
         };
     }
 
     public static int normalizeRotation(int rotation) {
         int normalized = rotation % 360;
-        if (normalized < 0) {
-            normalized += 360;
-        }
-        if (normalized % 90 != 0) {
-            throw new IllegalArgumentException(
-                    "Module rotation must be a multiple of 90 degrees"
-            );
-        }
+        if (normalized < 0) normalized += 360;
+        if (normalized % 90 != 0) throw new IllegalArgumentException("Module rotation must be a multiple of 90 degrees");
         return normalized;
     }
 
-    private static boolean intersects(
-            int x1, int y1, ModuleSize size1,
-            int x2, int y2, ModuleSize size2
-    ) {
-        return x1 < x2 + size2.width()
-                && x1 + size1.width() > x2
-                && y1 < y2 + size2.height()
-                && y1 + size1.height() > y2;
+    private static boolean intersects(int x1, int y1, ModuleSize size1,
+                                      int x2, int y2, ModuleSize size2) {
+        return x1 < x2 + size2.width() && x1 + size1.width() > x2
+                && y1 < y2 + size2.height() && y1 + size1.height() > y2;
     }
 
-    private static boolean isInside(
-            int x,
-            int y,
-            int moduleX,
-            int moduleY,
-            ModuleSize size
-    ) {
-        return x >= moduleX
-                && x < moduleX + size.width()
-                && y >= moduleY
-                && y < moduleY + size.height();
+    private static boolean isInside(int x, int y, int moduleX, int moduleY, ModuleSize size) {
+        return x >= moduleX && x < moduleX + size.width()
+                && y >= moduleY && y < moduleY + size.height();
     }
 
     public static int calculateEnergyConsumption(MatrixData matrix) {
-        return matrix.modules().stream()
-                .mapToInt(module -> ModModules.getDefinition(module.id())
-                        .energy()
-                        .map(EnergyProperties::consumption)
-                        .orElse(0))
-                .sum();
+        return matrix.modules().stream().mapToInt(module -> ModModules.getDefinition(module.id())
+                .energy().map(EnergyProperties::consumption).orElse(0)).sum();
     }
 
     public static int calculateEnergyGeneration(MatrixData matrix) {
-        return matrix.modules().stream()
-                .mapToInt(module -> ModModules.getDefinition(module.id())
-                        .generation()
-                        .map(GenerationProperties::generation)
-                        .orElse(0))
-                .sum();
+        return matrix.modules().stream().mapToInt(module -> ModModules.getDefinition(module.id())
+                .generation().map(GenerationProperties::generation).orElse(0)).sum();
     }
 
     public static int calculateEnergyStorageCapacity(MatrixData matrix) {
-        return matrix.modules().stream()
-                .mapToInt(module -> ModModules.getDefinition(module.id())
-                        .storage()
-                        .map(StorageProperties::capacity)
-                        .orElse(0))
-                .sum();
+        return matrix.modules().stream().mapToInt(module -> ModModules.getDefinition(module.id())
+                .storage().map(StorageProperties::capacity).orElse(0)).sum();
     }
 
     public static int calculateEnergyStorageInput(MatrixData matrix) {
-        return matrix.modules().stream()
-                .mapToInt(module -> ModModules.getDefinition(module.id())
-                        .storage()
-                        .map(StorageProperties::maxInput)
-                        .orElse(0))
-                .sum();
+        return matrix.modules().stream().mapToInt(module -> ModModules.getDefinition(module.id())
+                .storage().map(StorageProperties::maxInput).orElse(0)).sum();
     }
 
     public static int calculateEnergyStorageOutput(MatrixData matrix) {
-        return matrix.modules().stream()
-                .mapToInt(module -> ModModules.getDefinition(module.id())
-                        .storage()
-                        .map(StorageProperties::maxOutput)
-                        .orElse(0))
-                .sum();
+        return matrix.modules().stream().mapToInt(module -> ModModules.getDefinition(module.id())
+                .storage().map(StorageProperties::maxOutput).orElse(0)).sum();
     }
 
     public static int calculateStoredEnergy(MatrixData matrix) {
-        return matrix.modules().stream()
-                .mapToInt(InstalledModule::storedEnergy)
-                .sum();
+        return matrix.modules().stream().mapToInt(module -> {
+            var storage = ModModules.getDefinition(module.id()).storage();
+            return storage.map(value -> Math.min(module.storedEnergy(), value.capacity())).orElse(0);
+        }).sum();
     }
 
     public static int calculateHeatGeneration(MatrixData matrix) {
-        return matrix.modules().stream()
-                .mapToInt(module -> ModModules.getDefinition(module.id())
-                        .thermal()
-                        .map(ThermalProperties::heatGeneration)
-                        .orElse(0))
-                .sum();
+        return matrix.modules().stream().mapToInt(module -> ModModules.getDefinition(module.id())
+                .thermal().map(ThermalProperties::heatGeneration).orElse(0)).sum();
     }
 
     public static int calculateCooling(MatrixData matrix) {
-        return matrix.modules().stream()
-                .mapToInt(module -> ModModules.getDefinition(module.id())
-                        .thermal()
-                        .map(ThermalProperties::cooling)
-                        .orElse(0))
-                .sum();
+        return matrix.modules().stream().mapToInt(module -> ModModules.getDefinition(module.id())
+                .thermal().map(ThermalProperties::cooling).orElse(0)).sum();
     }
 
     public static MatrixState calculateState(MatrixData matrix) {
-        return new MatrixState(
-                calculateEnergyConsumption(matrix),
-                calculateEnergyGeneration(matrix),
-                calculateEnergyStorageCapacity(matrix),
-                calculateEnergyStorageInput(matrix),
-                calculateEnergyStorageOutput(matrix),
-                calculateHeatGeneration(matrix),
-                calculateCooling(matrix)
-        );
+        return new MatrixState(calculateEnergyConsumption(matrix), calculateEnergyGeneration(matrix),
+                calculateEnergyStorageCapacity(matrix), calculateEnergyStorageInput(matrix),
+                calculateEnergyStorageOutput(matrix), calculateHeatGeneration(matrix), calculateCooling(matrix));
     }
 }

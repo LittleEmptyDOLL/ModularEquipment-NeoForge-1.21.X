@@ -2,6 +2,7 @@ package com.github.littleemptydoll.exoequipment.event;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonScreen;
+import com.github.littleemptydoll.exoequipment.gui.MatrixScreen;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -23,6 +24,11 @@ public final class ClientModEvents {
         event.register(
                 ModMenus.EXOSKELETON.get(),
                 ExoskeletonScreen::new
+        );
+
+        event.register(
+                ModMenus.MATRIX.get(),
+                MatrixScreen::new
         );
     }
 }

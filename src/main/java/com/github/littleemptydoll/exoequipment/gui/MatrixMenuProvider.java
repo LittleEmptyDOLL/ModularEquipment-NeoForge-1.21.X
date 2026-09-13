@@ -3,6 +3,7 @@ package com.github.littleemptydoll.exoequipment.gui;
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.extensions.IPlayerExtension;
 
@@ -61,10 +62,10 @@ public final class MatrixMenuProvider {
             ItemStack matrix,
             int sourceType,
             int sourceIndex,
-            ItemStack ignoredExoskeleton
+            ItemStack exoskeleton
     ) {
         ((IPlayerExtension) player).openMenu(
-                new net.minecraft.world.SimpleMenuProvider(
+                new SimpleMenuProvider(
                         (containerId, inventory, ignoredPlayer) ->
                                 new MatrixMenu(
                                         containerId,

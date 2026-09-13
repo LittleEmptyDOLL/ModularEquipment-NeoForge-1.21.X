@@ -211,10 +211,11 @@ public final class TooltipHelper {
     }
 
     public static Component capacity(
-            int capacity
-    ) {
+            int stored,
+            int capacity) {
         return Component.translatable(
                 "tooltip.exoequipment.capacity",
+                stored,
                 capacity
         );
     }

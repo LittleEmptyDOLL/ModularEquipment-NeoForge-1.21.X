@@ -193,7 +193,7 @@ public class ModLanguageProvider extends LanguageProvider {
 
         add(
                 "tooltip.exoequipment.capacity",
-                "Capacity: 0/%s FE"
+                "Capacity: %s/%s FE"
         );
 
         add(

@@ -56,10 +56,7 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
                     stack.getOrDefault(ModDataComponents.MODULE_STORED_ENERGY.get(), 0),
                     storage.capacity()
             );
-            tooltip.add(TooltipHelper.capacity(storage.capacity()));
-            if (stored > 0) {
-                tooltip.add(TooltipHelper.capacity(stored));
-            }
+            tooltip.add(TooltipHelper.capacity(stored, storage.capacity()));
         }
 
         if (definition.thermal().isPresent()) {

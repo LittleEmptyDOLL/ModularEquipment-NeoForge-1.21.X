@@ -147,6 +147,11 @@ public class ModLanguageProvider extends LanguageProvider {
         );
 
         add(
+                "gui.exoequipment.matrix",
+                "Matrix"
+        );
+
+        add(
                 "gui.exoequipment.system",
                 "System status"
         );
@@ -154,6 +159,11 @@ public class ModLanguageProvider extends LanguageProvider {
         add(
                 "gui.exoequipment.inventory",
                 "Inventory"
+        );
+
+        add(
+                "menu.exoequipment.matrix",
+                "Matrix"
         );
 
         add(

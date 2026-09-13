@@ -39,6 +39,7 @@ public class MatrixMenu extends AbstractContainerMenu {
     public static final int INVENTORY_GAP = 18;
 
     private ItemStack matrixStack;
+    private final ItemStack sourceExoskeleton;
     private final int sourceType;
     private final int sourceIndex;
     private final int width;
@@ -56,7 +57,8 @@ public class MatrixMenu extends AbstractContainerMenu {
                 playerInventory,
                 ItemStack.STREAM_CODEC.decode(buffer),
                 buffer.readByte(),
-                buffer.readByte()
+                buffer.readByte(),
+                null
         );
     }
 
@@ -67,6 +69,17 @@ public class MatrixMenu extends AbstractContainerMenu {
             int sourceType,
             int sourceIndex
     ) {
+        this(containerId, playerInventory, matrixStack, sourceType, sourceIndex, null);
+    }
+
+    public MatrixMenu(
+            int containerId,
+            Inventory playerInventory,
+            ItemStack matrixStack,
+            int sourceType,
+            int sourceIndex,
+            ItemStack sourceExoskeleton
+    ) {
         super(ModMenus.MATRIX.get(), containerId);
 
         if (!(matrixStack.getItem() instanceof MatrixItem matrixItem)) {
@@ -75,8 +88,12 @@ public class MatrixMenu extends AbstractContainerMenu {
         if (sourceType != SOURCE_HAND && sourceType != SOURCE_EXOSKELETON) {
             throw new IllegalArgumentException("Unknown matrix source type: " + sourceType);
         }
+        if (sourceType == SOURCE_EXOSKELETON && sourceExoskeleton == null) {
+            throw new IllegalArgumentException("Exoskeleton source is required");
+        }
 
         this.matrixStack = matrixStack;
+        this.sourceExoskeleton = sourceExoskeleton;
         this.sourceType = sourceType;
         this.sourceIndex = sourceIndex;
 

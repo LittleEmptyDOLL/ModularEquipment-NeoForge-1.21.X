@@ -6,14 +6,18 @@ import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import com.github.littleemptydoll.exoequipment.module.ModuleSize;
+import com.github.littleemptydoll.exoequipment.network.MatrixActionPayload;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
@@ -28,6 +32,10 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     private static final int GRID_LINE_COLOR = 0xFF35434D;
     private static final int MODULE_BACKGROUND_COLOR = 0xFF2C5366;
     private static final int MODULE_BORDER_COLOR = 0xFF76B5C9;
+
+    private boolean draggingModule;
+    private int dragStartX;
+    private int dragStartY;
 
     public MatrixScreen(
             MatrixMenu menu,
@@ -206,9 +214,21 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     }
 
     private InstalledModule getModuleAtMouse(int mouseX, int mouseY) {
+        int[] cell = getCellAtMouse(mouseX, mouseY);
+        if (cell == null) {
+            return null;
+        }
+
+        return MatrixOperations.getModuleAt(
+                menu.getMatrixData(),
+                cell[0],
+                cell[1]
+        );
+    }
+
+    private int[] getCellAtMouse(int mouseX, int mouseY) {
         int gridX = leftPos + MatrixMenu.GRID_X;
         int gridY = topPos + MatrixMenu.GRID_Y;
-
         int localX = mouseX - gridX;
         int localY = mouseY - gridY;
 
@@ -223,10 +243,97 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
             return null;
         }
 
-        return MatrixOperations.getModuleAt(
-                menu.getMatrixData(),
-                cellX,
-                cellY
+        return new int[]{cellX, cellY};
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        int[] cell = getCellAtMouse((int) mouseX, (int) mouseY);
+        if (cell != null) {
+            InstalledModule module = MatrixOperations.getModuleAt(
+                    menu.getMatrixData(),
+                    cell[0],
+                    cell[1]
+            );
+
+            if (button == 0) {
+                if (menu.getCarried().getItem() instanceof ModuleItem) {
+                    sendAction(
+                            MatrixMenu.ACTION_PLACE,
+                            cell[0],
+                            cell[1],
+                            cell[0],
+                            cell[1]
+                    );
+                    return true;
+                }
+
+                if (module != null) {
+                    draggingModule = true;
+                    dragStartX = module.x();
+                    dragStartY = module.y();
+                    return true;
+                }
+            }
+
+            if (button == 1 && module != null) {
+                sendAction(
+                        MatrixMenu.ACTION_ROTATE,
+                        cell[0],
+                        cell[1],
+                        cell[0],
+                        cell[1]
+                );
+                return true;
+            }
+        }
+
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == 0 && draggingModule) {
+            draggingModule = false;
+
+            int[] cell = getCellAtMouse((int) mouseX, (int) mouseY);
+            if (cell == null) {
+                return true;
+            }
+
+            if (cell[0] == dragStartX && cell[1] == dragStartY) {
+                sendAction(
+                        MatrixMenu.ACTION_REMOVE,
+                        dragStartX,
+                        dragStartY,
+                        dragStartX,
+                        dragStartY
+                );
+            } else {
+                sendAction(
+                        MatrixMenu.ACTION_MOVE,
+                        dragStartX,
+                        dragStartY,
+                        cell[0],
+                        cell[1]
+                );
+            }
+
+            return true;
+        }
+
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    private void sendAction(
+            int action,
+            int x,
+            int y,
+            int targetX,
+            int targetY
+    ) {
+        PacketDistributor.sendToServer(
+                new MatrixActionPayload(action, x, y, targetX, targetY)
         );
     }
 

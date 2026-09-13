@@ -12,7 +12,6 @@ import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -25,6 +24,11 @@ public class MatrixMenu extends AbstractContainerMenu {
     public static final int SOURCE_HAND = 0;
     public static final int SOURCE_EXOSKELETON = 1;
 
+    public static final int ACTION_PLACE = 0;
+    public static final int ACTION_REMOVE = 1;
+    public static final int ACTION_ROTATE = 2;
+    public static final int ACTION_MOVE = 3;
+
     public static final int PLAYER_INVENTORY_START = 0;
     public static final int PLAYER_INVENTORY_END = 36;
 
@@ -35,7 +39,6 @@ public class MatrixMenu extends AbstractContainerMenu {
     public static final int INVENTORY_GAP = 18;
 
     private ItemStack matrixStack;
-    private final ItemStack sourceExoskeleton;
     private final int sourceType;
     private final int sourceIndex;
     private final int width;
@@ -53,8 +56,7 @@ public class MatrixMenu extends AbstractContainerMenu {
                 playerInventory,
                 ItemStack.STREAM_CODEC.decode(buffer),
                 buffer.readByte(),
-                buffer.readByte(),
-                null
+                buffer.readByte()
         );
     }
 
@@ -63,8 +65,7 @@ public class MatrixMenu extends AbstractContainerMenu {
             Inventory playerInventory,
             ItemStack matrixStack,
             int sourceType,
-            int sourceIndex,
-            ItemStack sourceExoskeleton
+            int sourceIndex
     ) {
         super(ModMenus.MATRIX.get(), containerId);
 
@@ -74,12 +75,8 @@ public class MatrixMenu extends AbstractContainerMenu {
         if (sourceType != SOURCE_HAND && sourceType != SOURCE_EXOSKELETON) {
             throw new IllegalArgumentException("Unknown matrix source type: " + sourceType);
         }
-        if (sourceType == SOURCE_EXOSKELETON && sourceExoskeleton == null) {
-            throw new IllegalArgumentException("Exoskeleton source is required");
-        }
 
         this.matrixStack = matrixStack;
-        this.sourceExoskeleton = sourceExoskeleton;
         this.sourceType = sourceType;
         this.sourceIndex = sourceIndex;
 
@@ -183,21 +180,19 @@ public class MatrixMenu extends AbstractContainerMenu {
 
         if (sourceType == SOURCE_EXOSKELETON) {
             return ExoskeletonMenuProvider.findBodyExoskeleton(player)
-                    .map(this::containsMatrix)
+                    .map(exoskeleton -> {
+                        ExoskeletonData data = ExoskeletonItem.getData(exoskeleton);
+                        if (sourceIndex < 0 || sourceIndex >= ExoskeletonData.MAX_MATRICES) {
+                            return false;
+                        }
+                        return data.matrices().get(sourceIndex).matrix()
+                                .map(matrix -> matrix.id().equals(getMatrixData().id()))
+                                .orElse(false);
+                    })
                     .orElse(false);
         }
 
         return false;
-    }
-
-    private boolean containsMatrix(ItemStack exoskeleton) {
-        ExoskeletonData data = ExoskeletonItem.getData(exoskeleton);
-        if (sourceIndex < 0 || sourceIndex >= ExoskeletonData.MAX_MATRICES) {
-            return false;
-        }
-        return data.matrices().get(sourceIndex).matrix()
-                .map(matrix -> matrix.id().equals(getMatrixData().id()))
-                .orElse(false);
     }
 
     public boolean handleAction(
@@ -213,10 +208,10 @@ public class MatrixMenu extends AbstractContainerMenu {
 
         try {
             return switch (action) {
-                case 0 -> placeModule(player, matrix, definition, x, y);
-                case 1 -> removeModule(player, matrix, x, y);
-                case 2 -> rotateModule(player, matrix, definition, x, y);
-                case 3 -> moveModule(matrix, definition, x, y, targetX, targetY);
+                case ACTION_PLACE -> placeModule(player, matrix, definition, x, y);
+                case ACTION_REMOVE -> removeModule(player, matrix, x, y);
+                case ACTION_ROTATE -> rotateModule(player, matrix, definition, x, y);
+                case ACTION_MOVE -> moveModule(player, matrix, definition, x, y, targetX, targetY);
                 default -> false;
             };
         } catch (IllegalArgumentException | IllegalStateException exception) {
@@ -297,6 +292,7 @@ public class MatrixMenu extends AbstractContainerMenu {
     }
 
     private boolean moveModule(
+            ServerPlayer player,
             MatrixData matrix,
             MatrixDefinition definition,
             int fromX,
@@ -317,10 +313,6 @@ public class MatrixMenu extends AbstractContainerMenu {
                 toY
         );
         if (updated.equals(matrix)) {
-            return false;
-        }
-
-        if (!(getPlayer() instanceof ServerPlayer player)) {
             return false;
         }
 
@@ -380,19 +372,15 @@ public class MatrixMenu extends AbstractContainerMenu {
         ItemStack exoskeleton = ExoskeletonMenuProvider.findBodyExoskeleton(player)
                 .orElseThrow(() -> new IllegalStateException("Exoskeleton is no longer equipped"));
         ExoskeletonData exoskeletonData = ExoskeletonItem.getData(exoskeleton);
+        ExoskeletonData updatedData = exoskeletonData.withMatrix(sourceIndex, data);
         exoskeleton.set(
                 ModDataComponents.EXOSKELETON_DATA.get(),
-                exoskeletonData.withMatrix(sourceIndex, data)
+                updatedData
         );
 
-        this.matrixStack = exoskeletonData.matrices().get(sourceIndex).matrix()
+        this.matrixStack = updatedData.matrices().get(sourceIndex).matrix()
                 .map(ItemStack::copy)
                 .orElseThrow(() -> new IllegalStateException("Matrix is no longer installed"));
-        this.matrixStack.set(ModDataComponents.MATRIX_DATA.get(), data);
-    }
-
-    private Player getPlayer() {
-        return getCarried().isEmpty() ? null : null;
     }
 
     @Override

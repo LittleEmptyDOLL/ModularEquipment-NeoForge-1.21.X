@@ -4,7 +4,9 @@ import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.energy.EnergyOperations;
 import com.github.littleemptydoll.exoequipment.energy.EnergyTickResult;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
+import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenuProvider;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
+import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -22,7 +24,8 @@ public final class ExoskeletonTickEvents {
             return;
         }
 
-        ExoskeletonMenuProvider.findBodyExoskeleton(player).ifPresent(ExoskeletonTickEvents::tickEnergy);
+        ExoskeletonMenuProvider.findBodyExoskeleton(player)
+                .ifPresent(ExoskeletonTickEvents::tickEnergy);
     }
 
     private static void tickEnergy(ItemStack exoskeleton) {
@@ -31,7 +34,7 @@ public final class ExoskeletonTickEvents {
 
         if (!result.data().equals(data)) {
             exoskeleton.set(
-                    com.github.littleemptydoll.exoequipment.registry.ModDataComponents.EXOSKELETON_DATA.get(),
+                    ModDataComponents.EXOSKELETON_DATA.get(),
                     result.data()
             );
         }

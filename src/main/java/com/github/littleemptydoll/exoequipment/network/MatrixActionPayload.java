@@ -12,7 +12,8 @@ public record MatrixActionPayload(
         int x,
         int y,
         int targetX,
-        int targetY
+        int targetY,
+        int rotation
 ) implements CustomPacketPayload {
 
     public static final Type<MatrixActionPayload> TYPE =
@@ -33,6 +34,8 @@ public record MatrixActionPayload(
                     MatrixActionPayload::targetX,
                     ByteBufCodecs.VAR_INT,
                     MatrixActionPayload::targetY,
+                    ByteBufCodecs.VAR_INT,
+                    MatrixActionPayload::rotation,
                     MatrixActionPayload::new
             );
 

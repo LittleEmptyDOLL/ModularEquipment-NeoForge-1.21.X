@@ -27,6 +27,9 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     private InstalledModule draggedModule;
     private int dragStartX;
     private int dragStartY;
+    private int dragStartMouseX;
+    private int dragStartMouseY;
+    private boolean dragMoved;
     private int pendingMoveX;
     private int pendingMoveY;
     private boolean pendingMove;
@@ -60,14 +63,17 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
             guiGraphics.fill(gridX, lineY, gridX + gridWidth, lineY + 1, GRID_LINE_COLOR);
         }
 
+        if (pendingMove && isPendingMoveApplied()) {
+            pendingMove = false;
+            draggedModule = null;
+        }
+
         int[] previewOrigin = getPreviewOrigin(mouseX, mouseY);
         for (InstalledModule module : menu.getMatrixData().modules()) {
             if (draggingModule && module.equals(draggedModule)) {
                 if (previewOrigin != null) {
                     renderModule(guiGraphics, module, gridX, gridY, previewOrigin[0], previewOrigin[1]);
                 }
-            } else if (pendingMove && module.equals(draggedModule)) {
-                renderModule(guiGraphics, module, gridX, gridY, pendingMoveX, pendingMoveY);
             } else {
                 renderModule(guiGraphics, module, gridX, gridY, module.x(), module.y());
             }
@@ -75,11 +81,6 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
         if (previewOrigin != null && draggedModule == null && menu.getCarried().getItem() instanceof ModuleItem) {
             renderCarriedModulePreview(guiGraphics, gridX, gridY, previewOrigin[0], previewOrigin[1]);
-        }
-
-        if (pendingMove && isPendingMoveApplied()) {
-            pendingMove = false;
-            draggedModule = null;
         }
     }
 
@@ -189,8 +190,14 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
     private boolean isPendingMoveApplied() {
         if (!pendingMove || draggedModule == null) return false;
-        InstalledModule current = MatrixOperations.getModuleAt(menu.getMatrixData(), pendingMoveX, pendingMoveY);
-        return current != null && current.id().equals(draggedModule.id());
+
+        InstalledModule source = MatrixOperations.getModuleAt(menu.getMatrixData(), dragStartX, dragStartY);
+        if (source != null) {
+            return false;
+        }
+
+        InstalledModule target = MatrixOperations.getModuleAt(menu.getMatrixData(), pendingMoveX, pendingMoveY);
+        return target != null && target.id().equals(draggedModule.id());
     }
 
     @Override
@@ -209,6 +216,9 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
                     draggedModule = module;
                     dragStartX = module.x();
                     dragStartY = module.y();
+                    dragStartMouseX = cell[0];
+                    dragStartMouseY = cell[1];
+                    dragMoved = false;
                     pendingMove = false;
                     return true;
                 }
@@ -222,27 +232,41 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     }
 
     @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (button == 0 && draggingModule) {
+            int[] cell = getCellAtMouse((int) mouseX, (int) mouseY);
+            if (cell != null && (cell[0] != dragStartMouseX || cell[1] != dragStartMouseY)) {
+                dragMoved = true;
+            }
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (button == 0 && draggingModule) {
             int[] cell = getCellAtMouse((int) mouseX, (int) mouseY);
             InstalledModule module = draggedModule;
+            draggingModule = false;
+
             if (cell == null) {
-                draggingModule = false;
                 draggedModule = null;
                 return true;
             }
 
             int[] target = getCenteredOrigin(cell[0], cell[1], getModuleSize(module));
-            boolean remove = target[0] == dragStartX && target[1] == dragStartY;
-            draggingModule = false;
+            boolean remove = !dragMoved;
             if (remove) {
                 draggedModule = null;
                 sendAction(MatrixMenu.ACTION_REMOVE, dragStartX, dragStartY, dragStartX, dragStartY);
-            } else {
+            } else if (target[0] != dragStartX || target[1] != dragStartY) {
                 pendingMove = true;
                 pendingMoveX = target[0];
                 pendingMoveY = target[1];
                 sendAction(MatrixMenu.ACTION_MOVE, dragStartX, dragStartY, target[0], target[1]);
+            } else {
+                draggedModule = null;
             }
             return true;
         }

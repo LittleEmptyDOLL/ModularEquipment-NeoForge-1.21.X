@@ -137,18 +137,25 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
                 MatrixMenu.INVENTORY_X, menu.getInventoryY() - 11, 0xFFD8EAF5, false);
     }
 
+    /**
+     * Container slots are handled by AbstractContainerScreen. The matrix grid
+     * is not made of Slot instances, so its module tooltip is rendered
+     * explicitly after the normal screen rendering pass.
+     */
     @Override
     protected void renderTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        super.renderTooltip(guiGraphics, mouseX, mouseY);
+    }
+
+    private void renderMatrixTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         InstalledModule module = getModuleAtMouse(mouseX, mouseY);
         if (module == null) {
-            super.renderTooltip(guiGraphics, mouseX, mouseY);
             return;
         }
+
         var entry = ModModules.find(module.id());
         if (entry != null) {
             guiGraphics.renderTooltip(font, entry.getItem().getDefaultInstance(), mouseX, mouseY);
-        } else {
-            super.renderTooltip(guiGraphics, mouseX, mouseY);
         }
     }
 
@@ -345,5 +352,6 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+        renderMatrixTooltip(guiGraphics, mouseX, mouseY);
     }
 }

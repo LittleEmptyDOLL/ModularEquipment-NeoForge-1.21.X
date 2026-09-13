@@ -135,11 +135,11 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         return new int[]{cellX, cellY};
     }
 
-    private boolean isInsideDraggedModule(int x, int y) {
-        if (draggedModule == null) return false;
+    private boolean isInsideDraggedModule(int x, int y, InstalledModule module) {
+        if (module == null) return false;
 
-        ModuleDefinition definition = ModModules.getDefinition(draggedModule.id());
-        ModuleSize size = MatrixOperations.getRotatedSize(definition.size(), draggedModule.rotation());
+        ModuleDefinition definition = ModModules.getDefinition(module.id());
+        ModuleSize size = MatrixOperations.getRotatedSize(definition.size(), module.rotation());
         return x >= dragStartX
                 && x < dragStartX + size.width()
                 && y >= dragStartY
@@ -178,11 +178,12 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
             draggingModule = false;
             int[] cell = getCellAtMouse((int) mouseX, (int) mouseY);
             InstalledModule module = draggedModule;
+            boolean remove = cell != null && isInsideDraggedModule(cell[0], cell[1], module);
             draggedModule = null;
 
             if (cell == null) return true;
 
-            if (isInsideDraggedModule(cell[0], cell[1])) {
+            if (remove) {
                 sendAction(MatrixMenu.ACTION_REMOVE, dragStartX, dragStartY, dragStartX, dragStartY);
             } else {
                 sendAction(MatrixMenu.ACTION_MOVE, dragStartX, dragStartY, cell[0], cell[1]);

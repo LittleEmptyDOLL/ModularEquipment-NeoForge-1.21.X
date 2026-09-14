@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import com.github.littleemptydoll.exoequipment.module.ModuleSize;
 import com.github.littleemptydoll.exoequipment.network.MatrixActionPayload;
+import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -119,12 +120,27 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
         guiGraphics.fill(x, y, x + width, y + height, MODULE_BACKGROUND_COLOR);
         guiGraphics.renderOutline(x, y, width, height, MODULE_BORDER_COLOR);
-        var entry = ModModules.find(module.id());
-        if (entry != null) {
-            ItemStack stack = entry.getItem().getDefaultInstance();
+        ItemStack stack = createModuleStack(module);
+        if (!stack.isEmpty()) {
             guiGraphics.renderItem(stack, x + Math.max(0, (width - 16) / 2),
                     y + Math.max(0, (height - 16) / 2));
         }
+    }
+
+    private ItemStack createModuleStack(InstalledModule module) {
+        var entry = ModModules.find(module.id());
+        if (entry == null) {
+            return ItemStack.EMPTY;
+        }
+
+        ItemStack stack = entry.getItem().getDefaultInstance();
+        ModModules.getDefinition(module.id()).storage().ifPresent(storage -> {
+            int storedEnergy = Math.min(module.storedEnergy(), storage.capacity());
+            if (storedEnergy > 0) {
+                stack.set(ModDataComponents.MODULE_STORED_ENERGY.get(), storedEnergy);
+            }
+        });
+        return stack;
     }
 
     @Override
@@ -145,9 +161,9 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
             return;
         }
 
-        var entry = ModModules.find(module.id());
-        if (entry != null) {
-            guiGraphics.renderTooltip(font, entry.getItem().getDefaultInstance(), mouseX, mouseY);
+        ItemStack stack = createModuleStack(module);
+        if (!stack.isEmpty()) {
+            guiGraphics.renderTooltip(font, stack, mouseX, mouseY);
         } else {
             super.renderTooltip(guiGraphics, mouseX, mouseY);
         }

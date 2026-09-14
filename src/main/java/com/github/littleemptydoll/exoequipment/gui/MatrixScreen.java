@@ -135,7 +135,10 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
         ItemStack stack = entry.getItem().getDefaultInstance();
         ModModules.getDefinition(module.id()).storage().ifPresent(storage -> {
-            int storedEnergy = Math.min(module.storedEnergy(), storage.capacity());
+            int storedEnergy = Math.min(
+                    menu.getSyncedStoredEnergy(module.x(), module.y()),
+                    storage.capacity()
+            );
             if (storedEnergy > 0) {
                 stack.set(ModDataComponents.MODULE_STORED_ENERGY.get(), storedEnergy);
             }

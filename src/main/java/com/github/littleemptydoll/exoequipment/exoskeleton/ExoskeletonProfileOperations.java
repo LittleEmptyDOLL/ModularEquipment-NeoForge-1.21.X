@@ -35,12 +35,24 @@ public final class ExoskeletonProfileOperations {
     ) {
         int number = 1;
 
-        while (profiles.stream().anyMatch(profile ->
-                profile.name().equals("Profile " + number))) {
+        while (containsProfileName(profiles, "Profile " + number)) {
             number++;
         }
 
         return "Profile " + number;
+    }
+
+    private static boolean containsProfileName(
+            List<ExoskeletonProfile> profiles,
+            String name
+    ) {
+        for (ExoskeletonProfile profile : profiles) {
+            if (profile.name().equals(name)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static ExoskeletonData renameProfile(

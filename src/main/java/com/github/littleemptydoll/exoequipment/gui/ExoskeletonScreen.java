@@ -5,13 +5,11 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.network.OpenMatrixPayload;
 import com.github.littleemptydoll.exoequipment.network.OpenProfilePayload;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -39,8 +37,6 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     private static final int PROFILE_Y = 57;
     private static final int MATRICES_Y = 73;
     private static final int PROFILE_MAX_WIDTH = 63;
-    private static final int PROFILE_BUTTON_WIDTH = 30;
-    private static final int PROFILE_BUTTON_HEIGHT = 20;
 
     private static final int PLAYER_MODEL_X1 = 8;
     private static final int PLAYER_MODEL_Y1 = 29;
@@ -56,6 +52,27 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     private static final int MATRIX_INSTALLED_TEXTURE_X = 8;
     private static final int MATRIX_EMPTY_TEXTURE_X = 16;
 
+    private static final int ENERGY_STATUS_INDICATOR_X = 204;
+    private static final int ENERGY_STATUS_INDICATOR_Y = 6;
+    private static final int ENERGY_STATUS_INDICATOR_WIDTH = 13;
+    private static final int ENERGY_STATUS_INDICATOR_HEIGHT = 9;
+    private static final int ENERGY_STATUS_GREEN_X = 24;
+    private static final int ENERGY_STATUS_YELLOW_X = 37;
+    private static final int ENERGY_STATUS_RED_X = 50;
+    private static final int ENERGY_STATUS_GRAY_X = 63;
+
+    private static final int PROFILE_HOVER_X = 157;
+    private static final int PROFILE_HOVER_Y = 52;
+    private static final int PROFILE_HOVER_WIDTH = 84;
+    private static final int PROFILE_HOVER_HEIGHT = 18;
+
+    private static final int EXPANDED_BUTTON_X = 226;
+    private static final int EXPANDED_BUTTON_Y = 5;
+    private static final int EXPANDED_BUTTON_WIDTH = 14;
+    private static final int EXPANDED_BUTTON_HEIGHT = 11;
+    private static final int EXPANDED_BUTTON_NORMAL_TEXTURE_X = 76;
+    private static final int EXPANDED_BUTTON_HOVER_TEXTURE_X = 90;
+
     public ExoskeletonScreen(
             ExoskeletonMenu menu,
             Inventory inventory,
@@ -69,18 +86,6 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     @Override
     protected void init() {
         super.init();
-
-        Button profileButton = Button.builder(
-                Component.literal(getProfileText()),
-                button -> PacketDistributor.sendToServer(new OpenProfilePayload())
-        ).bounds(
-                leftPos + STATUS_VALUE_X - 2,
-                topPos + PROFILE_Y - 4,
-                PROFILE_BUTTON_WIDTH,
-                PROFILE_BUTTON_HEIGHT
-        ).build();
-        profileButton.active = menu.getActiveProfile() >= 0;
-        addRenderableWidget(profileButton);
     }
 
     @Override
@@ -122,15 +127,94 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
             int mouseX,
             int mouseY
     ) {
-        guiGraphics.drawString(font, Component.translatable("gui.exoequipment.exoskeleton"), 9, 9, 0xFFD8EAF5, false);
-        guiGraphics.drawString(font, Component.translatable("gui.exoequipment.components"), 69, 32, 0xFFD8EAF5, false);
-        guiGraphics.drawString(font, Component.translatable("gui.exoequipment.matrices"), 69, 67, 0xFFD8EAF5, false);
-        guiGraphics.drawString(font, Component.translatable("gui.exoequipment.system"), 157, 7, 0xFFD8EAF5, false);
-        guiGraphics.drawString(font, Component.translatable("gui.exoequipment.inventory"), 42, 109, 0xFFD8EAF5, false);
+        guiGraphics.drawString(font, Component.translatable("gui.exoequipment.exoskeleton"), 9, 9, STATUS_TEXT_COLOR, false);
+        guiGraphics.drawString(font, Component.translatable("gui.exoequipment.components"), 69, 32, STATUS_TEXT_COLOR, false);
+        guiGraphics.drawString(font, Component.translatable("gui.exoequipment.matrices"), 69, 67, STATUS_TEXT_COLOR, false);
+        guiGraphics.drawString(font, Component.translatable("gui.exoequipment.system"), 157, 7, STATUS_TEXT_COLOR, false);
+        guiGraphics.drawString(font, Component.translatable("gui.exoequipment.inventory"), 42, 109, STATUS_TEXT_COLOR, false);
+
+        drawEnergyStatusIndicator(guiGraphics);
+        drawExpandedParametersButton(guiGraphics, mouseX, mouseY);
+        drawProfileHover(guiGraphics, mouseX, mouseY);
 
         drawStatusValue(guiGraphics, formatEnergy(menu.getEnergyStored(), menu.getEnergyCapacity()), ENERGY_Y);
         drawStatusValue(guiGraphics, "None", TEMPERATURE_Y);
         drawMatrixIndicators(guiGraphics);
+    }
+
+    private void drawEnergyStatusIndicator(GuiGraphics guiGraphics) {
+        int textureX = switch (menu.getEnergyStatus()) {
+            case ExoskeletonMenu.ENERGY_STATUS_GREEN -> ENERGY_STATUS_GREEN_X;
+            case ExoskeletonMenu.ENERGY_STATUS_YELLOW -> ENERGY_STATUS_YELLOW_X;
+            case ExoskeletonMenu.ENERGY_STATUS_RED -> ENERGY_STATUS_RED_X;
+            default -> ENERGY_STATUS_GRAY_X;
+        };
+
+        guiGraphics.blit(
+                CONTROLS_TEXTURE,
+                ENERGY_STATUS_INDICATOR_X,
+                ENERGY_STATUS_INDICATOR_Y,
+                textureX,
+                0,
+                ENERGY_STATUS_INDICATOR_WIDTH,
+                ENERGY_STATUS_INDICATOR_HEIGHT,
+                IMAGE_WIDTH,
+                IMAGE_HEIGHT
+        );
+    }
+
+    private void drawExpandedParametersButton(
+            GuiGraphics guiGraphics,
+            int mouseX,
+            int mouseY
+    ) {
+        boolean hovered = mouseX >= EXPANDED_BUTTON_X
+                && mouseX < EXPANDED_BUTTON_X + EXPANDED_BUTTON_WIDTH
+                && mouseY >= EXPANDED_BUTTON_Y
+                && mouseY < EXPANDED_BUTTON_Y + EXPANDED_BUTTON_HEIGHT;
+
+        guiGraphics.blit(
+                CONTROLS_TEXTURE,
+                EXPANDED_BUTTON_X,
+                EXPANDED_BUTTON_Y,
+                hovered ? EXPANDED_BUTTON_HOVER_TEXTURE_X : EXPANDED_BUTTON_NORMAL_TEXTURE_X,
+                0,
+                EXPANDED_BUTTON_WIDTH,
+                EXPANDED_BUTTON_HEIGHT,
+                IMAGE_WIDTH,
+                IMAGE_HEIGHT
+        );
+    }
+
+    private void drawProfileHover(
+            GuiGraphics guiGraphics,
+            int mouseX,
+            int mouseY
+    ) {
+        if (menu.getActiveProfile() < 0) {
+            return;
+        }
+
+        boolean hovered = mouseX >= PROFILE_HOVER_X
+                && mouseX < PROFILE_HOVER_X + PROFILE_HOVER_WIDTH
+                && mouseY >= PROFILE_HOVER_Y
+                && mouseY < PROFILE_HOVER_Y + PROFILE_HOVER_HEIGHT;
+
+        if (!hovered) {
+            return;
+        }
+
+        guiGraphics.blit(
+                CONTROLS_TEXTURE,
+                PROFILE_HOVER_X,
+                PROFILE_HOVER_Y,
+                0,
+                11,
+                PROFILE_HOVER_WIDTH,
+                PROFILE_HOVER_HEIGHT,
+                IMAGE_WIDTH,
+                IMAGE_HEIGHT
+        );
     }
 
     private void drawMatrixIndicators(GuiGraphics guiGraphics) {
@@ -275,6 +359,16 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
                 PacketDistributor.sendToServer(new OpenMatrixPayload(matrixSlot));
                 return true;
             }
+        }
+
+        if (button == 0
+                && menu.getActiveProfile() >= 0
+                && mouseX >= leftPos + PROFILE_HOVER_X
+                && mouseX < leftPos + PROFILE_HOVER_X + PROFILE_HOVER_WIDTH
+                && mouseY >= topPos + PROFILE_HOVER_Y
+                && mouseY < topPos + PROFILE_HOVER_Y + PROFILE_HOVER_HEIGHT) {
+            PacketDistributor.sendToServer(new OpenProfilePayload());
+            return true;
         }
 
         return super.mouseClicked(mouseX, mouseY, button);

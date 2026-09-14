@@ -40,12 +40,12 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     private static final int PLAYER_MODEL_SIZE = 28;
     private static final int STATUS_TEXT_COLOR = 0xFFD8EAF5;
 
-    private static final int MATRIX_INDICATOR_SIZE = 7;
-    private static final int MATRIX_INDICATOR_GAP = 2;
-    private static final int MATRIX_ACTIVE_COLOR = 0xFF55E06A;
-    private static final int MATRIX_INSTALLED_COLOR = 0xFFB9A84A;
-    private static final int MATRIX_EMPTY_COLOR = 0xFF3A4248;
-    private static final int MATRIX_INDICATOR_BORDER_COLOR = 0xFF172026;
+    private static final int MATRIX_INDICATOR_SIZE = 8;
+    private static final int MATRIX_INDICATOR_GAP = 4;
+    private static final int MATRIX_INDICATOR_TEXTURE_Y = 214;
+    private static final int MATRIX_ACTIVE_TEXTURE_X = 0;
+    private static final int MATRIX_INSTALLED_TEXTURE_X = 8;
+    private static final int MATRIX_EMPTY_TEXTURE_X = 16;
 
     public ExoskeletonScreen(
             ExoskeletonMenu menu,
@@ -157,28 +157,25 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
             int y = MATRICES_Y;
             ItemStack matrixStack = menu.getSlot(ExoskeletonMenu.MATRIX_START_SLOT + slot).getItem();
 
-            int color;
+            int textureX;
             if (matrixStack.isEmpty()) {
-                color = MATRIX_EMPTY_COLOR;
+                textureX = MATRIX_EMPTY_TEXTURE_X;
             } else if (menu.isMatrixActive(slot)) {
-                color = MATRIX_ACTIVE_COLOR;
+                textureX = MATRIX_ACTIVE_TEXTURE_X;
             } else {
-                color = MATRIX_INSTALLED_COLOR;
+                textureX = MATRIX_INSTALLED_TEXTURE_X;
             }
 
-            guiGraphics.fill(
+            guiGraphics.blit(
+                    TEXTURE,
                     x,
                     y,
-                    x + MATRIX_INDICATOR_SIZE,
-                    y + MATRIX_INDICATOR_SIZE,
-                    color
-            );
-            guiGraphics.renderOutline(
-                    x,
-                    y,
+                    textureX,
+                    MATRIX_INDICATOR_TEXTURE_Y,
                     MATRIX_INDICATOR_SIZE,
                     MATRIX_INDICATOR_SIZE,
-                    MATRIX_INDICATOR_BORDER_COLOR
+                    IMAGE_WIDTH,
+                    IMAGE_HEIGHT
             );
         }
     }

@@ -1,7 +1,9 @@
 package com.github.littleemptydoll.exoequipment.gui;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.energy.EnergyState;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.network.OpenMatrixPayload;
 import net.minecraft.client.gui.GuiGraphics;
@@ -38,6 +40,13 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     private static final int PLAYER_MODEL_Y2 = 99;
     private static final int PLAYER_MODEL_SIZE = 28;
     private static final int STATUS_TEXT_COLOR = 0xFFD8EAF5;
+
+    private static final int MATRIX_INDICATOR_SIZE = 7;
+    private static final int MATRIX_INDICATOR_GAP = 2;
+    private static final int MATRIX_ACTIVE_COLOR = 0xFF55E06A;
+    private static final int MATRIX_INSTALLED_COLOR = 0xFFB9A84A;
+    private static final int MATRIX_EMPTY_COLOR = 0xFF3A4248;
+    private static final int MATRIX_INDICATOR_BORDER_COLOR = 0xFF172026;
 
     public ExoskeletonScreen(
             ExoskeletonMenu menu,
@@ -134,15 +143,16 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
         );
 
         ExoskeletonData data = getExoskeletonData();
+        EnergyState energy = EnergyState.calculate(data);
 
-        drawStatusValue(guiGraphics, "None", ENERGY_Y);
-        drawStatusValue(guiGraphics, "None", TEMPERATURE_Y);
-        drawStatusValue(guiGraphics, getProfileText(data), PROFILE_Y);
         drawStatusValue(
                 guiGraphics,
-                countInstalledMatrices(data) + " / " + ExoskeletonData.MAX_MATRICES,
-                MATRICES_Y
+                truncate(energy.storedEnergy() + "/" + energy.storageCapacity(), PROFILE_MAX_WIDTH),
+                ENERGY_Y
         );
+        drawStatusValue(guiGraphics, "None", TEMPERATURE_Y);
+        drawStatusValue(guiGraphics, getProfileText(data), PROFILE_Y);
+        drawMatrixIndicators(guiGraphics, data);
     }
 
     private ExoskeletonData getExoskeletonData() {
@@ -150,11 +160,35 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
         return ExoskeletonItem.getData(stack);
     }
 
-    private int countInstalledMatrices(ExoskeletonData data) {
-        return (int) data.matrices()
-                .stream()
-                .filter(matrixSlot -> matrixSlot.matrix().isPresent())
-                .count();
+    private void drawMatrixIndicators(GuiGraphics guiGraphics, ExoskeletonData data) {
+        for (int slot = 0; slot < ExoskeletonData.MAX_MATRICES; slot++) {
+            int x = STATUS_VALUE_X + slot * (MATRIX_INDICATOR_SIZE + MATRIX_INDICATOR_GAP);
+            int y = MATRICES_Y;
+
+            int color;
+            if (data.matrices().get(slot).matrix().isEmpty()) {
+                color = MATRIX_EMPTY_COLOR;
+            } else if (ExoskeletonState.isMatrixActive(data, slot)) {
+                color = MATRIX_ACTIVE_COLOR;
+            } else {
+                color = MATRIX_INSTALLED_COLOR;
+            }
+
+            guiGraphics.fill(
+                    x,
+                    y,
+                    x + MATRIX_INDICATOR_SIZE,
+                    y + MATRIX_INDICATOR_SIZE,
+                    color
+            );
+            guiGraphics.renderOutline(
+                    x,
+                    y,
+                    MATRIX_INDICATOR_SIZE,
+                    MATRIX_INDICATOR_SIZE,
+                    MATRIX_INDICATOR_BORDER_COLOR
+            );
+        }
     }
 
     private String getProfileText(ExoskeletonData data) {

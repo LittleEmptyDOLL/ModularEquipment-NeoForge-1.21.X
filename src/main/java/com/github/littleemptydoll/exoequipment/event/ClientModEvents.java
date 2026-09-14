@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.event;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.gui.ExoskeletonProfileScreen;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonScreen;
 import com.github.littleemptydoll.exoequipment.gui.MatrixScreen;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
@@ -29,6 +30,11 @@ public final class ClientModEvents {
         event.register(
                 ModMenus.MATRIX.get(),
                 MatrixScreen::new
+        );
+
+        event.register(
+                ModMenus.EXOSKELETON_PROFILES.get(),
+                ExoskeletonProfileScreen::new
         );
     }
 }

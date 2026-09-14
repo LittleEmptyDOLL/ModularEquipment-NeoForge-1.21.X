@@ -7,7 +7,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class ExoskeletonProfileScreen extends AbstractContainerScreen<ExoskeletonProfileMenu> {
@@ -20,6 +19,7 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
 
     private int lastProfileCount = -1;
     private int lastActiveProfile = -2;
+    private int lastActiveMask = -1;
 
     public ExoskeletonProfileScreen(
             ExoskeletonProfileMenu menu,
@@ -54,24 +54,35 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
                 button -> sendAction(ProfileActionPayload.CREATE, -1, -1)
         ).bounds(leftPos + 18, topPos + 120, 72, 20).build());
 
-        addRenderableWidget(Button.builder(
+        Button removeButton = Button.builder(
                 Component.translatable("gui.exoequipment.profile_remove"),
                 button -> sendAction(ProfileActionPayload.REMOVE, menu.getActiveProfile(), -1)
-        ).bounds(leftPos + 94, topPos + 120, 72, 20).build());
+        ).bounds(leftPos + 94, topPos + 120, 72, 20).build();
+        removeButton.active = profileCount > 1;
+        addRenderableWidget(removeButton);
 
+        int activeProfile = menu.getActiveProfile();
         for (int matrix = 0; matrix < 4; matrix++) {
             final int matrixIndex = matrix;
-            addRenderableWidget(Button.builder(
-                    Component.translatable("gui.exoequipment.matrix_short", matrix + 1),
+            boolean installed = menu.isMatrixInstalled(matrix);
+            boolean active = menu.isMatrixActive(activeProfile, matrix);
+            String suffix = active ? "ON" : installed ? "OFF" : "-";
+
+            Button matrixButton = Button.builder(
+                    Component.literal("M" + (matrix + 1) + " " + suffix),
                     button -> sendAction(
                             ProfileActionPayload.TOGGLE_MATRIX,
                             menu.getActiveProfile(),
                             matrixIndex
                     )
-            ).bounds(leftPos + 112 + (matrix % 2) * 62,
+            ).bounds(
+                    leftPos + 112 + (matrix % 2) * 62,
                     topPos + 42 + (matrix / 2) * 26,
                     58,
-                    20).build());
+                    20
+            ).build();
+            matrixButton.active = installed;
+            addRenderableWidget(matrixButton);
         }
 
         addRenderableWidget(Button.builder(
@@ -81,6 +92,18 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
 
         lastProfileCount = menu.getProfileCount();
         lastActiveProfile = menu.getActiveProfile();
+        lastActiveMask = getActiveMask();
+    }
+
+    private int getActiveMask() {
+        int mask = 0;
+        int profile = menu.getActiveProfile();
+        for (int matrix = 0; matrix < 4; matrix++) {
+            if (menu.isMatrixActive(profile, matrix)) {
+                mask |= 1 << matrix;
+            }
+        }
+        return mask;
     }
 
     private void sendAction(int action, int profile, int matrix) {
@@ -143,7 +166,7 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
                 font,
                 Component.translatable("gui.exoequipment.active_matrices"),
                 112,
-                72,
+                24,
                 TEXT_COLOR,
                 false
         );
@@ -151,25 +174,11 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
         guiGraphics.drawString(
                 font,
                 menu.getMaxActiveMatrices() + " / " + 4,
-                198,
-                72,
+                184,
+                24,
                 TEXT_COLOR,
                 false
         );
-
-        for (int matrix = 0; matrix < 4; matrix++) {
-            boolean installed = menu.isMatrixInstalled(matrix);
-            boolean active = menu.isMatrixActive(activeProfile, matrix);
-            int color = !installed ? INACTIVE_COLOR : active ? ACTIVE_COLOR : INACTIVE_COLOR;
-            guiGraphics.drawString(
-                    font,
-                    active ? "ON" : installed ? "OFF" : "-",
-                    175 + (matrix % 2) * 62,
-                    48 + (matrix / 2) * 26,
-                    color,
-                    false
-            );
-        }
 
         guiGraphics.drawString(
                 font,
@@ -179,6 +188,20 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
                 TEXT_COLOR,
                 false
         );
+
+        for (int matrix = 0; matrix < 4; matrix++) {
+            boolean installed = menu.isMatrixInstalled(matrix);
+            boolean active = menu.isMatrixActive(activeProfile, matrix);
+            int color = active ? ACTIVE_COLOR : installed ? INACTIVE_COLOR : 0xFF555555;
+            guiGraphics.drawString(
+                    font,
+                    active ? "Active" : installed ? "Installed" : "Empty",
+                    174 + (matrix % 2) * 62,
+                    48 + (matrix / 2) * 26,
+                    color,
+                    false
+            );
+        }
     }
 
     @Override
@@ -186,7 +209,8 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
         super.containerTick();
 
         if (menu.getProfileCount() != lastProfileCount
-                || menu.getActiveProfile() != lastActiveProfile) {
+                || menu.getActiveProfile() != lastActiveProfile
+                || getActiveMask() != lastActiveMask) {
             rebuildWidgets();
         }
     }

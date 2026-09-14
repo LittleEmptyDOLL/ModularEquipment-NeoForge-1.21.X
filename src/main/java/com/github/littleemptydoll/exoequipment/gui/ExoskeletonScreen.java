@@ -31,7 +31,7 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     private static final int TEMPERATURE_Y = 40;
     private static final int PROFILE_Y = 57;
     private static final int MATRICES_Y = 74;
-    private static final int PROFILE_MAX_WIDTH = 54;
+    private static final int PROFILE_MAX_WIDTH = 63;
 
     private static final int PLAYER_MODEL_X1 = 8;
     private static final int PLAYER_MODEL_Y1 = 29;

@@ -46,6 +46,7 @@ public class MatrixMenu extends AbstractContainerMenu {
     private final int imageWidth;
     private final int imageHeight;
     private final int[] syncedModuleEnergy;
+    private final Inventory playerInventory;
 
     public MatrixMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buffer) {
         this(containerId, playerInventory, ItemStack.STREAM_CODEC.decode(buffer),
@@ -77,6 +78,7 @@ public class MatrixMenu extends AbstractContainerMenu {
         int inventoryY = GRID_Y + height * CELL_SIZE + INVENTORY_GAP;
         this.imageHeight = inventoryY + 76;
         this.syncedModuleEnergy = new int[Math.max(1, width * height)];
+        this.playerInventory = playerInventory;
         addPlayerInventory(playerInventory, inventoryY);
         addModuleEnergyDataSlots();
     }

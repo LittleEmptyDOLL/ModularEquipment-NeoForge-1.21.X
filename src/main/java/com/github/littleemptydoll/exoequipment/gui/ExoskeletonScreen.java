@@ -24,6 +24,12 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
                     "textures/gui/exoskeleton.png"
             );
 
+    private static final ResourceLocation CONTROLS_TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(
+                    ExoEquipment.MODID,
+                    "textures/gui/controls.png"
+            );
+
     private static final int IMAGE_WIDTH = 256;
     private static final int IMAGE_HEIGHT = 256;
 
@@ -45,7 +51,7 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
 
     private static final int MATRIX_INDICATOR_SIZE = 8;
     private static final int MATRIX_INDICATOR_GAP = 4;
-    private static final int MATRIX_INDICATOR_TEXTURE_Y = 214;
+    private static final int MATRIX_INDICATOR_TEXTURE_Y = 0;
     private static final int MATRIX_ACTIVE_TEXTURE_X = 0;
     private static final int MATRIX_INSTALLED_TEXTURE_X = 8;
     private static final int MATRIX_EMPTY_TEXTURE_X = 16;
@@ -143,7 +149,7 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
             }
 
             guiGraphics.blit(
-                    TEXTURE,
+                    CONTROLS_TEXTURE,
                     x,
                     y,
                     textureX,

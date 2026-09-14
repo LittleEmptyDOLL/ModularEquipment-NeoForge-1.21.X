@@ -2,9 +2,10 @@ package com.github.littleemptydoll.exoequipment.gui;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.network.OpenMatrixPayload;
+import com.github.littleemptydoll.exoequipment.network.OpenProfilePayload;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
@@ -32,6 +33,8 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     private static final int PROFILE_Y = 57;
     private static final int MATRICES_Y = 74;
     private static final int PROFILE_MAX_WIDTH = 63;
+    private static final int PROFILE_BUTTON_WIDTH = 30;
+    private static final int PROFILE_BUTTON_HEIGHT = 20;
 
     private static final int PLAYER_MODEL_X1 = 8;
     private static final int PLAYER_MODEL_Y1 = 29;
@@ -55,6 +58,21 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
         super(menu, inventory, title);
         this.imageWidth = IMAGE_WIDTH;
         this.imageHeight = IMAGE_HEIGHT;
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+
+        addRenderableWidget(Button.builder(
+                Component.literal(getProfileText()),
+                button -> PacketDistributor.sendToServer(new OpenProfilePayload())
+        ).bounds(
+                leftPos + STATUS_VALUE_X - 2,
+                topPos + PROFILE_Y - 4,
+                PROFILE_BUTTON_WIDTH,
+                PROFILE_BUTTON_HEIGHT
+        ).build());
     }
 
     @Override
@@ -147,7 +165,6 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
                 ENERGY_Y
         );
         drawStatusValue(guiGraphics, "None", TEMPERATURE_Y);
-        drawStatusValue(guiGraphics, getProfileText(), PROFILE_Y);
         drawMatrixIndicators(guiGraphics);
     }
 
@@ -181,12 +198,7 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     }
 
     private String getProfileText() {
-        ItemStack source = menu.getSlot(ExoskeletonMenu.SOURCE_SLOT).getItem();
-        if (!(source.getItem() instanceof ExoskeletonItem)) {
-            return "None";
-        }
-
-        int activeProfile = ExoskeletonItem.getData(source).activeProfile();
+        int activeProfile = menu.getActiveProfile();
         if (activeProfile < 0) {
             return "None";
         }

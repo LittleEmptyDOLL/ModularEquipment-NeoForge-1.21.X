@@ -2,6 +2,7 @@ package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenu;
+import com.github.littleemptydoll.exoequipment.gui.ExoskeletonProfileMenu;
 import com.github.littleemptydoll.exoequipment.gui.MatrixMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
@@ -31,6 +32,13 @@ public final class ModMenus {
             "matrix",
             () -> IMenuTypeExtension.create(
                     MatrixMenu::new
+            )
+    );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<ExoskeletonProfileMenu>> EXOSKELETON_PROFILES = MENUS.register(
+            "exoskeleton_profiles",
+            () -> IMenuTypeExtension.create(
+                    ExoskeletonProfileMenu::new
             )
     );
 

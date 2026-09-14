@@ -13,12 +13,13 @@ import com.github.littleemptydoll.exoequipment.registry.ModMatrices;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.server.level.ServerPlayer;
 
 public class MatrixMenu extends AbstractContainerMenu {
 
@@ -44,6 +45,7 @@ public class MatrixMenu extends AbstractContainerMenu {
     private final int height;
     private final int imageWidth;
     private final int imageHeight;
+    private final int[] syncedModuleEnergy;
 
     public MatrixMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buffer) {
         this(containerId, playerInventory, ItemStack.STREAM_CODEC.decode(buffer),
@@ -74,7 +76,76 @@ public class MatrixMenu extends AbstractContainerMenu {
         this.imageWidth = Math.max(176, GRID_X * 2 + width * CELL_SIZE);
         int inventoryY = GRID_Y + height * CELL_SIZE + INVENTORY_GAP;
         this.imageHeight = inventoryY + 76;
+        this.syncedModuleEnergy = new int[Math.max(1, width * height)];
         addPlayerInventory(playerInventory, inventoryY);
+        addModuleEnergyDataSlots();
+    }
+
+    private void addModuleEnergyDataSlots() {
+        for (int cell = 0; cell < syncedModuleEnergy.length; cell++) {
+            final int dataIndex = cell;
+            final int x = cell % width;
+            final int y = cell / width;
+            addDataSlot(new DataSlot() {
+                @Override
+                public int get() {
+                    if (levelIsClient()) {
+                        return syncedModuleEnergy[dataIndex];
+                    }
+                    return getServerModuleEnergy(x, y);
+                }
+
+                @Override
+                public void set(int value) {
+                    syncedModuleEnergy[dataIndex] = Math.max(0, value);
+                }
+            });
+        }
+    }
+
+    private boolean levelIsClient() {
+        return minecraftPlayer() != null && minecraftPlayer().level().isClientSide;
+    }
+
+    private Player minecraftPlayer() {
+        return getPlayer();
+    }
+
+    private Player getPlayer() {
+        return playerInventory.player;
+    }
+
+    private int getServerModuleEnergy(int x, int y) {
+        if (getPlayer().level().isClientSide) {
+            return syncedModuleEnergy[y * width + x];
+        }
+
+        MatrixData data;
+        if (sourceType == SOURCE_HAND) {
+            if (sourceIndex < 0 || sourceIndex >= getPlayer().getInventory().getContainerSize()) {
+                return 0;
+            }
+            ItemStack stack = getPlayer().getInventory().getItem(sourceIndex);
+            data = stack.get(ModDataComponents.MATRIX_DATA.get());
+        } else {
+            ItemStack exoskeleton = ExoskeletonMenuProvider.findBodyExoskeleton(getPlayer()).orElse(null);
+            if (exoskeleton == null) return 0;
+            ExoskeletonData exoskeletonData = ExoskeletonItem.getData(exoskeleton);
+            if (sourceIndex < 0 || sourceIndex >= ExoskeletonData.MAX_MATRICES) return 0;
+            data = exoskeletonData.matrices().get(sourceIndex).matrix().orElse(null);
+        }
+
+        if (data == null) return 0;
+        InstalledModule module = MatrixOperations.getModuleAt(data, x, y);
+        if (module == null) return 0;
+        return ModModules.getDefinition(module.id()).storage()
+                .map(storage -> Math.min(module.storedEnergy(), storage.capacity()))
+                .orElse(0);
+    }
+
+    public int getSyncedStoredEnergy(int x, int y) {
+        if (x < 0 || x >= width || y < 0 || y >= height) return 0;
+        return syncedModuleEnergy[y * width + x];
     }
 
     private void addPlayerInventory(Inventory inventory, int inventoryY) {

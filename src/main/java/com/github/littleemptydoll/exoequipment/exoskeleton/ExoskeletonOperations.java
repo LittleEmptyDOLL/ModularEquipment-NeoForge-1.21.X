@@ -48,7 +48,7 @@ public final class ExoskeletonOperations {
         return data
                 .withController(controller)
                 .withProfiles(
-                        List.of(new ExoskeletonProfile(List.of())),
+                        List.of(new ExoskeletonProfile("Profile 1", List.of())),
                         0
                 );
     }

@@ -1,9 +1,7 @@
 package com.github.littleemptydoll.exoequipment.gui;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
-import com.github.littleemptydoll.exoequipment.energy.EnergyState;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.network.OpenMatrixPayload;
 import net.minecraft.client.gui.GuiGraphics;
@@ -12,6 +10,7 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -142,33 +141,26 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
                 false
         );
 
-        ExoskeletonData data = getExoskeletonData();
-        EnergyState energy = EnergyState.calculate(data);
-
         drawStatusValue(
                 guiGraphics,
-                truncate(energy.storedEnergy() + "/" + energy.storageCapacity(), PROFILE_MAX_WIDTH),
+                formatEnergy(menu.getEnergyStored(), menu.getEnergyCapacity()),
                 ENERGY_Y
         );
         drawStatusValue(guiGraphics, "None", TEMPERATURE_Y);
-        drawStatusValue(guiGraphics, getProfileText(data), PROFILE_Y);
-        drawMatrixIndicators(guiGraphics, data);
+        drawStatusValue(guiGraphics, getProfileText(), PROFILE_Y);
+        drawMatrixIndicators(guiGraphics);
     }
 
-    private ExoskeletonData getExoskeletonData() {
-        ItemStack stack = menu.getSlot(ExoskeletonMenu.SOURCE_SLOT).getItem();
-        return ExoskeletonItem.getData(stack);
-    }
-
-    private void drawMatrixIndicators(GuiGraphics guiGraphics, ExoskeletonData data) {
+    private void drawMatrixIndicators(GuiGraphics guiGraphics) {
         for (int slot = 0; slot < ExoskeletonData.MAX_MATRICES; slot++) {
             int x = STATUS_VALUE_X + slot * (MATRIX_INDICATOR_SIZE + MATRIX_INDICATOR_GAP);
             int y = MATRICES_Y;
+            ItemStack matrixStack = menu.getSlot(ExoskeletonMenu.MATRIX_START_SLOT + slot).getItem();
 
             int color;
-            if (data.matrices().get(slot).matrix().isEmpty()) {
+            if (matrixStack.isEmpty()) {
                 color = MATRIX_EMPTY_COLOR;
-            } else if (ExoskeletonState.isMatrixActive(data, slot)) {
+            } else if (menu.isMatrixActive(slot)) {
                 color = MATRIX_ACTIVE_COLOR;
             } else {
                 color = MATRIX_INSTALLED_COLOR;
@@ -191,14 +183,52 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
         }
     }
 
-    private String getProfileText(ExoskeletonData data) {
-        int activeProfile = data.activeProfile();
+    private String getProfileText() {
+        ItemStack source = menu.getSlot(ExoskeletonMenu.SOURCE_SLOT).getItem();
+        if (!(source.getItem() instanceof ExoskeletonItem)) {
+            return "None";
+        }
 
+        int activeProfile = ExoskeletonItem.getData(source).activeProfile();
         if (activeProfile < 0) {
             return "None";
         }
 
         return truncate("#" + (activeProfile + 1), PROFILE_MAX_WIDTH);
+    }
+
+    private String formatEnergy(int stored, int capacity) {
+        return truncate(
+                formatEnergyValue(stored) + "/" + formatEnergyValue(capacity) + " FE",
+                PROFILE_MAX_WIDTH
+        );
+    }
+
+    private String formatEnergyValue(int value) {
+        if (value < 1_000) {
+            return Integer.toString(value);
+        }
+        if (value < 1_000_000) {
+            return compactValue(value, 1_000, "K");
+        }
+        if (value < 1_000_000_000) {
+            return compactValue(value, 1_000_000, "M");
+        }
+        return compactValue(value, 1_000_000_000, "B");
+    }
+
+    private String compactValue(int value, int divisor, String suffix) {
+        int whole = value / divisor;
+        int remainder = value % divisor;
+        if (remainder == 0) {
+            return whole + suffix;
+        }
+
+        int decimal = (remainder * 10) / divisor;
+        if (decimal == 0) {
+            return whole + suffix;
+        }
+        return whole + "." + decimal + suffix;
     }
 
     private void drawStatusValue(

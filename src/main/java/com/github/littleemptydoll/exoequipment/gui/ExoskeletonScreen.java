@@ -139,6 +139,7 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
 
         drawStatusValue(guiGraphics, formatEnergy(menu.getEnergyStored(), menu.getEnergyCapacity()), ENERGY_Y);
         drawStatusValue(guiGraphics, "None", TEMPERATURE_Y);
+        drawStatusValue(guiGraphics, getProfileText(), PROFILE_Y);
         drawMatrixIndicators(guiGraphics);
     }
 

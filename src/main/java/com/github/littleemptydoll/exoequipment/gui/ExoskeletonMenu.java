@@ -1,7 +1,9 @@
 package com.github.littleemptydoll.exoequipment.gui;
 
+import com.github.littleemptydoll.exoequipment.energy.EnergyState;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonContainer;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.item.*;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -10,6 +12,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -29,10 +32,16 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
     public static final int HOTBAR_START = PLAYER_INVENTORY_END;
     public static final int HOTBAR_END = HOTBAR_START + 9;
 
+    private static final int DATA_ENERGY_STORED = 0;
+    private static final int DATA_ENERGY_CAPACITY = 1;
+    private static final int DATA_ACTIVE_MATRICES = 2;
+    private static final int DATA_COUNT = 3;
+
     private final Player player;
     private final Inventory playerInventory;
     private final ItemStack exoskeleton;
     private final ExoskeletonContainer exoskeletonContainer;
+    private final int[] syncedData = new int[DATA_COUNT];
 
     // Client
     public ExoskeletonMenu(
@@ -67,6 +76,63 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
 
         addEquipmentSlots();
         addPlayerInventory();
+        addDataSlots();
+    }
+
+    private void addDataSlots() {
+        for (int index = 0; index < DATA_COUNT; index++) {
+            final int dataIndex = index;
+            addDataSlot(new DataSlot() {
+                @Override
+                public int get() {
+                    if (player.level().isClientSide) {
+                        return syncedData[dataIndex];
+                    }
+                    return getServerDataValue(dataIndex);
+                }
+
+                @Override
+                public void set(int value) {
+                    syncedData[dataIndex] = value;
+                }
+            });
+        }
+    }
+
+    private int getServerDataValue(int index) {
+        ExoskeletonData data = ExoskeletonItem.getData(exoskeleton);
+        EnergyState energy = EnergyState.calculate(data);
+
+        return switch (index) {
+            case DATA_ENERGY_STORED -> energy.storedEnergy();
+            case DATA_ENERGY_CAPACITY -> energy.storageCapacity();
+            case DATA_ACTIVE_MATRICES -> buildActiveMatrixMask(data);
+            default -> 0;
+        };
+    }
+
+    private int buildActiveMatrixMask(ExoskeletonData data) {
+        int mask = 0;
+        for (int slot = 0; slot < ExoskeletonData.MAX_MATRICES; slot++) {
+            if (ExoskeletonState.isMatrixActive(data, slot)) {
+                mask |= 1 << slot;
+            }
+        }
+        return mask;
+    }
+
+    public int getEnergyStored() {
+        return syncedData[DATA_ENERGY_STORED];
+    }
+
+    public int getEnergyCapacity() {
+        return syncedData[DATA_ENERGY_CAPACITY];
+    }
+
+    public boolean isMatrixActive(int slot) {
+        return slot >= 0
+                && slot < ExoskeletonData.MAX_MATRICES
+                && (syncedData[DATA_ACTIVE_MATRICES] & (1 << slot)) != 0;
     }
 
     private void addEquipmentSlots() {

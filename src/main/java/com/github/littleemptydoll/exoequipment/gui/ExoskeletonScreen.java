@@ -64,7 +64,7 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     protected void init() {
         super.init();
 
-        addRenderableWidget(Button.builder(
+        Button profileButton = Button.builder(
                 Component.literal(getProfileText()),
                 button -> PacketDistributor.sendToServer(new OpenProfilePayload())
         ).bounds(
@@ -72,7 +72,9 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
                 topPos + PROFILE_Y - 4,
                 PROFILE_BUTTON_WIDTH,
                 PROFILE_BUTTON_HEIGHT
-        ).build());
+        ).build();
+        profileButton.active = menu.getActiveProfile() >= 0;
+        addRenderableWidget(profileButton);
     }
 
     @Override
@@ -114,56 +116,13 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
             int mouseX,
             int mouseY
     ) {
-        guiGraphics.drawString(
-                font,
-                Component.translatable("gui.exoequipment.exoskeleton"),
-                9,
-                9,
-                0xFFD8EAF5,
-                false
-        );
+        guiGraphics.drawString(font, Component.translatable("gui.exoequipment.exoskeleton"), 9, 9, 0xFFD8EAF5, false);
+        guiGraphics.drawString(font, Component.translatable("gui.exoequipment.components"), 69, 32, 0xFFD8EAF5, false);
+        guiGraphics.drawString(font, Component.translatable("gui.exoequipment.matrices"), 69, 67, 0xFFD8EAF5, false);
+        guiGraphics.drawString(font, Component.translatable("gui.exoequipment.system"), 157, 7, 0xFFD8EAF5, false);
+        guiGraphics.drawString(font, Component.translatable("gui.exoequipment.inventory"), 42, 109, 0xFFD8EAF5, false);
 
-        guiGraphics.drawString(
-                font,
-                Component.translatable("gui.exoequipment.components"),
-                69,
-                32,
-                0xFFD8EAF5,
-                false
-        );
-
-        guiGraphics.drawString(
-                font,
-                Component.translatable("gui.exoequipment.matrices"),
-                69,
-                67,
-                0xFFD8EAF5,
-                false
-        );
-
-        guiGraphics.drawString(
-                font,
-                Component.translatable("gui.exoequipment.system"),
-                157,
-                7,
-                0xFFD8EAF5,
-                false
-        );
-
-        guiGraphics.drawString(
-                font,
-                Component.translatable("gui.exoequipment.inventory"),
-                42,
-                109,
-                0xFFD8EAF5,
-                false
-        );
-
-        drawStatusValue(
-                guiGraphics,
-                formatEnergy(menu.getEnergyStored(), menu.getEnergyCapacity()),
-                ENERGY_Y
-        );
+        drawStatusValue(guiGraphics, formatEnergy(menu.getEnergyStored(), menu.getEnergyCapacity()), ENERGY_Y);
         drawStatusValue(guiGraphics, "None", TEMPERATURE_Y);
         drawMatrixIndicators(guiGraphics);
     }
@@ -240,19 +199,8 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
         return whole + "." + decimal + suffix;
     }
 
-    private void drawStatusValue(
-            GuiGraphics guiGraphics,
-            String text,
-            int y
-    ) {
-        guiGraphics.drawString(
-                font,
-                text,
-                STATUS_VALUE_X,
-                y,
-                STATUS_TEXT_COLOR,
-                false
-        );
+    private void drawStatusValue(GuiGraphics guiGraphics, String text, int y) {
+        guiGraphics.drawString(font, text, STATUS_VALUE_X, y, STATUS_TEXT_COLOR, false);
     }
 
     private String truncate(String text, int maxWidth) {
@@ -294,21 +242,11 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
             return;
         }
 
-        super.renderSlotHighlight(
-                guiGraphics,
-                slot,
-                mouseX,
-                mouseY,
-                partialTick
-        );
+        super.renderSlotHighlight(guiGraphics, slot, mouseX, mouseY, partialTick);
     }
 
     @Override
-    protected void renderTooltip(
-            GuiGraphics guiGraphics,
-            int mouseX,
-            int mouseY
-    ) {
+    protected void renderTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         Slot hoveredSlot = getSlotUnderMouse();
 
         if (hoveredSlot != null && hoveredSlot.index == ExoskeletonMenu.SOURCE_SLOT) {
@@ -337,12 +275,7 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     }
 
     @Override
-    public void render(
-            GuiGraphics guiGraphics,
-            int mouseX,
-            int mouseY,
-            float partialTick
-    ) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         renderTooltip(guiGraphics, mouseX, mouseY);

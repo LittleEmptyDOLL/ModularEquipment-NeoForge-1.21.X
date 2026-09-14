@@ -74,6 +74,9 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     private static final int EXPANDED_BUTTON_NORMAL_TEXTURE_X = 76;
     private static final int EXPANDED_BUTTON_HOVER_TEXTURE_X = 90;
 
+    private boolean profileHovered;
+    private boolean expandedButtonHovered;
+
     public ExoskeletonScreen(
             ExoskeletonMenu menu,
             Inventory inventory,
@@ -135,8 +138,8 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
         guiGraphics.drawString(font, Component.translatable("gui.exoequipment.inventory"), 42, 109, STATUS_TEXT_COLOR, false);
 
         drawEnergyStatusIndicator(guiGraphics);
-        drawExpandedParametersButton(guiGraphics, mouseX, mouseY);
-        drawProfileHover(guiGraphics, mouseX, mouseY);
+        drawExpandedParametersButton(guiGraphics);
+        drawProfileHover(guiGraphics);
 
         drawStatusValue(guiGraphics, formatEnergy(menu.getEnergyStored(), menu.getEnergyCapacity()), ENERGY_Y);
         drawStatusValue(guiGraphics, "None", TEMPERATURE_Y);
@@ -169,21 +172,14 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
         }
     }
 
-    private void drawExpandedParametersButton(
-            GuiGraphics guiGraphics,
-            int mouseX,
-            int mouseY
-    ) {
-        boolean hovered = mouseX >= EXPANDED_BUTTON_X
-                && mouseX < EXPANDED_BUTTON_X + EXPANDED_BUTTON_WIDTH
-                && mouseY >= EXPANDED_BUTTON_Y
-                && mouseY < EXPANDED_BUTTON_Y + EXPANDED_BUTTON_HEIGHT;
-
+    private void drawExpandedParametersButton(GuiGraphics guiGraphics) {
         guiGraphics.blit(
                 CONTROLS_TEXTURE,
                 EXPANDED_BUTTON_X,
                 EXPANDED_BUTTON_Y,
-                hovered ? EXPANDED_BUTTON_HOVER_TEXTURE_X : EXPANDED_BUTTON_NORMAL_TEXTURE_X,
+                expandedButtonHovered
+                        ? EXPANDED_BUTTON_HOVER_TEXTURE_X
+                        : EXPANDED_BUTTON_NORMAL_TEXTURE_X,
                 0,
                 EXPANDED_BUTTON_WIDTH,
                 EXPANDED_BUTTON_HEIGHT,
@@ -192,21 +188,8 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
         );
     }
 
-    private void drawProfileHover(
-            GuiGraphics guiGraphics,
-            int mouseX,
-            int mouseY
-    ) {
-        if (menu.getActiveProfile() < 0) {
-            return;
-        }
-
-        boolean hovered = mouseX >= PROFILE_HOVER_X
-                && mouseX < PROFILE_HOVER_X + PROFILE_HOVER_WIDTH
-                && mouseY >= PROFILE_HOVER_Y
-                && mouseY < PROFILE_HOVER_Y + PROFILE_HOVER_HEIGHT;
-
-        if (!hovered) {
+    private void drawProfileHover(GuiGraphics guiGraphics) {
+        if (!profileHovered || menu.getActiveProfile() < 0) {
             return;
         }
 
@@ -382,8 +365,43 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        int localMouseX = mouseX - leftPos;
+        int localMouseY = mouseY - topPos;
+
+        expandedButtonHovered = isInside(
+                localMouseX,
+                localMouseY,
+                EXPANDED_BUTTON_X,
+                EXPANDED_BUTTON_Y,
+                EXPANDED_BUTTON_WIDTH,
+                EXPANDED_BUTTON_HEIGHT
+        );
+
+        profileHovered = isInside(
+                localMouseX,
+                localMouseY,
+                PROFILE_HOVER_X,
+                PROFILE_HOVER_Y,
+                PROFILE_HOVER_WIDTH,
+                PROFILE_HOVER_HEIGHT
+        );
+
         renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         renderTooltip(guiGraphics, mouseX, mouseY);
+    }
+
+    private boolean isInside(
+            int mouseX,
+            int mouseY,
+            int x,
+            int y,
+            int width,
+            int height
+    ) {
+        return mouseX >= x
+                && mouseX < x + width
+                && mouseY >= y
+                && mouseY < y + height;
     }
 }

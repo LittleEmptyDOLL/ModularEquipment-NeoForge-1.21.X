@@ -26,7 +26,7 @@ public record ProfileSyncPayload(
     );
 
     private static final StreamCodec<RegistryFriendlyByteBuf, List<Integer>> MASKS_CODEC =
-            ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.VAR_INT);
+            ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list());
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ProfileSyncPayload> STREAM_CODEC =
             StreamCodec.composite(

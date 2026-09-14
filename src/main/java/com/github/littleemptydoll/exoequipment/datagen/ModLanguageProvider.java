@@ -31,179 +31,51 @@ public class ModLanguageProvider extends LanguageProvider {
             );
         }
 
-        add(
-                "tooltip.exoequipment.type",
-                "Type: %s"
-        );
+        add("tooltip.exoequipment.type", "Type: %s");
+        add("tooltip.exoequipment.tier", "Tier: %s");
+        add("tooltip.exoequipment.size", "Size: %s x %s");
+        add("tooltip.exoequipment.input", "Max input: %s FE/t");
+        add("tooltip.exoequipment.output", "Max output: %s FE/t");
+        add("tooltip.exoequipment.efficiency", "Efficiency: %s%%");
+        add("tooltip.exoequipment.frame", "Frame: %s");
+        add("tooltip.exoequipment.controller", "Controller: %s");
+        add("tooltip.exoequipment.energy_system", "Energy system: %s");
+        add("tooltip.exoequipment.matrices", "Matrices: %s / %s");
+        add("tooltip.exoequipment.active_profile", "Active profile: %s");
+        add("tooltip.exoequipment.installed_matrices", "Installed matrices:");
+        add("tooltip.exoequipment.empty", "Empty");
+        add("tooltip.exoequipment.max_profiles", "Max profiles: %s");
+        add("tooltip.exoequipment.max_active_matrices", "Max active matrices: %s");
+        add("tooltip.exoequipment.max_module_size", "Max module size: %s x %s");
+        add("tooltip.exoequipment.matrix_slot", "Matrix %s: %s");
+        add("tooltip.exoequipment.modules", "Modules: %s");
+        add("tooltip.exoequipment.installed_modules", "Installed modules:");
+        add("tooltip.exoequipment.module_entry", "  %s");
+        add("tooltip.exoequipment.category", "Category: %s");
+        add("tooltip.exoequipment.consumption", "Consumption: %s FE/t");
+        add("tooltip.exoequipment.generation", "Generation: %s FE/t");
+        add("tooltip.exoequipment.capacity", "Capacity: %s/%s FE");
+        add("tooltip.exoequipment.cooling", "Сooling: %s°C");
+        add("tooltip.exoequipment.heat_generation", "Heat generation: %s°C");
 
-        add(
-                "tooltip.exoequipment.tier",
-                "Tier: %s"
-        );
+        add("gui.exoequipment.exoskeleton", "Exoskeleton");
+        add("gui.exoequipment.components", "Components");
+        add("gui.exoequipment.matrices", "Matrices");
+        add("gui.exoequipment.matrix", "Matrix");
+        add("gui.exoequipment.system", "System status");
+        add("gui.exoequipment.inventory", "Inventory");
+        add("gui.exoequipment.profiles", "Profiles");
+        add("gui.exoequipment.profile", "Profile %s");
+        add("gui.exoequipment.profile_create", "Create");
+        add("gui.exoequipment.profile_remove", "Remove");
+        add("gui.exoequipment.matrix_short", "M%s");
+        add("gui.exoequipment.active_profile", "Active profile:");
+        add("gui.exoequipment.active_matrices", "Active matrices:");
+        add("gui.exoequipment.back", "Back");
 
-        add(
-                "tooltip.exoequipment.size",
-                "Size: %s x %s"
-        );
-
-        add(
-                "tooltip.exoequipment.input",
-                "Max input: %s FE/t"
-        );
-
-        add(
-                "tooltip.exoequipment.output",
-                "Max output: %s FE/t"
-        );
-
-        add(
-                "tooltip.exoequipment.efficiency",
-                "Efficiency: %s%%"
-        );
-
-        add(
-                "tooltip.exoequipment.frame",
-                "Frame: %s"
-        );
-
-        add(
-                "tooltip.exoequipment.controller",
-                "Controller: %s"
-        );
-
-        add(
-                "tooltip.exoequipment.energy_system",
-                "Energy system: %s"
-        );
-
-        add(
-                "tooltip.exoequipment.matrices",
-                "Matrices: %s / %s"
-        );
-
-        add(
-                "tooltip.exoequipment.active_profile",
-                "Active profile: %s"
-        );
-
-        add(
-                "tooltip.exoequipment.installed_matrices",
-                "Installed matrices:"
-        );
-
-        add(
-                "tooltip.exoequipment.empty",
-                "Empty"
-        );
-
-        add(
-                "tooltip.exoequipment.max_profiles",
-                "Max profiles: %s"
-        );
-
-        add(
-                "tooltip.exoequipment.max_active_matrices",
-                "Max active matrices: %s"
-        );
-
-        add(
-                "tooltip.exoequipment.max_module_size",
-                "Max module size: %s x %s"
-        );
-
-        add(
-                "tooltip.exoequipment.matrix_slot",
-                "Matrix %s: %s"
-        );
-
-        add(
-                "tooltip.exoequipment.modules",
-                "Modules: %s"
-        );
-
-        add(
-                "tooltip.exoequipment.installed_modules",
-                "Installed modules:"
-        );
-
-        add(
-                "tooltip.exoequipment.module_entry",
-                "  %s"
-        );
-
-        add(
-                "gui.exoequipment.exoskeleton",
-                "Exoskeleton"
-        );
-
-        add(
-                "gui.exoequipment.components",
-                "Components"
-        );
-
-        add(
-                "gui.exoequipment.matrices",
-                "Matrices"
-        );
-
-        add(
-                "gui.exoequipment.matrix",
-                "Matrix"
-        );
-
-        add(
-                "gui.exoequipment.system",
-                "System status"
-        );
-
-        add(
-                "gui.exoequipment.inventory",
-                "Inventory"
-        );
-
-        add(
-                "menu.exoequipment.matrix",
-                "Matrix"
-        );
-
-        add(
-                "key.exoequipment.open_exoskeleton",
-                "Open exoskeleton"
-        );
-
-        add(
-                "key.categories.exoequipment",
-                "ExoEquipment"
-        );
-
-        add(
-                "tooltip.exoequipment.category",
-                "Category: %s"
-        );
-
-        add(
-                "tooltip.exoequipment.consumption",
-                "Consumption: %s FE/t"
-        );
-
-        add(
-                "tooltip.exoequipment.generation",
-                "Generation: %s FE/t"
-        );
-
-        add(
-                "tooltip.exoequipment.capacity",
-                "Capacity: %s/%s FE"
-        );
-
-        add(
-                "tooltip.exoequipment.cooling",
-                "Сooling: %s°C"
-        );
-
-        add(
-                "tooltip.exoequipment.heat_generation",
-                "Heat generation: %s°C"
-        );
+        add("menu.exoequipment.matrix", "Matrix");
+        add("menu.exoequipment.profiles", "Profiles");
+        add("key.exoequipment.open_exoskeleton", "Open exoskeleton");
+        add("key.categories.exoequipment", "ExoEquipment");
     }
 }

@@ -14,8 +14,6 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
     private static final int HEIGHT = 180;
     private static final int PANEL_COLOR = 0xD0101010;
     private static final int TEXT_COLOR = 0xFFD8EAF5;
-    private static final int ACTIVE_COLOR = 0xFF55FF55;
-    private static final int INACTIVE_COLOR = 0xFFAAAAAA;
 
     private int lastProfileCount = -1;
     private int lastActiveProfile = -2;
@@ -166,16 +164,16 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
                 font,
                 Component.translatable("gui.exoequipment.active_matrices"),
                 112,
-                24,
+                76,
                 TEXT_COLOR,
                 false
         );
 
         guiGraphics.drawString(
                 font,
-                menu.getMaxActiveMatrices() + " / " + 4,
+                menu.getMaxActiveMatrices() + " / 4",
                 184,
-                24,
+                76,
                 TEXT_COLOR,
                 false
         );
@@ -188,20 +186,6 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
                 TEXT_COLOR,
                 false
         );
-
-        for (int matrix = 0; matrix < 4; matrix++) {
-            boolean installed = menu.isMatrixInstalled(matrix);
-            boolean active = menu.isMatrixActive(activeProfile, matrix);
-            int color = active ? ACTIVE_COLOR : installed ? INACTIVE_COLOR : 0xFF555555;
-            guiGraphics.drawString(
-                    font,
-                    active ? "Active" : installed ? "Installed" : "Empty",
-                    174 + (matrix % 2) * 62,
-                    48 + (matrix / 2) * 26,
-                    color,
-                    false
-            );
-        }
     }
 
     @Override

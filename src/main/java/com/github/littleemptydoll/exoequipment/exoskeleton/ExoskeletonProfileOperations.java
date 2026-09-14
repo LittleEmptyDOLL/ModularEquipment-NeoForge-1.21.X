@@ -21,11 +21,46 @@ public final class ExoskeletonProfileOperations {
         }
 
         List<ExoskeletonProfile> profiles = new ArrayList<>(data.profiles());
+        String name = createDefaultProfileName(profiles);
 
-        profiles.add(new ExoskeletonProfile(List.of()));
+        profiles.add(new ExoskeletonProfile(name, List.of()));
 
         return data.withProfiles(
                 profiles
+        );
+    }
+
+    private static String createDefaultProfileName(
+            List<ExoskeletonProfile> profiles
+    ) {
+        int number = 1;
+
+        while (profiles.stream().anyMatch(profile ->
+                profile.name().equals("Profile " + number))) {
+            number++;
+        }
+
+        return "Profile " + number;
+    }
+
+    public static ExoskeletonData renameProfile(
+            ExoskeletonData data,
+            int profile,
+            String name
+    ) {
+        ExoskeletonValidation.validateProfileIndex(data, profile);
+
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Profile name cannot be blank"
+            );
+        }
+
+        return data.withProfiles(
+                profile,
+                data.profiles()
+                        .get(profile)
+                        .withName(name)
         );
     }
 
@@ -73,6 +108,7 @@ public final class ExoskeletonProfileOperations {
         return data.withProfiles(
                 profile,
                 new ExoskeletonProfile(
+                        data.profiles().get(profile).name(),
                         List.copyOf(matrices)
                 )
         );

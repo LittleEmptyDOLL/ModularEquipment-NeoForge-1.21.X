@@ -35,7 +35,7 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
         rebuildWidgets();
     }
 
-    private void rebuildWidgets() {
+    public void rebuildWidgets() {
         clearWidgets();
 
         int profileCount = menu.getProfileCount();

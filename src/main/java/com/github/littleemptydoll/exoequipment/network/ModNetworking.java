@@ -2,12 +2,14 @@ package com.github.littleemptydoll.exoequipment.network;
 
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenu;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenuProvider;
+import com.github.littleemptydoll.exoequipment.gui.ExoskeletonProfileMenu;
+import com.github.littleemptydoll.exoequipment.gui.ExoskeletonProfileMenuProvider;
 import com.github.littleemptydoll.exoequipment.gui.MatrixMenu;
 import com.github.littleemptydoll.exoequipment.gui.MatrixMenuProvider;
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
@@ -26,6 +28,64 @@ public final class ModNetworking {
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer serverPlayer) {
                         ExoskeletonMenuProvider.open(serverPlayer);
+                    }
+                })
+        );
+
+        registrar.playToServer(
+                OpenProfilePayload.TYPE,
+                OpenProfilePayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (!(context.player() instanceof ServerPlayer serverPlayer)) {
+                        return;
+                    }
+
+                    if (!(serverPlayer.containerMenu instanceof ExoskeletonMenu)) {
+                        return;
+                    }
+
+                    ExoskeletonProfileMenuProvider.open(serverPlayer);
+
+                    if (serverPlayer.containerMenu instanceof ExoskeletonProfileMenu menu) {
+                        PacketDistributor.sendToPlayer(
+                                serverPlayer,
+                                menu.getSyncPayload()
+                        );
+                    }
+                })
+        );
+
+        registrar.playToServer(
+                ProfileActionPayload.TYPE,
+                ProfileActionPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (!(context.player() instanceof ServerPlayer serverPlayer)) {
+                        return;
+                    }
+                    if (!(serverPlayer.containerMenu instanceof ExoskeletonProfileMenu menu)) {
+                        return;
+                    }
+
+                    if (menu.handleAction(
+                            payload.action(),
+                            payload.profile(),
+                            payload.matrix()
+                    )) {
+                        PacketDistributor.sendToPlayer(
+                                serverPlayer,
+                                menu.getSyncPayload()
+                        );
+                    }
+                })
+        );
+
+        registrar.playToClient(
+                ProfileSyncPayload.TYPE,
+                ProfileSyncPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() != null
+                            && context.player().containerMenu instanceof ExoskeletonProfileMenu menu) {
+                        menu.applySync(payload);
                     }
                 })
         );

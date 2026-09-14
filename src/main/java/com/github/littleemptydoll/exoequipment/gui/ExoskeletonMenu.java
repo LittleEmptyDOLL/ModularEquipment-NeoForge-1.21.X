@@ -35,7 +35,8 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
     private static final int DATA_ENERGY_STORED = 0;
     private static final int DATA_ENERGY_CAPACITY = 1;
     private static final int DATA_ACTIVE_MATRICES = 2;
-    private static final int DATA_COUNT = 3;
+    private static final int DATA_ACTIVE_PROFILE = 3;
+    private static final int DATA_COUNT = 4;
 
     private final Player player;
     private final Inventory playerInventory;
@@ -43,7 +44,6 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
     private final ExoskeletonContainer exoskeletonContainer;
     private final int[] syncedData = new int[DATA_COUNT];
 
-    // Client
     public ExoskeletonMenu(
             int containerId,
             Inventory playerInventory,
@@ -56,7 +56,6 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
         );
     }
 
-    // Server
     public ExoskeletonMenu(
             int containerId,
             Inventory playerInventory,
@@ -107,6 +106,7 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
             case DATA_ENERGY_STORED -> energy.storedEnergy();
             case DATA_ENERGY_CAPACITY -> energy.storageCapacity();
             case DATA_ACTIVE_MATRICES -> buildActiveMatrixMask(data);
+            case DATA_ACTIVE_PROFILE -> data.activeProfile();
             default -> 0;
         };
     }
@@ -127,6 +127,10 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
 
     public int getEnergyCapacity() {
         return syncedData[DATA_ENERGY_CAPACITY];
+    }
+
+    public int getActiveProfile() {
+        return syncedData[DATA_ACTIVE_PROFILE];
     }
 
     public boolean isMatrixActive(int slot) {

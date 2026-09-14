@@ -52,8 +52,9 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     private static final int MATRIX_INSTALLED_TEXTURE_X = 8;
     private static final int MATRIX_EMPTY_TEXTURE_X = 16;
 
-    private static final int ENERGY_STATUS_INDICATOR_X = 204;
-    private static final int ENERGY_STATUS_INDICATOR_Y = 6;
+    private static final int ENERGY_STATUS_INDICATOR_X = 93;
+    private static final int ENERGY_STATUS_INDICATOR_Y = 8;
+    private static final int ENERGY_STATUS_INDICATOR_GAP = 10;
     private static final int ENERGY_STATUS_INDICATOR_WIDTH = 13;
     private static final int ENERGY_STATUS_INDICATOR_HEIGHT = 9;
     private static final int ENERGY_STATUS_GREEN_X = 24;
@@ -61,13 +62,13 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     private static final int ENERGY_STATUS_RED_X = 50;
     private static final int ENERGY_STATUS_GRAY_X = 63;
 
-    private static final int PROFILE_HOVER_X = 157;
-    private static final int PROFILE_HOVER_Y = 52;
+    private static final int PROFILE_HOVER_X = 153;
+    private static final int PROFILE_HOVER_Y = 51;
     private static final int PROFILE_HOVER_WIDTH = 84;
     private static final int PROFILE_HOVER_HEIGHT = 18;
 
-    private static final int EXPANDED_BUTTON_X = 226;
-    private static final int EXPANDED_BUTTON_Y = 5;
+    private static final int EXPANDED_BUTTON_X = 188;
+    private static final int EXPANDED_BUTTON_Y = 89;
     private static final int EXPANDED_BUTTON_WIDTH = 14;
     private static final int EXPANDED_BUTTON_HEIGHT = 11;
     private static final int EXPANDED_BUTTON_NORMAL_TEXTURE_X = 76;
@@ -151,17 +152,21 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
             default -> ENERGY_STATUS_GRAY_X;
         };
 
-        guiGraphics.blit(
-                CONTROLS_TEXTURE,
-                ENERGY_STATUS_INDICATOR_X,
-                ENERGY_STATUS_INDICATOR_Y,
-                textureX,
-                0,
-                ENERGY_STATUS_INDICATOR_WIDTH,
-                ENERGY_STATUS_INDICATOR_HEIGHT,
-                IMAGE_WIDTH,
-                IMAGE_HEIGHT
-        );
+        int currentX = ENERGY_STATUS_INDICATOR_X;
+        for (int i = 0; i < 4; i++) {
+            guiGraphics.blit(
+                    CONTROLS_TEXTURE,
+                    currentX,
+                    ENERGY_STATUS_INDICATOR_Y,
+                    textureX,
+                    0,
+                    ENERGY_STATUS_INDICATOR_WIDTH,
+                    ENERGY_STATUS_INDICATOR_HEIGHT,
+                    IMAGE_WIDTH,
+                    IMAGE_HEIGHT
+            );
+            currentX += ENERGY_STATUS_INDICATOR_GAP;
+        }
     }
 
     private void drawExpandedParametersButton(

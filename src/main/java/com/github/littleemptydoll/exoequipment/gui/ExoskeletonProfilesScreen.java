@@ -135,6 +135,27 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
         if (renameProfile != profile) drawText(graphics, menu.getProfileName(profile), PROFILE_X + 5, y + 5, PROFILE_WIDTH - 10, TEXT_COLOR);
     }
 
+    private void drawProfileButtons(GuiGraphics graphics) {
+        int topProfile = hoveredProfile;
+        if (topProfile < 0) {
+            int activeProfile = menu.getActiveProfile();
+            if (activeProfile >= scrollOffset && activeProfile < scrollOffset + VISIBLE_PROFILES) {
+                topProfile = activeProfile;
+            }
+        }
+
+        for (int visible = 0; visible < VISIBLE_PROFILES; visible++) {
+            int profile = scrollOffset + visible;
+            if (profile >= menu.getProfileCount() || profile == topProfile) continue;
+            drawProfileButton(graphics, profile, visible);
+        }
+
+        if (topProfile >= scrollOffset && topProfile < scrollOffset + VISIBLE_PROFILES
+                && topProfile < menu.getProfileCount()) {
+            drawProfileButton(graphics, topProfile, topProfile - scrollOffset);
+        }
+    }
+
     private void drawMatrixButton(GuiGraphics graphics, int matrix) {
         int sourceY = menu.isMatrixActive(menu.getActiveProfile(), matrix) ? SELECTED_Y : hoveredMatrix == matrix ? HOVER_Y : NORMAL_Y;
         int column = matrix % 2, row = matrix / 2;
@@ -168,11 +189,7 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         drawText(graphics, Component.translatable("gui.exoequipment.profiles_count", menu.getProfileCount(), menu.getMaxProfiles()), 9, 9, 88, TEXT_COLOR);
         drawText(graphics, Component.translatable("gui.exoequipment.active_matrices_count", menu.getActiveMatrixCount(), menu.getMaxActiveMatrices()), 104, 9, 119, TEXT_COLOR);
-        for (int visible = 0; visible < VISIBLE_PROFILES; visible++) {
-            int profile = scrollOffset + visible;
-            if (profile >= menu.getProfileCount()) break;
-            drawProfileButton(graphics, profile, visible);
-        }
+        drawProfileButtons(graphics);
         for (int matrix = 0; matrix < 4; matrix++) drawMatrixButton(graphics, matrix);
         drawActionButton(graphics, ProfileActionPayload.CREATE, CREATE_X, menu.getProfileCount() < menu.getMaxProfiles(), Component.translatable("gui.exoequipment.profile_create"));
         drawActionButton(graphics, ProfileActionPayload.REMOVE, DELETE_X, menu.getProfileCount() > 1, Component.translatable("gui.exoequipment.profile_delete"));
@@ -328,18 +345,5 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
         updateHover(mouseX, mouseY);
         renderBackground(graphics, mouseX, mouseY, partialTick);
         super.render(graphics, mouseX, mouseY, partialTick);
-        renderTooltip(graphics, mouseX, mouseY);
     }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (renameBox != null) {
-            if (keyCode == 257 || keyCode == 335) { finishRename(true); return true; }
-            if (keyCode == 256) { finishRename(false); return true; }
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public boolean isPauseScreen() { return false; }
 }

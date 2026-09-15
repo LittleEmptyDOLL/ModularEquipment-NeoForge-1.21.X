@@ -1,11 +1,11 @@
 package com.github.littleemptydoll.exoequipment.gui;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonProfile;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonProfileOperations;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonValidation;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.network.ProfileSyncPayload;
+import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -17,6 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExoskeletonProfileMenu extends AbstractContainerMenu {
+    private static final int SELECT = 0;
+    private static final int CREATE = 1;
+    private static final int REMOVE = 2;
+    private static final int TOGGLE_MATRIX = 3;
+    private static final int RENAME = 4;
+
     private final Player player;
     private final ItemStack exoskeleton;
 
@@ -25,6 +31,7 @@ public class ExoskeletonProfileMenu extends AbstractContainerMenu {
     private int maxActiveMatrices;
     private int installedMatrices;
     private List<Integer> profileMasks = List.of();
+    private List<String> profileNames = List.of();
 
     // Client
     public ExoskeletonProfileMenu(
@@ -56,13 +63,14 @@ public class ExoskeletonProfileMenu extends AbstractContainerMenu {
         maxActiveMatrices = payload.maxActiveMatrices();
         installedMatrices = payload.installedMatrices();
         profileMasks = List.copyOf(payload.profileMasks());
+        profileNames = List.copyOf(payload.profileNames());
     }
 
     public ProfileSyncPayload getSyncPayload() {
         return ProfileSyncPayload.fromData(ExoskeletonItem.getData(exoskeleton));
     }
 
-    public boolean handleAction(int action, int profile, int matrix) {
+    public boolean handleAction(int action, int profile, int matrix, String name) {
         if (player.level().isClientSide) {
             return false;
         }
@@ -71,16 +79,17 @@ public class ExoskeletonProfileMenu extends AbstractContainerMenu {
 
         try {
             switch (action) {
-                case 0 -> data = ExoskeletonProfileOperations.activateProfile(data, profile);
-                case 1 -> {
+                case SELECT -> data = ExoskeletonProfileOperations.activateProfile(data, profile);
+                case CREATE -> {
                     data = ExoskeletonProfileOperations.createProfile(data);
                     data = ExoskeletonProfileOperations.activateProfile(
                             data,
                             data.profiles().size() - 1
                     );
                 }
-                case 2 -> data = ExoskeletonProfileOperations.removeProfile(data, profile);
-                case 3 -> data = toggleMatrix(data, profile, matrix);
+                case REMOVE -> data = ExoskeletonProfileOperations.removeProfile(data, profile);
+                case TOGGLE_MATRIX -> data = toggleMatrix(data, profile, matrix);
+                case RENAME -> data = ExoskeletonProfileOperations.renameProfile(data, profile, name);
                 default -> {
                     return false;
                 }
@@ -89,10 +98,7 @@ public class ExoskeletonProfileMenu extends AbstractContainerMenu {
             return false;
         }
 
-        exoskeleton.set(
-                com.github.littleemptydoll.exoequipment.registry.ModDataComponents.EXOSKELETON_DATA.get(),
-                data
-        );
+        exoskeleton.set(ModDataComponents.EXOSKELETON_DATA.get(), data);
         refreshFromData();
         return true;
     }
@@ -147,6 +153,20 @@ public class ExoskeletonProfileMenu extends AbstractContainerMenu {
 
     public int getProfileCount() {
         return profileMasks.size();
+    }
+
+    public String getProfileName(int profile) {
+        if (profile < 0 || profile >= profileNames.size()) {
+            return "";
+        }
+        return profileNames.get(profile);
+    }
+
+    public int getActiveMatrixCount() {
+        if (activeProfile < 0 || activeProfile >= profileMasks.size()) {
+            return 0;
+        }
+        return Integer.bitCount(profileMasks.get(activeProfile));
     }
 
     public boolean isProfileActive(int profile) {

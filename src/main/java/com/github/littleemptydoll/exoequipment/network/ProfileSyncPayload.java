@@ -19,7 +19,8 @@ public record ProfileSyncPayload(
         int maxProfiles,
         int maxActiveMatrices,
         int installedMatrices,
-        List<Integer> profileMasks
+        List<Integer> profileMasks,
+        List<String> profileNames
 ) implements CustomPacketPayload {
     public static final Type<ProfileSyncPayload> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath(ExoEquipment.MODID, "profile_sync")
@@ -28,6 +29,9 @@ public record ProfileSyncPayload(
     private static final StreamCodec<RegistryFriendlyByteBuf, List<Integer>> MASKS_CODEC =
             ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.VAR_INT);
 
+    private static final StreamCodec<RegistryFriendlyByteBuf, List<String>> NAMES_CODEC =
+            ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.stringUtf8(32));
+
     public static final StreamCodec<RegistryFriendlyByteBuf, ProfileSyncPayload> STREAM_CODEC =
             StreamCodec.composite(
                     ByteBufCodecs.VAR_INT, ProfileSyncPayload::activeProfile,
@@ -35,6 +39,7 @@ public record ProfileSyncPayload(
                     ByteBufCodecs.VAR_INT, ProfileSyncPayload::maxActiveMatrices,
                     ByteBufCodecs.VAR_INT, ProfileSyncPayload::installedMatrices,
                     MASKS_CODEC, ProfileSyncPayload::profileMasks,
+                    NAMES_CODEC, ProfileSyncPayload::profileNames,
                     ProfileSyncPayload::new
             );
 
@@ -49,6 +54,8 @@ public record ProfileSyncPayload(
         }
 
         List<Integer> masks = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+
         for (ExoskeletonProfile profile : data.profiles()) {
             int mask = 0;
             for (int slot : profile.activeMatrices()) {
@@ -57,6 +64,7 @@ public record ProfileSyncPayload(
                 }
             }
             masks.add(mask);
+            names.add(profile.name());
         }
 
         return new ProfileSyncPayload(
@@ -64,7 +72,8 @@ public record ProfileSyncPayload(
                 controller.maxProfiles(),
                 controller.maxActiveMatrices(),
                 installed,
-                List.copyOf(masks)
+                List.copyOf(masks),
+                List.copyOf(names)
         );
     }
 

@@ -24,36 +24,37 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
     private static final int TEXTURE_SIZE = 256;
     private static final int TEXT_COLOR = 0xFFD8EAF5;
 
-    private static final int PROFILE_X = 8;
-    private static final int PROFILE_Y = 29;
+    private static final int PROFILE_X = 7;
+    private static final int PROFILE_Y = 28;
     private static final int PROFILE_WIDTH = 80;
     private static final int PROFILE_HEIGHT = 18;
     private static final int VISIBLE_PROFILES = 4;
 
-    private static final int MATRIX_X = 111;
-    private static final int MATRIX_Y = 29;
+    private static final int MATRIX_X = 102;
+    private static final int MATRIX_Y = 21;
     private static final int MATRIX_WIDTH = 59;
     private static final int MATRIX_HEIGHT = 18;
-    private static final int MATRIX_GAP = 4;
+    private static final int MATRIX_GAP = 3;
 
-    private static final int CREATE_X = 8;
-    private static final int DELETE_X = 67;
-    private static final int BACK_X = 170;
-    private static final int ACTION_Y = 108;
+    private static final int CREATE_X = 7;
+    private static final int DELETE_X = 60;
+    private static final int BACK_X = 173;
+    private static final int ACTION_Y = 107;
     private static final int ACTION_WIDTH = 50;
     private static final int ACTION_HEIGHT = 18;
 
-    private static final int SCROLL_X = 100;
+    private static final int SCROLL_X = 90;
     private static final int SCROLL_Y = 29;
     private static final int SCROLL_WIDTH = 3;
     private static final int SCROLL_HEIGHT = 67;
-    private static final int SCROLL_CONTROL_X = 103;
-    private static final int SCROLL_DOWN_X = 106;
-    private static final int SCROLL_ARROW_Y = 29;
+    private static final int SCROLL_CONTROL_X = 90;
+    private static final int SCROLL_DOWN_X = 90;
+    private static final int SCROLL_ARROW_UP_Y = 29;
+    private static final int SCROLL_ARROW_DOWN_Y = 92;
     private static final int SCROLL_ARROW_WIDTH = 3;
     private static final int SCROLL_ARROW_HEIGHT = 4;
-    private static final int SCROLL_THUMB_X = 103;
-    private static final int SCROLL_THUMB_INACTIVE_X = 106;
+    private static final int SCROLL_THUMB_X = 90;
+    private static final int SCROLL_THUMB_INACTIVE_X = 90;
     private static final int SCROLL_THUMB_Y = 33;
     private static final int SCROLL_THUMB_HEIGHT = 24;
 
@@ -159,7 +160,7 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
         renameBox.setTextColor(TEXT_COLOR);
         renameBox.setTextColorUneditable(TEXT_COLOR);
         renameBox.setFocused(true);
-        renameBox.moveCursorToEnd();
+        renameBox.moveCursorToEnd(true);
         addRenderableWidget(renameBox);
     }
 
@@ -284,9 +285,9 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
             drawStringClipped(
                     guiGraphics,
                     menu.getProfileName(profile),
-                    PROFILE_X + 8,
+                    PROFILE_X + 5,
                     y + 5,
-                    PROFILE_WIDTH - 16
+                    PROFILE_WIDTH - 10
             );
         }
     }
@@ -314,10 +315,10 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
 
         drawStringClipped(
                 guiGraphics,
-                "Slot " + (matrix + 1),
-                x + 8,
+                "Matrix " + (matrix + 1),
+                x + 5,
                 y + 5,
-                MATRIX_WIDTH - 16
+                MATRIX_WIDTH - 10
         );
     }
 
@@ -350,9 +351,9 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
         drawStringClipped(
                 guiGraphics,
                 text,
-                x + 7,
+                x + 5,
                 ACTION_Y + 5,
-                ACTION_WIDTH - 14
+                ACTION_WIDTH - 10
         );
     }
 
@@ -376,7 +377,7 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
         drawButton(
                 guiGraphics,
                 SCROLL_CONTROL_X,
-                SCROLL_ARROW_Y,
+                SCROLL_ARROW_UP_Y,
                 SCROLL_ARROW_WIDTH,
                 SCROLL_ARROW_HEIGHT,
                 upActive ? 3 : 3,
@@ -385,7 +386,7 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
         drawButton(
                 guiGraphics,
                 SCROLL_DOWN_X,
-                SCROLL_ARROW_Y,
+                SCROLL_ARROW_DOWN_Y,
                 SCROLL_ARROW_WIDTH,
                 SCROLL_ARROW_HEIGHT,
                 downActive ? 6 : 6,
@@ -397,7 +398,7 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
                 TEXTURE,
                 thumbX,
                 getThumbY(),
-                thumbX == SCROLL_THUMB_X ? 3 : 6,
+                scrollable ? 3 : 6,
                 194,
                 SCROLL_WIDTH,
                 SCROLL_THUMB_HEIGHT,
@@ -449,8 +450,8 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
         guiGraphics.drawString(
                 font,
                 "Profiles " + menu.getProfileCount() + "/" + menu.getMaxProfiles(),
-                8,
-                8,
+                9,
+                9,
                 TEXT_COLOR,
                 false
         );
@@ -458,8 +459,8 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
         guiGraphics.drawString(
                 font,
                 "Active Matrices " + menu.getActiveMatrixCount() + "/" + menu.getMaxActiveMatrices(),
-                111,
-                8,
+                104,
+                9,
                 TEXT_COLOR,
                 false
         );
@@ -572,12 +573,12 @@ public class ExoskeletonProfileScreen extends AbstractContainerScreen<Exoskeleto
         int localY = mouseY - topPos;
         hoveredScrollUp = localX >= SCROLL_CONTROL_X
                 && localX < SCROLL_CONTROL_X + SCROLL_ARROW_WIDTH
-                && localY >= SCROLL_ARROW_Y
-                && localY < SCROLL_ARROW_Y + SCROLL_ARROW_HEIGHT;
+                && localY >= SCROLL_ARROW_UP_Y
+                && localY < SCROLL_ARROW_UP_Y + SCROLL_ARROW_HEIGHT;
         hoveredScrollDown = localX >= SCROLL_DOWN_X
                 && localX < SCROLL_DOWN_X + SCROLL_ARROW_WIDTH
-                && localY >= SCROLL_ARROW_Y
-                && localY < SCROLL_ARROW_Y + SCROLL_ARROW_HEIGHT;
+                && localY >= SCROLL_ARROW_DOWN_Y
+                && localY < SCROLL_ARROW_DOWN_Y + SCROLL_ARROW_HEIGHT;
     }
 
     @Override

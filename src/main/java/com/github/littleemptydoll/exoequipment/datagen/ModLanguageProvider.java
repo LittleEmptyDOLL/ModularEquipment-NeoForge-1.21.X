@@ -65,12 +65,16 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.system", "System status");
         add("gui.exoequipment.inventory", "Inventory");
         add("gui.exoequipment.profiles", "Profiles");
+        add("gui.exoequipment.profiles_count", "Profiles %s/%s");
         add("gui.exoequipment.profile", "Profile %s");
         add("gui.exoequipment.profile_create", "Create");
         add("gui.exoequipment.profile_remove", "Remove");
+        add("gui.exoequipment.profile_delete", "Delete");
         add("gui.exoequipment.matrix_short", "M%s");
+        add("gui.exoequipment.matrix_slot", "Slot %s");
         add("gui.exoequipment.active_profile", "Active profile:");
         add("gui.exoequipment.active_matrices", "Active matrices:");
+        add("gui.exoequipment.active_matrices_count", "Active Matrices %s/%s");
         add("gui.exoequipment.back", "Back");
 
         add("menu.exoequipment.matrix", "Matrix");

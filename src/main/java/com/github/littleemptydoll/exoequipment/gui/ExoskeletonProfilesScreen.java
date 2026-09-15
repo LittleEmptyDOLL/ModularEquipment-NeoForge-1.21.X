@@ -63,9 +63,9 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
         if (profile < 0 || profile >= menu.getProfileCount()) return;
         clearRenameBox();
         renameProfile = profile;
-        renameBox = new EditBox(font, leftPos + PROFILE_X + 7,
-                topPos + PROFILE_Y + (profile - scrollOffset) * PROFILE_STEP + 2,
-                PROFILE_WIDTH - 14, 14, Component.empty());
+        renameBox = new EditBox(font, leftPos + PROFILE_X + 5,
+                topPos + PROFILE_Y + (profile - scrollOffset) * PROFILE_STEP + 5,
+                PROFILE_WIDTH - 10, 14, Component.empty());
         renameBox.setMaxLength(32);
         renameBox.setValue(menu.getProfileName(profile));
         renameBox.setBordered(false);
@@ -74,6 +74,7 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
         renameBox.setFocused(true);
         renameBox.moveCursorToEnd(true);
         addRenderableWidget(renameBox);
+        setInitialFocus(renameBox);
     }
 
     private void clearRenameBox() {
@@ -237,6 +238,15 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (renameBox != null) {
+            if (renameBox.isMouseOver(mouseX, mouseY)) {
+                return super.mouseClicked(mouseX, mouseY, button);
+            }
+
+            if (button == 0) {
+                finishRename(true);
+            }
+        }
         if (button != 0) return super.mouseClicked(mouseX, mouseY, button);
         int profile = profileAt(mouseX, mouseY);
         if (profile >= 0) {
@@ -335,8 +345,8 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
             if (visible < 0 || visible >= VISIBLE_PROFILES) {
                 finishRename(true);
             } else {
-                renameBox.setX(leftPos + PROFILE_X + 7);
-                renameBox.setY(topPos + PROFILE_Y + visible * PROFILE_STEP + 2);
+                renameBox.setX(leftPos + PROFILE_X + 5);
+                renameBox.setY(topPos + PROFILE_Y + visible * PROFILE_STEP + 5);
             }
         }
     }
@@ -346,5 +356,35 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
         updateHover(mouseX, mouseY);
         renderBackground(graphics, mouseX, mouseY, partialTick);
         super.render(graphics, mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (renameBox != null) {
+            if (keyCode == 257) { // Enter
+                finishRename(true);
+                return true;
+            }
+
+            if (keyCode == 256) { // Escape
+                finishRename(false);
+                return true;
+            }
+
+            renameBox.keyPressed(keyCode, scanCode, modifiers);
+            return true;
+        }
+
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (renameBox != null) {
+            renameBox.charTyped(codePoint, modifiers);
+            return true;
+        }
+
+        return super.charTyped(codePoint, modifiers);
     }
 }

@@ -69,7 +69,8 @@ public final class ModNetworking {
                     if (menu.handleAction(
                             payload.action(),
                             payload.profile(),
-                            payload.matrix()
+                            payload.matrix(),
+                            payload.name()
                     )) {
                         PacketDistributor.sendToPlayer(
                                 serverPlayer,

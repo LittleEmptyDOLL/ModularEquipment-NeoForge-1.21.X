@@ -136,23 +136,24 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
     }
 
     private void drawProfileButtons(GuiGraphics graphics) {
-        int topProfile = hoveredProfile;
-        if (topProfile < 0) {
-            int activeProfile = menu.getActiveProfile();
-            if (activeProfile >= scrollOffset && activeProfile < scrollOffset + VISIBLE_PROFILES) {
-                topProfile = activeProfile;
-            }
-        }
-
+        // Сначала все профили
         for (int visible = 0; visible < VISIBLE_PROFILES; visible++) {
             int profile = scrollOffset + visible;
-            if (profile >= menu.getProfileCount() || profile == topProfile) continue;
+            if (profile >= menu.getProfileCount()) break;
             drawProfileButton(graphics, profile, visible);
         }
 
-        if (topProfile >= scrollOffset && topProfile < scrollOffset + VISIBLE_PROFILES
-                && topProfile < menu.getProfileCount()) {
-            drawProfileButton(graphics, topProfile, topProfile - scrollOffset);
+        // Затем активный — поверх соседних
+        int activeProfile = menu.getActiveProfile();
+        if (activeProfile >= scrollOffset
+                && activeProfile < scrollOffset + VISIBLE_PROFILES) {
+            drawProfileButton(graphics, activeProfile, activeProfile - scrollOffset);
+        }
+
+        // И наведённый — самым верхним слоем
+        if (hoveredProfile >= scrollOffset
+                && hoveredProfile < scrollOffset + VISIBLE_PROFILES) {
+            drawProfileButton(graphics, hoveredProfile, hoveredProfile - scrollOffset);
         }
     }
 

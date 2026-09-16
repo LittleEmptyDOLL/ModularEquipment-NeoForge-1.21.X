@@ -156,6 +156,22 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
         return syncedData[DATA_ACTIVE_PROFILE];
     }
 
+    public String getActiveProfileName() {
+        int activeProfile = getActiveProfile();
+
+        if (activeProfile < 0) {
+            return "None";
+        }
+
+        ExoskeletonData data = ExoskeletonItem.getData(exoskeleton);
+
+        if (activeProfile >= data.profiles().size()) {
+            return "None";
+        }
+
+        return data.profiles().get(activeProfile).name();
+    }
+
     public int getEnergyStatus() {
         return syncedData[DATA_ENERGY_STATUS];
     }

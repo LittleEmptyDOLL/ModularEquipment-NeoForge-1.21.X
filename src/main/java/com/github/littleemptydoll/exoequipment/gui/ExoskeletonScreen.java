@@ -236,12 +236,7 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     }
 
     private String getProfileText() {
-        int activeProfile = menu.getActiveProfile();
-        if (activeProfile < 0) {
-            return "None";
-        }
-
-        return truncate("#" + (activeProfile + 1), PROFILE_MAX_WIDTH);
+        return truncate(menu.getActiveProfileName(), PROFILE_MAX_WIDTH);
     }
 
     private String formatEnergy(int stored, int capacity) {

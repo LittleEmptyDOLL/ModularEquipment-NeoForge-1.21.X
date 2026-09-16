@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.item.*;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
+import com.github.littleemptydoll.exoequipment.network.ExoskeletonProfileNameSyncPayload;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -49,6 +50,7 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
     private final ItemStack exoskeleton;
     private final ExoskeletonContainer exoskeletonContainer;
     private final int[] syncedData = new int[DATA_COUNT];
+    private String activeProfileName = "None";
 
     public ExoskeletonMenu(
             int containerId,
@@ -157,15 +159,18 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
     }
 
     public String getActiveProfileName() {
-        int activeProfile = getActiveProfile();
+        return activeProfileName;
+    }
 
-        if (activeProfile < 0) {
-            return "None";
-        }
+    public void applyProfileNameSync(ExoskeletonProfileNameSyncPayload payload) {
+        activeProfileName = payload.name();
+    }
 
+    public String getServerActiveProfileName() {
         ExoskeletonData data = ExoskeletonItem.getData(exoskeleton);
+        int activeProfile = data.activeProfile();
 
-        if (activeProfile >= data.profiles().size()) {
+        if (activeProfile < 0 || activeProfile >= data.profiles().size()) {
             return "None";
         }
 

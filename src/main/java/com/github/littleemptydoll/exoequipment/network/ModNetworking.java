@@ -1,5 +1,6 @@
 package com.github.littleemptydoll.exoequipment.network;
 
+import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenu;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenuProvider;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonProfileMenu;
@@ -28,6 +29,15 @@ public final class ModNetworking {
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer serverPlayer) {
                         ExoskeletonMenuProvider.open(serverPlayer);
+
+                        if (serverPlayer.containerMenu instanceof ExoskeletonMenu menu) {
+                            PacketDistributor.sendToPlayer(
+                                    serverPlayer,
+                                    new ExoskeletonProfileNameSyncPayload(
+                                            menu.getServerActiveProfileName()
+                                    )
+                            );
+                        }
                     }
                 })
         );
@@ -87,6 +97,17 @@ public final class ModNetworking {
                     if (context.player() != null
                             && context.player().containerMenu instanceof ExoskeletonProfileMenu menu) {
                         menu.applySync(payload);
+                    }
+                })
+        );
+
+        registrar.playToClient(
+                ExoskeletonProfileNameSyncPayload.TYPE,
+                ExoskeletonProfileNameSyncPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() != null
+                            && context.player().containerMenu instanceof ExoskeletonMenu menu) {
+                        menu.applyProfileNameSync(payload);
                     }
                 })
         );

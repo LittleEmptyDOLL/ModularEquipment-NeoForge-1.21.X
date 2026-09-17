@@ -28,7 +28,9 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     private static final int INVENTORY_HEIGHT = 111;
     private static final int INVENTORY_HEADER_WIDTH = 196;
     private static final int INVENTORY_HEADER_HEIGHT = 9;
-    private static final int INVENTORY_OFFSET_Y = -3;
+    private static final int INVENTORY_OFFSET_Y = -5;
+    private static final int MATRIX_GRID_OFFSET_Y = 4;
+    private static final int MATRIX_BOTTOM_OFFSET_Y = 8;
     private static final int TOP_CORNER_SIZE = 9;
     private static final int TOP_HEIGHT = 22;
     private static final int SIDE_WIDTH = 9;
@@ -78,7 +80,10 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
     private void renderMatrixBackground(GuiGraphics guiGraphics) {
         int width = imageWidth;
-        int gridBottom = MatrixMenu.GRID_Y + menu.getMatrixHeight() * MatrixMenu.CELL_SIZE;
+        int gridY = MatrixMenu.GRID_Y + MATRIX_GRID_OFFSET_Y;
+        int gridBottom = gridY + menu.getMatrixHeight() * MatrixMenu.CELL_SIZE;
+        int lowerBorderY = gridBottom + MATRIX_BOTTOM_OFFSET_Y;
+
         guiGraphics.blit(TEXTURE, leftPos, topPos, 188, 0, 9, 22, TEXTURE_SIZE, TEXTURE_SIZE);
         guiGraphics.blit(TEXTURE, leftPos + width - TOP_CORNER_SIZE, topPos,
                 197, 0, 9, 22, TEXTURE_SIZE, TEXTURE_SIZE);
@@ -86,26 +91,47 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
                 width - TOP_CORNER_SIZE * 2);
 
         int sideStartY = topPos + TOP_HEIGHT;
-        int sideEndY = topPos + gridBottom;
+        int sideEndY = topPos + lowerBorderY;
         drawVerticalRepeat(guiGraphics, leftPos, sideStartY, sideEndY - sideStartY,
                 224, 9, SIDE_WIDTH, SIDE_HEIGHT);
         drawVerticalRepeat(guiGraphics, leftPos + width - SIDE_WIDTH, sideStartY,
                 sideEndY - sideStartY, 233, 9, SIDE_WIDTH, SIDE_HEIGHT);
 
         if (menu.getMatrixWidth() <= 9) {
-            int bottomY = topPos + gridBottom - TOP_CORNER_SIZE;
-            guiGraphics.blit(TEXTURE, leftPos, bottomY, 224, 0, 9, 9,
-                    TEXTURE_SIZE, TEXTURE_SIZE);
-            guiGraphics.blit(TEXTURE, leftPos + width - 9, bottomY, 233, 0, 9, 9,
-                    TEXTURE_SIZE, TEXTURE_SIZE);
+            guiGraphics.blit(TEXTURE, leftPos, topPos + lowerBorderY,
+                    224, 0, 9, 9, TEXTURE_SIZE, TEXTURE_SIZE);
+            guiGraphics.blit(TEXTURE, leftPos + width - 9, topPos + lowerBorderY,
+                    233, 0, 9, 9, TEXTURE_SIZE, TEXTURE_SIZE);
         } else {
-            int bottomY = topPos + gridBottom;
-            guiGraphics.blit(TEXTURE, leftPos, bottomY, 206, 0, 9, 9,
-                    TEXTURE_SIZE, TEXTURE_SIZE);
-            guiGraphics.blit(TEXTURE, leftPos + width - 9, bottomY, 215, 0, 9, 9,
-                    TEXTURE_SIZE, TEXTURE_SIZE);
-            drawHorizontalRepeat(guiGraphics, leftPos + 9, bottomY, width - 18,
-                    206, 9, 18, 9);
+            guiGraphics.blit(TEXTURE, leftPos, topPos + lowerBorderY,
+                    206, 0, 9, 9, TEXTURE_SIZE, TEXTURE_SIZE);
+            guiGraphics.blit(TEXTURE, leftPos + width - 9, topPos + lowerBorderY,
+                    215, 0, 9, 9, TEXTURE_SIZE, TEXTURE_SIZE);
+            drawHorizontalRepeat(guiGraphics, leftPos + 9, topPos + lowerBorderY,
+                    width - 18, 206, 9, 18, 9);
+        }
+
+        fillMatrixBackgroundGap(guiGraphics, width, gridBottom, lowerBorderY);
+    }
+
+    private void fillMatrixBackgroundGap(GuiGraphics guiGraphics, int width,
+                                         int gridBottom, int lowerBorderY) {
+        int gapHeight = lowerBorderY - gridBottom;
+        if (gapHeight <= 0) return;
+        int gridX = leftPos + menu.getGridX();
+        int x = gridX;
+        int right = leftPos + width;
+        while (x < right) {
+            int partWidth = Math.min(18, right - x);
+            int y = topPos + gridBottom;
+            int remaining = gapHeight;
+            while (remaining > 0) {
+                int partHeight = Math.min(18, remaining);
+                blitPartial(guiGraphics, x, y, 188, 22, partWidth, partHeight);
+                y += partHeight;
+                remaining -= partHeight;
+            }
+            x += partWidth;
         }
     }
 
@@ -159,7 +185,7 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
     private void renderMatrixGrid(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         int gridX = leftPos + menu.getGridX();
-        int gridY = topPos + MatrixMenu.GRID_Y;
+        int gridY = topPos + MatrixMenu.GRID_Y + MATRIX_GRID_OFFSET_Y;
         int gridWidth = menu.getMatrixWidth() * MatrixMenu.CELL_SIZE;
         int gridHeight = menu.getMatrixHeight() * MatrixMenu.CELL_SIZE;
         drawGridFrame(guiGraphics, gridX, gridY, gridWidth, gridHeight);
@@ -194,25 +220,30 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         int frameX = gridX - GRID_BORDER;
         int frameY = gridY - GRID_BORDER;
         int frameWidth = gridWidth + GRID_BORDER * 2;
-        int frameHeight = gridHeight + GRID_BORDER * 2;
+        int frameHeight = gridHeight + GRID_BORDER * 2 + MATRIX_BOTTOM_OFFSET_Y;
 
         guiGraphics.blit(TEXTURE, frameX, frameY, 0, 142, 7, 7,
                 TEXTURE_SIZE, TEXTURE_SIZE);
         guiGraphics.blit(TEXTURE, frameX + frameWidth - 7, frameY, 7, 142, 7, 7,
                 TEXTURE_SIZE, TEXTURE_SIZE);
-        guiGraphics.blit(TEXTURE, frameX, frameY + frameHeight - 7, 14, 142, 7, 7,
+
+        int bottomFrameY = topPos + MatrixMenu.GRID_Y + MATRIX_GRID_OFFSET_Y
+                + gridHeight + MATRIX_BOTTOM_OFFSET_Y;
+        guiGraphics.blit(TEXTURE, frameX, bottomFrameY, 14, 142, 7, 7,
                 TEXTURE_SIZE, TEXTURE_SIZE);
-        guiGraphics.blit(TEXTURE, frameX + frameWidth - 7, frameY + frameHeight - 7,
+        guiGraphics.blit(TEXTURE, frameX + frameWidth - 7, bottomFrameY,
                 21, 142, 7, 7, TEXTURE_SIZE, TEXTURE_SIZE);
 
         drawHorizontalRepeat(guiGraphics, frameX + 7, frameY, gridWidth,
                 28, 142, 18, 7);
-        drawHorizontalRepeat(guiGraphics, frameX + 7, frameY + frameHeight - 7,
+        drawHorizontalRepeat(guiGraphics, frameX + 7, bottomFrameY,
                 gridWidth, 46, 142, 18, 7);
-        drawVerticalRepeat(guiGraphics, frameX, frameY + 7, gridHeight,
+
+        int verticalHeight = gridHeight + MATRIX_BOTTOM_OFFSET_Y;
+        drawVerticalRepeat(guiGraphics, frameX, frameY + 7, verticalHeight,
                 0, 149, 7, 18);
-        drawVerticalRepeat(guiGraphics, frameX + frameWidth - 7, frameY + 7, gridHeight,
-                7, 149, 7, 18);
+        drawVerticalRepeat(guiGraphics, frameX + frameWidth - 7, frameY + 7,
+                verticalHeight, 7, 149, 7, 18);
 
         for (int row = 0; row < menu.getMatrixHeight(); row++) {
             for (int column = 0; column < menu.getMatrixWidth(); column++) {
@@ -229,6 +260,9 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         int inventoryY = topPos + menu.getInventoryY() + INVENTORY_OFFSET_Y;
         guiGraphics.blit(TEXTURE, inventoryX, inventoryY, 0, 0,
                 INVENTORY_WIDTH, INVENTORY_HEIGHT, TEXTURE_SIZE, TEXTURE_SIZE);
+        guiGraphics.drawString(font,
+                Component.translatable("gui.exoequipment.inventory"),
+                inventoryX + 14, inventoryY + 6, 0xFFD8EAF5, false);
         if (menu.getMatrixWidth() > 9) {
             guiGraphics.blit(TEXTURE, inventoryX - 4, inventoryY, 0, 111,
                     INVENTORY_HEADER_WIDTH, INVENTORY_HEADER_HEIGHT,
@@ -313,8 +347,8 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     @Override
     protected void renderSlot(GuiGraphics guiGraphics, Slot slot) {
         if (!slot.hasItem()) return;
-        guiGraphics.renderItem(slot.getItem(), leftPos + slot.x, topPos + slot.y);
-        guiGraphics.renderItemDecorations(font, slot.getItem(), leftPos + slot.x, topPos + slot.y);
+        guiGraphics.renderItem(slot.getItem(), slot.x, slot.y);
+        guiGraphics.renderItemDecorations(font, slot.getItem(), slot.x, slot.y);
     }
 
     @Override
@@ -342,7 +376,7 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
     private int[] getCellAtMouse(int mouseX, int mouseY) {
         int gridX = leftPos + menu.getGridX();
-        int gridY = topPos + MatrixMenu.GRID_Y;
+        int gridY = topPos + MatrixMenu.GRID_Y + MATRIX_GRID_OFFSET_Y;
         int localX = mouseX - gridX;
         int localY = mouseY - gridY;
         if (localX < 0 || localY < 0) return null;

@@ -3,6 +3,7 @@
   "gui.exoequipment.exoskeleton": "Экзоскелет",
   "gui.exoequipment.inventory": "Инвентарь",
   "gui.exoequipment.matrices": "Матрицы",
+  "gui.exoequipment.matrix_size": "Матрица %s/%s",
   "gui.exoequipment.system": "Статус системы",
   "item.exoequipment.basic_exoskeleton": "Базовый Экзоскелет",
   "item.exoequipment.civilian_controller": "Гражданский Контроллер",

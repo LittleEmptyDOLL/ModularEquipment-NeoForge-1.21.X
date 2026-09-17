@@ -28,7 +28,7 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     private static final int INVENTORY_HEADER_HEIGHT = 9;
     private static final int INVENTORY_OFFSET_Y = -5;
     private static final int MATRIX_GRID_OFFSET_Y = 4;
-    private static final int MATRIX_BOTTOM_OFFSET_Y = 8;
+    private static final int MATRIX_BOTTOM_OFFSET_Y = 4;
     private static final int TOP_CORNER_SIZE = 9;
     private static final int TOP_HEIGHT = 22;
     private static final int SIDE_WIDTH = 9;
@@ -36,7 +36,7 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     private static final int GRID_BORDER = 7;
     private static final int BUTTON_WIDTH = 14;
     private static final int BUTTON_HEIGHT = 11;
-    private static final int BUTTON_Y = 7;
+    private static final int BUTTON_Y = 6;
     private static final int BUTTON_NORMAL_U = 76;
     private static final int BUTTON_HOVER_U = 90;
     private static final int MODULE_BACKGROUND_COLOR = 0xFF2C5366;
@@ -172,7 +172,6 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         int gridY = topPos + MatrixMenu.GRID_Y + MATRIX_GRID_OFFSET_Y;
         int gridWidth = menu.getMatrixWidth() * MatrixMenu.CELL_SIZE;
         int gridHeight = menu.getMatrixHeight() * MatrixMenu.CELL_SIZE;
-        renderMatrixCellBackground(guiGraphics, gridX, gridY, gridWidth, gridHeight);
         drawGridFrame(guiGraphics, gridX, gridY, gridWidth, gridHeight);
 
         if (pendingMove && isPendingMoveApplied()) {
@@ -194,40 +193,36 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         }
     }
 
-    private void renderMatrixCellBackground(GuiGraphics guiGraphics, int gridX, int gridY, int gridWidth, int gridHeight) {
+    private void drawGridFrame(GuiGraphics guiGraphics, int gridX, int gridY,
+                               int gridWidth, int gridHeight) {
+        int frameX = gridX - GRID_BORDER;
+        int frameY = gridY - GRID_BORDER;
+        int frameWidth = gridWidth + GRID_BORDER * 2;
+        int frameHeight = gridHeight + GRID_BORDER * 2;
+
+        guiGraphics.blit(TEXTURE, frameX, frameY, 0, 142, 7, 7,
+                TEXTURE_SIZE, TEXTURE_SIZE);
+        guiGraphics.blit(TEXTURE, frameX + frameWidth - 7, frameY, 7, 142, 7, 7,
+                TEXTURE_SIZE, TEXTURE_SIZE);
+        guiGraphics.blit(TEXTURE, frameX, frameY + frameHeight - 7, 14, 142, 7, 7,
+                TEXTURE_SIZE, TEXTURE_SIZE);
+        guiGraphics.blit(TEXTURE, frameX + frameWidth - 7, frameY + frameHeight - 7,
+                21, 142, 7, 7, TEXTURE_SIZE, TEXTURE_SIZE);
+
+        drawHorizontalRepeat(guiGraphics, frameX + 7, frameY, gridWidth,
+                28, 142, 18, 7);
+        drawHorizontalRepeat(guiGraphics, frameX + 7, frameY + frameHeight - 7,
+                gridWidth, 46, 142, 18, 7);
+        drawVerticalRepeat(guiGraphics, frameX, frameY + 7, gridHeight,
+                0, 149, 7, 18);
+        drawVerticalRepeat(guiGraphics, frameX + frameWidth - 7, frameY + 7, gridHeight,
+                7, 149, 7, 18);
+
         for (int row = 0; row < menu.getMatrixHeight(); row++) {
             for (int column = 0; column < menu.getMatrixWidth(); column++) {
                 guiGraphics.blit(TEXTURE,
                         gridX + column * MatrixMenu.CELL_SIZE,
                         gridY + row * MatrixMenu.CELL_SIZE,
-                        188, 22, 18, 18, TEXTURE_SIZE, TEXTURE_SIZE);
-            }
-        }
-    }
-
-    private void drawGridFrame(GuiGraphics guiGraphics, int gridX, int gridY, int gridWidth, int gridHeight) {
-        int frameX = gridX - GRID_BORDER;
-        int frameY = gridY - GRID_BORDER;
-        int frameWidth = gridWidth + GRID_BORDER * 2;
-        int frameHeight = gridHeight + GRID_BORDER * 2 + MATRIX_BOTTOM_OFFSET_Y;
-
-        guiGraphics.blit(TEXTURE, frameX, frameY, 0, 142, 7, 7, TEXTURE_SIZE, TEXTURE_SIZE);
-        guiGraphics.blit(TEXTURE, frameX + frameWidth - 7, frameY, 7, 142, 7, 7, TEXTURE_SIZE, TEXTURE_SIZE);
-
-        int bottomFrameY = topPos + MatrixMenu.GRID_Y + MATRIX_GRID_OFFSET_Y + gridHeight + MATRIX_BOTTOM_OFFSET_Y;
-        guiGraphics.blit(TEXTURE, frameX, bottomFrameY, 14, 142, 7, 7, TEXTURE_SIZE, TEXTURE_SIZE);
-        guiGraphics.blit(TEXTURE, frameX + frameWidth - 7, bottomFrameY, 21, 142, 7, 7, TEXTURE_SIZE, TEXTURE_SIZE);
-
-        drawHorizontalRepeat(guiGraphics, frameX + 7, frameY, gridWidth, 28, 142, 18, 7);
-        drawHorizontalRepeat(guiGraphics, frameX + 7, bottomFrameY, gridWidth, 46, 142, 18, 7);
-
-        int verticalHeight = gridHeight + MATRIX_BOTTOM_OFFSET_Y;
-        drawVerticalRepeat(guiGraphics, frameX, frameY + 7, verticalHeight, 0, 149, 7, 18);
-        drawVerticalRepeat(guiGraphics, frameX + frameWidth - 7, frameY + 7, verticalHeight, 7, 149, 7, 18);
-
-        for (int row = 0; row < menu.getMatrixHeight(); row++) {
-            for (int column = 0; column < menu.getMatrixWidth(); column++) {
-                guiGraphics.blit(TEXTURE, gridX + column * MatrixMenu.CELL_SIZE, gridY + row * MatrixMenu.CELL_SIZE,
                         14, 149, 18, 18, TEXTURE_SIZE, TEXTURE_SIZE);
             }
         }
@@ -299,12 +294,12 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     @Override
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         guiGraphics.drawString(font, Component.translatable("gui.exoequipment.matrix_size", menu.getMatrixWidth(), menu.getMatrixHeight()),
-                12, 7, 0xFFD8EAF5, false);
+                14, 8, 0xFFD8EAF5, false);
         drawCharacteristicsButton(guiGraphics);
     }
 
     private void drawCharacteristicsButton(GuiGraphics guiGraphics) {
-        int x = imageWidth - 20;
+        int x = imageWidth - 23;
         guiGraphics.blit(CONTROLS_TEXTURE, x, BUTTON_Y, characteristicsHovered ? BUTTON_HOVER_U : BUTTON_NORMAL_U,
                 0, BUTTON_WIDTH, BUTTON_HEIGHT, TEXTURE_SIZE, TEXTURE_SIZE);
     }
@@ -397,14 +392,15 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         return target != null && target.id().equals(draggedModule.id()) && target.x() == pendingMoveX && target.y() == pendingMoveY && target.rotation() == pendingMoveRotation;
     }
 
-    @Override
-    public boolean mouseMoved(double mouseX, double mouseY) {
-        double localX = mouseX - leftPos;
-        double localY = mouseY - topPos;
-        characteristicsHovered = localX >= imageWidth - 20 && localX < imageWidth - 20 + BUTTON_WIDTH
-                && localY >= BUTTON_Y && localY < BUTTON_Y + BUTTON_HEIGHT;
-        return super.mouseMoved(mouseX, mouseY);
-    }
+    //ToDo Исправить, несовместимый тип возврата
+//    @Override
+//    public boolean mouseMoved(double mouseX, double mouseY) {
+//        double localX = mouseX - leftPos;
+//        double localY = mouseY - topPos;
+//        characteristicsHovered = localX >= imageWidth - 20 && localX < imageWidth - 20 + BUTTON_WIDTH
+//                && localY >= BUTTON_Y && localY < BUTTON_Y + BUTTON_HEIGHT;
+//        return super.mouseMoved(mouseX, mouseY);
+//    }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {

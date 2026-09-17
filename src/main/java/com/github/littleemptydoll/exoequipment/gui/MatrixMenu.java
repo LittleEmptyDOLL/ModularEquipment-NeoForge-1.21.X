@@ -33,7 +33,7 @@ public class MatrixMenu extends AbstractContainerMenu {
     public static final int PLAYER_INVENTORY_END = 36;
     public static final int CELL_SIZE = 18;
     public static final int GRID_Y = 22;
-    public static final int INVENTORY_X = 13;
+    public static final int INVENTORY_X = 14;
     public static final int INVENTORY_GAP = 18;
     public static final int INVENTORY_BACKGROUND_WIDTH = 188;
     public static final int INVENTORY_BACKGROUND_HEIGHT = 111;
@@ -84,7 +84,7 @@ public class MatrixMenu extends AbstractContainerMenu {
         this.imageHeight = inventoryY + INVENTORY_BACKGROUND_HEIGHT - 3;
         this.syncedModuleEnergy = new int[Math.max(1, width * height)];
         this.playerInventory = playerInventory;
-        addPlayerInventory(playerInventory, inventoryY);
+        addPlayerInventory(playerInventory, inventoryY + 18);
         addModuleEnergyDataSlots();
     }
 

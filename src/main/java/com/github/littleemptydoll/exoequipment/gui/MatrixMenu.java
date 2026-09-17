@@ -84,7 +84,7 @@ public class MatrixMenu extends AbstractContainerMenu {
         this.imageHeight = inventoryY + INVENTORY_BACKGROUND_HEIGHT - 3;
         this.syncedModuleEnergy = new int[Math.max(1, width * height)];
         this.playerInventory = playerInventory;
-        addPlayerInventory(playerInventory, inventoryY + 36);
+        addPlayerInventory(playerInventory, inventoryY + 18);
         addModuleEnergyDataSlots();
     }
 

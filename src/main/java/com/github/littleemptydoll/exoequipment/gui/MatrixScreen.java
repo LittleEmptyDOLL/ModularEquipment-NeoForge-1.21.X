@@ -11,7 +11,6 @@ import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -31,19 +30,16 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     private static final int INVENTORY_HEADER_WIDTH = 196;
     private static final int INVENTORY_HEADER_HEIGHT = 9;
     private static final int INVENTORY_OFFSET_Y = -3;
-
     private static final int TOP_CORNER_SIZE = 9;
     private static final int TOP_HEIGHT = 22;
     private static final int SIDE_WIDTH = 9;
     private static final int SIDE_HEIGHT = 18;
     private static final int GRID_BORDER = 7;
-
     private static final int BUTTON_WIDTH = 14;
     private static final int BUTTON_HEIGHT = 11;
     private static final int BUTTON_Y = 7;
     private static final int BUTTON_NORMAL_U = 76;
     private static final int BUTTON_HOVER_U = 90;
-
     private static final int MODULE_BACKGROUND_COLOR = 0xFF2C5366;
     private static final int MODULE_BORDER_COLOR = 0xFF76B5C9;
     private static final int MODULE_PREVIEW_BACKGROUND_COLOR = 0x553F7185;
@@ -86,7 +82,8 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         int gridBottom = MatrixMenu.GRID_Y + menu.getMatrixHeight() * MatrixMenu.CELL_SIZE;
 
         guiGraphics.blit(TEXTURE, leftPos, topPos, 188, 0, 9, 22, TEXTURE_SIZE, TEXTURE_SIZE);
-        blitMirroredTopRight(guiGraphics, leftPos + width - TOP_CORNER_SIZE, topPos);
+        guiGraphics.blit(TEXTURE, leftPos + width - TOP_CORNER_SIZE, topPos,
+                197, 0, 9, 22, TEXTURE_SIZE, TEXTURE_SIZE);
         drawTopEdge(guiGraphics, leftPos + TOP_CORNER_SIZE, topPos,
                 width - TOP_CORNER_SIZE * 2);
 
@@ -119,7 +116,7 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         int currentX = x;
         int leftWidth = Math.min(78, remaining);
         if (leftWidth > 0) {
-            blitPartial(guiGraphics, currentX, y, 0, 120, leftWidth, 22, 78, 22);
+            blitPartial(guiGraphics, currentX, y, 0, 120, leftWidth, 22);
             currentX += leftWidth;
             remaining -= leftWidth;
         }
@@ -130,13 +127,9 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
             currentX += middleWidth;
             remaining -= middleWidth;
             if (remaining > 0) {
-                blitPartial(guiGraphics, currentX, y, 96, 120, rightWidth, 22, 20, 22);
+                blitPartial(guiGraphics, currentX, y, 96, 120, rightWidth, 22);
             }
         }
-    }
-
-    private void blitMirroredTopRight(GuiGraphics guiGraphics, int x, int y) {
-        guiGraphics.blit(TEXTURE, x, y, 197, 0, 9, 22, TEXTURE_SIZE, TEXTURE_SIZE);
     }
 
     private void drawHorizontalRepeat(GuiGraphics guiGraphics, int x, int y, int width,
@@ -145,8 +138,7 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         int currentX = x;
         while (remaining > 0) {
             int part = Math.min(sourceWidth, remaining);
-            blitPartial(guiGraphics, currentX, y, u, v, part, sourceHeight,
-                    sourceWidth, sourceHeight);
+            blitPartial(guiGraphics, currentX, y, u, v, part, sourceHeight);
             currentX += part;
             remaining -= part;
         }
@@ -158,15 +150,14 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         int currentY = y;
         while (remaining > 0) {
             int part = Math.min(sourceHeight, remaining);
-            blitPartial(guiGraphics, x, currentY, u, v, sourceWidth, part,
-                    sourceWidth, sourceHeight);
+            blitPartial(guiGraphics, x, currentY, u, v, sourceWidth, part);
             currentY += part;
             remaining -= part;
         }
     }
 
     private void blitPartial(GuiGraphics guiGraphics, int x, int y, int u, int v,
-                             int width, int height, int sourceWidth, int sourceHeight) {
+                             int width, int height) {
         guiGraphics.blit(TEXTURE, x, y, u, v, width, height, TEXTURE_SIZE, TEXTURE_SIZE);
     }
 
@@ -213,12 +204,12 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
         guiGraphics.blit(TEXTURE, frameX, frameY, 0, 142, 7, 7,
                 TEXTURE_SIZE, TEXTURE_SIZE);
-        guiGraphics.blit(TEXTURE, frameX + frameWidth - 7, frameY, 21, 142, 7, 7,
+        guiGraphics.blit(TEXTURE, frameX + frameWidth - 7, frameY, 7, 142, 7, 7,
                 TEXTURE_SIZE, TEXTURE_SIZE);
-        guiGraphics.blit(TEXTURE, frameX, frameY + frameHeight - 7, 0, 135, 7, 7,
+        guiGraphics.blit(TEXTURE, frameX, frameY + frameHeight - 7, 14, 142, 7, 7,
                 TEXTURE_SIZE, TEXTURE_SIZE);
         guiGraphics.blit(TEXTURE, frameX + frameWidth - 7, frameY + frameHeight - 7,
-                21, 135, 7, 7, TEXTURE_SIZE, TEXTURE_SIZE);
+                21, 142, 7, 7, TEXTURE_SIZE, TEXTURE_SIZE);
 
         drawHorizontalRepeat(guiGraphics, frameX + 7, frameY, gridWidth,
                 28, 142, 18, 7);
@@ -261,7 +252,6 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         int y = gridY + moduleY * MatrixMenu.CELL_SIZE + 2;
         int width = size.width() * MatrixMenu.CELL_SIZE - 3;
         int height = size.height() * MatrixMenu.CELL_SIZE - 3;
-
         guiGraphics.fill(x, y, x + width, y + height, MODULE_PREVIEW_BACKGROUND_COLOR);
         guiGraphics.renderOutline(x, y, width, height, MODULE_PREVIEW_BORDER_COLOR);
         renderScaledItem(guiGraphics, menu.getCarried(), x, y, width, height);
@@ -275,7 +265,6 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         int y = gridY + moduleY * MatrixMenu.CELL_SIZE + 2;
         int width = size.width() * MatrixMenu.CELL_SIZE - 3;
         int height = size.height() * MatrixMenu.CELL_SIZE - 3;
-
         guiGraphics.fill(x, y, x + width, y + height, MODULE_BACKGROUND_COLOR);
         guiGraphics.renderOutline(x, y, width, height, MODULE_BORDER_COLOR);
         ItemStack stack = createModuleStack(module);
@@ -290,7 +279,6 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
                     y + Math.max(0, (height - 16) / 2));
             return;
         }
-
         int renderedSize = Math.round(16.0F * scale);
         int renderX = x + (width - renderedSize) / 2;
         int renderY = y + (height - renderedSize) / 2;

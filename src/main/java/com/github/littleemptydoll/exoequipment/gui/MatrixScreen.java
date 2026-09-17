@@ -78,9 +78,9 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
     private void renderMatrixBackground(GuiGraphics guiGraphics) {
         int width = imageWidth;
-        int gridX = leftPos + menu.getGridX();
-        int gridY = topPos + MatrixMenu.GRID_Y + MATRIX_GRID_OFFSET_Y;
-        int gridWidth = menu.getMatrixWidth() * MatrixMenu.CELL_SIZE;
+        int gridX = leftPos + 9;
+        int gridY = topPos + 22;
+        int gridWidth = width - 18;
         int gridBottom = MatrixMenu.GRID_Y + MATRIX_GRID_OFFSET_Y + menu.getMatrixHeight() * MatrixMenu.CELL_SIZE;
         int lowerBorderY = gridBottom + MATRIX_BOTTOM_OFFSET_Y;
 
@@ -90,7 +90,7 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
         // Rear matrix background. It is rendered before the matrix slot frame,
         // so the 18x18 texture fills the area behind the slots instead of becoming their fill.
-        fillMatrixBackground(guiGraphics, gridX, gridY, gridWidth, lowerBorderY - (MatrixMenu.GRID_Y + MATRIX_GRID_OFFSET_Y));
+        fillMatrixBackground(guiGraphics, gridX, gridY, gridWidth, lowerBorderY - MatrixMenu.GRID_Y);
 
         int sideStartY = topPos + TOP_HEIGHT;
         int sideEndY = topPos + lowerBorderY;
@@ -103,8 +103,8 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         } else {
             guiGraphics.blit(TEXTURE, leftPos, topPos + lowerBorderY, 206, 0, 9, 9, TEXTURE_SIZE, TEXTURE_SIZE);
             guiGraphics.blit(TEXTURE, leftPos + width - 9, topPos + lowerBorderY, 215, 0, 9, 9, TEXTURE_SIZE, TEXTURE_SIZE);
-            drawHorizontalRepeat(guiGraphics, leftPos + 9, topPos + lowerBorderY, width - 18, 206, 9, 18, 9);
         }
+        drawHorizontalRepeat(guiGraphics, leftPos + 9, topPos + lowerBorderY, width - 18, 206, 9, 18, 9);
     }
 
     private void fillMatrixBackground(GuiGraphics guiGraphics, int x, int y, int width, int height) {

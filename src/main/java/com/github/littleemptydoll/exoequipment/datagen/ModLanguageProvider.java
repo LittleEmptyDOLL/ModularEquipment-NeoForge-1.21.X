@@ -10,25 +10,16 @@ import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class ModLanguageProvider extends LanguageProvider {
-    public ModLanguageProvider(
-            PackOutput output
-    ) {
-        super(
-                output,
-                ExoEquipment.MODID,
-                ExoEquipment.LOCALE
-        );
+    public ModLanguageProvider(PackOutput output) {
+        super(output, ExoEquipment.MODID, ExoEquipment.LOCALE);
     }
 
     @Override
     protected void addTranslations() {
         for (DeferredHolder<Item, ? extends Item> holder : ModItems.ITEMS.getEntries()) {
             ResourceLocation id = holder.getId();
-
-            add(
-                    "item." + id.getNamespace() + "." + id.getPath(),
-                    NameUtils.toDisplayName(id.getPath())
-            );
+            add("item." + id.getNamespace() + "." + id.getPath(),
+                    NameUtils.toDisplayName(id.getPath()));
         }
 
         add("tooltip.exoequipment.type", "Type: %s");
@@ -62,6 +53,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.components", "Components");
         add("gui.exoequipment.matrices", "Matrices");
         add("gui.exoequipment.matrix", "Matrix");
+        add("gui.exoequipment.matrix_size", "Matrix %s/%s");
         add("gui.exoequipment.system", "System status");
         add("gui.exoequipment.inventory", "Inventory");
         add("gui.exoequipment.profiles", "Profiles");

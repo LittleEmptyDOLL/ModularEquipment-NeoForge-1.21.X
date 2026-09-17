@@ -78,13 +78,19 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
     private void renderMatrixBackground(GuiGraphics guiGraphics) {
         int width = imageWidth;
-        int gridY = MatrixMenu.GRID_Y + MATRIX_GRID_OFFSET_Y;
-        int gridBottom = gridY + menu.getMatrixHeight() * MatrixMenu.CELL_SIZE;
+        int gridX = leftPos + menu.getGridX();
+        int gridY = topPos + MatrixMenu.GRID_Y + MATRIX_GRID_OFFSET_Y;
+        int gridWidth = menu.getMatrixWidth() * MatrixMenu.CELL_SIZE;
+        int gridBottom = MatrixMenu.GRID_Y + MATRIX_GRID_OFFSET_Y + menu.getMatrixHeight() * MatrixMenu.CELL_SIZE;
         int lowerBorderY = gridBottom + MATRIX_BOTTOM_OFFSET_Y;
 
         guiGraphics.blit(TEXTURE, leftPos, topPos, 188, 0, 9, 22, TEXTURE_SIZE, TEXTURE_SIZE);
         guiGraphics.blit(TEXTURE, leftPos + width - TOP_CORNER_SIZE, topPos, 197, 0, 9, 22, TEXTURE_SIZE, TEXTURE_SIZE);
         drawTopEdge(guiGraphics, leftPos + TOP_CORNER_SIZE, topPos, width - TOP_CORNER_SIZE * 2);
+
+        // Rear matrix background. It is rendered before the matrix slot frame,
+        // so the 18x18 texture fills the area behind the slots instead of becoming their fill.
+        fillMatrixBackground(guiGraphics, gridX, gridY, gridWidth, lowerBorderY - (MatrixMenu.GRID_Y + MATRIX_GRID_OFFSET_Y));
 
         int sideStartY = topPos + TOP_HEIGHT;
         int sideEndY = topPos + lowerBorderY;
@@ -99,26 +105,23 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
             guiGraphics.blit(TEXTURE, leftPos + width - 9, topPos + lowerBorderY, 215, 0, 9, 9, TEXTURE_SIZE, TEXTURE_SIZE);
             drawHorizontalRepeat(guiGraphics, leftPos + 9, topPos + lowerBorderY, width - 18, 206, 9, 18, 9);
         }
-        fillMatrixBackgroundGap(guiGraphics, width, gridBottom, lowerBorderY);
     }
 
-    private void fillMatrixBackgroundGap(GuiGraphics guiGraphics, int width, int gridBottom, int lowerBorderY) {
-        int gapHeight = lowerBorderY - gridBottom;
-        if (gapHeight <= 0) return;
-        int gridX = leftPos + menu.getGridX();
-        int x = gridX;
-        int right = leftPos + width;
-        while (x < right) {
-            int partWidth = Math.min(18, right - x);
-            int y = topPos + gridBottom;
-            int remaining = gapHeight;
-            while (remaining > 0) {
-                int partHeight = Math.min(18, remaining);
-                blitPartial(guiGraphics, x, y, 188, 22, partWidth, partHeight);
-                y += partHeight;
-                remaining -= partHeight;
+    private void fillMatrixBackground(GuiGraphics guiGraphics, int x, int y, int width, int height) {
+        int remainingHeight = height;
+        int currentY = y;
+        while (remainingHeight > 0) {
+            int partHeight = Math.min(18, remainingHeight);
+            int remainingWidth = width;
+            int currentX = x;
+            while (remainingWidth > 0) {
+                int partWidth = Math.min(18, remainingWidth);
+                blitPartial(guiGraphics, currentX, currentY, 188, 22, partWidth, partHeight);
+                currentX += partWidth;
+                remainingWidth -= partWidth;
             }
-            x += partWidth;
+            currentY += partHeight;
+            remainingHeight -= partHeight;
         }
     }
 
@@ -313,7 +316,7 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
     @Override
     protected void renderSlotHighlight(GuiGraphics guiGraphics, Slot slot, int mouseX, int mouseY, float partialTick) {
-        // Slot backgrounds and highlights are part of matrix.png.
+        super.renderSlotHighlight(guiGraphics, slot, mouseX, mouseY, partialTick);
     }
 
     @Override
@@ -391,16 +394,6 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         InstalledModule target = MatrixOperations.getModuleAt(menu.getMatrixData(), pendingMoveX, pendingMoveY);
         return target != null && target.id().equals(draggedModule.id()) && target.x() == pendingMoveX && target.y() == pendingMoveY && target.rotation() == pendingMoveRotation;
     }
-
-    //ToDo Исправить, несовместимый тип возврата
-//    @Override
-//    public boolean mouseMoved(double mouseX, double mouseY) {
-//        double localX = mouseX - leftPos;
-//        double localY = mouseY - topPos;
-//        characteristicsHovered = localX >= imageWidth - 20 && localX < imageWidth - 20 + BUTTON_WIDTH
-//                && localY >= BUTTON_Y && localY < BUTTON_Y + BUTTON_HEIGHT;
-//        return super.mouseMoved(mouseX, mouseY);
-//    }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {

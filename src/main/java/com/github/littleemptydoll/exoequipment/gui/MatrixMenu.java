@@ -13,13 +13,13 @@ import com.github.littleemptydoll.exoequipment.registry.ModMatrices;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.server.level.ServerPlayer;
 
 public class MatrixMenu extends AbstractContainerMenu {
 
@@ -32,10 +32,12 @@ public class MatrixMenu extends AbstractContainerMenu {
     public static final int PLAYER_INVENTORY_START = 0;
     public static final int PLAYER_INVENTORY_END = 36;
     public static final int CELL_SIZE = 18;
-    public static final int GRID_X = 12;
     public static final int GRID_Y = 22;
-    public static final int INVENTORY_X = 12;
+    public static final int INVENTORY_X = 13;
     public static final int INVENTORY_GAP = 18;
+    public static final int INVENTORY_BACKGROUND_WIDTH = 188;
+    public static final int INVENTORY_BACKGROUND_HEIGHT = 111;
+    public static final int GRID_BORDER = 7;
 
     private ItemStack matrixStack;
     private final ItemStack sourceExoskeleton;
@@ -45,6 +47,7 @@ public class MatrixMenu extends AbstractContainerMenu {
     private final int height;
     private final int imageWidth;
     private final int imageHeight;
+    private final int inventoryY;
     private final int[] syncedModuleEnergy;
     private final Inventory playerInventory;
 
@@ -74,13 +77,28 @@ public class MatrixMenu extends AbstractContainerMenu {
         MatrixDefinition definition = matrixItem.getDefinition();
         this.width = definition.width();
         this.height = definition.height();
-        this.imageWidth = Math.max(176, GRID_X * 2 + width * CELL_SIZE);
-        int inventoryY = GRID_Y + height * CELL_SIZE + INVENTORY_GAP;
-        this.imageHeight = inventoryY + 76;
+        int effectiveWidth = getEffectiveBackgroundWidth(this.width);
+        this.imageWidth = Math.max(INVENTORY_BACKGROUND_WIDTH,
+                effectiveWidth * CELL_SIZE + GRID_BORDER * 2 + 12);
+        this.inventoryY = GRID_Y + height * CELL_SIZE + INVENTORY_GAP;
+        this.imageHeight = inventoryY + INVENTORY_BACKGROUND_HEIGHT - 3;
         this.syncedModuleEnergy = new int[Math.max(1, width * height)];
         this.playerInventory = playerInventory;
         addPlayerInventory(playerInventory, inventoryY);
         addModuleEnergyDataSlots();
+    }
+
+    private static int getEffectiveBackgroundWidth(int matrixWidth) {
+        return matrixWidth > 9 ? Math.max(11, matrixWidth) : 0;
+    }
+
+    public int getGridX() {
+        int gridWidth = width * CELL_SIZE + GRID_BORDER * 2;
+        return (imageWidth - gridWidth) / 2 + GRID_BORDER;
+    }
+
+    public int getInventoryX() {
+        return (imageWidth - INVENTORY_BACKGROUND_WIDTH) / 2 + INVENTORY_X;
     }
 
     private void addModuleEnergyDataSlots() {
@@ -91,9 +109,7 @@ public class MatrixMenu extends AbstractContainerMenu {
             addDataSlot(new DataSlot() {
                 @Override
                 public int get() {
-                    if (levelIsClient()) {
-                        return syncedModuleEnergy[dataIndex];
-                    }
+                    if (levelIsClient()) return syncedModuleEnergy[dataIndex];
                     return getServerModuleEnergy(x, y);
                 }
 
@@ -118,15 +134,11 @@ public class MatrixMenu extends AbstractContainerMenu {
     }
 
     private int getServerModuleEnergy(int x, int y) {
-        if (getPlayer().level().isClientSide) {
-            return syncedModuleEnergy[y * width + x];
-        }
+        if (getPlayer().level().isClientSide) return syncedModuleEnergy[y * width + x];
 
         MatrixData data;
         if (sourceType == SOURCE_HAND) {
-            if (sourceIndex < 0 || sourceIndex >= getPlayer().getInventory().getContainerSize()) {
-                return 0;
-            }
+            if (sourceIndex < 0 || sourceIndex >= getPlayer().getInventory().getContainerSize()) return 0;
             ItemStack stack = getPlayer().getInventory().getItem(sourceIndex);
             data = stack.get(ModDataComponents.MATRIX_DATA.get());
         } else {
@@ -151,17 +163,18 @@ public class MatrixMenu extends AbstractContainerMenu {
     }
 
     private void addPlayerInventory(Inventory inventory, int inventoryY) {
+        int inventoryX = getInventoryX();
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
                 int inventorySlot = column + row * 9 + 9;
                 addSlot(createInventorySlot(inventory, inventorySlot,
-                        INVENTORY_X + column * CELL_SIZE, inventoryY + row * CELL_SIZE));
+                        inventoryX + column * CELL_SIZE, inventoryY + row * CELL_SIZE));
             }
         }
         for (int column = 0; column < 9; column++) {
             int inventorySlot = column;
             addSlot(createInventorySlot(inventory, inventorySlot,
-                    INVENTORY_X + column * CELL_SIZE, inventoryY + 58));
+                    inventoryX + column * CELL_SIZE, inventoryY + 58));
         }
     }
 
@@ -174,19 +187,17 @@ public class MatrixMenu extends AbstractContainerMenu {
 
     public ItemStack getMatrixStack() { return matrixStack; }
     public void setMatrixStack(ItemStack matrixStack) { if (matrixStack.getItem() instanceof MatrixItem) this.matrixStack = matrixStack; }
-
     public MatrixData getMatrixData() {
         MatrixData data = matrixStack.get(ModDataComponents.MATRIX_DATA.get());
         if (data == null) throw new IllegalStateException("Matrix stack does not contain matrix data");
         return data;
     }
-
     public MatrixDefinition getMatrixDefinition() { return MatrixItem.get(matrixStack).getDefinition(); }
     public int getMatrixWidth() { return width; }
     public int getMatrixHeight() { return height; }
     public int getImageWidth() { return imageWidth; }
     public int getImageHeight() { return imageHeight; }
-    public int getInventoryY() { return GRID_Y + height * CELL_SIZE + INVENTORY_GAP; }
+    public int getInventoryY() { return inventoryY; }
     public int getSourceType() { return sourceType; }
     public int getSourceIndex() { return sourceIndex; }
 
@@ -230,24 +241,16 @@ public class MatrixMenu extends AbstractContainerMenu {
                                 int x, int y, int rotation) {
         ItemStack carried = getCarried();
         if (!(carried.getItem() instanceof ModuleItem moduleItem)) return false;
-
         var moduleDefinition = moduleItem.getDefinition();
         int storedEnergy = carried.getOrDefault(ModDataComponents.MODULE_STORED_ENERGY.get(), 0);
         int finalStoredEnergy = storedEnergy;
         storedEnergy = moduleDefinition.storage()
-                .map(storage -> Math.min(finalStoredEnergy, storage.capacity()))
-                .orElse(0);
-
-        InstalledModule module = new InstalledModule(
-                moduleDefinition.id(), x, y, rotation, storedEnergy
-        );
+                .map(storage -> Math.min(finalStoredEnergy, storage.capacity())).orElse(0);
+        InstalledModule module = new InstalledModule(moduleDefinition.id(), x, y, rotation, storedEnergy);
         MatrixData updated = MatrixOperations.addModule(matrix, definition, module);
-
         applyMatrixData(player, updated);
         carried.shrink(1);
-        if (!carried.isEmpty()) {
-            carried.remove(ModDataComponents.MODULE_STORED_ENERGY.get());
-        }
+        if (!carried.isEmpty()) carried.remove(ModDataComponents.MODULE_STORED_ENERGY.get());
         setCarried(carried);
         return true;
     }
@@ -255,14 +258,12 @@ public class MatrixMenu extends AbstractContainerMenu {
     private boolean removeModule(ServerPlayer player, MatrixData matrix, int x, int y) {
         InstalledModule module = MatrixOperations.getModuleAt(matrix, x, y);
         if (module == null) return false;
-
         ItemStack moduleStack = ModModules.find(module.id()).getItem().getDefaultInstance();
         var storage = ModModules.getDefinition(module.id()).storage();
         if (storage.isPresent() && module.storedEnergy() > 0) {
             int storedEnergy = Math.min(module.storedEnergy(), storage.get().capacity());
             moduleStack.set(ModDataComponents.MODULE_STORED_ENERGY.get(), storedEnergy);
         }
-
         if (!giveModule(player, moduleStack)) return false;
         applyMatrixData(player, MatrixOperations.removeModule(matrix, x, y));
         return true;
@@ -323,7 +324,6 @@ public class MatrixMenu extends AbstractContainerMenu {
                 throw new IllegalStateException("Matrix is no longer in the source slot");
             return stack;
         }
-
         ItemStack exoskeleton = ExoskeletonMenuProvider.findBodyExoskeleton(player)
                 .orElseThrow(() -> new IllegalStateException("Exoskeleton is no longer equipped"));
         ExoskeletonData data = ExoskeletonItem.getData(exoskeleton);

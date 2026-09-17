@@ -23,7 +23,6 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
             ExoEquipment.MODID, "textures/gui/matrix.png");
     private static final ResourceLocation CONTROLS_TEXTURE = ResourceLocation.fromNamespaceAndPath(
             ExoEquipment.MODID, "textures/gui/controls.png");
-
     private static final int TEXTURE_SIZE = 256;
     private static final int INVENTORY_WIDTH = 188;
     private static final int INVENTORY_HEIGHT = 111;
@@ -80,7 +79,6 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     private void renderMatrixBackground(GuiGraphics guiGraphics) {
         int width = imageWidth;
         int gridBottom = MatrixMenu.GRID_Y + menu.getMatrixHeight() * MatrixMenu.CELL_SIZE;
-
         guiGraphics.blit(TEXTURE, leftPos, topPos, 188, 0, 9, 22, TEXTURE_SIZE, TEXTURE_SIZE);
         guiGraphics.blit(TEXTURE, leftPos + width - TOP_CORNER_SIZE, topPos,
                 197, 0, 9, 22, TEXTURE_SIZE, TEXTURE_SIZE);
@@ -126,9 +124,7 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
             drawHorizontalRepeat(guiGraphics, currentX, y, middleWidth, 78, 120, 18, 22);
             currentX += middleWidth;
             remaining -= middleWidth;
-            if (remaining > 0) {
-                blitPartial(guiGraphics, currentX, y, 96, 120, rightWidth, 22);
-            }
+            if (remaining > 0) blitPartial(guiGraphics, currentX, y, 96, 120, rightWidth, 22);
         }
     }
 
@@ -166,7 +162,6 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         int gridY = topPos + MatrixMenu.GRID_Y;
         int gridWidth = menu.getMatrixWidth() * MatrixMenu.CELL_SIZE;
         int gridHeight = menu.getMatrixHeight() * MatrixMenu.CELL_SIZE;
-
         drawGridFrame(guiGraphics, gridX, gridY, gridWidth, gridHeight);
 
         if (pendingMove && isPendingMoveApplied()) {
@@ -187,7 +182,6 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
                         module.x(), module.y(), module.rotation());
             }
         }
-
         if (previewOrigin != null && draggedModule == null
                 && menu.getCarried().getItem() instanceof ModuleItem) {
             renderCarriedModulePreview(guiGraphics, gridX, gridY,
@@ -235,7 +229,6 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         int inventoryY = topPos + menu.getInventoryY() + INVENTORY_OFFSET_Y;
         guiGraphics.blit(TEXTURE, inventoryX, inventoryY, 0, 0,
                 INVENTORY_WIDTH, INVENTORY_HEIGHT, TEXTURE_SIZE, TEXTURE_SIZE);
-
         if (menu.getMatrixWidth() > 9) {
             guiGraphics.blit(TEXTURE, inventoryX - 4, inventoryY, 0, 111,
                     INVENTORY_HEADER_WIDTH, INVENTORY_HEADER_HEIGHT,
@@ -412,9 +405,11 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
     @Override
     public boolean mouseMoved(double mouseX, double mouseY) {
-        characteristicsHovered = mouseX >= imageWidth - 20
-                && mouseX < imageWidth - 20 + BUTTON_WIDTH
-                && mouseY >= BUTTON_Y && mouseY < BUTTON_Y + BUTTON_HEIGHT;
+        double localX = mouseX - leftPos;
+        double localY = mouseY - topPos;
+        characteristicsHovered = localX >= imageWidth - 20
+                && localX < imageWidth - 20 + BUTTON_WIDTH
+                && localY >= BUTTON_Y && localY < BUTTON_Y + BUTTON_HEIGHT;
         return super.mouseMoved(mouseX, mouseY);
     }
 
@@ -501,7 +496,6 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
                 hasLastDragPreview = false;
                 return true;
             }
-
             int[] target = getCenteredOrigin(cell[0], cell[1], getModuleSize(module));
             boolean rotationChanged = draggedRotation != module.rotation();
             boolean remove = !dragMoved && !rotationChanged;

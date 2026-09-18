@@ -147,7 +147,7 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
         drawProfileHover(guiGraphics);
 
         drawStatusValue(guiGraphics, formatEnergy(menu.getEnergyStored(), menu.getEnergyCapacity()), ENERGY_Y);
-        drawStatusValue(guiGraphics, "None", TEMPERATURE_Y);
+        drawStatusValue(guiGraphics, formatTemperature(menu.getTemperature()), TEMPERATURE_Y);
         drawStatusValue(guiGraphics, getProfileText(), PROFILE_Y);
         drawMatrixIndicators(guiGraphics);
     }
@@ -240,7 +240,7 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
         }
     }
 
-    private String getProfileText() {
+    private String formatTemperature(double temperature) {\n        return String.format(java.util.Locale.ROOT, "%.1f°C", temperature);\n    }\n\n    private String getProfileText() {
         return truncate(menu.getActiveProfileName(), PROFILE_MAX_WIDTH);
     }
 
@@ -356,7 +356,7 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
             int mouseY
     ) {
         List<Component> lines = new ArrayList<>();
-        lines.add(Component.translatable("gui.exoequipment.system_status"));
+        lines.add(Component.translatable("gui.exoequipment.system_status"));\n        lines.add(Component.translatable("gui.exoequipment.status.temperature", formatTemperature(menu.getTemperature())));
 
         int flags = menu.getStatusFlags();
 

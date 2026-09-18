@@ -60,6 +60,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.status.energy_warning", "Insufficient energy");
         add("gui.exoequipment.status.energy_critical", "Energy system cannot supply active modules");
         add("gui.exoequipment.status.energy_unavailable", "Energy system unavailable");
+        add("gui.exoequipment.status.controller_missing", "Controller not installed");
         add("gui.exoequipment.status.frame_missing", "Frame not installed");
         add("gui.exoequipment.status.module_too_large", "Module exceeds frame size");
         add("gui.exoequipment.inventory", "Inventory");

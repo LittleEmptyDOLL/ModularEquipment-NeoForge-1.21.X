@@ -17,7 +17,9 @@ public record ModuleDefinition(
         Optional<GenerationProperties> generation,
         Optional<StorageProperties> storage,
         Optional<ThermalProperties> thermal,
-        Optional<TemperatureProperties> temperature
+        Optional<TemperatureProperties> temperature,
+        Optional<DamageReductionProperties> damageReduction,
+        Optional<ShieldProperties> shield
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -48,7 +50,13 @@ public record ModuleDefinition(
                                     .forGetter(ModuleDefinition::thermal),
                             TemperatureProperties.CODEC
                                     .optionalFieldOf("temperature")
-                                    .forGetter(ModuleDefinition::temperature)
+                                    .forGetter(ModuleDefinition::temperature),
+                            DamageReductionProperties.CODEC
+                                    .optionalFieldOf("damage_reduction")
+                                    .forGetter(ModuleDefinition::damageReduction),
+                            ShieldProperties.CODEC
+                                    .optionalFieldOf("shield")
+                                    .forGetter(ModuleDefinition::shield)
                     ).apply(
                             instance,
                             ModuleDefinition::new
@@ -75,6 +83,8 @@ public record ModuleDefinition(
         private StorageProperties storage;
         private ThermalProperties thermal;
         private TemperatureProperties temperature;
+        private DamageReductionProperties damageReduction;
+        private ShieldProperties shield;
 
         private Builder(
                 ResourceLocation id,
@@ -113,6 +123,16 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder damageReduction(DamageReductionProperties damageReduction) {
+            this.damageReduction = damageReduction;
+            return this;
+        }
+
+        public Builder shield(ShieldProperties shield) {
+            this.shield = shield;
+            return this;
+        }
+
         public ModuleDefinition build() {
             return new ModuleDefinition(
                     id,
@@ -123,7 +143,9 @@ public record ModuleDefinition(
                     Optional.ofNullable(generation),
                     Optional.ofNullable(storage),
                     Optional.ofNullable(thermal),
-                    Optional.ofNullable(temperature)
+                    Optional.ofNullable(temperature),
+                    Optional.ofNullable(damageReduction),
+                    Optional.ofNullable(shield)
             );
         }
     }

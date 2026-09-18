@@ -3,7 +3,8 @@ package com.github.littleemptydoll.exoequipment.event;
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.module.DefenseOperations;
-import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
+import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,7 +15,6 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.Optional;
-import java.util.Set;
 
 @EventBusSubscriber(modid = ExoEquipment.MODID)
 public final class DefenseEvents {
@@ -46,9 +46,16 @@ public final class DefenseEvents {
         }
 
         ItemStack stack = exoskeletonStack.get();
-        ExoskeletonItem exoskeleton = (ExoskeletonItem) stack.getItem();
-
         var data = ExoskeletonItem.getData(stack);
+
+        ExoskeletonRuntimeState runtime = stack.get(
+                com.github.littleemptydoll.exoequipment.registry.ModDataComponents
+                        .EXOSKELETON_RUNTIME.get()
+        );
+
+        if (runtime == null) {
+            runtime = ExoskeletonRuntimeState.empty();
+        }
         DamageSource source = event.getSource();
 
         ResourceLocation damageType =
@@ -61,19 +68,34 @@ public final class DefenseEvents {
             return;
         }
 
-        double multiplier = DefenseOperations.calculateDamageMultiplier(
+        ShieldOperations.ShieldDamageResult shieldResult =
+                ShieldOperations.absorbDamage(
+                        event.getAmount(),
+                        data,
+                        runtime
+                );
+
+        runtime = shieldResult.runtime();
+
+        double remainingDamage = shieldResult.remainingDamage();
+
+        remainingDamage = DefenseOperations.applyDamageReduction(
+                remainingDamage,
                 data,
-                damageType
+                damageType,
+                runtime.poweredModules()
         );
 
-        if (multiplier >= 1.0D) {
-            return;
-        }
+        stack.set(
+                com.github.littleemptydoll.exoequipment.registry.ModDataComponents
+                        .EXOSKELETON_RUNTIME.get(),
+                runtime
+        );
 
         event.setAmount(
                 (float) Math.max(
                         0.0D,
-                        event.getAmount() * multiplier
+                        remainingDamage
                 )
         );
     }

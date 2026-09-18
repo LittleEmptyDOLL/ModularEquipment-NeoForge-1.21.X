@@ -13,6 +13,7 @@ public record SystemStatus(int severity, int flags) {
     public static final int FLAG_ENERGY_CRITICAL = 1 << 1;
     public static final int FLAG_OVERSIZED_MODULE = 1 << 2;
     public static final int FLAG_FRAME_MISSING = 1 << 3;
+    public static final int FLAG_CONTROLLER_MISSING = 1 << 4;
 
     public static SystemStatus calculate(ExoskeletonData data) {
         EnergyState energy = EnergyState.calculate(data);
@@ -30,6 +31,11 @@ public record SystemStatus(int severity, int flags) {
         } else if (energy.netGeneration() < 0) {
             flags |= FLAG_ENERGY_WARNING;
             severity = YELLOW;
+        }
+
+        if (data.controller().isEmpty()) {
+            flags |= FLAG_CONTROLLER_MISSING;
+            severity = maxSeverity(severity, RED);
         }
 
         boolean hasActiveModules = !ExoskeletonState.activeMatrices(data).isEmpty();

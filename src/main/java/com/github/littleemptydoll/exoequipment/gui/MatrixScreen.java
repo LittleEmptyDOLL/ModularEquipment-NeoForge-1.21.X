@@ -1,7 +1,6 @@
 package com.github.littleemptydoll.exoequipment.gui;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
-import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.item.ModuleItem;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
@@ -17,8 +16,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

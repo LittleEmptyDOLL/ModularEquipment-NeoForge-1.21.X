@@ -143,6 +143,31 @@ public class ModModules {
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
+            > TEST_SHIELD = REGISTRY.register(
+            "test_shield",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.DEFENSE,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(5, 1))
+                            .shield(new ShieldProperties(
+                                    50,
+                                    5,
+                                    20
+                            ))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
             > TEST_COOLER = REGISTRY.register(
             "test_cooler",
             new EquipmentProperties(

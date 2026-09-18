@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.gui;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.item.ModuleItem;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
@@ -16,6 +17,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
@@ -327,7 +333,19 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
             return;
         }
         ItemStack stack = createModuleStack(module);
-        if (!stack.isEmpty()) guiGraphics.renderTooltip(font, stack, mouseX, mouseY);
+        if (stack.isEmpty()) return;
+
+        List<Component> tooltip = new ArrayList<>();
+        if (stack.getItem() instanceof ModuleItem moduleItem) {
+            moduleItem.appendHoverTextWithTemperature(
+                    stack,
+                    tooltip,
+                    menu.getTemperature()
+            );
+            guiGraphics.renderTooltip(font, tooltip, Optional.empty(), mouseX, mouseY);
+        } else {
+            guiGraphics.renderTooltip(font, stack, mouseX, mouseY);
+        }
     }
 
     private InstalledModule getModuleAtMouse(int mouseX, int mouseY) {

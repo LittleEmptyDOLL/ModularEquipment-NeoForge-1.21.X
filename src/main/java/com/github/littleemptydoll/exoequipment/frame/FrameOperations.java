@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.frame;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.module.ModuleSize;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
@@ -33,8 +34,7 @@ public final class FrameOperations {
             return false;
         }
 
-        return data.matrices().stream()
-                .flatMap(slot -> slot.matrix().stream())
+        return ExoskeletonState.activeMatrices(data).stream()
                 .flatMap(matrix -> matrix.modules().stream())
                 .anyMatch(module -> !isModuleSupported(data, module));
     }

@@ -3,6 +3,7 @@ package com.github.littleemptydoll.exoequipment.energy;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
+import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.module.StorageProperties;
 import com.github.littleemptydoll.exoequipment.registry.ModEnergySystems;
@@ -245,10 +246,18 @@ public final class EnergyOperations {
                     continue;
                 }
 
-                int current = Math.min(module.storedEnergy(), storage.capacity());
+                int effectiveCapacity = MatrixOperations.calculateEnergyStorageCapacity(
+                        new MatrixData(matrix.id(), List.of(module)),
+                        ignored -> true,
+                        updated.temperature()
+                );
+                int current = Math.min(module.storedEnergy(), effectiveCapacity);
                 int accepted = Math.min(
                         remaining,
-                        Math.min(storage.maxInput(), storage.capacity() - current)
+                        Math.min(
+                                storage.maxInput(),
+                                Math.max(0, effectiveCapacity - current)
+                        )
                 );
                 if (accepted <= 0) {
                     if (current != module.storedEnergy()) {
@@ -298,7 +307,12 @@ public final class EnergyOperations {
                     continue;
                 }
 
-                int current = Math.min(module.storedEnergy(), storage.capacity());
+                int effectiveCapacity = MatrixOperations.calculateEnergyStorageCapacity(
+                        new MatrixData(matrix.id(), List.of(module)),
+                        ignored -> true,
+                        updated.temperature()
+                );
+                int current = Math.min(module.storedEnergy(), effectiveCapacity);
                 int extracted = Math.min(
                         remaining,
                         Math.min(storage.maxOutput(), current)

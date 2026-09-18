@@ -49,6 +49,7 @@ public class MatrixMenu extends AbstractContainerMenu {
     private final int imageHeight;
     private final int inventoryY;
     private final int[] syncedModuleEnergy;
+    private int syncedTemperature = 2000;
     private final Inventory playerInventory;
 
     public MatrixMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buffer) {
@@ -86,6 +87,7 @@ public class MatrixMenu extends AbstractContainerMenu {
         this.playerInventory = playerInventory;
         addPlayerInventory(playerInventory, inventoryY + 18);
         addModuleEnergyDataSlots();
+        addTemperatureDataSlot();
     }
 
     private static int getEffectiveBackgroundWidth(int matrixWidth) {
@@ -155,6 +157,37 @@ public class MatrixMenu extends AbstractContainerMenu {
         return ModModules.getDefinition(module.id()).storage()
                 .map(storage -> Math.min(module.storedEnergy(), storage.capacity()))
                 .orElse(0);
+    }
+
+    private void addTemperatureDataSlot() {
+        addDataSlot(new DataSlot() {
+            @Override
+            public int get() {
+                if (levelIsClient()) return syncedTemperature;
+                return getServerTemperature();
+            }
+
+            @Override
+            public void set(int value) {
+                syncedTemperature = value;
+            }
+        });
+    }
+
+    private int getServerTemperature() {
+        if (sourceType != SOURCE_EXOSKELETON) return 2000;
+
+        ItemStack exoskeleton = ExoskeletonMenuProvider.findBodyExoskeleton(getPlayer()).orElse(null);
+        if (exoskeleton == null) return 2000;
+
+        double temperature = ExoskeletonItem.getData(exoskeleton).temperature();
+        return Math.max(Integer.MIN_VALUE, Math.min(Integer.MAX_VALUE, (int) Math.round(temperature * 10.0D)));
+    }
+
+    public double getTemperature() {
+        return sourceType == SOURCE_EXOSKELETON
+                ? syncedTemperature / 10.0D
+                : Double.NaN;
     }
 
     public int getSyncedStoredEnergy(int x, int y) {

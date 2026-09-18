@@ -7,14 +7,13 @@ import java.util.Locale;
 
 public enum ModuleCategory {
     ENERGY,
-    COOLING,
+    THERMAL,
     DEFENSE,
     MOBILITY,
     SURVIVAL,
     SENSOR,
     COMBAT,
-    UTILITY,
-    EXPERIMENTAL;
+    UTILITY;
 
     public static final Codec<ModuleCategory> CODEC =
             Codec.STRING.comapFlatMap(

@@ -102,7 +102,7 @@ public class ModModules {
                     ModuleDefinition.builder(
                             id,
                             properties,
-                            ModuleCategory.UTILITY,
+                            ModuleCategory.ENERGY,
                             new ModuleSize(3, 3)
                     )
                             .generation(new GenerationProperties(40))
@@ -128,7 +128,7 @@ public class ModModules {
                     ModuleDefinition.builder(
                             id,
                             properties,
-                            ModuleCategory.UTILITY,
+                            ModuleCategory.ENERGY,
                             new ModuleSize(2, 3)
                     )
                             .storage(new StorageProperties(10_000, 100, 200))
@@ -153,7 +153,7 @@ public class ModModules {
                     ModuleDefinition.builder(
                                     id,
                                     properties,
-                                    ModuleCategory.UTILITY,
+                                    ModuleCategory.THERMAL,
                                     new ModuleSize(2, 2)
                             )
                             .energy(new EnergyProperties(10))
@@ -174,7 +174,7 @@ public class ModModules {
                     ModuleDefinition.builder(
                                     id,
                                     properties,
-                                    ModuleCategory.UTILITY,
+                                    ModuleCategory.THERMAL,
                                     new ModuleSize(2, 2)
                             )
                             .energy(new EnergyProperties(10))

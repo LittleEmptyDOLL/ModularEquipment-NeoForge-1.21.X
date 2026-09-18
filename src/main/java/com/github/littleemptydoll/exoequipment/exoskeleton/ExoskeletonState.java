@@ -90,7 +90,8 @@ public final class ExoskeletonState {
         for (MatrixData matrix : activeMatrices(data)) {
             MatrixState state = MatrixOperations.calculateState(
                     matrix,
-                    module -> FrameOperations.isModuleSupported(data, module)
+                    module -> FrameOperations.isModuleSupported(data, module),
+                    data.temperature()
             );
 
             energyConsumption += state.energyConsumption();

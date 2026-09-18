@@ -35,8 +35,17 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
             List<Component> tooltip,
             TooltipFlag flag
     ) {
+        appendHoverTextWithTemperature(stack, context, tooltip, flag, Double.NaN);
+    }
+
+    public void appendHoverTextWithTemperature(
+            ItemStack stack,
+            TooltipContext context,
+            List<Component> tooltip,
+            TooltipFlag flag,
+            double temperature
+    ) {
         ModuleDefinition definition = getDefinition();
-        double temperature = TooltipHelper.currentExoskeletonTemperature();
         double efficiency = definition.temperature().isPresent() && !Double.isNaN(temperature)
                 ? TemperatureOperations.calculateModuleEfficiency(definition, temperature)
                 : 1.0D;

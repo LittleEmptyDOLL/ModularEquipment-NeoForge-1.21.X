@@ -40,7 +40,8 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
     private static final int DATA_ACTIVE_PROFILE = 3;
     private static final int DATA_ENERGY_STATUS = 4;
     private static final int DATA_STATUS_FLAGS = 5;
-    private static final int DATA_COUNT = 6;
+    private static final int DATA_TEMPERATURE = 6;
+    private static final int DATA_COUNT = 7;
 
     public static final int ENERGY_STATUS_GREEN = 0;
     public static final int ENERGY_STATUS_YELLOW = 1;
@@ -120,6 +121,7 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
             case DATA_ACTIVE_PROFILE -> data.activeProfile();
             case DATA_ENERGY_STATUS -> status.severity();
             case DATA_STATUS_FLAGS -> status.flags();
+            case DATA_TEMPERATURE -> (int) Math.round(data.temperature() * 10.0D);
             default -> 0;
         };
     }
@@ -171,6 +173,10 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
 
     public int getStatusFlags() {
         return syncedData[DATA_STATUS_FLAGS];
+    }
+
+    public double getTemperature() {
+        return syncedData[DATA_TEMPERATURE] / 10.0D;
     }
 
     public boolean isMatrixActive(int slot) {

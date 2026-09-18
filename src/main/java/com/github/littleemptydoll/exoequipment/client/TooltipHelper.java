@@ -1,34 +1,18 @@
 package com.github.littleemptydoll.exoequipment.client;
 
-import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.module.ModuleCategory;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import com.github.littleemptydoll.exoequipment.util.NameUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import top.theillusivec4.curios.api.CuriosApi;
 
 public final class TooltipHelper {
     private TooltipHelper() {}
 
     public static boolean isShiftDown() {
         return Screen.hasShiftDown();
-    }
-
-    public static double currentExoskeletonTemperature() {
-        if (Minecraft.getInstance().player == null) {
-            return Double.NaN;
-        }
-
-        return CuriosApi.getCuriosInventory(Minecraft.getInstance().player)
-                .flatMap(handler -> handler.findFirstCurio(
-                        stack -> stack.getItem() instanceof ExoskeletonItem
-                ))
-                .map(result -> ExoskeletonItem.getData(result.stack()).temperature())
-                .orElse(Double.NaN);
     }
 
     private static Component styledValue(int value, double efficiency) {

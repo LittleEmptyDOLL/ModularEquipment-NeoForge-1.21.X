@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.energy.EnergyState;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonContainer;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
+import com.github.littleemptydoll.exoequipment.exoskeleton.SystemStatus;
 import com.github.littleemptydoll.exoequipment.item.*;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
 import com.github.littleemptydoll.exoequipment.network.ExoskeletonProfileNameSyncPayload;
@@ -38,7 +39,8 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
     private static final int DATA_ACTIVE_MATRICES = 2;
     private static final int DATA_ACTIVE_PROFILE = 3;
     private static final int DATA_ENERGY_STATUS = 4;
-    private static final int DATA_COUNT = 5;
+    private static final int DATA_STATUS_FLAGS = 5;
+    private static final int DATA_COUNT = 6;
 
     public static final int ENERGY_STATUS_GREEN = 0;
     public static final int ENERGY_STATUS_YELLOW = 1;
@@ -109,31 +111,17 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
     private int getServerDataValue(int index) {
         ExoskeletonData data = ExoskeletonItem.getData(exoskeleton);
         EnergyState energy = EnergyState.calculate(data);
+        SystemStatus status = SystemStatus.calculate(data);
 
         return switch (index) {
             case DATA_ENERGY_STORED -> energy.storedEnergy();
             case DATA_ENERGY_CAPACITY -> energy.storageCapacity();
             case DATA_ACTIVE_MATRICES -> buildActiveMatrixMask(data);
             case DATA_ACTIVE_PROFILE -> data.activeProfile();
-            case DATA_ENERGY_STATUS -> calculateEnergyStatus(energy);
+            case DATA_ENERGY_STATUS -> status.severity();
+            case DATA_STATUS_FLAGS -> status.flags();
             default -> 0;
         };
-    }
-
-    private int calculateEnergyStatus(EnergyState energy) {
-        if (energy.maxInput() == 0 && energy.maxOutput() == 0) {
-            return ENERGY_STATUS_GRAY;
-        }
-
-        if (energy.generation() == 0
-                && energy.storedEnergy() == 0
-                && energy.consumption() > 0) {
-            return ENERGY_STATUS_RED;
-        }
-
-        return energy.netGeneration() < 0
-                ? ENERGY_STATUS_YELLOW
-                : ENERGY_STATUS_GREEN;
     }
 
     private int buildActiveMatrixMask(ExoskeletonData data) {
@@ -179,6 +167,10 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
 
     public int getEnergyStatus() {
         return syncedData[DATA_ENERGY_STATUS];
+    }
+
+    public int getStatusFlags() {
+        return syncedData[DATA_STATUS_FLAGS];
     }
 
     public boolean isMatrixActive(int slot) {

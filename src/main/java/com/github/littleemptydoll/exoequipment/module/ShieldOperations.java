@@ -9,7 +9,6 @@ import com.github.littleemptydoll.exoequipment.registry.ModModules;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,16 +25,11 @@ public final class ShieldOperations {
         }
 
         List<ShieldTarget> targets = collectShields(data);
-
         if (targets.isEmpty()) {
             return new ShieldDamageResult(damage, runtime);
         }
 
-        List<ShieldState> states = normalizeStates(
-                targets,
-                runtime.shields()
-        );
-
+        List<ShieldState> states = normalizeStates(targets, runtime.shields());
         double remaining = damage;
 
         for (ShieldTarget target : targets) {
@@ -43,37 +37,24 @@ public final class ShieldOperations {
                 break;
             }
 
-            ShieldState state = findState(
+            ShieldState state = findState(states, target.reference());
+
+            if (state.currentEnergy() <= 0.0D
+                    || !isPowered(target, runtime.poweredModules())) {
+                continue;
+            }
+
+            double absorbed = Math.min(remaining, state.currentEnergy());
+
+            states = replaceState(
                     states,
-                    target.reference()
+                    new ShieldState(
+                            state.reference(),
+                            state.currentEnergy() - absorbed,
+                            target.properties().rechargeDelay()
+                    )
             );
 
-            if (state.currentEnergy() <= 0) {
-                continue;
-            }
-
-            if (!isPowered(target, runtime.poweredModules())) {
-                continue;
-            }
-
-            int absorbed = (int) Math.min(
-                    remaining,
-                    state.currentEnergy()
-            );
-
-            if (absorbed <= 0) {
-                continue;
-            }
-
-            int currentEnergy = state.currentEnergy() - absorbed;
-
-            state = new ShieldState(
-                    state.reference(),
-                    currentEnergy,
-                    target.properties().rechargeDelay()
-            );
-
-            states = replaceState(states, state);
             remaining -= absorbed;
         }
 
@@ -93,16 +74,10 @@ public final class ShieldOperations {
             return runtime.withShields(List.of());
         }
 
-        List<ShieldState> states = normalizeStates(
-                targets,
-                runtime.shields()
-        );
+        List<ShieldState> states = normalizeStates(targets, runtime.shields());
 
         for (ShieldTarget target : targets) {
-            ShieldState state = findState(
-                    states,
-                    target.reference()
-            );
+            ShieldState state = findState(states, target.reference());
 
             if (!isPowered(target, runtime.poweredModules())) {
                 continue;
@@ -118,10 +93,9 @@ public final class ShieldOperations {
                 continue;
             }
 
-            int recharged = Math.min(
+            double recharged = Math.min(
                     target.properties().capacity(),
-                    state.currentEnergy()
-                            + target.properties().rechargeRate()
+                    state.currentEnergy() + target.properties().rechargeRate()
             );
 
             if (recharged != state.currentEnergy()) {
@@ -135,9 +109,7 @@ public final class ShieldOperations {
         return runtime.withShields(states);
     }
 
-    private static List<ShieldTarget> collectShields(
-            ExoskeletonData data
-    ) {
+    private static List<ShieldTarget> collectShields(ExoskeletonData data) {
         List<ShieldTarget> targets = new ArrayList<>();
 
         for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
@@ -160,19 +132,20 @@ public final class ShieldOperations {
                     continue;
                 }
 
-                var definition = ModModules.getDefinition(module.id());
-
-                definition.shield().ifPresent(properties ->
-                        targets.add(
-                                new ShieldTarget(
-                                        new InstalledModuleReference(
-                                                slot,
-                                                moduleIndex
-                                        ),
-                                        properties
+                ModModules.getDefinition(module.id())
+                        .shield()
+                        .ifPresent(properties ->
+                                targets.add(
+                                        new ShieldTarget(
+                                                new InstalledModuleReference(
+                                                        slot,
+                                                        moduleIndex
+                                                ),
+                                                module.id(),
+                                                properties
+                                        )
                                 )
-                        )
-                );
+                        );
             }
         }
 
@@ -191,19 +164,11 @@ public final class ShieldOperations {
             ShieldTarget target,
             Set<InstalledModuleReference> poweredModules
     ) {
-        var energy = ModModules
-                .getDefinition(findModuleId(target))
-                .energy();
+        var energy = ModModules.getDefinition(target.moduleId()).energy();
 
         return energy.isEmpty()
                 || energy.get().consumption() <= 0
                 || poweredModules.contains(target.reference());
-    }
-
-    private static net.minecraft.resources.ResourceLocation findModuleId(
-            ShieldTarget target
-    ) {
-        return target.moduleId;
     }
 
     private static List<ShieldState> normalizeStates(
@@ -230,16 +195,16 @@ public final class ShieldOperations {
                 );
             }
 
-            current = new ShieldState(
-                    current.reference(),
-                    Math.min(
-                            current.currentEnergy(),
-                            target.properties().capacity()
-                    ),
-                    current.rechargeCooldown()
+            result.add(
+                    new ShieldState(
+                            current.reference(),
+                            Math.min(
+                                    current.currentEnergy(),
+                                    target.properties().capacity()
+                            ),
+                            current.rechargeCooldown()
+                    )
             );
-
-            result.add(current);
         }
 
         return List.copyOf(result);
@@ -279,23 +244,9 @@ public final class ShieldOperations {
 
     private record ShieldTarget(
             InstalledModuleReference reference,
-            ShieldProperties properties,
-            net.minecraft.resources.ResourceLocation moduleId
-    ) {
-        private ShieldTarget(
-                InstalledModuleReference reference,
-                ShieldProperties properties
-        ) {
-            this(
-                    reference,
-                    properties,
-                    net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
-                            "minecraft",
-                            "air"
-                    )
-            );
-        }
-    }
+            net.minecraft.resources.ResourceLocation moduleId,
+            ShieldProperties properties
+    ) {}
 
     public record ShieldDamageResult(
             double remainingDamage,

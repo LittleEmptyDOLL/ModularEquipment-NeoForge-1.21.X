@@ -132,6 +132,11 @@ public class ModModules {
                             new ModuleSize(2, 3)
                     )
                             .storage(new StorageProperties(10_000, 100, 200))
+                            .temperature(new TemperatureProperties(
+                                    -20,
+                                    50,
+                                    Optional.empty(),
+                                    Optional.empty()))
                             .build()
     );
 

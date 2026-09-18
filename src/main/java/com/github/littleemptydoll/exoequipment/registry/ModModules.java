@@ -111,7 +111,7 @@ public class ModModules {
                                     40,
                                     80,
                                     Optional.empty(),
-                                    Optional.of(new TemperatureBonus(60, 80, 100))))
+                                    Optional.of(new TemperatureBonus(60, 80, 1))))
                             .build()
     );
 

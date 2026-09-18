@@ -1,6 +1,6 @@
 package com.github.littleemptydoll.exoequipment.client;
 
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonItem;
+import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.module.ModuleCategory;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import com.github.littleemptydoll.exoequipment.util.NameUtils;

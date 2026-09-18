@@ -19,6 +19,8 @@ import java.util.List;
 
 public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implements ICurioItem {
 
+    private static final int TEMPERATURE_UPDATE_INTERVAL = 20;
+
     public ExoskeletonItem(
             DeferredHolder<
                     ExoskeletonDefinition,
@@ -83,9 +85,11 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
                 externalEnergy
         );
 
-        ExoskeletonData updatedData = ExoskeletonTemperatureState.tick(
-                result.data()
-        );
+        ExoskeletonData updatedData = result.data();
+
+        if (slotContext.entity().tickCount % TEMPERATURE_UPDATE_INTERVAL == 0) {
+            updatedData = ExoskeletonTemperatureState.tick(updatedData);
+        }
 
         if (!updatedData.equals(getData(stack))) {
             stack.set(

@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixState;
 import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
+import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,21 +123,62 @@ public final class ExoskeletonState {
             ExoskeletonData data,
             double temperature
     ) {
+        return calculateThermalBalance(data, temperature, null);
+    }
+
+    public static double calculateThermalBalance(
+            ExoskeletonData data,
+            double temperature,
+            java.util.Set<InstalledModuleReference> poweredModules
+    ) {
         double heatGeneration = 0.0D;
         double cooling = 0.0D;
 
-        for (MatrixData matrix : activeMatrices(data)) {
-            heatGeneration += MatrixOperations.calculateHeatGeneration(
-                    matrix,
-                    module -> FrameOperations.isModuleSupported(data, module),
-                    temperature
-            );
+        for (int slot : activeMatrixSlots(data)) {
+            MatrixData matrix = data.matrices().get(slot).matrix().orElse(null);
+            if (matrix == null) {
+                continue;
+            }
 
-            cooling += MatrixOperations.calculateCooling(
-                    matrix,
-                    module -> FrameOperations.isModuleSupported(data, module),
-                    temperature
-            );
+            for (int moduleIndex = 0; moduleIndex < matrix.modules().size(); moduleIndex++) {
+                var module = matrix.modules().get(moduleIndex);
+
+                if (!FrameOperations.isModuleSupported(data, module)) {
+                    continue;
+                }
+
+                var energy = com.github.littleemptydoll.exoequipment.registry.ModModules
+                        .getDefinition(module.id())
+                        .energy();
+
+                boolean powered = energy.isEmpty()
+                        || energy.get().consumption() <= 0
+                        || poweredModules == null
+                        || poweredModules.contains(
+                        new InstalledModuleReference(slot, moduleIndex)
+                );
+
+                if (!powered) {
+                    continue;
+                }
+
+                MatrixData singleModule = new MatrixData(
+                        matrix.id(),
+                        List.of(module)
+                );
+
+                heatGeneration += MatrixOperations.calculateHeatGeneration(
+                        singleModule,
+                        ignored -> true,
+                        temperature
+                );
+
+                cooling += MatrixOperations.calculateCooling(
+                        singleModule,
+                        ignored -> true,
+                        temperature
+                );
+            }
         }
 
         return heatGeneration - cooling;

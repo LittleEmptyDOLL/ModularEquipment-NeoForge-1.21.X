@@ -5,13 +5,17 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
+import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.module.StorageProperties;
 import com.github.littleemptydoll.exoequipment.registry.ModEnergySystems;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Performs one simulation step of the exoskeleton energy bus.
@@ -92,7 +96,9 @@ public final class EnergyOperations {
             ExternalEnergyExtractor externalExtractor
     ) {
         if (data.energySystem().isEmpty()) {
-            return new EnergyTickResult(data, 0, 0, 0, 0, 0, 0, 0);
+            return new EnergyTickResult(
+                    data, 0, 0, 0, 0, 0, 0, 0, Set.of()
+            );
         }
 
         ResourceLocation energySystemId = data.energySystem().get().definitionId();
@@ -101,9 +107,11 @@ public final class EnergyOperations {
 
         int remainingInput = energySystem.maxInput();
         int remainingOutput = energySystem.maxOutput();
-        int remainingDemand = state.energyConsumption();
 
         int generated = state.energyGeneration();
+        int generatedAvailable = Math.min(generated, remainingInput);
+        remainingInput -= generatedAvailable;
+
         int externalInput = 0;
         int consumed = 0;
         int discharged = 0;
@@ -111,92 +119,104 @@ public final class EnergyOperations {
         int generatedCharged = 0;
 
         ExoskeletonData updatedData = data;
+        Set<InstalledModuleReference> poweredModules = new LinkedHashSet<>();
 
-        // 1. Built-in generators have the highest priority. Only the amount
-        // that actually enters the bus consumes maxInput; excess generation
-        // never reaches the bus and is wasted.
-        int generatedIntoBus = Math.min(generated, remainingInput);
-        generated = generatedIntoBus;
-        remainingInput -= generatedIntoBus;
+        List<EnergyConsumer> consumers = collectConsumers(data);
+        consumers.sort(Comparator.comparingInt(EnergyConsumer::priority).reversed());
 
-        int generatedToConsumers = Math.min(
-                generated,
-                Math.min(remainingDemand, remainingOutput)
-        );
-        generated -= generatedToConsumers;
-        consumed += generatedToConsumers;
-        remainingDemand -= generatedToConsumers;
-        remainingOutput -= generatedToConsumers;
+        for (EnergyConsumer consumer : consumers) {
+            int required = consumer.consumption();
 
-        // 2. External energy is the second-priority source. It can only use
-        // input capacity left by higher-priority internal generation.
-        int externalToConsumersRequested = Math.min(
-                externalAvailable,
-                Math.min(remainingDemand, Math.min(remainingInput, remainingOutput))
-        );
-        int externalToConsumers = externalExtractor.extract(externalToConsumersRequested);
-        externalToConsumers = Math.min(externalToConsumers, externalToConsumersRequested);
-        externalInput += externalToConsumers;
-        consumed += externalToConsumers;
-        remainingDemand -= externalToConsumers;
-        externalAvailable -= externalToConsumers;
-        remainingInput -= externalToConsumers;
-        remainingOutput -= externalToConsumers;
+            if (required > remainingOutput
+                    || required > remainingInput + generatedAvailable) {
+                continue;
+            }
 
-        // 3. Batteries are the lowest-priority source. Their discharge enters
-        // the bus, so it consumes the same maxInput budget as every other
-        // source. The battery itself additionally applies maxOutput.
-        if (remainingDemand > 0 && remainingInput > 0 && remainingOutput > 0) {
-            int discharge = Math.min(
-                    remainingDemand,
+            int availableExternal = Math.min(
+                    externalAvailable,
+                    remainingInput
+            );
+            int availableBattery = Math.min(
+                    remainingInput,
                     Math.min(
-                            remainingInput,
-                            Math.min(remainingOutput, state.energyStorageOutput())
+                            remainingOutput,
+                            calculateAvailableStorageOutput(updatedData)
                     )
             );
-            if (discharge > 0) {
-                StorageTransferResult result = discharge(updatedData, discharge);
-                updatedData = result.data();
-                discharged = result.amount();
-                consumed += discharged;
-                remainingDemand -= discharged;
-                remainingInput -= discharged;
-                remainingOutput -= discharged;
+
+            if (generatedAvailable + availableExternal + availableBattery < required) {
+                continue;
             }
+
+            int fromGenerated = Math.min(required, generatedAvailable);
+            int remaining = required - fromGenerated;
+
+            int fromExternal = Math.min(remaining, availableExternal);
+            remaining -= fromExternal;
+
+            int fromBattery = remaining;
+
+            if (fromExternal > 0) {
+                int extracted = externalExtractor.extract(fromExternal);
+                fromExternal = Math.min(extracted, fromExternal);
+                externalInput += fromExternal;
+                externalAvailable -= fromExternal;
+                remainingInput -= fromExternal;
+            }
+
+            if (fromBattery > 0) {
+                StorageTransferResult result = discharge(updatedData, fromBattery);
+                updatedData = result.data();
+                fromBattery = result.amount();
+                discharged += fromBattery;
+                remainingInput -= fromBattery;
+            }
+
+            int supplied = fromGenerated + fromExternal + fromBattery;
+            if (supplied != required) {
+                continue;
+            }
+
+            generatedAvailable -= fromGenerated;
+            consumed += supplied;
+            remainingOutput -= supplied;
+            poweredModules.add(consumer.reference());
         }
 
-        // The remaining generator energy is already inside the bus and can be
-        // sent to a battery. Charging is a bus output, therefore it consumes
-        // maxOutput. The battery also applies its own maxInput.
-        if (generated > 0 && remainingOutput > 0) {
+        if (generatedAvailable > 0 && remainingOutput > 0) {
             int charge = Math.min(
-                    generated,
-                    Math.min(remainingOutput, state.energyStorageInput())
+                    generatedAvailable,
+                    Math.min(
+                            remainingOutput,
+                            calculateAvailableStorageInput(updatedData)
+                    )
             );
+
             if (charge > 0) {
                 StorageTransferResult result = charge(updatedData, charge);
                 updatedData = result.data();
                 charged += result.amount();
                 generatedCharged = result.amount();
-                generated -= result.amount();
+                generatedAvailable -= result.amount();
                 remainingOutput -= result.amount();
             }
         }
 
-        // External energy can also charge batteries, but only after the
-        // higher-priority generator surplus has been handled. It still enters
-        // the bus, so the remaining maxInput budget applies, and charging is
-        // subject to maxOutput and the battery's own maxInput.
         if (externalAvailable > 0 && remainingInput > 0 && remainingOutput > 0) {
             int chargeRequested = Math.min(
                     externalAvailable,
                     Math.min(
                             remainingInput,
-                            Math.min(remainingOutput, state.energyStorageInput())
+                            Math.min(
+                                    remainingOutput,
+                                    calculateAvailableStorageInput(updatedData)
+                            )
                     )
             );
+
             int externalCharge = externalExtractor.extract(chargeRequested);
             externalCharge = Math.min(externalCharge, chargeRequested);
+
             if (externalCharge > 0) {
                 StorageTransferResult result = charge(updatedData, externalCharge);
                 updatedData = result.data();
@@ -208,20 +228,134 @@ public final class EnergyOperations {
             }
         }
 
-        int deficit = remainingDemand;
-        int wasted = state.energyGeneration() - generatedToConsumers - generatedCharged;
+        int deficit = Math.max(0, state.energyConsumption() - consumed);
+        int generatedUsed = generated - generatedAvailable - generatedCharged;
+        int wasted = Math.max(0, generated - generatedUsed);
 
         return new EnergyTickResult(
                 updatedData,
-                state.energyGeneration(),
+                generated,
                 externalInput,
                 consumed,
                 charged,
                 discharged,
                 deficit,
-                wasted
+                wasted,
+                poweredModules
         );
     }
+
+    private static List<EnergyConsumer> collectConsumers(ExoskeletonData data) {
+        List<EnergyConsumer> consumers = new ArrayList<>();
+
+        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
+            MatrixData matrix = data.matrices().get(slot).matrix().orElse(null);
+            if (matrix == null) {
+                continue;
+            }
+
+            for (int moduleIndex = 0; moduleIndex < matrix.modules().size(); moduleIndex++) {
+                InstalledModule module = matrix.modules().get(moduleIndex);
+
+                if (!com.github.littleemptydoll.exoequipment.frame.FrameOperations
+                        .isModuleSupported(data, module)) {
+                    continue;
+                }
+
+                var energy = ModModules.getDefinition(module.id()).energy();
+                if (energy.isEmpty() || energy.get().consumption() <= 0) {
+                    continue;
+                }
+
+                int consumption = MatrixOperations.calculateEnergyConsumption(
+                        new MatrixData(matrix.id(), List.of(module)),
+                        ignored -> true,
+                        data.temperature()
+                );
+
+                if (consumption <= 0) {
+                    continue;
+                }
+
+                consumers.add(
+                        new EnergyConsumer(
+                                new InstalledModuleReference(slot, moduleIndex),
+                                consumption,
+                                energy.get().priority()
+                        )
+                );
+            }
+        }
+
+        return consumers;
+    }
+
+    private static int calculateAvailableStorageOutput(ExoskeletonData data) {
+        int available = 0;
+
+        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
+            MatrixData matrix = data.matrices().get(slot).matrix().orElse(null);
+            if (matrix == null) {
+                continue;
+            }
+
+            for (InstalledModule module : matrix.modules()) {
+                var storage = ModModules.getDefinition(module.id()).storage().orElse(null);
+                if (storage == null) {
+                    continue;
+                }
+
+                int capacity = MatrixOperations.calculateEnergyStorageCapacity(
+                        new MatrixData(matrix.id(), List.of(module)),
+                        ignored -> true,
+                        data.temperature()
+                );
+
+                int stored = Math.min(module.storedEnergy(), capacity);
+                available += Math.min(storage.maxOutput(), stored);
+            }
+        }
+
+        return available;
+    }
+
+    private static int calculateAvailableStorageInput(ExoskeletonData data) {
+        int available = 0;
+
+        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
+            MatrixData matrix = data.matrices().get(slot).matrix().orElse(null);
+            if (matrix == null) {
+                continue;
+            }
+
+            for (InstalledModule module : matrix.modules()) {
+                var storage = ModModules.getDefinition(module.id()).storage().orElse(null);
+                if (storage == null) {
+                    continue;
+                }
+
+                int capacity = MatrixOperations.calculateEnergyStorageCapacity(
+                        new MatrixData(matrix.id(), List.of(module)),
+                        ignored -> true,
+                        data.temperature()
+                );
+
+                int stored = Math.min(module.storedEnergy(), capacity);
+                available += Math.min(
+                        storage.maxInput(),
+                        Math.max(0, capacity - stored)
+                );
+            }
+        }
+
+        return available;
+    }
+
+    private record EnergyConsumer(
+            InstalledModuleReference reference,
+            int consumption,
+            int priority
+    ) {}
 
     private static StorageTransferResult charge(ExoskeletonData data, int amount) {
         int remaining = amount;

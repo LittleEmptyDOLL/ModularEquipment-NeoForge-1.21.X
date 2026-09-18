@@ -88,7 +88,7 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
         ExoskeletonData updatedData = result.data();
 
         if (slotContext.entity().tickCount % TEMPERATURE_UPDATE_INTERVAL == 0) {
-            updatedData = ExoskeletonTemperatureState.tick(updatedData);
+            updatedData = ExoskeletonTemperatureState.tick(updatedData, result);
         }
 
         if (!updatedData.equals(getData(stack))) {

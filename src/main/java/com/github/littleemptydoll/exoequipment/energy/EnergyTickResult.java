@@ -1,13 +1,10 @@
 package com.github.littleemptydoll.exoequipment.energy;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
+import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 
-/**
- * Result of one energy-network simulation step.
- *
- * <p>The returned {@link ExoskeletonData} contains the updated charge of
- * storage modules. The counters describe what happened during this step.</p>
- */
+import java.util.Set;
+
 public record EnergyTickResult(
         ExoskeletonData data,
         int generated,
@@ -16,7 +13,8 @@ public record EnergyTickResult(
         int charged,
         int discharged,
         int deficit,
-        int wasted
+        int wasted,
+        Set<InstalledModuleReference> poweredModules
 ) {
     public EnergyTickResult {
         if (generated < 0) throw new IllegalArgumentException("Generated energy cannot be negative");
@@ -26,5 +24,10 @@ public record EnergyTickResult(
         if (discharged < 0) throw new IllegalArgumentException("Discharged energy cannot be negative");
         if (deficit < 0) throw new IllegalArgumentException("Energy deficit cannot be negative");
         if (wasted < 0) throw new IllegalArgumentException("Wasted energy cannot be negative");
+        poweredModules = Set.copyOf(poweredModules);
+    }
+
+    public boolean isPowered(InstalledModuleReference reference) {
+        return poweredModules.contains(reference);
     }
 }

@@ -1,5 +1,7 @@
 package com.github.littleemptydoll.exoequipment.exoskeleton;
 
+import com.github.littleemptydoll.exoequipment.energy.EnergyTickResult;
+
 public record ExoskeletonTemperatureState(
         double temperature,
         double thermalBalance
@@ -20,7 +22,18 @@ public record ExoskeletonTemperatureState(
     public static ExoskeletonTemperatureState calculate(
             ExoskeletonData data
     ) {
-        double thermalBalance = ExoskeletonState.calculateThermalBalance(data, data.temperature());
+        return calculate(data, null);
+    }
+
+    public static ExoskeletonTemperatureState calculate(
+            ExoskeletonData data,
+            EnergyTickResult energyResult
+    ) {
+        double thermalBalance = ExoskeletonState.calculateThermalBalance(
+                data,
+                data.temperature(),
+                energyResult == null ? null : energyResult.poweredModules()
+        );
         thermalBalance -=
                 (data.temperature() - INITIAL_TEMPERATURE)
                         * PASSIVE_THERMAL_EXCHANGE;
@@ -37,7 +50,14 @@ public record ExoskeletonTemperatureState(
     public static ExoskeletonData tick(
             ExoskeletonData data
     ) {
-        ExoskeletonTemperatureState state = calculate(data);
+        return tick(data, null);
+    }
+
+    public static ExoskeletonData tick(
+            ExoskeletonData data,
+            EnergyTickResult energyResult
+    ) {
+        ExoskeletonTemperatureState state = calculate(data, energyResult);
 
         if (Double.compare(data.temperature(), state.temperature()) == 0) {
             return data;

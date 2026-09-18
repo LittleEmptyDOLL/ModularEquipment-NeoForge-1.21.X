@@ -115,21 +115,75 @@ public final class ExoskeletonState {
     }
 
     public static double calculateThermalBalance(ExoskeletonData data) {
+        return calculateThermalBalance(data, data.temperature());
+    }
+
+    public static double calculateThermalBalance(
+            ExoskeletonData data,
+            double temperature
+    ) {
         int heatGeneration = 0;
         int cooling = 0;
 
         for (MatrixData matrix : activeMatrices(data)) {
             heatGeneration += MatrixOperations.calculateHeatGeneration(
                     matrix,
-                    module -> FrameOperations.isModuleSupported(data, module)
+                    module -> FrameOperations.isModuleSupported(data, module),
+                    temperature
             );
 
             cooling += MatrixOperations.calculateCooling(
                     matrix,
-                    module -> FrameOperations.isModuleSupported(data, module)
+                    module -> FrameOperations.isModuleSupported(data, module),
+                    temperature
             );
         }
 
         return heatGeneration - cooling;
+    }
+
+    public static ExoskeletonData normalizeStoredEnergy(ExoskeletonData data) {
+        ExoskeletonData updated = data;
+
+        for (int slot = 0; slot < data.matrices().size(); slot++) {
+            MatrixData matrix = updated.matrices().get(slot).matrix().orElse(null);
+            if (matrix == null) {
+                continue;
+            }
+
+            List<com.github.littleemptydoll.exoequipment.module.InstalledModule> modules =
+                    new ArrayList<>(matrix.modules());
+            boolean changed = false;
+
+            for (int i = 0; i < modules.size(); i++) {
+                var module = modules.get(i);
+                var storage = com.github.littleemptydoll.exoequipment.registry.ModModules
+                        .getDefinition(module.id())
+                        .storage()
+                        .orElse(null);
+
+                if (storage == null) {
+                    continue;
+                }
+
+                int effectiveCapacity = MatrixOperations.calculateEnergyStorageCapacity(
+                        new MatrixData(matrix.id(), List.of(module)),
+                        ignored -> true,
+                        data.temperature()
+                );
+                int clamped = Math.max(0, Math.min(module.storedEnergy(), effectiveCapacity));
+
+                if (clamped != module.storedEnergy()) {
+                    modules.set(i, module.withStoredEnergy(clamped));
+                    changed = true;
+                }
+            }
+
+            if (changed) {
+                updated = updated.withMatrix(slot, new MatrixData(matrix.id(), modules));
+            }
+        }
+
+        return updated;
     }
 }

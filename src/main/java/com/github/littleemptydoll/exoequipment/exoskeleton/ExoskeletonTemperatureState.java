@@ -6,11 +6,17 @@ public record ExoskeletonTemperatureState(
 ) {
     public static final double INITIAL_TEMPERATURE = 20.0D;
 
+    /**
+     * Temperature change per one second for one unit of thermal balance.
+     */
+    public static final double TEMPERATURE_RESPONSE = 0.05D;
+
     public static ExoskeletonTemperatureState calculate(
             ExoskeletonData data
     ) {
         double thermalBalance = ExoskeletonState.calculateThermalBalance(data, data.temperature());
-        double temperature = INITIAL_TEMPERATURE + thermalBalance;
+        double temperature =
+                data.temperature() + thermalBalance * TEMPERATURE_RESPONSE;
 
         return new ExoskeletonTemperatureState(
                 temperature,

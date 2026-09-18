@@ -35,14 +35,12 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
             List<Component> tooltip,
             TooltipFlag flag
     ) {
-        appendHoverTextWithTemperature(stack, context, tooltip, flag, Double.NaN);
+        appendHoverTextWithTemperature(stack, tooltip, Double.NaN);
     }
 
     public void appendHoverTextWithTemperature(
             ItemStack stack,
-            TooltipContext context,
             List<Component> tooltip,
-            TooltipFlag flag,
             double temperature
     ) {
         ModuleDefinition definition = getDefinition();

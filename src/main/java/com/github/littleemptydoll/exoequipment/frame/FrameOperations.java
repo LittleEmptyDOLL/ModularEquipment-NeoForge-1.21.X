@@ -5,6 +5,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.module.ModuleSize;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
+import com.github.littleemptydoll.exoequipment.registry.ModModules;
 import com.github.littleemptydoll.exoequipment.registry.ModFrames;
 
 public final class FrameOperations {
@@ -17,8 +18,7 @@ public final class FrameOperations {
 
         FrameDefinition definition = ModFrames.getDefinition(data.frame().get().definitionId());
         ModuleSize moduleSize = MatrixOperations.getRotatedSize(
-                com.github.littleemptydoll.exoequipment.registry.ModModules
-                        .getDefinition(module.id())
+                ModModules.getDefinition(module.id())
                         .size(),
                 module.rotation()
         );

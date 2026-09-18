@@ -16,7 +16,8 @@ public record ModuleDefinition(
         Optional<EnergyProperties> energy,
         Optional<GenerationProperties> generation,
         Optional<StorageProperties> storage,
-        Optional<ThermalProperties> thermal
+        Optional<ThermalProperties> thermal,
+        Optional<TemperatureProperties> temperature
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -44,7 +45,10 @@ public record ModuleDefinition(
                                     .forGetter(ModuleDefinition::storage),
                             ThermalProperties.CODEC
                                     .optionalFieldOf("thermal")
-                                    .forGetter(ModuleDefinition::thermal)
+                                    .forGetter(ModuleDefinition::thermal),
+                            TemperatureProperties.CODEC
+                                    .optionalFieldOf("temperature")
+                                    .forGetter(ModuleDefinition::temperature)
                     ).apply(
                             instance,
                             ModuleDefinition::new
@@ -70,6 +74,7 @@ public record ModuleDefinition(
         private GenerationProperties generation;
         private StorageProperties storage;
         private ThermalProperties thermal;
+        private TemperatureProperties temperature;
 
         private Builder(
                 ResourceLocation id,
@@ -103,6 +108,11 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder temperature(TemperatureProperties temperature) {
+            this.temperature = temperature;
+            return this;
+        }
+
         public ModuleDefinition build() {
             return new ModuleDefinition(
                     id,
@@ -112,7 +122,8 @@ public record ModuleDefinition(
                     Optional.ofNullable(energy),
                     Optional.ofNullable(generation),
                     Optional.ofNullable(storage),
-                    Optional.ofNullable(thermal)
+                    Optional.ofNullable(thermal),
+                    Optional.ofNullable(temperature)
             );
         }
     }

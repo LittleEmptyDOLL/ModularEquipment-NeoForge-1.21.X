@@ -2,6 +2,7 @@ package com.github.littleemptydoll.exoequipment.gui;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
+import com.github.littleemptydoll.exoequipment.exoskeleton.SystemStatus;
 import com.github.littleemptydoll.exoequipment.network.OpenMatrixPayload;
 import com.github.littleemptydoll.exoequipment.network.OpenProfilePayload;
 import net.minecraft.client.gui.GuiGraphics;
@@ -12,6 +13,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> {
@@ -61,6 +65,7 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     private static final int ENERGY_STATUS_YELLOW_X = 37;
     private static final int ENERGY_STATUS_RED_X = 50;
     private static final int ENERGY_STATUS_GRAY_X = 63;
+    private static final int ENERGY_STATUS_TOOLTIP_WIDTH = 43;
 
     private static final int PROFILE_HOVER_X = 153;
     private static final int PROFILE_HOVER_Y = 51;
@@ -321,6 +326,21 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
 
     @Override
     protected void renderTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        int localMouseX = mouseX - leftPos;
+        int localMouseY = mouseY - topPos;
+
+        if (isInside(
+                localMouseX,
+                localMouseY,
+                ENERGY_STATUS_INDICATOR_X,
+                ENERGY_STATUS_INDICATOR_Y,
+                ENERGY_STATUS_TOOLTIP_WIDTH,
+                ENERGY_STATUS_INDICATOR_HEIGHT
+        )) {
+            renderSystemStatusTooltip(guiGraphics, mouseX, mouseY);
+            return;
+        }
+
         Slot hoveredSlot = getSlotUnderMouse();
 
         if (hoveredSlot != null && hoveredSlot.index == ExoskeletonMenu.SOURCE_SLOT) {
@@ -328,6 +348,33 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
         }
 
         super.renderTooltip(guiGraphics, mouseX, mouseY);
+    }
+
+    private void renderSystemStatusTooltip(
+            GuiGraphics guiGraphics,
+            int mouseX,
+            int mouseY
+    ) {
+        List<Component> lines = new ArrayList<>();
+        lines.add(Component.translatable("gui.exoequipment.system_status"));
+
+        int flags = menu.getStatusFlags();
+
+        if ((flags & SystemStatus.FLAG_ENERGY_CRITICAL) != 0) {
+            lines.add(Component.translatable("gui.exoequipment.status.energy_critical"));
+        } else if ((flags & SystemStatus.FLAG_ENERGY_WARNING) != 0) {
+            lines.add(Component.translatable("gui.exoequipment.status.energy_warning"));
+        } else if (menu.getEnergyStatus() == SystemStatus.GREEN) {
+            lines.add(Component.translatable("gui.exoequipment.status.energy_stable"));
+        } else if (menu.getEnergyStatus() == SystemStatus.GRAY) {
+            lines.add(Component.translatable("gui.exoequipment.status.energy_unavailable"));
+        }
+
+        if ((flags & SystemStatus.FLAG_OVERSIZED_MODULE) != 0) {
+            lines.add(Component.translatable("gui.exoequipment.status.module_too_large"));
+        }
+
+        guiGraphics.renderTooltip(font, lines, mouseX, mouseY);
     }
 
     @Override

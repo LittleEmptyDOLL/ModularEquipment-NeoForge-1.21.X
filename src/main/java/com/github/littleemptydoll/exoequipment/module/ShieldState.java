@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public record ShieldState(
         InstalledModuleReference reference,
-        int currentEnergy,
+        double currentEnergy,
         int rechargeCooldown
 ) {
     public static final Codec<ShieldState> CODEC =
@@ -14,7 +14,7 @@ public record ShieldState(
                             InstalledModuleReference.CODEC
                                     .fieldOf("reference")
                                     .forGetter(ShieldState::reference),
-                            Codec.INT
+                            Codec.DOUBLE
                                     .fieldOf("current_energy")
                                     .forGetter(ShieldState::currentEnergy),
                             Codec.INT
@@ -27,9 +27,9 @@ public record ShieldState(
             );
 
     public ShieldState {
-        if (currentEnergy < 0) {
+        if (!Double.isFinite(currentEnergy) || currentEnergy < 0.0D) {
             throw new IllegalArgumentException(
-                    "Shield energy cannot be negative"
+                    "Shield energy must be finite and non-negative"
             );
         }
 
@@ -40,19 +40,11 @@ public record ShieldState(
         }
     }
 
-    public ShieldState withCurrentEnergy(int currentEnergy) {
-        return new ShieldState(
-                reference,
-                currentEnergy,
-                rechargeCooldown
-        );
+    public ShieldState withCurrentEnergy(double currentEnergy) {
+        return new ShieldState(reference, currentEnergy, rechargeCooldown);
     }
 
     public ShieldState withRechargeCooldown(int rechargeCooldown) {
-        return new ShieldState(
-                reference,
-                currentEnergy,
-                rechargeCooldown
-        );
+        return new ShieldState(reference, currentEnergy, rechargeCooldown);
     }
 }

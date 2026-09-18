@@ -55,6 +55,12 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.matrix", "Matrix");
         add("gui.exoequipment.matrix_size", "Matrix %s/%s");
         add("gui.exoequipment.system", "System status");
+        add("gui.exoequipment.system_status", "System status");
+        add("gui.exoequipment.status.energy_stable", "Energy system stable");
+        add("gui.exoequipment.status.energy_warning", "Insufficient energy");
+        add("gui.exoequipment.status.energy_critical", "Energy system cannot supply active modules");
+        add("gui.exoequipment.status.energy_unavailable", "Energy system unavailable");
+        add("gui.exoequipment.status.module_too_large", "Module exceeds frame size");
         add("gui.exoequipment.inventory", "Inventory");
         add("gui.exoequipment.profiles", "Profiles");
         add("gui.exoequipment.profiles_count", "Profiles %s/%s");

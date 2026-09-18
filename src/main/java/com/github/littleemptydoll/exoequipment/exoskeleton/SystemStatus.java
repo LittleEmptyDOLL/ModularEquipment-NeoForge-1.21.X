@@ -33,7 +33,7 @@ public record SystemStatus(int severity, int flags) {
 
         if (FrameOperations.hasOversizedModule(data)) {
             flags |= FLAG_OVERSIZED_MODULE;
-            severity = Math.maxSeverity(severity, YELLOW);
+            severity = maxSeverity(severity, YELLOW);
         }
 
         return new SystemStatus(severity, flags);

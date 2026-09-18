@@ -217,11 +217,28 @@ public final class MatrixOperations {
     }
 
     public static int calculateStoredEnergy(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return calculateStoredEnergy(matrix, supported, Double.NaN);
+    }
+
+    public static int calculateStoredEnergy(
+            MatrixData matrix,
+            Predicate<InstalledModule> supported,
+            double temperature
+    ) {
         return matrix.modules().stream()
                 .filter(supported)
                 .mapToInt(module -> {
                     var storage = ModModules.getDefinition(module.id()).storage();
-                    return storage.map(value -> Math.min(module.storedEnergy(), value.capacity())).orElse(0);
+                    if (storage.isEmpty()) {
+                        return 0;
+                    }
+
+                    int capacity = storage.get().capacity();
+                    if (!Double.isNaN(temperature)) {
+                        capacity = scaled(capacity, temperature, module);
+                    }
+
+                    return Math.max(0, Math.min(module.storedEnergy(), capacity));
                 })
                 .sum();
     }

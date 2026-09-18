@@ -7,6 +7,12 @@ public record ExoskeletonTemperatureState(
     public static final double INITIAL_TEMPERATURE = 20.0D;
 
     /**
+     * Passive heat exchange with the environment.
+     * Positive values pull the temperature back toward INITIAL_TEMPERATURE.
+     */
+    public static final double PASSIVE_THERMAL_EXCHANGE = 1.0D;
+
+    /**
      * Temperature change per one second for one unit of thermal balance.
      */
     public static final double TEMPERATURE_RESPONSE = 0.05D;
@@ -15,6 +21,10 @@ public record ExoskeletonTemperatureState(
             ExoskeletonData data
     ) {
         double thermalBalance = ExoskeletonState.calculateThermalBalance(data, data.temperature());
+        thermalBalance -=
+                (data.temperature() - INITIAL_TEMPERATURE)
+                        * PASSIVE_THERMAL_EXCHANGE;
+
         double temperature =
                 data.temperature() + thermalBalance * TEMPERATURE_RESPONSE;
 

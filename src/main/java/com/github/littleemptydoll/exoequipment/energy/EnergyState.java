@@ -2,6 +2,7 @@ package com.github.littleemptydoll.exoequipment.energy;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
+import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModEnergySystems;
 import net.minecraft.resources.ResourceLocation;
@@ -63,7 +64,10 @@ public record EnergyState(
         var state = ExoskeletonState.calculateState(data);
 
         int storedEnergy = ExoskeletonState.activeMatrices(data).stream()
-                .mapToInt(MatrixOperations::calculateStoredEnergy)
+                .mapToInt(matrix -> MatrixOperations.calculateStoredEnergy(
+                        matrix,
+                        module -> FrameOperations.isModuleSupported(data, module)
+                ))
                 .sum();
 
         return new EnergyState(

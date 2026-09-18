@@ -5,6 +5,7 @@ import com.github.littleemptydoll.exoequipment.registry.ModModules;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public final class MatrixOperations {
     private MatrixOperations() {}
@@ -112,50 +113,116 @@ public final class MatrixOperations {
     }
 
     public static int calculateEnergyConsumption(MatrixData matrix) {
-        return matrix.modules().stream().mapToInt(module -> ModModules.getDefinition(module.id())
-                .energy().map(EnergyProperties::consumption).orElse(0)).sum();
+        return calculateEnergyConsumption(matrix, module -> true);
+    }
+
+    public static int calculateEnergyConsumption(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return matrix.modules().stream()
+                .filter(supported)
+                .mapToInt(module -> ModModules.getDefinition(module.id())
+                        .energy().map(EnergyProperties::consumption).orElse(0))
+                .sum();
     }
 
     public static int calculateEnergyGeneration(MatrixData matrix) {
-        return matrix.modules().stream().mapToInt(module -> ModModules.getDefinition(module.id())
-                .generation().map(GenerationProperties::generation).orElse(0)).sum();
+        return calculateEnergyGeneration(matrix, module -> true);
+    }
+
+    public static int calculateEnergyGeneration(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return matrix.modules().stream()
+                .filter(supported)
+                .mapToInt(module -> ModModules.getDefinition(module.id())
+                        .generation().map(GenerationProperties::generation).orElse(0))
+                .sum();
     }
 
     public static int calculateEnergyStorageCapacity(MatrixData matrix) {
-        return matrix.modules().stream().mapToInt(module -> ModModules.getDefinition(module.id())
-                .storage().map(StorageProperties::capacity).orElse(0)).sum();
+        return calculateEnergyStorageCapacity(matrix, module -> true);
+    }
+
+    public static int calculateEnergyStorageCapacity(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return matrix.modules().stream()
+                .filter(supported)
+                .mapToInt(module -> ModModules.getDefinition(module.id())
+                        .storage().map(StorageProperties::capacity).orElse(0))
+                .sum();
     }
 
     public static int calculateEnergyStorageInput(MatrixData matrix) {
-        return matrix.modules().stream().mapToInt(module -> ModModules.getDefinition(module.id())
-                .storage().map(StorageProperties::maxInput).orElse(0)).sum();
+        return calculateEnergyStorageInput(matrix, module -> true);
+    }
+
+    public static int calculateEnergyStorageInput(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return matrix.modules().stream()
+                .filter(supported)
+                .mapToInt(module -> ModModules.getDefinition(module.id())
+                        .storage().map(StorageProperties::maxInput).orElse(0))
+                .sum();
     }
 
     public static int calculateEnergyStorageOutput(MatrixData matrix) {
-        return matrix.modules().stream().mapToInt(module -> ModModules.getDefinition(module.id())
-                .storage().map(StorageProperties::maxOutput).orElse(0)).sum();
+        return calculateEnergyStorageOutput(matrix, module -> true);
+    }
+
+    public static int calculateEnergyStorageOutput(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return matrix.modules().stream()
+                .filter(supported)
+                .mapToInt(module -> ModModules.getDefinition(module.id())
+                        .storage().map(StorageProperties::maxOutput).orElse(0))
+                .sum();
     }
 
     public static int calculateStoredEnergy(MatrixData matrix) {
-        return matrix.modules().stream().mapToInt(module -> {
-            var storage = ModModules.getDefinition(module.id()).storage();
-            return storage.map(value -> Math.min(module.storedEnergy(), value.capacity())).orElse(0);
-        }).sum();
+        return calculateStoredEnergy(matrix, module -> true);
+    }
+
+    public static int calculateStoredEnergy(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return matrix.modules().stream()
+                .filter(supported)
+                .mapToInt(module -> {
+                    var storage = ModModules.getDefinition(module.id()).storage();
+                    return storage.map(value -> Math.min(module.storedEnergy(), value.capacity())).orElse(0);
+                })
+                .sum();
     }
 
     public static int calculateHeatGeneration(MatrixData matrix) {
-        return matrix.modules().stream().mapToInt(module -> ModModules.getDefinition(module.id())
-                .thermal().map(ThermalProperties::heatGeneration).orElse(0)).sum();
+        return calculateHeatGeneration(matrix, module -> true);
+    }
+
+    public static int calculateHeatGeneration(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return matrix.modules().stream()
+                .filter(supported)
+                .mapToInt(module -> ModModules.getDefinition(module.id())
+                        .thermal().map(ThermalProperties::heatGeneration).orElse(0))
+                .sum();
     }
 
     public static int calculateCooling(MatrixData matrix) {
-        return matrix.modules().stream().mapToInt(module -> ModModules.getDefinition(module.id())
-                .thermal().map(ThermalProperties::cooling).orElse(0)).sum();
+        return calculateCooling(matrix, module -> true);
+    }
+
+    public static int calculateCooling(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return matrix.modules().stream()
+                .filter(supported)
+                .mapToInt(module -> ModModules.getDefinition(module.id())
+                        .thermal().map(ThermalProperties::cooling).orElse(0))
+                .sum();
     }
 
     public static MatrixState calculateState(MatrixData matrix) {
-        return new MatrixState(calculateEnergyConsumption(matrix), calculateEnergyGeneration(matrix),
-                calculateEnergyStorageCapacity(matrix), calculateEnergyStorageInput(matrix),
-                calculateEnergyStorageOutput(matrix), calculateHeatGeneration(matrix), calculateCooling(matrix));
+        return calculateState(matrix, module -> true);
+    }
+
+    public static MatrixState calculateState(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return new MatrixState(
+                calculateEnergyConsumption(matrix, supported),
+                calculateEnergyGeneration(matrix, supported),
+                calculateEnergyStorageCapacity(matrix, supported),
+                calculateEnergyStorageInput(matrix, supported),
+                calculateEnergyStorageOutput(matrix, supported),
+                calculateHeatGeneration(matrix, supported),
+                calculateCooling(matrix, supported)
+        );
     }
 }

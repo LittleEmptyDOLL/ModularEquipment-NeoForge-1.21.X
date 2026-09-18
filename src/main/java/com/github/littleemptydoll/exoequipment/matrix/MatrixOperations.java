@@ -243,40 +243,40 @@ public final class MatrixOperations {
                 .sum();
     }
 
-    public static int calculateHeatGeneration(MatrixData matrix) {
+    public static double calculateHeatGeneration(MatrixData matrix) {
         return calculateHeatGeneration(matrix, module -> true);
     }
 
-    public static int calculateHeatGeneration(MatrixData matrix, Predicate<InstalledModule> supported) {
+    public static double calculateHeatGeneration(MatrixData matrix, Predicate<InstalledModule> supported) {
         return calculateHeatGeneration(matrix, supported, Double.NaN);
     }
 
-    public static int calculateHeatGeneration(MatrixData matrix, Predicate<InstalledModule> supported, double temperature) {
+    public static double calculateHeatGeneration(MatrixData matrix, Predicate<InstalledModule> supported, double temperature) {
         return matrix.modules().stream()
                 .filter(supported)
-                .mapToInt(module -> scaled(
+                .mapToDouble(module -> scaledThermal(
                         ModModules.getDefinition(module.id()).thermal()
-                                .map(ThermalProperties::heatGeneration).orElse(0),
+                                .map(ThermalProperties::heatGeneration).orElse(0.0D),
                         temperature,
                         module
                 ))
                 .sum();
     }
 
-    public static int calculateCooling(MatrixData matrix) {
+    public static double calculateCooling(MatrixData matrix) {
         return calculateCooling(matrix, module -> true);
     }
 
-    public static int calculateCooling(MatrixData matrix, Predicate<InstalledModule> supported) {
+    public static double calculateCooling(MatrixData matrix, Predicate<InstalledModule> supported) {
         return calculateCooling(matrix, supported, Double.NaN);
     }
 
-    public static int calculateCooling(MatrixData matrix, Predicate<InstalledModule> supported, double temperature) {
+    public static double calculateCooling(MatrixData matrix, Predicate<InstalledModule> supported, double temperature) {
         return matrix.modules().stream()
                 .filter(supported)
-                .mapToInt(module -> scaled(
+                .mapToDouble(module -> scaledThermal(
                         ModModules.getDefinition(module.id()).thermal()
-                                .map(ThermalProperties::cooling).orElse(0),
+                                .map(ThermalProperties::cooling).orElse(0.0D),
                         temperature,
                         module
                 ))
@@ -302,9 +302,24 @@ public final class MatrixOperations {
                 calculateEnergyStorageCapacity(matrix, supported, temperature),
                 calculateEnergyStorageInput(matrix, supported, temperature),
                 calculateEnergyStorageOutput(matrix, supported, temperature),
-                calculateHeatGeneration(matrix, supported, temperature),
-                calculateCooling(matrix, supported, temperature)
+                (int) Math.round(calculateHeatGeneration(matrix, supported, temperature)),
+                (int) Math.round(calculateCooling(matrix, supported, temperature))
         );
+    }
+
+    private static double scaledThermal(
+            double value,
+            double temperature,
+            InstalledModule module
+    ) {
+        if (Double.isNaN(temperature)) {
+            return value;
+        }
+
+        double efficiency = com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations
+                .calculateModuleEfficiency(module.id(), temperature);
+
+        return Math.max(0.0D, value * efficiency);
     }
 
     private static int scaled(

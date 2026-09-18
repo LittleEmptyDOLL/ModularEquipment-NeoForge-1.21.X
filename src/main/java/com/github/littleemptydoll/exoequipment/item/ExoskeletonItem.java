@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.energy.EnergyOperations;
 import com.github.littleemptydoll.exoequipment.energy.EnergyTickResult;
 import com.github.littleemptydoll.exoequipment.energy.NeoForgeEnergyProvider;
+import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
 import com.github.littleemptydoll.exoequipment.exoskeleton.*;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
@@ -40,6 +41,10 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
                         .component(
                                 ModDataComponents.EXOSKELETON_DATA.get(),
                                 ExoskeletonData.empty()
+                        )
+                        .component(
+                                ModDataComponents.EXOSKELETON_RUNTIME.get(),
+                                ExoskeletonRuntimeState.empty()
                         )
         );
     }
@@ -87,6 +92,17 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
 
         ExoskeletonData updatedData = result.data();
 
+        ExoskeletonRuntimeState runtime = stack.get(
+                ModDataComponents.EXOSKELETON_RUNTIME.get()
+        );
+
+        if (runtime == null) {
+            runtime = ExoskeletonRuntimeState.empty();
+        }
+
+        runtime = runtime.withPoweredModules(result.poweredModules());
+        runtime = ShieldOperations.tick(updatedData, runtime);
+
         if (slotContext.entity().tickCount % TEMPERATURE_UPDATE_INTERVAL == 0) {
             updatedData = ExoskeletonTemperatureState.tick(updatedData, result);
         }
@@ -95,6 +111,15 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
             stack.set(
                     ModDataComponents.EXOSKELETON_DATA.get(),
                     updatedData
+            );
+        }
+
+        if (!runtime.equals(
+                stack.get(ModDataComponents.EXOSKELETON_RUNTIME.get())
+        )) {
+            stack.set(
+                    ModDataComponents.EXOSKELETON_RUNTIME.get(),
+                    runtime
             );
         }
     }

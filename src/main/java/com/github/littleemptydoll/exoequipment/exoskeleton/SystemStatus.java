@@ -21,6 +21,20 @@ public record SystemStatus(int severity, int flags) {
         int flags = 0;
         int severity = GREEN;
 
+        if (data.controller().isEmpty()) {
+            flags |= FLAG_CONTROLLER_MISSING;
+            severity = maxSeverity(severity, RED);
+        }
+
+        if (data.frame().isEmpty()) {
+            flags |= FLAG_FRAME_MISSING;
+            severity = maxSeverity(severity, RED);
+        } else if (FrameOperations.hasOversizedModule(data)) {
+            flags |= FLAG_OVERSIZED_MODULE;
+            severity = maxSeverity(severity, YELLOW);
+        }
+
+        //Энерго система имеет последнее слово
         if (energy.maxInput() == 0 && energy.maxOutput() == 0) {
             severity = GRAY;
         } else if (energy.generation() == 0
@@ -31,21 +45,6 @@ public record SystemStatus(int severity, int flags) {
         } else if (energy.netGeneration() < 0) {
             flags |= FLAG_ENERGY_WARNING;
             severity = YELLOW;
-        }
-
-        if (data.controller().isEmpty()) {
-            flags |= FLAG_CONTROLLER_MISSING;
-            severity = maxSeverity(severity, RED);
-        }
-
-        boolean hasActiveModules = !ExoskeletonState.activeMatrices(data).isEmpty();
-
-        if (hasActiveModules && data.frame().isEmpty()) {
-            flags |= FLAG_FRAME_MISSING;
-            severity = maxSeverity(severity, RED);
-        } else if (FrameOperations.hasOversizedModule(data)) {
-            flags |= FLAG_OVERSIZED_MODULE;
-            severity = maxSeverity(severity, YELLOW);
         }
 
         return new SystemStatus(severity, flags);

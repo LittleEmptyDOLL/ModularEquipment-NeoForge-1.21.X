@@ -5,6 +5,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.SystemStatus;
 import com.github.littleemptydoll.exoequipment.network.OpenMatrixPayload;
 import com.github.littleemptydoll.exoequipment.network.OpenProfilePayload;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -240,7 +241,11 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
         }
     }
 
-    private String formatTemperature(double temperature) {\n        return String.format(java.util.Locale.ROOT, "%.1f°C", temperature);\n    }\n\n    private String getProfileText() {
+    private String formatTemperature(double temperature) {
+        return String.format(java.util.Locale.ROOT, "%.1f°C", temperature);
+    }
+
+    private String getProfileText() {
         return truncate(menu.getActiveProfileName(), PROFILE_MAX_WIDTH);
     }
 
@@ -356,7 +361,7 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
             int mouseY
     ) {
         List<Component> lines = new ArrayList<>();
-        lines.add(Component.translatable("gui.exoequipment.system_status"));\n        lines.add(Component.translatable("gui.exoequipment.status.temperature", formatTemperature(menu.getTemperature())));
+        lines.add(Component.translatable("gui.exoequipment.system_status").withStyle(ChatFormatting.AQUA));
 
         int flags = menu.getStatusFlags();
 

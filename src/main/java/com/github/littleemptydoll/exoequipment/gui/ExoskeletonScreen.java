@@ -378,7 +378,7 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
             lines.add(Component.translatable("gui.exoequipment.status.module_too_large"));
         }
 
-        renderTooltip(guiGraphics, lines, mouseX, mouseY);
+        guiGraphics.renderComponentTooltip(font, lines, mouseX, mouseY);
     }
 
     @Override

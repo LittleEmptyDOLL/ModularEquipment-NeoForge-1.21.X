@@ -72,23 +72,23 @@ public final class TemperatureOperations {
         }
 
         TemperatureBonus bonus = optionalBonus.get();
+        double min = bonus.minTemperature();
+        double max = bonus.maxTemperature();
+        double range = max - min;
 
-        if (temperature <= bonus.minTemperature()) {
-            return 1.0D;
-        }
-
-        if (temperature >= bonus.maxTemperature()) {
-            return 1.0D + bonus.maximumBonus();
-        }
-
-        double range = bonus.maxTemperature() - bonus.minTemperature();
         if (range <= 0.0D) {
             return 1.0D + bonus.maximumBonus();
         }
 
-        double progress =
-                (temperature - bonus.minTemperature()) / range;
+        double midpoint = (min + max) / 2.0D;
 
-        return 1.0D + bonus.maximumBonus() * progress;
+        if (temperature <= min || temperature >= max) {
+            return 1.0D;
+        }
+
+        double distance = Math.abs(temperature - midpoint);
+        double progress = 1.0D - (distance / (range / 2.0D));
+
+        return 1.0D + bonus.maximumBonus() * Math.max(0.0D, progress);
     }
 }

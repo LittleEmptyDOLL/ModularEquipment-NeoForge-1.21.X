@@ -122,8 +122,8 @@ public final class ExoskeletonState {
             ExoskeletonData data,
             double temperature
     ) {
-        int heatGeneration = 0;
-        int cooling = 0;
+        double heatGeneration = 0.0D;
+        double cooling = 0.0D;
 
         for (MatrixData matrix : activeMatrices(data)) {
             heatGeneration += MatrixOperations.calculateHeatGeneration(

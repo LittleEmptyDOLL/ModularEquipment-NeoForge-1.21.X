@@ -83,10 +83,14 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
                 externalEnergy
         );
 
-        if (!result.data().equals(getData(stack))) {
+        ExoskeletonData updatedData = ExoskeletonTemperatureState.tick(
+                result.data()
+        );
+
+        if (!updatedData.equals(getData(stack))) {
             stack.set(
                     ModDataComponents.EXOSKELETON_DATA.get(),
-                    result.data()
+                    updatedData
             );
         }
     }

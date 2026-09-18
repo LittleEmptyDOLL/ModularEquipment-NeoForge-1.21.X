@@ -17,7 +17,8 @@ public record ExoskeletonData(
         Optional<EnergySystem> energySystem,
         List<MatrixSlot> matrices,
         List<ExoskeletonProfile> profiles,
-        int activeProfile
+        int activeProfile,
+        double temperature
 ) {
     public static final int MAX_MATRICES = 4;
 
@@ -53,7 +54,10 @@ public record ExoskeletonData(
                                     .forGetter(ExoskeletonData::profiles),
                             Codec.INT
                                     .fieldOf("active_profile")
-                                    .forGetter(ExoskeletonData::activeProfile)
+                                    .forGetter(ExoskeletonData::activeProfile),
+                            Codec.DOUBLE
+                                    .optionalFieldOf("temperature", 20.0D)
+                                    .forGetter(ExoskeletonData::temperature)
                     ).apply(
                             instance,
                             ExoskeletonData::new
@@ -72,7 +76,20 @@ public record ExoskeletonData(
                         MatrixSlot.empty()
                 ),
                 List.of(),
-                -1
+                -1,
+                20.0D
+        );
+    }
+
+    public ExoskeletonData withTemperature(double temperature) {
+        return new ExoskeletonData(
+                frame,
+                controller,
+                energySystem,
+                matrices,
+                profiles,
+                activeProfile,
+                temperature
         );
     }
 
@@ -83,7 +100,8 @@ public record ExoskeletonData(
                 energySystem,
                 matrices,
                 profiles,
-                activeProfile
+                activeProfile,
+                temperature
         );
     }
 

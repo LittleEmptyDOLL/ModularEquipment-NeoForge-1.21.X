@@ -5,6 +5,7 @@ import com.github.littleemptydoll.exoequipment.controller.Controller;
 import com.github.littleemptydoll.exoequipment.energy.EnergySystem;
 import com.github.littleemptydoll.exoequipment.exoskeleton.Exoskeleton;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
 import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.module.Module;
@@ -57,6 +58,12 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType(
                     "exoskeleton_data",
                     builder -> builder.persistent(ExoskeletonData.CODEC)
+            );
+
+    public static final Supplier<DataComponentType<ExoskeletonRuntimeState>> EXOSKELETON_RUNTIME =
+            COMPONENTS.registerComponentType(
+                    "exoskeleton_runtime",
+                    builder -> builder.persistent(ExoskeletonRuntimeState.CODEC)
             );
 
     public static final Supplier<DataComponentType<Module>> MODULE =

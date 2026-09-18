@@ -5,6 +5,7 @@
   "gui.exoequipment.matrices": "Матрицы",
   "gui.exoequipment.matrix_size": "Матрица %s/%s",
   "gui.exoequipment.system": "Статус системы",
+  "gui.exoequipment.status.temperature": "Температура: %s",
   "item.exoequipment.basic_exoskeleton": "Базовый Экзоскелет",
   "item.exoequipment.civilian_controller": "Гражданский Контроллер",
   "item.exoequipment.civilian_energy_system": "Гражданская Энерго Система",

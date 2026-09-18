@@ -499,6 +499,13 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        int localMouseX = mouseX - leftPos;
+        int localMouseY = mouseY - topPos;
+        characteristicsHovered = localMouseX >= imageWidth - 23
+                && localMouseX < imageWidth - 23 + BUTTON_WIDTH
+                && localMouseY >= BUTTON_Y
+                && localMouseY < BUTTON_Y + BUTTON_HEIGHT;
+
         renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         renderTooltip(guiGraphics, mouseX, mouseY);

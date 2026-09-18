@@ -9,7 +9,7 @@ public record ExoskeletonTemperatureState(
     public static ExoskeletonTemperatureState calculate(
             ExoskeletonData data
     ) {
-        double thermalBalance = ExoskeletonState.calculateThermalBalance(data);
+        double thermalBalance = ExoskeletonState.calculateThermalBalance(data, data.temperature());
         double temperature = INITIAL_TEMPERATURE + thermalBalance;
 
         return new ExoskeletonTemperatureState(
@@ -27,6 +27,7 @@ public record ExoskeletonTemperatureState(
             return data;
         }
 
-        return data.withTemperature(state.temperature());
+        ExoskeletonData updated = data.withTemperature(state.temperature());
+        return ExoskeletonState.normalizeStoredEnergy(updated);
     }
 }

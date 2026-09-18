@@ -113,4 +113,23 @@ public final class ExoskeletonState {
                 cooling
         );
     }
+
+    public static double calculateThermalBalance(ExoskeletonData data) {
+        int heatGeneration = 0;
+        int cooling = 0;
+
+        for (MatrixData matrix : activeMatrices(data)) {
+            heatGeneration += MatrixOperations.calculateHeatGeneration(
+                    matrix,
+                    module -> FrameOperations.isModuleSupported(data, module)
+            );
+
+            cooling += MatrixOperations.calculateCooling(
+                    matrix,
+                    module -> FrameOperations.isModuleSupported(data, module)
+            );
+        }
+
+        return heatGeneration - cooling;
+    }
 }

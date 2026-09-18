@@ -78,10 +78,10 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
         if (definition.thermal().isPresent()) {
             var thermal = definition.thermal().get();
             if (thermal.cooling() > 0) {
-                tooltip.add(TooltipHelper.cooling(applyEfficiency(thermal.cooling(), efficiency), efficiency));
+                tooltip.add(TooltipHelper.cooling(applyEfficiency((int) thermal.cooling(), efficiency), efficiency));
             }
             if (thermal.heatGeneration() > 0) {
-                tooltip.add(TooltipHelper.heatGeneration(applyEfficiency(thermal.heatGeneration(), efficiency), efficiency));
+                tooltip.add(TooltipHelper.heatGeneration(applyEfficiency((int) thermal.heatGeneration(), efficiency), efficiency));
             }
         }
 

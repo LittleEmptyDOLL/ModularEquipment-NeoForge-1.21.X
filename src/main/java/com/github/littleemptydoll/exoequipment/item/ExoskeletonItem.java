@@ -19,7 +19,7 @@ import java.util.List;
 
 public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implements ICurioItem {
 
-    private static final int TEMPERATURE_UPDATE_INTERVAL = 20;
+    private static final int TEMPERATURE_UPDATE_INTERVAL = 1;
 
     public ExoskeletonItem(
             DeferredHolder<

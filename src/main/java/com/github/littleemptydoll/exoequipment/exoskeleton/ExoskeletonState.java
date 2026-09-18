@@ -3,6 +3,7 @@ package com.github.littleemptydoll.exoequipment.exoskeleton;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixState;
+import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +88,10 @@ public final class ExoskeletonState {
         int cooling = 0;
 
         for (MatrixData matrix : activeMatrices(data)) {
-            MatrixState state = MatrixOperations.calculateState(matrix);
+            MatrixState state = MatrixOperations.calculateState(
+                    matrix,
+                    module -> FrameOperations.isModuleSupported(data, module)
+            );
 
             energyConsumption += state.energyConsumption();
             energyGeneration += state.energyGeneration();

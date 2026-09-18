@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.item;
 
 import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
+import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
@@ -35,46 +36,64 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
             TooltipFlag flag
     ) {
         ModuleDefinition definition = getDefinition();
+        double temperature = TooltipHelper.currentExoskeletonTemperature();
+        double efficiency = definition.temperature().isPresent() && !Double.isNaN(temperature)
+                ? TemperatureOperations.calculateModuleEfficiency(definition, temperature)
+                : 1.0D;
 
         appendEquipmentTooltip(tooltip);
         tooltip.add(TooltipHelper.category(definition.category()));
         tooltip.add(TooltipHelper.size(definition.size().width(), definition.size().height()));
 
         if (definition.energy().isPresent()) {
-            tooltip.add(TooltipHelper.energyConsumption(definition.energy().get().consumption()));
+            int consumption = definition.energy().get().consumption();
+            tooltip.add(TooltipHelper.energyConsumption(applyEfficiency(consumption, efficiency), efficiency));
         }
 
         if (definition.generation().isPresent()) {
-            tooltip.add(TooltipHelper.energyGeneration(definition.generation().get().generation()));
+            int generation = definition.generation().get().generation();
+            tooltip.add(TooltipHelper.energyGeneration(applyEfficiency(generation, efficiency), efficiency));
         }
 
         if (definition.storage().isPresent()) {
             var storage = definition.storage().get();
-            tooltip.add(TooltipHelper.input(storage.maxInput()));
-            tooltip.add(TooltipHelper.output(storage.maxOutput()));
+            tooltip.add(TooltipHelper.input(applyEfficiency(storage.maxInput(), efficiency), efficiency));
+            tooltip.add(TooltipHelper.output(applyEfficiency(storage.maxOutput(), efficiency), efficiency));
+
             int stored = Math.min(
                     stack.getOrDefault(ModDataComponents.MODULE_STORED_ENERGY.get(), 0),
                     storage.capacity()
             );
-            tooltip.add(TooltipHelper.capacity(stored, storage.capacity()));
+            int capacity = applyEfficiency(storage.capacity(), efficiency);
+            tooltip.add(TooltipHelper.capacity(stored, capacity, efficiency));
         }
 
         if (definition.thermal().isPresent()) {
             var thermal = definition.thermal().get();
             if (thermal.cooling() > 0) {
-                tooltip.add(TooltipHelper.cooling(thermal.cooling()));
+                tooltip.add(TooltipHelper.cooling(applyEfficiency(thermal.cooling(), efficiency), efficiency));
             }
             if (thermal.heatGeneration() > 0) {
-                tooltip.add(TooltipHelper.heatGeneration(thermal.heatGeneration()));
+                tooltip.add(TooltipHelper.heatGeneration(applyEfficiency(thermal.heatGeneration(), efficiency), efficiency));
             }
         }
 
         if (definition.temperature().isPresent()) {
-            var temperature = definition.temperature().get();
-            tooltip.add(TooltipHelper.temperature(temperature.minTemperature(), temperature.maxTemperature()));
-            if (temperature.bonus().isPresent()) {
-                tooltip.add(TooltipHelper.temperature_bonus(temperature.bonus().get().minTemperature(), temperature.bonus().get().maxTemperature()));
+            var temperatureProperties = definition.temperature().get();
+            tooltip.add(TooltipHelper.temperature(
+                    temperatureProperties.minTemperature(),
+                    temperatureProperties.maxTemperature()
+            ));
+            if (temperatureProperties.bonus().isPresent()) {
+                tooltip.add(TooltipHelper.temperature_bonus(
+                        temperatureProperties.bonus().get().minTemperature(),
+                        temperatureProperties.bonus().get().maxTemperature()
+                ));
             }
         }
+    }
+
+    private static int applyEfficiency(int value, double efficiency) {
+        return Math.max(0, (int) Math.round(value * efficiency));
     }
 }

@@ -370,6 +370,10 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
             lines.add(Component.translatable("gui.exoequipment.status.energy_unavailable"));
         }
 
+        if ((flags & SystemStatus.FLAG_CONTROLLER_MISSING) != 0) {
+            lines.add(Component.translatable("gui.exoequipment.status.controller_missing"));
+        }
+
         if ((flags & SystemStatus.FLAG_FRAME_MISSING) != 0) {
             lines.add(Component.translatable("gui.exoequipment.status.frame_missing"));
         }

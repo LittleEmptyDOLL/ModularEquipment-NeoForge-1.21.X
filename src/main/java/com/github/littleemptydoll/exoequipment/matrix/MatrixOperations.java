@@ -117,10 +117,18 @@ public final class MatrixOperations {
     }
 
     public static int calculateEnergyConsumption(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return calculateEnergyConsumption(matrix, supported, Double.NaN);
+    }
+
+    public static int calculateEnergyConsumption(MatrixData matrix, Predicate<InstalledModule> supported, double temperature) {
         return matrix.modules().stream()
                 .filter(supported)
-                .mapToInt(module -> ModModules.getDefinition(module.id())
-                        .energy().map(EnergyProperties::consumption).orElse(0))
+                .mapToInt(module -> scaled(
+                        ModModules.getDefinition(module.id()).energy()
+                                .map(EnergyProperties::consumption).orElse(0),
+                        temperature,
+                        module
+                ))
                 .sum();
     }
 
@@ -129,10 +137,18 @@ public final class MatrixOperations {
     }
 
     public static int calculateEnergyGeneration(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return calculateEnergyGeneration(matrix, supported, Double.NaN);
+    }
+
+    public static int calculateEnergyGeneration(MatrixData matrix, Predicate<InstalledModule> supported, double temperature) {
         return matrix.modules().stream()
                 .filter(supported)
-                .mapToInt(module -> ModModules.getDefinition(module.id())
-                        .generation().map(GenerationProperties::generation).orElse(0))
+                .mapToInt(module -> scaled(
+                        ModModules.getDefinition(module.id()).generation()
+                                .map(GenerationProperties::generation).orElse(0),
+                        temperature,
+                        module
+                ))
                 .sum();
     }
 
@@ -141,10 +157,18 @@ public final class MatrixOperations {
     }
 
     public static int calculateEnergyStorageCapacity(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return calculateEnergyStorageCapacity(matrix, supported, Double.NaN);
+    }
+
+    public static int calculateEnergyStorageCapacity(MatrixData matrix, Predicate<InstalledModule> supported, double temperature) {
         return matrix.modules().stream()
                 .filter(supported)
-                .mapToInt(module -> ModModules.getDefinition(module.id())
-                        .storage().map(StorageProperties::capacity).orElse(0))
+                .mapToInt(module -> scaled(
+                        ModModules.getDefinition(module.id()).storage()
+                                .map(StorageProperties::capacity).orElse(0),
+                        temperature,
+                        module
+                ))
                 .sum();
     }
 
@@ -153,10 +177,18 @@ public final class MatrixOperations {
     }
 
     public static int calculateEnergyStorageInput(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return calculateEnergyStorageInput(matrix, supported, Double.NaN);
+    }
+
+    public static int calculateEnergyStorageInput(MatrixData matrix, Predicate<InstalledModule> supported, double temperature) {
         return matrix.modules().stream()
                 .filter(supported)
-                .mapToInt(module -> ModModules.getDefinition(module.id())
-                        .storage().map(StorageProperties::maxInput).orElse(0))
+                .mapToInt(module -> scaled(
+                        ModModules.getDefinition(module.id()).storage()
+                                .map(StorageProperties::maxInput).orElse(0),
+                        temperature,
+                        module
+                ))
                 .sum();
     }
 
@@ -165,10 +197,18 @@ public final class MatrixOperations {
     }
 
     public static int calculateEnergyStorageOutput(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return calculateEnergyStorageOutput(matrix, supported, Double.NaN);
+    }
+
+    public static int calculateEnergyStorageOutput(MatrixData matrix, Predicate<InstalledModule> supported, double temperature) {
         return matrix.modules().stream()
                 .filter(supported)
-                .mapToInt(module -> ModModules.getDefinition(module.id())
-                        .storage().map(StorageProperties::maxOutput).orElse(0))
+                .mapToInt(module -> scaled(
+                        ModModules.getDefinition(module.id()).storage()
+                                .map(StorageProperties::maxOutput).orElse(0),
+                        temperature,
+                        module
+                ))
                 .sum();
     }
 
@@ -191,10 +231,18 @@ public final class MatrixOperations {
     }
 
     public static int calculateHeatGeneration(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return calculateHeatGeneration(matrix, supported, Double.NaN);
+    }
+
+    public static int calculateHeatGeneration(MatrixData matrix, Predicate<InstalledModule> supported, double temperature) {
         return matrix.modules().stream()
                 .filter(supported)
-                .mapToInt(module -> ModModules.getDefinition(module.id())
-                        .thermal().map(ThermalProperties::heatGeneration).orElse(0))
+                .mapToInt(module -> scaled(
+                        ModModules.getDefinition(module.id()).thermal()
+                                .map(ThermalProperties::heatGeneration).orElse(0),
+                        temperature,
+                        module
+                ))
                 .sum();
     }
 
@@ -203,10 +251,18 @@ public final class MatrixOperations {
     }
 
     public static int calculateCooling(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return calculateCooling(matrix, supported, Double.NaN);
+    }
+
+    public static int calculateCooling(MatrixData matrix, Predicate<InstalledModule> supported, double temperature) {
         return matrix.modules().stream()
                 .filter(supported)
-                .mapToInt(module -> ModModules.getDefinition(module.id())
-                        .thermal().map(ThermalProperties::cooling).orElse(0))
+                .mapToInt(module -> scaled(
+                        ModModules.getDefinition(module.id()).thermal()
+                                .map(ThermalProperties::cooling).orElse(0),
+                        temperature,
+                        module
+                ))
                 .sum();
     }
 
@@ -215,14 +271,37 @@ public final class MatrixOperations {
     }
 
     public static MatrixState calculateState(MatrixData matrix, Predicate<InstalledModule> supported) {
+        return calculateState(matrix, supported, Double.NaN);
+    }
+
+    public static MatrixState calculateState(
+            MatrixData matrix,
+            Predicate<InstalledModule> supported,
+            double temperature
+    ) {
         return new MatrixState(
-                calculateEnergyConsumption(matrix, supported),
-                calculateEnergyGeneration(matrix, supported),
-                calculateEnergyStorageCapacity(matrix, supported),
-                calculateEnergyStorageInput(matrix, supported),
-                calculateEnergyStorageOutput(matrix, supported),
-                calculateHeatGeneration(matrix, supported),
-                calculateCooling(matrix, supported)
+                calculateEnergyConsumption(matrix, supported, temperature),
+                calculateEnergyGeneration(matrix, supported, temperature),
+                calculateEnergyStorageCapacity(matrix, supported, temperature),
+                calculateEnergyStorageInput(matrix, supported, temperature),
+                calculateEnergyStorageOutput(matrix, supported, temperature),
+                calculateHeatGeneration(matrix, supported, temperature),
+                calculateCooling(matrix, supported, temperature)
         );
+    }
+
+    private static int scaled(
+            int value,
+            double temperature,
+            InstalledModule module
+    ) {
+        if (Double.isNaN(temperature)) {
+            return value;
+        }
+
+        double efficiency = com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations
+                .calculateModuleEfficiency(module.id(), temperature);
+
+        return Math.max(0, (int) Math.round(value * efficiency));
     }
 }

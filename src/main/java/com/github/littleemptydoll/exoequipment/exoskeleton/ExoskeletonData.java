@@ -112,7 +112,8 @@ public record ExoskeletonData(
                 energySystem,
                 matrices,
                 profiles,
-                activeProfile
+                activeProfile,
+                temperature
         );
     }
 
@@ -123,7 +124,8 @@ public record ExoskeletonData(
                 energySystem,
                 matrices,
                 profiles,
-                activeProfile
+                activeProfile,
+                temperature
         );
     }
 
@@ -134,7 +136,8 @@ public record ExoskeletonData(
                 energySystem,
                 matrices,
                 profiles,
-                activeProfile
+                activeProfile,
+                temperature
         );
     }
 
@@ -145,7 +148,8 @@ public record ExoskeletonData(
                 Optional.of(energySystem),
                 matrices,
                 profiles,
-                activeProfile
+                activeProfile,
+                temperature
         );
     }
 
@@ -156,7 +160,8 @@ public record ExoskeletonData(
                 Optional.empty(),
                 matrices,
                 profiles,
-                activeProfile
+                activeProfile,
+                temperature
         );
     }
 
@@ -177,7 +182,8 @@ public record ExoskeletonData(
                 energySystem,
                 List.copyOf(newMatrices),
                 profiles,
-                activeProfile
+                activeProfile,
+                temperature
         );
     }
 
@@ -195,7 +201,8 @@ public record ExoskeletonData(
                 energySystem,
                 List.copyOf(newMatrices),
                 profiles,
-                activeProfile
+                activeProfile,
+                temperature
         );
     }
 
@@ -208,7 +215,8 @@ public record ExoskeletonData(
                 energySystem,
                 matrices,
                 List.copyOf(profiles),
-                activeProfile
+                activeProfile,
+                temperature
         );
     }
 
@@ -222,7 +230,8 @@ public record ExoskeletonData(
                 energySystem,
                 matrices,
                 List.copyOf(profiles),
-                activeProfile
+                activeProfile,
+                temperature
         );
     }
 
@@ -240,7 +249,8 @@ public record ExoskeletonData(
                 energySystem,
                 matrices,
                 List.copyOf(profiles),
-                activeProfile
+                activeProfile,
+                temperature
         );
     }
 
@@ -253,7 +263,8 @@ public record ExoskeletonData(
                 energySystem,
                 matrices,
                 profiles,
-                activeProfile
+                activeProfile,
+                temperature
         );
     }
 }

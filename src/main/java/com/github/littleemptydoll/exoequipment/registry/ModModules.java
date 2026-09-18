@@ -8,6 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.Optional;
+
 public class ModModules {
     private ModModules() {}
 
@@ -57,15 +59,15 @@ public class ModModules {
                             id,
                             properties,
                             ModuleCategory.UTILITY,
-                            new ModuleSize(2, 2)
+                            new ModuleSize(1, 2)
                     ).build()
     );
 
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
-    > TEST_ENERGY = REGISTRY.register(
-            "test_energy",
+    > TEST_CONSUMER = REGISTRY.register(
+            "test_consumer",
             new EquipmentProperties(
                     EquipmentTier.BASIC,
                     Rarity.EPIC
@@ -75,10 +77,15 @@ public class ModModules {
                             id,
                             properties,
                             ModuleCategory.UTILITY,
-                            new ModuleSize(3, 3)
+                            new ModuleSize(2, 2)
                     )
                             .energy(new EnergyProperties(20))
-                            .thermal(new ThermalProperties(10, 5))
+                            .thermal(new ThermalProperties(20, 0))
+                            .temperature(new TemperatureProperties(
+                                    0,
+                                    40,
+                                    Optional.empty(),
+                                    Optional.of(new TemperatureBonus(20, 40, 50))))
                             .build()
     );
 
@@ -99,6 +106,12 @@ public class ModModules {
                             new ModuleSize(3, 3)
                     )
                             .generation(new GenerationProperties(40))
+                            .thermal(new ThermalProperties(10, 0))
+                            .temperature(new TemperatureProperties(
+                                    40,
+                                    80,
+                                    Optional.empty(),
+                                    Optional.of(new TemperatureBonus(60, 80, 100))))
                             .build()
     );
 
@@ -119,6 +132,48 @@ public class ModModules {
                             new ModuleSize(2, 3)
                     )
                             .storage(new StorageProperties(10_000, 100, 200))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > TEST_COOLER = REGISTRY.register(
+            "test_cooler",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.UTILITY,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(10))
+                            .thermal(new ThermalProperties(0, 20))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > TEST_HEATER = REGISTRY.register(
+            "test_heater",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.UTILITY,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(10))
+                            .thermal(new ThermalProperties(20, 0))
                             .build()
     );
 }

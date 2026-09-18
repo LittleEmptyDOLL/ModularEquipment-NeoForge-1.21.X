@@ -237,4 +237,20 @@ public final class TooltipHelper {
                 heatGeneration
         );
     }
+
+    public static Component temperature(double min, double max) {
+        return Component.translatable(
+                "tooltip.exoequipment.temperature",
+                min,
+                max
+        );
+    }
+
+    public static Component temperature_bonus(double min, double max) {
+        return Component.translatable(
+                "tooltip.exoequipment.temperature_bonus",
+                min,
+                max
+        );
+    }
 }

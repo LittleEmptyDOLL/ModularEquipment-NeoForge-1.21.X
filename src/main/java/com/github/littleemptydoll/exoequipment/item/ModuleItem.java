@@ -60,8 +60,21 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
         }
 
         if (definition.thermal().isPresent()) {
-            tooltip.add(TooltipHelper.cooling(definition.thermal().get().cooling()));
-            tooltip.add(TooltipHelper.heatGeneration(definition.thermal().get().heatGeneration()));
+            var thermal = definition.thermal().get();
+            if (thermal.cooling() > 0) {
+                tooltip.add(TooltipHelper.cooling(thermal.cooling()));
+            }
+            if (thermal.heatGeneration() > 0) {
+                tooltip.add(TooltipHelper.heatGeneration(thermal.heatGeneration()));
+            }
+        }
+
+        if (definition.temperature().isPresent()) {
+            var temperature = definition.temperature().get();
+            tooltip.add(TooltipHelper.temperature(temperature.minTemperature(), temperature.maxTemperature()));
+            if (temperature.bonus().isPresent()) {
+                tooltip.add(TooltipHelper.temperature_bonus(temperature.bonus().get().minTemperature(), temperature.bonus().get().maxTemperature()));
+            }
         }
     }
 }

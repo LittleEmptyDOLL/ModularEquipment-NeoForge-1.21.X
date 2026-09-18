@@ -48,6 +48,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add("tooltip.exoequipment.capacity", "Capacity: %s/%s FE");
         add("tooltip.exoequipment.cooling", "Сooling: %s°C");
         add("tooltip.exoequipment.heat_generation", "Heat generation: %s°C");
+        add("tooltip.exoequipment.temperature", "Operating temperature: %s°C - %s°C");
+        add("tooltip.exoequipment.temperature_bonus", "Effective temperature: %s°C - %s°C");
 
         add("gui.exoequipment.exoskeleton", "Exoskeleton");
         add("gui.exoequipment.components", "Components");

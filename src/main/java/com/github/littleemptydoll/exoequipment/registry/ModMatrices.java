@@ -110,7 +110,7 @@ public final class ModMatrices {
                     new MatrixDefinition(
                             id,
                             properties,
-                            10,
+                            9,
                             9
                     )
     );

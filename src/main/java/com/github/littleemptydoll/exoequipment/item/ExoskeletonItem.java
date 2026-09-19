@@ -106,7 +106,14 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
         }
 
         runtime = runtime.withPoweredModules(result.poweredModules());
-        runtime = ShieldOperations.tick(updatedData, runtime);
+        updatedData = ShieldOperations.tick(
+                updatedData,
+                runtime.poweredModules()
+        );
+        updatedData = RevivalOperations.tick(
+                updatedData,
+                runtime.poweredModules()
+        );
         runtime = RevivalOperations.tick(updatedData, runtime);
         StatusProtectionOperations.removeFullyProtectedEffects(
                 slotContext.entity(),

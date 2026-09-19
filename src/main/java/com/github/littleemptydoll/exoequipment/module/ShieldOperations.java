@@ -90,6 +90,29 @@ public final class ShieldOperations {
         );
     }
 
+    public static ShieldStatus getStatus(
+            ExoskeletonData data,
+            ExoskeletonRuntimeState runtime
+    ) {
+        List<ShieldTarget> targets = collectShields(data);
+
+        if (targets.isEmpty()) {
+            return ShieldStatus.empty();
+        }
+
+        List<ShieldState> states = normalizeStates(targets, runtime.shields());
+        double currentEnergy = 0.0D;
+        int capacity = 0;
+
+        for (ShieldTarget target : targets) {
+            ShieldState state = findState(states, target.reference());
+            currentEnergy += state.currentEnergy();
+            capacity += target.properties().capacity();
+        }
+
+        return new ShieldStatus(currentEnergy, capacity);
+    }
+
     public static ExoskeletonRuntimeState tick(
             ExoskeletonData data,
             ExoskeletonRuntimeState runtime
@@ -273,6 +296,32 @@ public final class ShieldOperations {
             net.minecraft.resources.ResourceLocation moduleId,
             ShieldProperties properties
     ) {}
+
+    public record ShieldStatus(
+            double currentEnergy,
+            int capacity
+    ) {
+        public ShieldStatus {
+            if (!Double.isFinite(currentEnergy) || currentEnergy < 0.0D) {
+                throw new IllegalArgumentException(
+                        "Shield current energy must be finite and non-negative"
+                );
+            }
+            if (capacity < 0) {
+                throw new IllegalArgumentException(
+                        "Shield capacity cannot be negative"
+                );
+            }
+        }
+
+        public static ShieldStatus empty() {
+            return new ShieldStatus(0.0D, 0);
+        }
+
+        public boolean hasShields() {
+            return capacity > 0;
+        }
+    }
 
     public record ShieldDamageResult(
             double remainingDamage,

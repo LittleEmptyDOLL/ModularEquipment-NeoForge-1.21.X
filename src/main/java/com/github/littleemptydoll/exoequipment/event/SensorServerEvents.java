@@ -4,18 +4,24 @@ import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.module.SensorOperations;
+import com.github.littleemptydoll.exoequipment.network.SensorHighlightPayload;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import top.theillusivec4.curios.api.CuriosApi;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -47,6 +53,9 @@ public final class SensorServerEvents {
                 HIGHLIGHTED.getOrDefault(player.getUUID(), Set.of());
 
         Set<Integer> current = new HashSet<>();
+        List<Integer> hostile = new ArrayList<>();
+        List<Integer> mobs = new ArrayList<>();
+        List<Integer> players = new ArrayList<>();
 
         Optional<ItemStack> stack = findExoskeleton(player);
 
@@ -66,6 +75,14 @@ public final class SensorServerEvents {
                 Entity entity = detected.entity();
                 current.add(entity.getId());
                 sendGlow(player, entity, true);
+
+                if (entity instanceof Player) {
+                    players.add(entity.getId());
+                } else if (entity instanceof Enemy) {
+                    hostile.add(entity.getId());
+                } else if (entity instanceof Mob) {
+                    mobs.add(entity.getId());
+                }
             });
         }
 
@@ -80,6 +97,15 @@ public final class SensorServerEvents {
                 sendGlow(player, entity, false);
             }
         }
+
+        PacketDistributor.sendToPlayer(
+                player,
+                new SensorHighlightPayload(
+                        hostile,
+                        mobs,
+                        players
+                )
+        );
 
         if (current.isEmpty()) {
             HIGHLIGHTED.remove(player.getUUID());

@@ -20,7 +20,8 @@ public record ModuleDefinition(
         Optional<TemperatureProperties> temperature,
         Optional<DamageReductionProperties> damageReduction,
         Optional<ShieldProperties> shield,
-        Optional<StatusProtectionProperties> statusProtection
+        Optional<StatusProtectionProperties> statusProtection,
+        Optional<MobilityProperties> mobility
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -60,7 +61,10 @@ public record ModuleDefinition(
                                     .forGetter(ModuleDefinition::shield),
                             StatusProtectionProperties.CODEC
                                     .optionalFieldOf("status_protection")
-                                    .forGetter(ModuleDefinition::statusProtection)
+                                    .forGetter(ModuleDefinition::statusProtection),
+                            MobilityProperties.CODEC
+                                    .optionalFieldOf("mobility")
+                                    .forGetter(ModuleDefinition::mobility)
                     ).apply(
                             instance,
                             ModuleDefinition::new
@@ -90,6 +94,7 @@ public record ModuleDefinition(
         private DamageReductionProperties damageReduction;
         private ShieldProperties shield;
         private StatusProtectionProperties statusProtection;
+        private MobilityProperties mobility;
 
         private Builder(
                 ResourceLocation id,
@@ -143,6 +148,11 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder mobility(MobilityProperties mobility) {
+            this.mobility = mobility;
+            return this;
+        }
+
         public ModuleDefinition build() {
             return new ModuleDefinition(
                     id,
@@ -156,7 +166,8 @@ public record ModuleDefinition(
                     Optional.ofNullable(temperature),
                     Optional.ofNullable(damageReduction),
                     Optional.ofNullable(shield),
-                    Optional.ofNullable(statusProtection)
+                    Optional.ofNullable(statusProtection),
+                    Optional.ofNullable(mobility)
             );
         }
     }

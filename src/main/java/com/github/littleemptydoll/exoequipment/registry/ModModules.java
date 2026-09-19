@@ -168,6 +168,62 @@ public class ModModules {
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
+            > TEST_STATUS_PROTECTION = REGISTRY.register(
+            "test_status_protection",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.DEFENSE,
+                                    new ModuleSize(2, 2)
+                            )
+                            .statusProtection(new StatusProtectionProperties(
+                                    java.util.Map.of(
+                                            ResourceLocation.fromNamespaceAndPath(
+                                                    "minecraft",
+                                                    "poison"
+                                            ),
+                                            0.75D
+                                    )
+                            ))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > TEST_DAMAGE_REDUCTION = REGISTRY.register(
+            "test_damage_reduction",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.DEFENSE,
+                                    new ModuleSize(2, 2)
+                            )
+                            .damageReduction(new DamageReductionProperties(
+                                    java.util.Map.of(
+                                            ResourceLocation.fromNamespaceAndPath(
+                                                    "minecraft",
+                                                    "player_attack"
+                                            ),
+                                            0.25D
+                                    )
+                            ))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
             > TEST_COOLER = REGISTRY.register(
             "test_cooler",
             new EquipmentProperties(

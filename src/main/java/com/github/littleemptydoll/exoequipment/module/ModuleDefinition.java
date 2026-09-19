@@ -28,7 +28,8 @@ public record ModuleDefinition(
         Optional<HealthProperties> health,
         Optional<RevivalProperties> revival,
         Optional<RegenerationProperties> regeneration,
-        Optional<FallProtectionProperties> fallProtection
+        Optional<FallProtectionProperties> fallProtection,
+        Optional<ThirstProperties> thirst
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -48,7 +49,10 @@ public record ModuleDefinition(
                             RecordCodecBuilder.of(
                                     ModuleDefinition::optionalProperties,
                                     ModuleOptionalProperties.CODEC
-                            )
+                            ),
+                            ThirstProperties.CODEC
+                                    .optionalFieldOf("thirst")
+                                    .forGetter(ModuleDefinition::thirst)
                     ).apply(
                             instance,
                             ModuleDefinition::fromCodec
@@ -81,7 +85,8 @@ public record ModuleDefinition(
             EquipmentProperties properties,
             ModuleCategory category,
             ModuleSize size,
-            ModuleOptionalProperties optional
+            ModuleOptionalProperties optional,
+            Optional<ThirstProperties> thirst
     ) {
         return new ModuleDefinition(
                 id,
@@ -103,7 +108,8 @@ public record ModuleDefinition(
                 optional.health(),
                 optional.revival(),
                 optional.regeneration(),
-                optional.fallProtection()
+                optional.fallProtection(),
+                thirst
         );
     }
 
@@ -138,6 +144,7 @@ public record ModuleDefinition(
         private RevivalProperties revival;
         private RegenerationProperties regeneration;
         private FallProtectionProperties fallProtection;
+        private ThirstProperties thirst;
 
         private Builder(
                 ResourceLocation id,
@@ -231,6 +238,11 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder thirst(ThirstProperties thirst) {
+            this.thirst = thirst;
+            return this;
+        }
+
         public ModuleDefinition build() {
             return new ModuleDefinition(
                     id,
@@ -252,7 +264,8 @@ public record ModuleDefinition(
                     Optional.ofNullable(health),
                     Optional.ofNullable(revival),
                     Optional.ofNullable(regeneration),
-                    Optional.ofNullable(fallProtection)
+                    Optional.ofNullable(fallProtection),
+                    Optional.ofNullable(thirst)
             );
         }
     }

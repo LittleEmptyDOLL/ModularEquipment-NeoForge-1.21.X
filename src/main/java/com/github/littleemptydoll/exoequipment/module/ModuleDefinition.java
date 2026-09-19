@@ -42,50 +42,61 @@ public record ModuleDefinition(
                             ModuleSize.CODEC
                                     .fieldOf("size")
                                     .forGetter(ModuleDefinition::size),
-                            EnergyProperties.CODEC
-                                    .optionalFieldOf("energy")
-                                    .forGetter(ModuleDefinition::energy),
-                            GenerationProperties.CODEC
-                                    .optionalFieldOf("generation")
-                                    .forGetter(ModuleDefinition::generation),
-                            StorageProperties.CODEC
-                                    .optionalFieldOf("storage")
-                                    .forGetter(ModuleDefinition::storage),
-                            ThermalProperties.CODEC
-                                    .optionalFieldOf("thermal")
-                                    .forGetter(ModuleDefinition::thermal),
-                            TemperatureProperties.CODEC
-                                    .optionalFieldOf("temperature")
-                                    .forGetter(ModuleDefinition::temperature),
-                            DamageReductionProperties.CODEC
-                                    .optionalFieldOf("damage_reduction")
-                                    .forGetter(ModuleDefinition::damageReduction),
-                            ShieldProperties.CODEC
-                                    .optionalFieldOf("shield")
-                                    .forGetter(ModuleDefinition::shield),
-                            StatusProtectionProperties.CODEC
-                                    .optionalFieldOf("status_protection")
-                                    .forGetter(ModuleDefinition::statusProtection),
-                            MobilityProperties.CODEC
-                                    .optionalFieldOf("mobility")
-                                    .forGetter(ModuleDefinition::mobility),
-                            NightVisionProperties.CODEC
-                                    .optionalFieldOf("night_vision")
-                                    .forGetter(ModuleDefinition::nightVision),
-                            EntityDetectionProperties.CODEC
-                                    .optionalFieldOf("entity_detection")
-                                    .forGetter(ModuleDefinition::entityDetection),
-                            HungerProperties.CODEC
-                                    .optionalFieldOf("hunger")
-                                    .forGetter(ModuleDefinition::hunger),
-                            HealthProperties.CODEC
-                                    .optionalFieldOf("health")
-                                    .forGetter(ModuleDefinition::health)
+                            RecordCodecBuilder.of(
+                                    ModuleDefinition::optionalProperties,
+                                    ModuleOptionalProperties.CODEC
+                            )
                     ).apply(
                             instance,
-                            ModuleDefinition::new
+                            ModuleDefinition::fromCodec
                     )
             );
+
+    private ModuleOptionalProperties optionalProperties() {
+        return new ModuleOptionalProperties(
+                energy,
+                generation,
+                storage,
+                thermal,
+                temperature,
+                damageReduction,
+                shield,
+                statusProtection,
+                mobility,
+                nightVision,
+                entityDetection,
+                hunger,
+                health
+        );
+    }
+
+    private static ModuleDefinition fromCodec(
+            ResourceLocation id,
+            EquipmentProperties properties,
+            ModuleCategory category,
+            ModuleSize size,
+            ModuleOptionalProperties optional
+    ) {
+        return new ModuleDefinition(
+                id,
+                properties,
+                category,
+                size,
+                optional.energy(),
+                optional.generation(),
+                optional.storage(),
+                optional.thermal(),
+                optional.temperature(),
+                optional.damageReduction(),
+                optional.shield(),
+                optional.statusProtection(),
+                optional.mobility(),
+                optional.nightVision(),
+                optional.entityDetection(),
+                optional.hunger(),
+                optional.health()
+        );
+    }
 
     public static Builder builder(
             ResourceLocation id,

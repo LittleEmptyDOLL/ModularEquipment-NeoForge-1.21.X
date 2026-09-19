@@ -54,6 +54,40 @@ public final class StatusProtectionEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void onEffectAdded(MobEffectEvent.Added event) {
+        LivingEntity entity = event.getEntity();
+
+        if (entity.level().isClientSide()) {
+            return;
+        }
+
+        ItemStack stack = findExoskeleton(entity).orElse(null);
+        if (stack == null) {
+            return;
+        }
+
+        ExoskeletonRuntimeState runtime = getRuntime(stack);
+        ResourceLocation effectId = event.getEffectInstance()
+                .getEffect()
+                .unwrapKey()
+                .map(key -> key.location())
+                .orElse(null);
+
+        if (effectId == null) {
+            return;
+        }
+
+        event.getEffectInstance().mapDuration(duration ->
+                StatusProtectionOperations.applyProtection(
+                        duration,
+                        ExoskeletonItem.getData(stack),
+                        effectId,
+                        runtime.poweredModules()
+                )
+        );
+    }
+
     private static ExoskeletonRuntimeState getRuntime(ItemStack stack) {
         ExoskeletonRuntimeState runtime =
                 stack.get(ModDataComponents.EXOSKELETON_RUNTIME.get());

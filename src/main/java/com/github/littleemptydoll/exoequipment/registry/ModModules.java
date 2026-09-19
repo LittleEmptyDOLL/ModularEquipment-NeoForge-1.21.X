@@ -229,6 +229,31 @@ public class ModModules {
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
+            > TEST_MOBILITY = REGISTRY.register(
+            "test_mobility",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.MOBILITY,
+                                    new ModuleSize(2, 2)
+                            )
+                            .mobility(new MobilityProperties(
+                                    0.15D,
+                                    0.25D,
+                                    0.20D,
+                                    0.50D
+                            ))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
             > TEST_COOLER = REGISTRY.register(
             "test_cooler",
             new EquipmentProperties(

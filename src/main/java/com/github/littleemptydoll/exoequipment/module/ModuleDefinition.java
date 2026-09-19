@@ -19,7 +19,8 @@ public record ModuleDefinition(
         Optional<ThermalProperties> thermal,
         Optional<TemperatureProperties> temperature,
         Optional<DamageReductionProperties> damageReduction,
-        Optional<ShieldProperties> shield
+        Optional<ShieldProperties> shield,
+        Optional<StatusProtectionProperties> statusProtection
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -56,7 +57,10 @@ public record ModuleDefinition(
                                     .forGetter(ModuleDefinition::damageReduction),
                             ShieldProperties.CODEC
                                     .optionalFieldOf("shield")
-                                    .forGetter(ModuleDefinition::shield)
+                                    .forGetter(ModuleDefinition::shield),
+                            StatusProtectionProperties.CODEC
+                                    .optionalFieldOf("status_protection")
+                                    .forGetter(ModuleDefinition::statusProtection)
                     ).apply(
                             instance,
                             ModuleDefinition::new
@@ -85,6 +89,7 @@ public record ModuleDefinition(
         private TemperatureProperties temperature;
         private DamageReductionProperties damageReduction;
         private ShieldProperties shield;
+        private StatusProtectionProperties statusProtection;
 
         private Builder(
                 ResourceLocation id,
@@ -133,6 +138,11 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder statusProtection(StatusProtectionProperties statusProtection) {
+            this.statusProtection = statusProtection;
+            return this;
+        }
+
         public ModuleDefinition build() {
             return new ModuleDefinition(
                     id,
@@ -145,7 +155,8 @@ public record ModuleDefinition(
                     Optional.ofNullable(thermal),
                     Optional.ofNullable(temperature),
                     Optional.ofNullable(damageReduction),
-                    Optional.ofNullable(shield)
+                    Optional.ofNullable(shield),
+                    Optional.ofNullable(statusProtection)
             );
         }
     }

@@ -58,6 +58,7 @@ public final class DefenseEvents {
         if (runtime == null) {
             runtime = ExoskeletonRuntimeState.empty();
         }
+
         DamageSource source = event.getSource();
 
         ResourceLocation damageType =
@@ -79,10 +80,8 @@ public final class DefenseEvents {
 
         runtime = shieldResult.runtime();
 
-        double remainingDamage = shieldResult.remainingDamage();
-
-        remainingDamage = DefenseOperations.applyDamageReduction(
-                remainingDamage,
+        double remainingDamage = DefenseOperations.applyDamageReduction(
+                shieldResult.remainingDamage(),
                 data,
                 damageType,
                 runtime.poweredModules()
@@ -97,16 +96,18 @@ public final class DefenseEvents {
         if (remainingDamage <= 0.0D) {
             event.setCanceled(true);
 
-            entity.level().playSound(
-                    null,
-                    entity.getX(),
-                    entity.getY(),
-                    entity.getZ(),
-                    ModSounds.SHIELD_HIT.get(),
-                    SoundSource.PLAYERS,
-                    1.0F,
-                    1.0F
-            );
+            if (shieldResult.absorbedDamage() > 0.0D) {
+                entity.level().playSound(
+                        null,
+                        entity.getX(),
+                        entity.getY(),
+                        entity.getZ(),
+                        ModSounds.SHIELD_HIT.get(),
+                        SoundSource.PLAYERS,
+                        1.0F,
+                        1.0F
+                );
+            }
 
             return;
         }

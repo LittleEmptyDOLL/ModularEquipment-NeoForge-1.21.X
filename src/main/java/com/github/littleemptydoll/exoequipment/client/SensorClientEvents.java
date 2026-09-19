@@ -12,7 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import top.theillusivec4.curios.api.CuriosApi;
 
@@ -38,6 +37,15 @@ public final class SensorClientEvents {
             return;
         }
 
+        for (int entityId : TEMPORARY_GLOWING_ENTITIES) {
+            Entity entity = player.level().getEntity(entityId);
+
+            if (entity != null && entity.hasGlowingTag()) {
+                entity.setGlowingTag(false);
+            }
+        }
+
+        TEMPORARY_GLOWING_ENTITIES.clear();
         DETECTED_ENTITIES.clear();
 
         Optional<ItemStack> stack = findExoskeleton(player);
@@ -57,32 +65,16 @@ public final class SensorClientEvents {
                 player,
                 ExoskeletonItem.getData(stack.get()),
                 runtime.poweredModules()
-        ).forEach(detected ->
-                DETECTED_ENTITIES.add(detected.entity().getId())
-        );
-    }
+        ).forEach(detected -> {
+            Entity entity = detected.entity();
 
-    @SubscribeEvent
-    public static void onLivingRenderPre(RenderLivingEvent.Pre<?, ?> event) {
-        Entity entity = event.getEntity();
+            DETECTED_ENTITIES.add(entity.getId());
 
-        if (!DETECTED_ENTITIES.contains(entity.getId())) {
-            return;
-        }
-
-        if (!entity.hasGlowingTag()) {
-            entity.setGlowingTag(true);
-            TEMPORARY_GLOWING_ENTITIES.add(entity.getId());
-        }
-    }
-
-    @SubscribeEvent
-    public static void onLivingRenderPost(RenderLivingEvent.Post<?, ?> event) {
-        Entity entity = event.getEntity();
-
-        if (TEMPORARY_GLOWING_ENTITIES.remove(entity.getId())) {
-            entity.setGlowingTag(false);
-        }
+            if (!entity.hasGlowingTag()) {
+                entity.setGlowingTag(true);
+                TEMPORARY_GLOWING_ENTITIES.add(entity.getId());
+            }
+        });
     }
 
     private static Optional<ItemStack> findExoskeleton(Player player) {

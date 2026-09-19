@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.exoskeleton;
 
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
+import com.github.littleemptydoll.exoequipment.module.RevivalState;
 import com.github.littleemptydoll.exoequipment.module.ShieldState;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

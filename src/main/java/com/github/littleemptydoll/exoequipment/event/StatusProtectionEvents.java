@@ -5,9 +5,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeSta
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.module.StatusProtectionOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
-import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -23,6 +21,8 @@ public final class StatusProtectionEvents {
     private static final ThreadLocal<Boolean> REAPPLYING =
             ThreadLocal.withInitial(() -> false);
 
+    private static boolean processing = false;
+
     private StatusProtectionEvents() {}
 
     @SubscribeEvent
@@ -32,7 +32,6 @@ public final class StatusProtectionEvents {
         if (entity.level().isClientSide()) {
             return;
         }
-
         ItemStack stack = findExoskeleton(entity).orElse(null);
         if (stack == null) {
             return;
@@ -57,10 +56,10 @@ public final class StatusProtectionEvents {
     }
 
     @SubscribeEvent
-    public static void onEffectAdded(MobEffectEvent.Added event) {
+    public static void onApplicable(MobEffectEvent.Applicable event) {
         LivingEntity entity = event.getEntity();
 
-        if (entity.level().isClientSide()) {
+        if (entity.level().isClientSide() || processing) {
             return;
         }
 
@@ -69,10 +68,10 @@ public final class StatusProtectionEvents {
             return;
         }
 
-        MobEffectInstance addedEffect = event.getEffectInstance();
-        ResourceLocation effectId = getEffectId(addedEffect);
+        MobEffectInstance incoming = event.getEffectInstance();
+        ResourceLocation effectId = getEffectId(incoming);
 
-        if (effectId == null || addedEffect.isInfiniteDuration()) {
+        if (effectId == null || incoming.isInfiniteDuration()) {
             return;
         }
 
@@ -88,12 +87,26 @@ public final class StatusProtectionEvents {
             return;
         }
 
-        addedEffect.mapDuration(duration ->
-                Math.max(
-                        0,
-                        (int) Math.floor(duration * (1.0D - protection))
-                )
-        );
+        event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
+
+        int newDuration = (int) (incoming.getDuration() * (1.0D - protection));
+        if (newDuration <= 0) {
+            return;
+        }
+
+        processing = true;
+        try {
+            entity.addEffect(new MobEffectInstance(
+                    incoming.getEffect(),
+                    newDuration,
+                    incoming.getAmplifier(),
+                    incoming.isAmbient(),
+                    incoming.isVisible(),
+                    incoming.showIcon()
+            ));
+        } finally {
+            processing = false;
+        }
     }
 
     private static ResourceLocation getEffectId(MobEffectInstance effect) {

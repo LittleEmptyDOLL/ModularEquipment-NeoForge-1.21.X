@@ -458,6 +458,55 @@ public class ModModules {
     );
 
 
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > TEST_DAMAGE_CHANCE = REGISTRY.register(
+            "test_damage_chance",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.DEFENSE,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(10, 1))
+                            .damageChanceProtection(new DamageChanceProtectionProperties(0.30D))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > TEST_BODY_DAMAGE_PROTECTION = REGISTRY.register(
+            "test_body_damage_protection",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.DEFENSE,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(10, 1))
+                            .bodyDamageProtection(new BodyDamageProtectionProperties(
+                                    0.30D,
+                                    0.50D,
+                                    java.util.Set.of(
+                                            BodyPart.HEAD,
+                                            BodyPart.CHEST
+                                    )
+                            ))
+                            .build()
+    );
+
     public static EquipmentEntry<
             ModuleDefinition,
             ModuleItem

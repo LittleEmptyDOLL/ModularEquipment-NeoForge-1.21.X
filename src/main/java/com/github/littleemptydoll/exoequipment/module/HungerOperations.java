@@ -56,7 +56,6 @@ public final class HungerOperations {
     }
 
     public static float applyExhaustionReduction(
-            Player player,
             float previousExhaustion,
             float currentExhaustion,
             ExoskeletonData data,

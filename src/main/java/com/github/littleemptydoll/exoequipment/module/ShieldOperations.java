@@ -48,9 +48,9 @@ public final class ShieldOperations {
 
             states = replaceState(
                     states,
-                    new ShieldState(
-                            state.reference(),
-                            state.currentEnergy() - absorbed,
+                    state.withCurrentEnergy(
+                            state.currentEnergy() - absorbed
+                    ).withRechargeCooldown(
                             target.properties().rechargeDelay()
                     )
             );

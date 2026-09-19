@@ -1,8 +1,10 @@
 package com.github.littleemptydoll.exoequipment;
 
+import com.github.littleemptydoll.exoequipment.compat.lso.LsoIntegration;
 import com.github.littleemptydoll.exoequipment.network.ModNetworking;
 import com.github.littleemptydoll.exoequipment.registry.*;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
@@ -20,6 +22,10 @@ public class ExoEquipment {
         ModMenus.register(eventBus);
         ModNetworking.register(eventBus);
         ModSounds.register(eventBus);
+
+        if (ModList.get().isLoaded("legendarysurvivaloverhaul")) {
+            LsoIntegration.register(eventBus);
+        }
 
         ModMatrices.MATRICES.register(eventBus);
         ModModules.MODULES.register(eventBus);

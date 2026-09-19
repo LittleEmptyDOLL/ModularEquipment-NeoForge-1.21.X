@@ -347,4 +347,26 @@ public class ModModules {
                             .thermal(new ThermalProperties(20, 0))
                             .build()
     );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > TEST_HUNGER = REGISTRY.register(
+            "test_hunger",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.SURVIVAL,
+                                    new ModuleSize(1, 2)
+                            )
+                            .energy(new EnergyProperties(5))
+                            .hunger(new HungerProperties(0.50D))
+                            .build()
+    );
+
 }

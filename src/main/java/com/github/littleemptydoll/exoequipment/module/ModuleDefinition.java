@@ -29,6 +29,8 @@ public record ModuleDefinition(
         Optional<RevivalProperties> revival,
         Optional<RegenerationProperties> regeneration,
         Optional<FallProtectionProperties> fallProtection,
+        Optional<DamageChanceProtectionProperties> damageChanceProtection,
+        Optional<BodyDamageProtectionProperties> bodyDamageProtection,
         Optional<ThirstProperties> thirst
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
@@ -50,6 +52,12 @@ public record ModuleDefinition(
                                     ModuleDefinition::optionalProperties,
                                     ModuleOptionalProperties.CODEC
                             ),
+                            DamageChanceProtectionProperties.CODEC
+                                    .optionalFieldOf("damage_chance_protection")
+                                    .forGetter(ModuleDefinition::damageChanceProtection),
+                            BodyDamageProtectionProperties.CODEC
+                                    .optionalFieldOf("body_damage_protection")
+                                    .forGetter(ModuleDefinition::bodyDamageProtection),
                             ThirstProperties.CODEC
                                     .optionalFieldOf("thirst")
                                     .forGetter(ModuleDefinition::thirst)
@@ -86,6 +94,8 @@ public record ModuleDefinition(
             ModuleCategory category,
             ModuleSize size,
             ModuleOptionalProperties optional,
+            Optional<DamageChanceProtectionProperties> damageChanceProtection,
+            Optional<BodyDamageProtectionProperties> bodyDamageProtection,
             Optional<ThirstProperties> thirst
     ) {
         return new ModuleDefinition(
@@ -109,6 +119,8 @@ public record ModuleDefinition(
                 optional.revival(),
                 optional.regeneration(),
                 optional.fallProtection(),
+                damageChanceProtection,
+                bodyDamageProtection,
                 thirst
         );
     }
@@ -144,6 +156,8 @@ public record ModuleDefinition(
         private RevivalProperties revival;
         private RegenerationProperties regeneration;
         private FallProtectionProperties fallProtection;
+        private DamageChanceProtectionProperties damageChanceProtection;
+        private BodyDamageProtectionProperties bodyDamageProtection;
         private ThirstProperties thirst;
 
         private Builder(
@@ -238,6 +252,16 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder damageChanceProtection(DamageChanceProtectionProperties damageChanceProtection) {
+            this.damageChanceProtection = damageChanceProtection;
+            return this;
+        }
+
+        public Builder bodyDamageProtection(BodyDamageProtectionProperties bodyDamageProtection) {
+            this.bodyDamageProtection = bodyDamageProtection;
+            return this;
+        }
+
         public Builder thirst(ThirstProperties thirst) {
             this.thirst = thirst;
             return this;
@@ -265,6 +289,8 @@ public record ModuleDefinition(
                     Optional.ofNullable(revival),
                     Optional.ofNullable(regeneration),
                     Optional.ofNullable(fallProtection),
+                    Optional.ofNullable(damageChanceProtection),
+                    Optional.ofNullable(bodyDamageProtection),
                     Optional.ofNullable(thirst)
             );
         }

@@ -26,7 +26,9 @@ public record ModuleDefinition(
         Optional<EntityDetectionProperties> entityDetection,
         Optional<HungerProperties> hunger,
         Optional<HealthProperties> health,
-        Optional<RevivalProperties> revival
+        Optional<RevivalProperties> revival,
+        Optional<RegenerationProperties> regeneration,
+        Optional<FallProtectionProperties> fallProtection
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -68,7 +70,9 @@ public record ModuleDefinition(
                 entityDetection,
                 hunger,
                 health,
-                revival
+                revival,
+                regeneration,
+                fallProtection
         );
     }
 
@@ -97,7 +101,9 @@ public record ModuleDefinition(
                 optional.entityDetection(),
                 optional.hunger(),
                 optional.health(),
-                optional.revival()
+                optional.revival(),
+                optional.regeneration(),
+                optional.fallProtection()
         );
     }
 
@@ -130,6 +136,8 @@ public record ModuleDefinition(
         private HungerProperties hunger;
         private HealthProperties health;
         private RevivalProperties revival;
+        private RegenerationProperties regeneration;
+        private FallProtectionProperties fallProtection;
 
         private Builder(
                 ResourceLocation id,
@@ -213,6 +221,16 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder regeneration(RegenerationProperties regeneration) {
+            this.regeneration = regeneration;
+            return this;
+        }
+
+        public Builder fallProtection(FallProtectionProperties fallProtection) {
+            this.fallProtection = fallProtection;
+            return this;
+        }
+
         public ModuleDefinition build() {
             return new ModuleDefinition(
                     id,
@@ -232,7 +250,9 @@ public record ModuleDefinition(
                     Optional.ofNullable(entityDetection),
                     Optional.ofNullable(hunger),
                     Optional.ofNullable(health),
-                    Optional.ofNullable(revival)
+                    Optional.ofNullable(revival),
+                    Optional.ofNullable(regeneration),
+                    Optional.ofNullable(fallProtection)
             );
         }
     }

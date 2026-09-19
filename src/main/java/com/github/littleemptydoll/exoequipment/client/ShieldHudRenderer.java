@@ -74,16 +74,8 @@ public final class ShieldHudRenderer {
 
         ItemStack stack = exoskeletonStack.get();
         ExoskeletonData data = ExoskeletonItem.getData(stack);
-        ExoskeletonRuntimeState runtime = stack.get(
-                ModDataComponents.EXOSKELETON_RUNTIME.get()
-        );
-
-        if (runtime == null) {
-            runtime = ExoskeletonRuntimeState.empty();
-        }
-
         ShieldOperations.ShieldStatus status =
-                ShieldOperations.getStatus(data, runtime);
+                ShieldOperations.getStatus(data);
 
         if (!status.hasShields()) {
             return;

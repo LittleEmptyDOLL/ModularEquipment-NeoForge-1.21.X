@@ -40,15 +40,26 @@ public final class HungerOperations {
                 InstalledModuleReference reference =
                         new InstalledModuleReference(slot, moduleIndex);
 
-                var definition = ModModules.getDefinition(module.id());
-
                 if (!isPowered(module.id(), reference, poweredModules)) {
                     continue;
                 }
 
-                definition.hunger().ifPresent(properties ->
-                        multiplier *= 1.0D - properties.exhaustionReduction()
-                );
+                HungerProperties properties =
+                        ModModules.getDefinition(module.id())
+                                .hunger()
+                                .orElse(null);
+
+                if (properties == null) {
+                    continue;
+                }
+
+                double reduction = properties.exhaustionReduction();
+
+                multiplier *= 1.0D - reduction;
+
+                if (multiplier <= 0.0D) {
+                    return 0.0D;
+                }
             }
         }
 

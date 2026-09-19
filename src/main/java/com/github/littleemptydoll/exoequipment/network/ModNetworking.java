@@ -9,7 +9,9 @@ import com.github.littleemptydoll.exoequipment.gui.MatrixMenu;
 import com.github.littleemptydoll.exoequipment.gui.MatrixMenuProvider;
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.DistExecutor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -188,6 +190,18 @@ public final class ModNetworking {
                         menu.setMatrixStack(payload.matrix());
                     }
                 })
+        );
+
+        registrar.playToClient(
+                SensorHighlightPayload.TYPE,
+                SensorHighlightPayload.STREAM_CODEC,
+                (payload, context) ->
+                        DistExecutor.unsafeRunWhenOn(
+                                Dist.CLIENT,
+                                () -> () -> context.enqueueWork(
+                                        () -> com.github.littleemptydoll.exoequipment.client.SensorHighlightClient.apply(payload)
+                                )
+                        )
         );
     }
 

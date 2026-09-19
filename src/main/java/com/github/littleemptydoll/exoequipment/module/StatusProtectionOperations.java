@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.Set;
 
@@ -75,6 +76,31 @@ public final class StatusProtectionOperations {
         }
 
         return Math.max(0.0D, Math.min(1.0D, 1.0D - remaining));
+    }
+
+
+    public static void removeFullyProtectedEffects(
+            LivingEntity entity,
+            ExoskeletonData data,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        entity.getActiveEffects().stream()
+                .filter(effect -> {
+                    ResourceLocation effectId = effect.getEffect()
+                            .unwrapKey()
+                            .map(key -> key.location())
+                            .orElse(null);
+
+                    return effectId != null
+                            && calculateProtection(
+                            data,
+                            effectId,
+                            poweredModules
+                    ) >= 1.0D;
+                })
+                .map(effect -> effect.getEffect())
+                .toList()
+                .forEach(entity::removeEffect);
     }
 
     public static int applyProtection(

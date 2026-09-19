@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.energy.EnergyTickResult;
 import com.github.littleemptydoll.exoequipment.energy.NeoForgeEnergyProvider;
 import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
 import com.github.littleemptydoll.exoequipment.module.SensorOperations;
+import com.github.littleemptydoll.exoequipment.module.RevivalOperations;
 import com.github.littleemptydoll.exoequipment.module.StatusProtectionOperations;
 import com.github.littleemptydoll.exoequipment.exoskeleton.*;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
@@ -106,6 +107,7 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
 
         runtime = runtime.withPoweredModules(result.poweredModules());
         runtime = ShieldOperations.tick(updatedData, runtime);
+        runtime = RevivalOperations.tick(updatedData, runtime);
         StatusProtectionOperations.removeFullyProtectedEffects(
                 slotContext.entity(),
                 updatedData,

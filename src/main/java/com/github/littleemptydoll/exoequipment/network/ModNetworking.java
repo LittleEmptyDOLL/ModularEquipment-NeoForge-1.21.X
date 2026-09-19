@@ -156,9 +156,6 @@ public final class ModNetworking {
                     if (!(context.player() instanceof ServerPlayer serverPlayer)) {
                         return;
                     }
-                    if (!(context.player() instanceof ServerPlayer serverPlayer)) {
-                        return;
-                    }
                     if (!(serverPlayer.containerMenu instanceof MatrixMenu menu)) {
                         return;
                     }

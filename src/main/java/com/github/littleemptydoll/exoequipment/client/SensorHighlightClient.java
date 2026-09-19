@@ -14,7 +14,7 @@ public final class SensorHighlightClient {
     private static final String MOBS_TEAM = "exoequipment_sensor_mobs";
     private static final String PLAYERS_TEAM = "exoequipment_sensor_players";
 
-    private static final Map<Integer, String> HIGHLIGHTED = new HashMap<>();
+    private static final Map<Integer, PlayerTeam> ORIGINAL_TEAMS = new HashMap<>();
 
     private SensorHighlightClient() {}
 
@@ -72,26 +72,45 @@ public final class SensorHighlightClient {
 
             String scoreboardName = entity.getScoreboardName();
 
+            if (!ORIGINAL_TEAMS.containsKey(entityId)) {
+                ORIGINAL_TEAMS.put(
+                        entityId,
+                        scoreboard.getPlayersTeam(scoreboardName)
+                );
+            }
+
             scoreboard.addPlayerToTeam(scoreboardName, team);
-            HIGHLIGHTED.put(entityId, scoreboardName);
         }
     }
 
     private static void clearHighlights(Scoreboard scoreboard) {
-        if (Minecraft.getInstance().level == null) {
-            HIGHLIGHTED.clear();
-            return;
-        }
+        for (Map.Entry<Integer, PlayerTeam> entry : ORIGINAL_TEAMS.entrySet()) {
+            if (Minecraft.getInstance().level == null) {
+                break;
+            }
 
-        for (Map.Entry<Integer, String> entry : HIGHLIGHTED.entrySet()) {
-            PlayerTeam team = findSensorTeam(scoreboard, entry.getValue());
+            var entity = Minecraft.getInstance().level.getEntity(entry.getKey());
 
-            if (team != null) {
-                scoreboard.removePlayerFromTeam(entry.getValue(), team);
+            if (entity == null) {
+                continue;
+            }
+
+            String scoreboardName = entity.getScoreboardName();
+            PlayerTeam sensorTeam = findSensorTeam(scoreboard, scoreboardName);
+
+            if (sensorTeam != null) {
+                scoreboard.removePlayerFromTeam(scoreboardName, sensorTeam);
+            }
+
+            PlayerTeam originalTeam = entry.getValue();
+
+            if (originalTeam != null
+                    && scoreboard.getPlayersTeam(scoreboardName) == null) {
+                scoreboard.addPlayerToTeam(scoreboardName, originalTeam);
             }
         }
 
-        HIGHLIGHTED.clear();
+        ORIGINAL_TEAMS.clear();
     }
 
     private static PlayerTeam findSensorTeam(

@@ -5,8 +5,6 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
-import sfiomn.legendarysurvivaloverhaul.api.bodydamage.BodyPartEnum;
-
 import java.util.Set;
 
 public final class BodyDamageProtectionOperations {
@@ -14,7 +12,7 @@ public final class BodyDamageProtectionOperations {
 
     public static double calculateChance(
             ExoskeletonData data,
-            BodyPartEnum bodyPart,
+            BodyPart bodyPart,
             Set<InstalledModuleReference> poweredModules
     ) {
         double remainingChance = 1.0D;

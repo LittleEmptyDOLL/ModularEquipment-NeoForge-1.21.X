@@ -174,6 +174,7 @@ public final class ShieldOperations {
                     continue;
                 }
 
+                int finalModuleIndex = moduleIndex;
                 ModModules.getDefinition(module.id())
                         .shield()
                         .ifPresent(properties ->
@@ -181,7 +182,7 @@ public final class ShieldOperations {
                                         new ShieldTarget(
                                                 new InstalledModuleReference(
                                                         slot,
-                                                        moduleIndex
+                                                        finalModuleIndex
                                                 ),
                                                 module.id(),
                                                 properties

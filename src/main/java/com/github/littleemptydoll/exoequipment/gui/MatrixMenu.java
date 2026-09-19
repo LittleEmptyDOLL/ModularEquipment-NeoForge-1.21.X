@@ -292,20 +292,24 @@ public class MatrixMenu extends AbstractContainerMenu {
                 0
         );
 
+        int finalStoredEnergy = storedEnergy;
         storedEnergy = moduleDefinition.storage()
-                .map(storage -> Math.min(storedEnergy, storage.capacity()))
+                .map(storage -> Math.min(finalStoredEnergy, storage.capacity()))
                 .orElse(0);
 
+        double finalShieldEnergy = shieldEnergy;
         shieldEnergy = moduleDefinition.shield()
-                .map(shield -> Math.min(shieldEnergy, shield.capacity()))
+                .map(shield -> Math.min(finalShieldEnergy, shield.capacity()))
                 .orElse(0.0D);
 
+        int finalShieldRechargeCooldown = shieldRechargeCooldown;
         shieldRechargeCooldown = moduleDefinition.shield()
-                .map(shield -> Math.min(shieldRechargeCooldown, shield.rechargeDelay()))
+                .map(shield -> Math.min(finalShieldRechargeCooldown, shield.rechargeDelay()))
                 .orElse(0);
 
+        int finalRevivalCooldown = revivalCooldown;
         revivalCooldown = moduleDefinition.revival()
-                .map(revival -> Math.min(revivalCooldown, revival.cooldown()))
+                .map(revival -> Math.min(finalRevivalCooldown, revival.cooldown()))
                 .orElse(0);
 
         InstalledModule module = new InstalledModule(

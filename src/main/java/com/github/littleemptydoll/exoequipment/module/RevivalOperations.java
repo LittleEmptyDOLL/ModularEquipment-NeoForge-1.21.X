@@ -99,6 +99,7 @@ public final class RevivalOperations {
                     continue;
                 }
 
+                int finalModuleIndex = moduleIndex;
                 ModModules.getDefinition(module.id())
                         .revival()
                         .ifPresent(properties ->
@@ -106,7 +107,7 @@ public final class RevivalOperations {
                                         new RevivalTarget(
                                                 new InstalledModuleReference(
                                                         slot,
-                                                        moduleIndex
+                                                        finalModuleIndex
                                                 ),
                                                 module.id(),
                                                 properties

@@ -23,7 +23,8 @@ public record ModuleDefinition(
         Optional<StatusProtectionProperties> statusProtection,
         Optional<MobilityProperties> mobility,
         Optional<NightVisionProperties> nightVision,
-        Optional<EntityDetectionProperties> entityDetection
+        Optional<EntityDetectionProperties> entityDetection,
+        Optional<HungerProperties> hunger
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -72,7 +73,10 @@ public record ModuleDefinition(
                                     .forGetter(ModuleDefinition::nightVision),
                             EntityDetectionProperties.CODEC
                                     .optionalFieldOf("entity_detection")
-                                    .forGetter(ModuleDefinition::entityDetection)
+                                    .forGetter(ModuleDefinition::entityDetection),
+                            HungerProperties.CODEC
+                                    .optionalFieldOf("hunger")
+                                    .forGetter(ModuleDefinition::hunger)
                     ).apply(
                             instance,
                             ModuleDefinition::new
@@ -105,6 +109,7 @@ public record ModuleDefinition(
         private MobilityProperties mobility;
         private NightVisionProperties nightVision;
         private EntityDetectionProperties entityDetection;
+        private HungerProperties hunger;
 
         private Builder(
                 ResourceLocation id,
@@ -173,6 +178,11 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder hunger(HungerProperties hunger) {
+            this.hunger = hunger;
+            return this;
+        }
+
         public ModuleDefinition build() {
             return new ModuleDefinition(
                     id,
@@ -189,7 +199,8 @@ public record ModuleDefinition(
                     Optional.ofNullable(statusProtection),
                     Optional.ofNullable(mobility),
                     Optional.ofNullable(nightVision),
-                    Optional.ofNullable(entityDetection)
+                    Optional.ofNullable(entityDetection),
+                    Optional.ofNullable(hunger)
             );
         }
     }

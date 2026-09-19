@@ -415,4 +415,46 @@ public class ModModules {
                             .build()
     );
 
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > TEST_REGENERATION = REGISTRY.register(
+            "test_regeneration",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.SURVIVAL,
+                                    new ModuleSize(1, 2)
+                            )
+                            .energy(new EnergyProperties(5))
+                            .regeneration(new RegenerationProperties(1.0D))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > TEST_FALL_PROTECTION = REGISTRY.register(
+            "test_fall_protection",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.SURVIVAL,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(5))
+                            .fallProtection(new FallProtectionProperties(0.50D))
+                            .build()
+    );
+
 }

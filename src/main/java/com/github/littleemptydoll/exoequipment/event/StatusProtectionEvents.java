@@ -6,7 +6,6 @@ import com.github.littleemptydoll.exoequipment.module.StatusProtectionOperations
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -53,41 +52,6 @@ public final class StatusProtectionEvents {
         if (protection >= 1.0D) {
             event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
         }
-    }
-
-    @SubscribeEvent
-    public static void onEffectAdded(MobEffectEvent.Added event) {
-        LivingEntity entity = event.getEntity();
-
-        if (entity.level().isClientSide()) {
-            return;
-        }
-
-        MobEffectInstance effect = event.getEffectInstance();
-
-        ItemStack stack = findExoskeleton(entity).orElse(null);
-        if (stack == null) {
-            return;
-        }
-
-        ExoskeletonRuntimeState runtime = getRuntime(stack);
-        ResourceLocation effectId = effect.getEffect()
-                .unwrapKey()
-                .map(key -> key.location())
-                .orElse(null);
-
-        if (effectId == null) {
-            return;
-        }
-
-        effect.mapDuration(duration ->
-                StatusProtectionOperations.applyProtection(
-                        duration,
-                        ExoskeletonItem.getData(stack),
-                        effectId,
-                        runtime.poweredModules()
-                )
-        );
     }
 
     private static ExoskeletonRuntimeState getRuntime(ItemStack stack) {

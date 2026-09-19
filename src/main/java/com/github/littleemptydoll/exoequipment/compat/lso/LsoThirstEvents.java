@@ -1,13 +1,11 @@
 package com.github.littleemptydoll.exoequipment.compat.lso;
 
-import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import sfiomn.legendarysurvivaloverhaul.api.thirst.ThirstUtil;
 import sfiomn.legendarysurvivaloverhaul.common.attachments.thirst.ThirstAttachment;
@@ -18,7 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
 
-@EventBusSubscriber(modid = ExoEquipment.MODID)
 public final class LsoThirstEvents {
     private static final Map<Player, Float> PREVIOUS_EXHAUSTION =
             new WeakHashMap<>();

@@ -24,7 +24,8 @@ public record ModuleDefinition(
         Optional<MobilityProperties> mobility,
         Optional<NightVisionProperties> nightVision,
         Optional<EntityDetectionProperties> entityDetection,
-        Optional<HungerProperties> hunger
+        Optional<HungerProperties> hunger,
+        Optional<HealthProperties> health
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -76,7 +77,10 @@ public record ModuleDefinition(
                                     .forGetter(ModuleDefinition::entityDetection),
                             HungerProperties.CODEC
                                     .optionalFieldOf("hunger")
-                                    .forGetter(ModuleDefinition::hunger)
+                                    .forGetter(ModuleDefinition::hunger),
+                            HealthProperties.CODEC
+                                    .optionalFieldOf("health")
+                                    .forGetter(ModuleDefinition::health)
                     ).apply(
                             instance,
                             ModuleDefinition::new
@@ -110,6 +114,7 @@ public record ModuleDefinition(
         private NightVisionProperties nightVision;
         private EntityDetectionProperties entityDetection;
         private HungerProperties hunger;
+        private HealthProperties health;
 
         private Builder(
                 ResourceLocation id,
@@ -183,6 +188,11 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder health(HealthProperties health) {
+            this.health = health;
+            return this;
+        }
+
         public ModuleDefinition build() {
             return new ModuleDefinition(
                     id,
@@ -200,7 +210,8 @@ public record ModuleDefinition(
                     Optional.ofNullable(mobility),
                     Optional.ofNullable(nightVision),
                     Optional.ofNullable(entityDetection),
-                    Optional.ofNullable(hunger)
+                    Optional.ofNullable(hunger),
+                    Optional.ofNullable(health)
             );
         }
     }

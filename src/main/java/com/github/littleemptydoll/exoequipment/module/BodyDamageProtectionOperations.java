@@ -32,7 +32,7 @@ public final class BodyDamageProtectionOperations {
 
     public static double calculateDamageMultiplier(
             ExoskeletonData data,
-            BodyPartEnum bodyPart,
+            BodyPart bodyPart,
             Set<InstalledModuleReference> poweredModules
     ) {
         double multiplier = 1.0D;

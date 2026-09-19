@@ -372,6 +372,31 @@ public class ModModules {
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
+            > TEST_REVIVAL = REGISTRY.register(
+            "test_revival",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.SURVIVAL,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(5, 1))
+                            .revival(new RevivalProperties(
+                                    4.0D,
+                                    600,
+                                    40
+                            ))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
             > TEST_HUNGER = REGISTRY.register(
             "test_hunger",
             new EquipmentProperties(

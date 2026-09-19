@@ -159,7 +159,7 @@ public class ModModules {
                             .energy(new EnergyProperties(5, 1))
                             .shield(new ShieldProperties(
                                     50,
-                                    5,
+                                    1,
                                     100
                             ))
                             .build()
@@ -218,9 +218,14 @@ public class ModModules {
                                     java.util.Map.of(
                                             ResourceLocation.fromNamespaceAndPath(
                                                     "minecraft",
-                                                    "player_attack"
+                                                    "arrow"
                                             ),
-                                            0.25D
+                                            0.25D,
+                                            ResourceLocation.fromNamespaceAndPath(
+                                                    "minecraft",
+                                                    "explosion"
+                                            ),
+                                            1.0D
                                     )
                             ))
                             .build()

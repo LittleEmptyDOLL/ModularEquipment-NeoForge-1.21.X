@@ -2,8 +2,8 @@ package com.github.littleemptydoll.exoequipment.module;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
+import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
-import net.minecraft.resources.ResourceLocation;
 
 import java.util.Set;
 

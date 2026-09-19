@@ -2,9 +2,8 @@
   "shield_hit": {
     "sounds": [
       {
-        "name": "minecraft:block.amethyst_block.chime",
-        "volume": 0.8,
-        "pitch": 0.65
+        "name": "exoequipment:shield_hit",
+        "volume": 0.30
       }
     ]
   }

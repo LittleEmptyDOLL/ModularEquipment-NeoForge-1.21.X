@@ -75,10 +75,10 @@ public final class DefenseEvents {
                 ShieldOperations.absorbDamage(
                         event.getAmount(),
                         data,
-                        runtime
+                        runtime.poweredModules()
                 );
 
-        runtime = shieldResult.runtime();
+        data = shieldResult.data();
 
         double remainingDamage = DefenseOperations.applyDamageReduction(
                 shieldResult.remainingDamage(),
@@ -89,8 +89,8 @@ public final class DefenseEvents {
 
         stack.set(
                 com.github.littleemptydoll.exoequipment.registry.ModDataComponents
-                        .EXOSKELETON_RUNTIME.get(),
-                runtime
+                        .EXOSKELETON_DATA.get(),
+                data
         );
 
         if (remainingDamage <= 0.0D) {

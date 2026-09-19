@@ -1,5 +1,6 @@
 package com.github.littleemptydoll.exoequipment.network;
 
+import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenu;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenuProvider;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonProfileMenu;
@@ -155,6 +156,9 @@ public final class ModNetworking {
                     if (!(context.player() instanceof ServerPlayer serverPlayer)) {
                         return;
                     }
+                    if (!(context.player() instanceof ServerPlayer serverPlayer)) {
+                        return;
+                    }
                     if (!(serverPlayer.containerMenu instanceof MatrixMenu menu)) {
                         return;
                     }
@@ -192,9 +196,9 @@ public final class ModNetworking {
         registrar.playToClient(
                 SensorHighlightPayload.TYPE,
                 SensorHighlightPayload.STREAM_CODEC,
-                (payload, context) -> {
-                    // Handler is registered separately on the physical client.
-                }
+                (payload, context) -> context.enqueueWork(
+                        () -> com.github.littleemptydoll.exoequipment.client.SensorHighlightClient.apply(payload)
+                )
         );
     }
 

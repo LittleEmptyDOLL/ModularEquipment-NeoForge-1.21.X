@@ -66,27 +66,45 @@ public final class RevivalOperations {
                 .comparingInt((RevivalState state) -> state.reference().matrixSlot())
                 .thenComparingInt(state -> state.reference().moduleIndex()));
 
-        for (RevivalState state : states) {
-            RevivalProperties properties = active.get(state.reference());
+        for (Map.Entry<InstalledModuleReference, RevivalProperties> entry : active.entrySet()) {
+            InstalledModuleReference reference = entry.getKey();
+            RevivalProperties properties = entry.getValue();
 
-            if (properties == null || !state.ready()) {
+            RevivalState state = states.stream()
+                    .filter(current -> current.reference().equals(reference))
+                    .findFirst()
+                    .orElse(new RevivalState(reference, 0));
+
+            if (!state.ready()) {
                 continue;
             }
 
             List<RevivalState> updatedStates = new ArrayList<>(states);
+            boolean updated = false;
+
             for (int i = 0; i < updatedStates.size(); i++) {
                 RevivalState current = updatedStates.get(i);
 
-                if (current.reference().equals(state.reference())) {
+                if (current.reference().equals(reference)) {
                     updatedStates.set(
                             i,
                             new RevivalState(
-                                    current.reference(),
+                                    reference,
                                     properties.cooldown()
                             )
                     );
+                    updated = true;
                     break;
                 }
+            }
+
+            if (!updated) {
+                updatedStates.add(
+                        new RevivalState(
+                                reference,
+                                properties.cooldown()
+                        )
+                );
             }
 
             return new RevivalResult(

@@ -1,7 +1,6 @@
 package com.github.littleemptydoll.exoequipment.module;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
@@ -18,18 +17,19 @@ public final class ShieldOperations {
     public static ShieldDamageResult absorbDamage(
             double damage,
             ExoskeletonData data,
-            ExoskeletonRuntimeState runtime
+            Set<InstalledModuleReference> poweredModules
     ) {
         if (damage <= 0.0D) {
-            return new ShieldDamageResult(0.0D, 0.0D, runtime);
+            return new ShieldDamageResult(0.0D, 0.0D, data);
         }
 
         List<ShieldTarget> targets = collectShields(data);
+
         if (targets.isEmpty()) {
-            return new ShieldDamageResult(damage, 0.0D, runtime);
+            return new ShieldDamageResult(damage, 0.0D, data);
         }
 
-        List<ShieldState> states = normalizeStates(targets, runtime.shields());
+        ExoskeletonData updatedData = data;
         double remaining = damage;
         double absorbedDamage = 0.0D;
 
@@ -38,19 +38,23 @@ public final class ShieldOperations {
                 break;
             }
 
-            ShieldState state = findState(states, target.reference());
+            InstalledModule module = getModule(updatedData, target.reference());
 
-            if (state.currentEnergy() <= 0.0D
-                    || !isPowered(target, runtime.poweredModules())) {
+            if (module.shieldEnergy() <= 0.0D
+                    || !isPowered(target, poweredModules)) {
                 continue;
             }
 
-            double absorbed = Math.min(remaining, state.currentEnergy());
+            double absorbed = Math.min(
+                    remaining,
+                    module.shieldEnergy()
+            );
 
-            states = replaceState(
-                    states,
-                    state.withCurrentEnergy(
-                            state.currentEnergy() - absorbed
+            updatedData = updateModule(
+                    updatedData,
+                    target.reference(),
+                    module.withShieldEnergy(
+                            module.shieldEnergy() - absorbed
                     )
             );
 
@@ -59,65 +63,69 @@ public final class ShieldOperations {
         }
 
         // Any incoming damage resets the recharge cooldown of every active
-        // shield. This also applies when all shields are already depleted,
-        // preventing them from immediately starting to recharge while the
-        // player is still taking damage.
-        states = resetRechargeCooldowns(states, targets);
+        // shield, including depleted shields.
+        for (ShieldTarget target : targets) {
+            InstalledModule module = getModule(updatedData, target.reference());
+
+            updatedData = updateModule(
+                    updatedData,
+                    target.reference(),
+                    module.withShieldRechargeCooldown(
+                            target.properties().rechargeDelay()
+                    )
+            );
+        }
 
         return new ShieldDamageResult(
                 Math.max(0.0D, remaining),
                 absorbedDamage,
-                runtime.withShields(states)
+                updatedData
         );
     }
 
-    public static ShieldStatus getStatus(
-            ExoskeletonData data,
-            ExoskeletonRuntimeState runtime
-    ) {
+    public static ShieldStatus getStatus(ExoskeletonData data) {
         List<ShieldTarget> targets = collectShields(data);
 
         if (targets.isEmpty()) {
             return ShieldStatus.empty();
         }
 
-        List<ShieldState> states = normalizeStates(targets, runtime.shields());
         double currentEnergy = 0.0D;
         int capacity = 0;
 
         for (ShieldTarget target : targets) {
-            ShieldState state = findState(states, target.reference());
-            currentEnergy += state.currentEnergy();
+            InstalledModule module = getModule(data, target.reference());
+
+            currentEnergy += Math.min(
+                    module.shieldEnergy(),
+                    target.properties().capacity()
+            );
             capacity += target.properties().capacity();
         }
 
         return new ShieldStatus(currentEnergy, capacity);
     }
 
-    public static ExoskeletonRuntimeState tick(
+    public static ExoskeletonData tick(
             ExoskeletonData data,
-            ExoskeletonRuntimeState runtime
+            Set<InstalledModuleReference> poweredModules
     ) {
         List<ShieldTarget> targets = collectShields(data);
-
-        if (targets.isEmpty()) {
-            return runtime.withShields(List.of());
-        }
-
-        List<ShieldState> states = normalizeStates(targets, runtime.shields());
+        ExoskeletonData updatedData = data;
 
         for (ShieldTarget target : targets) {
-            ShieldState state = findState(states, target.reference());
+            InstalledModule module = getModule(updatedData, target.reference());
 
-            if (!isPowered(target, runtime.poweredModules())) {
+            if (!isPowered(target, poweredModules)) {
                 continue;
             }
 
-            if (state.rechargeCooldown() > 0) {
-                states = replaceState(
-                        states,
-                        state.withRechargeCooldown(
-                                state.rechargeCooldown() - 1
+            if (module.shieldRechargeCooldown() > 0) {
+                updatedData = updateModule(
+                        updatedData,
+                        target.reference(),
+                        module.withShieldRechargeCooldown(
+                                module.shieldRechargeCooldown() - 1
                         )
                 );
                 continue;
@@ -125,43 +133,25 @@ public final class ShieldOperations {
 
             double recharged = Math.min(
                     target.properties().capacity(),
-                    state.currentEnergy() + target.properties().rechargeRate()
+                    module.shieldEnergy()
+                            + target.properties().rechargeRate()
             );
 
-            if (recharged != state.currentEnergy()) {
-                states = replaceState(
-                        states,
-                        state.withCurrentEnergy(recharged)
+            if (recharged != module.shieldEnergy()) {
+                updatedData = updateModule(
+                        updatedData,
+                        target.reference(),
+                        module.withShieldEnergy(recharged)
                 );
             }
         }
 
-        return runtime.withShields(states);
+        return updatedData;
     }
 
-    private static List<ShieldState> resetRechargeCooldowns(
-            List<ShieldState> states,
-            List<ShieldTarget> targets
+    private static List<ShieldTarget> collectShields(
+            ExoskeletonData data
     ) {
-        List<ShieldState> result = new ArrayList<>(states);
-
-        for (ShieldTarget target : targets) {
-            ShieldState state = findState(result, target.reference());
-
-            result = new ArrayList<>(
-                    replaceState(
-                            result,
-                            state.withRechargeCooldown(
-                                    target.properties().rechargeDelay()
-                            )
-                    )
-            );
-        }
-
-        return List.copyOf(result);
-    }
-
-    private static List<ShieldTarget> collectShields(ExoskeletonData data) {
         List<ShieldTarget> targets = new ArrayList<>();
 
         for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
@@ -184,7 +174,6 @@ public final class ShieldOperations {
                     continue;
                 }
 
-                int finalModuleIndex = moduleIndex;
                 ModModules.getDefinition(module.id())
                         .shield()
                         .ifPresent(properties ->
@@ -192,7 +181,7 @@ public final class ShieldOperations {
                                         new ShieldTarget(
                                                 new InstalledModuleReference(
                                                         slot,
-                                                        finalModuleIndex
+                                                        moduleIndex
                                                 ),
                                                 module.id(),
                                                 properties
@@ -224,82 +213,50 @@ public final class ShieldOperations {
                 || poweredModules.contains(target.reference());
     }
 
-    private static List<ShieldState> normalizeStates(
-            List<ShieldTarget> targets,
-            List<ShieldState> existing
+    private static InstalledModule getModule(
+            ExoskeletonData data,
+            InstalledModuleReference reference
     ) {
-        List<ShieldState> result = new ArrayList<>();
-
-        for (ShieldTarget target : targets) {
-            ShieldState current = null;
-
-            for (ShieldState state : existing) {
-                if (state.reference().equals(target.reference())) {
-                    current = state;
-                    break;
-                }
-            }
-
-            if (current == null) {
-                current = new ShieldState(
-                        target.reference(),
-                        target.properties().capacity(),
-                        0
+        MatrixData matrix = data.matrices()
+                .get(reference.matrixSlot())
+                .matrix()
+                .orElseThrow(() ->
+                        new IllegalStateException(
+                                "Matrix is missing for " + reference
+                        )
                 );
-            }
 
-            result.add(
-                    new ShieldState(
-                            current.reference(),
-                            Math.min(
-                                    current.currentEnergy(),
-                                    target.properties().capacity()
-                            ),
-                            current.rechargeCooldown()
-                    )
+        if (reference.moduleIndex() >= matrix.modules().size()) {
+            throw new IllegalStateException(
+                    "Module is missing for " + reference
             );
         }
 
-        return List.copyOf(result);
+        return matrix.modules().get(reference.moduleIndex());
     }
 
-    private static ShieldState findState(
-            List<ShieldState> states,
-            InstalledModuleReference reference
+    private static ExoskeletonData updateModule(
+            ExoskeletonData data,
+            InstalledModuleReference reference,
+            InstalledModule module
     ) {
-        for (ShieldState state : states) {
-            if (state.reference().equals(reference)) {
-                return state;
-            }
-        }
+        MatrixData matrix = data.matrices()
+                .get(reference.matrixSlot())
+                .matrix()
+                .orElseThrow(() ->
+                        new IllegalStateException(
+                                "Matrix is missing for " + reference
+                        )
+                );
 
-        throw new IllegalStateException(
-                "Shield state is missing for " + reference
+        List<InstalledModule> modules = new ArrayList<>(matrix.modules());
+        modules.set(reference.moduleIndex(), module);
+
+        return data.withMatrix(
+                reference.matrixSlot(),
+                new MatrixData(matrix.id(), modules)
         );
     }
-
-    private static List<ShieldState> replaceState(
-            List<ShieldState> states,
-            ShieldState replacement
-    ) {
-        List<ShieldState> result = new ArrayList<>(states);
-
-        for (int i = 0; i < result.size(); i++) {
-            if (result.get(i).reference().equals(replacement.reference())) {
-                result.set(i, replacement);
-                return List.copyOf(result);
-            }
-        }
-
-        result.add(replacement);
-        return List.copyOf(result);
-    }
-
-    private record ShieldTarget(
-            InstalledModuleReference reference,
-            net.minecraft.resources.ResourceLocation moduleId,
-            ShieldProperties properties
-    ) {}
 
     public record ShieldStatus(
             double currentEnergy,
@@ -330,6 +287,12 @@ public final class ShieldOperations {
     public record ShieldDamageResult(
             double remainingDamage,
             double absorbedDamage,
-            ExoskeletonRuntimeState runtime
+            ExoskeletonData data
+    ) {}
+    
+    private record ShieldTarget(
+            InstalledModuleReference reference,
+            net.minecraft.resources.ResourceLocation moduleId,
+            ShieldProperties properties
     ) {}
 }

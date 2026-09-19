@@ -160,7 +160,7 @@ public class ModModules {
                             .shield(new ShieldProperties(
                                     50,
                                     5,
-                                    20
+                                    100
                             ))
                             .build()
     );

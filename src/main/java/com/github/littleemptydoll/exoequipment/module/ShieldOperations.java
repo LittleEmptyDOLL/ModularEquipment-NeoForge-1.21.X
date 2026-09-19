@@ -84,32 +84,6 @@ public final class ShieldOperations {
             capacity += target.properties().capacity();
         }
 
-        return new ShieldStatus(
-                currentEnergy,
-                capacity
-        );
-    }
-
-    public static ShieldStatus getStatus(
-            ExoskeletonData data,
-            ExoskeletonRuntimeState runtime
-    ) {
-        List<ShieldTarget> targets = collectShields(data);
-
-        if (targets.isEmpty()) {
-            return ShieldStatus.empty();
-        }
-
-        List<ShieldState> states = normalizeStates(targets, runtime.shields());
-        double currentEnergy = 0.0D;
-        int capacity = 0;
-
-        for (ShieldTarget target : targets) {
-            ShieldState state = findState(states, target.reference());
-            currentEnergy += state.currentEnergy();
-            capacity += target.properties().capacity();
-        }
-
         return new ShieldStatus(currentEnergy, capacity);
     }
 
@@ -181,6 +155,7 @@ public final class ShieldOperations {
                     continue;
                 }
 
+                int finalModuleIndex = moduleIndex;
                 ModModules.getDefinition(module.id())
                         .shield()
                         .ifPresent(properties ->
@@ -188,7 +163,7 @@ public final class ShieldOperations {
                                         new ShieldTarget(
                                                 new InstalledModuleReference(
                                                         slot,
-                                                        moduleIndex
+                                                        finalModuleIndex
                                                 ),
                                                 module.id(),
                                                 properties

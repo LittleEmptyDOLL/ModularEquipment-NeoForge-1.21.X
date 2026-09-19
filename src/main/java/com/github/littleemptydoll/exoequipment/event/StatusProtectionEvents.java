@@ -99,7 +99,7 @@ public final class StatusProtectionEvents {
         entity.level().getServer().execute(() ->
                 replaceEffectWithProtectedDuration(
                         entity,
-                        effect,
+                        effectId,
                         protection
                 )
         );
@@ -107,14 +107,17 @@ public final class StatusProtectionEvents {
 
     private static void replaceEffectWithProtectedDuration(
             LivingEntity entity,
-            Holder<MobEffect> effect,
+            ResourceLocation effectId,
             double protection
     ) {
         if (!entity.isAlive()) {
             return;
         }
 
-        MobEffectInstance current = entity.getEffect(effect);
+        MobEffectInstance current = entity.getActiveEffects().stream()
+                .filter(effect -> effectId.equals(getEffectId(effect)))
+                .findFirst()
+                .orElse(null);
 
         if (current == null || current.isInfiniteDuration()) {
             return;
@@ -135,6 +138,7 @@ public final class StatusProtectionEvents {
         boolean visible = current.isVisible();
         boolean showIcon = current.showIcon();
 
+        Holder<MobEffect> effect = current.getEffect();
         entity.removeEffect(effect);
 
         if (protectedDuration <= 0) {

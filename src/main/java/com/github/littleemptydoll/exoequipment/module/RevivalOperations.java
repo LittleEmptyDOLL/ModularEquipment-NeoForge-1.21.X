@@ -66,7 +66,14 @@ public final class RevivalOperations {
                 .comparingInt((RevivalState state) -> state.reference().matrixSlot())
                 .thenComparingInt(state -> state.reference().moduleIndex()));
 
-        for (Map.Entry<InstalledModuleReference, RevivalProperties> entry : active.entrySet()) {
+        List<Map.Entry<InstalledModuleReference, RevivalProperties>> candidates =
+                new ArrayList<>(active.entrySet());
+        candidates.sort(Comparator
+                .comparingInt((Map.Entry<InstalledModuleReference, RevivalProperties> entry) ->
+                        entry.getKey().matrixSlot())
+                .thenComparingInt(entry -> entry.getKey().moduleIndex()));
+
+        for (Map.Entry<InstalledModuleReference, RevivalProperties> entry : candidates) {
             InstalledModuleReference reference = entry.getKey();
             RevivalProperties properties = entry.getValue();
 

@@ -1,142 +1,86 @@
 package com.github.littleemptydoll.exoequipment.module;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
+import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
-import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public final class RevivalOperations {
     private RevivalOperations() {}
 
-    public static ExoskeletonRuntimeState tick(
+    public static ExoskeletonData tick(
             ExoskeletonData data,
-            ExoskeletonRuntimeState runtime
+            Set<InstalledModuleReference> poweredModules
     ) {
-        Map<InstalledModuleReference, RevivalProperties> active = collect(
-                data,
-                runtime.poweredModules()
-        );
+        ExoskeletonData updatedData = data;
 
-        List<RevivalState> states = new ArrayList<>();
+        for (RevivalTarget target : collect(data)) {
+            InstalledModule module = getModule(updatedData, target.reference());
 
-        for (RevivalState state : runtime.revivals()) {
-            if (!active.containsKey(state.reference())) {
+            if (!isPowered(target, poweredModules)
+                    || module.revivalCooldown() <= 0) {
                 continue;
             }
 
-            states.add(state.tick());
+            updatedData = updateModule(
+                    updatedData,
+                    target.reference(),
+                    module.withRevivalCooldown(
+                            module.revivalCooldown() - 1
+                    )
+            );
         }
 
-        for (InstalledModuleReference reference : active.keySet()) {
-            boolean exists = states.stream()
-                    .anyMatch(state -> state.reference().equals(reference));
-
-            if (!exists) {
-                states.add(new RevivalState(reference, 0));
-            }
-        }
-
-        states.sort(Comparator
-                .comparingInt((RevivalState state) -> state.reference().matrixSlot())
-                .thenComparingInt(state -> state.reference().moduleIndex()));
-
-        return runtime.withRevivals(states);
+        return updatedData;
     }
 
     public static RevivalResult tryRevive(
             ExoskeletonData data,
-            ExoskeletonRuntimeState runtime
+            Set<InstalledModuleReference> poweredModules
     ) {
-        Map<InstalledModuleReference, RevivalProperties> active = collect(
-                data,
-                runtime.poweredModules()
-        );
+        for (RevivalTarget target : collect(data)) {
+            InstalledModule module = getModule(data, target.reference());
 
-        List<RevivalState> states = new ArrayList<>(runtime.revivals());
-
-        states.sort(Comparator
-                .comparingInt((RevivalState state) -> state.reference().matrixSlot())
-                .thenComparingInt(state -> state.reference().moduleIndex()));
-
-        List<Map.Entry<InstalledModuleReference, RevivalProperties>> candidates =
-                new ArrayList<>(active.entrySet());
-        candidates.sort(Comparator
-                .comparingInt((Map.Entry<InstalledModuleReference, RevivalProperties> entry) ->
-                        entry.getKey().matrixSlot())
-                .thenComparingInt(entry -> entry.getKey().moduleIndex()));
-
-        for (Map.Entry<InstalledModuleReference, RevivalProperties> entry : candidates) {
-            InstalledModuleReference reference = entry.getKey();
-            RevivalProperties properties = entry.getValue();
-
-            RevivalState state = states.stream()
-                    .filter(current -> current.reference().equals(reference))
-                    .findFirst()
-                    .orElse(new RevivalState(reference, 0));
-
-            if (!state.ready()) {
+            if (!isPowered(target, poweredModules)
+                    || module.revivalCooldown() > 0) {
                 continue;
             }
 
-            List<RevivalState> updatedStates = new ArrayList<>(states);
-            boolean updated = false;
-
-            for (int i = 0; i < updatedStates.size(); i++) {
-                RevivalState current = updatedStates.get(i);
-
-                if (current.reference().equals(reference)) {
-                    updatedStates.set(
-                            i,
-                            new RevivalState(
-                                    reference,
-                                    properties.cooldown()
-                            )
-                    );
-                    updated = true;
-                    break;
-                }
-            }
-
-            if (!updated) {
-                updatedStates.add(
-                        new RevivalState(
-                                reference,
-                                properties.cooldown()
-                        )
-                );
-            }
+            ExoskeletonData updatedData = updateModule(
+                    data,
+                    target.reference(),
+                    module.withRevivalCooldown(
+                            target.properties().cooldown()
+                    )
+            );
 
             return new RevivalResult(
                     true,
-                    properties,
-                    runtime.withRevivals(updatedStates)
+                    target.properties(),
+                    updatedData
             );
         }
 
         return new RevivalResult(
                 false,
                 null,
-                runtime
+                data
         );
     }
 
-    private static Map<InstalledModuleReference, RevivalProperties> collect(
-            ExoskeletonData data,
-            Set<InstalledModuleReference> poweredModules
+    private static List<RevivalTarget> collect(
+            ExoskeletonData data
     ) {
-        Map<InstalledModuleReference, RevivalProperties> result = new HashMap<>();
+        List<RevivalTarget> targets = new ArrayList<>();
 
         for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
-            var matrix = data.matrices()
+            MatrixData matrix = data.matrices()
                     .get(slot)
                     .matrix()
                     .orElse(null);
@@ -155,39 +99,99 @@ public final class RevivalOperations {
                     continue;
                 }
 
-                InstalledModuleReference reference =
-                        new InstalledModuleReference(slot, moduleIndex);
-
-                if (!isPowered(module.id(), reference, poweredModules)) {
-                    continue;
-                }
-
                 ModModules.getDefinition(module.id())
                         .revival()
                         .ifPresent(properties ->
-                                result.put(reference, properties)
+                                targets.add(
+                                        new RevivalTarget(
+                                                new InstalledModuleReference(
+                                                        slot,
+                                                        moduleIndex
+                                                ),
+                                                module.id(),
+                                                properties
+                                        )
+                                )
                         );
             }
         }
 
-        return result;
+        targets.sort(
+                Comparator
+                        .comparingInt((RevivalTarget target) ->
+                                target.reference().matrixSlot())
+                        .thenComparingInt(target ->
+                                target.reference().moduleIndex())
+        );
+
+        return targets;
     }
 
     private static boolean isPowered(
-            ResourceLocation moduleId,
-            InstalledModuleReference reference,
+            RevivalTarget target,
             Set<InstalledModuleReference> poweredModules
     ) {
-        var energy = ModModules.getDefinition(moduleId).energy();
+        var energy = ModModules.getDefinition(target.moduleId()).energy();
 
         return energy.isEmpty()
                 || energy.get().consumption() <= 0
-                || poweredModules.contains(reference);
+                || poweredModules.contains(target.reference());
+    }
+
+    private static InstalledModule getModule(
+            ExoskeletonData data,
+            InstalledModuleReference reference
+    ) {
+        MatrixData matrix = data.matrices()
+                .get(reference.matrixSlot())
+                .matrix()
+                .orElseThrow(() ->
+                        new IllegalStateException(
+                                "Matrix is missing for " + reference
+                        )
+                );
+
+        if (reference.moduleIndex() >= matrix.modules().size()) {
+            throw new IllegalStateException(
+                    "Module is missing for " + reference
+            );
+        }
+
+        return matrix.modules().get(reference.moduleIndex());
+    }
+
+    private static ExoskeletonData updateModule(
+            ExoskeletonData data,
+            InstalledModuleReference reference,
+            InstalledModule module
+    ) {
+        MatrixData matrix = data.matrices()
+                .get(reference.matrixSlot())
+                .matrix()
+                .orElseThrow(() ->
+                        new IllegalStateException(
+                                "Matrix is missing for " + reference
+                        )
+                );
+
+        List<InstalledModule> modules = new ArrayList<>(matrix.modules());
+        modules.set(reference.moduleIndex(), module);
+
+        return data.withMatrix(
+                reference.matrixSlot(),
+                new MatrixData(matrix.id(), modules)
+        );
     }
 
     public record RevivalResult(
             boolean revived,
             RevivalProperties properties,
-            ExoskeletonRuntimeState runtime
+            ExoskeletonData data
+    ) {}
+
+    private record RevivalTarget(
+            InstalledModuleReference reference,
+            net.minecraft.resources.ResourceLocation moduleId,
+            RevivalProperties properties
     ) {}
 }

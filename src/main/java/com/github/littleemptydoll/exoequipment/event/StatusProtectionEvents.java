@@ -1,10 +1,10 @@
 package com.github.littleemptydoll.exoequipment.event;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.module.StatusProtectionOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,11 +16,8 @@ import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.Optional;
 
-
 @EventBusSubscriber(modid = ExoEquipment.MODID)
 public final class StatusProtectionEvents {
-    private static final ThreadLocal<Boolean> REAPPLYING =
-            ThreadLocal.withInitial(() -> false);
 
     private StatusProtectionEvents() {}
 
@@ -38,11 +35,7 @@ public final class StatusProtectionEvents {
         }
 
         ExoskeletonRuntimeState runtime = getRuntime(stack);
-        ResourceLocation effectId = event.getEffectInstance()
-                .getEffect()
-                .unwrapKey()
-                .map(key -> key.location())
-                .orElse(null);
+        ResourceLocation effectId = getEffectId(event.getEffectInstance());
 
         if (effectId == null) {
             return;
@@ -73,22 +66,19 @@ public final class StatusProtectionEvents {
         }
 
         ExoskeletonRuntimeState runtime = getRuntime(stack);
-        ResourceLocation effectId = event.getEffectInstance()
-                .getEffect()
-                .unwrapKey()
-                .map(key -> key.location())
-                .orElse(null);
+        MobEffectInstance effect = event.getEffectInstance();
+        ResourceLocation effectId = getEffectId(effect);
 
         if (effectId == null) {
             return;
         }
 
-        if (REAPPLYING.get()) {
+        int originalDuration = effect.getDuration();
+
+        if (originalDuration <= 0) {
             return;
         }
 
-        MobEffectInstance effect = event.getEffectInstance();
-        int originalDuration = effect.getDuration();
         int protectedDuration = StatusProtectionOperations.applyProtection(
                 originalDuration,
                 ExoskeletonItem.getData(stack),
@@ -100,16 +90,48 @@ public final class StatusProtectionEvents {
             return;
         }
 
-        MobEffectInstance protectedEffect = new MobEffectInstance(effect);
-        protectedEffect.mapDuration(duration -> protectedDuration);
+        // Added is fired before LivingEntity stores the resulting effect.
+        // Change the incoming instance immediately so the normal add/update
+        // path receives the protected duration.
+        effect.mapDuration(duration -> protectedDuration);
 
-        try {
-            REAPPLYING.set(true);
-            entity.removeEffect(effect.getEffect());
-            entity.addEffect(protectedEffect);
-        } finally {
-            REAPPLYING.set(false);
+        // For an existing effect, vanilla may merge the incoming instance
+        // into another MobEffectInstance after this event. Correct the
+        // actually stored instance after the add/update operation completes.
+        entity.level().getServer().execute(() ->
+                applyProtectedDuration(
+                        entity,
+                        effect.getEffect(),
+                        protectedDuration
+                )
+        );
+    }
+
+    private static void applyProtectedDuration(
+            LivingEntity entity,
+            net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect> effect,
+            int protectedDuration
+    ) {
+        if (!entity.isAlive()) {
+            return;
         }
+
+        MobEffectInstance activeEffect = entity.getEffect(effect);
+
+        if (activeEffect == null) {
+            return;
+        }
+
+        activeEffect.mapDuration(duration ->
+                Math.min(duration, protectedDuration)
+        );
+    }
+
+    private static ResourceLocation getEffectId(MobEffectInstance effect) {
+        return effect.getEffect()
+                .unwrapKey()
+                .map(key -> key.location())
+                .orElse(null);
     }
 
     private static ExoskeletonRuntimeState getRuntime(ItemStack stack) {

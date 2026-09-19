@@ -50,12 +50,17 @@ public final class ShieldOperations {
                     states,
                     state.withCurrentEnergy(
                             state.currentEnergy() - absorbed
-                    ).withRechargeCooldown(
-                            target.properties().rechargeDelay()
                     )
             );
 
             remaining -= absorbed;
+        }
+
+        // Any damage absorbed by the shield system resets the recharge
+        // cooldown of every shield. This prevents an exhausted shield from
+        // recharging while another shield is still taking damage.
+        if (remaining < damage) {
+            states = resetRechargeCooldowns(states, targets);
         }
 
         return new ShieldDamageResult(
@@ -130,6 +135,28 @@ public final class ShieldOperations {
         }
 
         return runtime.withShields(states);
+    }
+
+    private static List<ShieldState> resetRechargeCooldowns(
+            List<ShieldState> states,
+            List<ShieldTarget> targets
+    ) {
+        List<ShieldState> result = new ArrayList<>(states);
+
+        for (ShieldTarget target : targets) {
+            ShieldState state = findState(result, target.reference());
+
+            result = new ArrayList<>(
+                    replaceState(
+                            result,
+                            state.withRechargeCooldown(
+                                    target.properties().rechargeDelay()
+                            )
+                    )
+            );
+        }
+
+        return List.copyOf(result);
     }
 
     private static List<ShieldTarget> collectShields(ExoskeletonData data) {

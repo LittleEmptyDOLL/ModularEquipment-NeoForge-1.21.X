@@ -10,6 +10,7 @@ import java.util.Set;
 
 public record ExoskeletonRuntimeState(
         List<ShieldState> shields,
+        List<RevivalState> revivals,
         Set<InstalledModuleReference> poweredModules
 ) {
     public static final Codec<ExoskeletonRuntimeState> CODEC =
@@ -19,6 +20,10 @@ public record ExoskeletonRuntimeState(
                                     .listOf()
                                     .optionalFieldOf("shields", List.of())
                                     .forGetter(ExoskeletonRuntimeState::shields),
+                            RevivalState.CODEC
+                                    .listOf()
+                                    .optionalFieldOf("revivals", List.of())
+                                    .forGetter(ExoskeletonRuntimeState::revivals),
                             InstalledModuleReference.CODEC
                                     .listOf()
                                     .optionalFieldOf("powered_modules", List.of())
@@ -32,11 +37,13 @@ public record ExoskeletonRuntimeState(
 
     public ExoskeletonRuntimeState {
         shields = List.copyOf(shields);
+        revivals = List.copyOf(revivals);
         poweredModules = Set.copyOf(poweredModules);
     }
 
     public static ExoskeletonRuntimeState empty() {
         return new ExoskeletonRuntimeState(
+                List.of(),
                 List.of(),
                 Set.of()
         );
@@ -47,6 +54,17 @@ public record ExoskeletonRuntimeState(
     ) {
         return new ExoskeletonRuntimeState(
                 shields,
+                revivals,
+                poweredModules
+        );
+    }
+
+    public ExoskeletonRuntimeState withRevivals(
+            List<RevivalState> revivals
+    ) {
+        return new ExoskeletonRuntimeState(
+                shields,
+                revivals,
                 poweredModules
         );
     }
@@ -56,6 +74,7 @@ public record ExoskeletonRuntimeState(
     ) {
         return new ExoskeletonRuntimeState(
                 shields,
+                revivals,
                 poweredModules
         );
     }

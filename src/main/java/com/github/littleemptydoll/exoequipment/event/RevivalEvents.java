@@ -9,6 +9,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.sounds.SoundEvents;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -73,6 +74,15 @@ public final class RevivalEvents {
 
         entity.clearFire();
         entity.fallDistance = 0.0F;
+
+        entity.level().playSound(
+                null,
+                entity.blockPosition(),
+                SoundEvents.TOTEM_USE,
+                entity.getSoundSource(),
+                1.0F,
+                1.0F
+        );
 
         if (result.properties().invulnerabilityTicks() > 0) {
             entity.addEffect(

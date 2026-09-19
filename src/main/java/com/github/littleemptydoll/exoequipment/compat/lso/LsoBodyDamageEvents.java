@@ -3,7 +3,6 @@ package com.github.littleemptydoll.exoequipment.compat.lso;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.module.BodyDamageProtectionOperations;
-import com.github.littleemptydoll.exoequipment.module.BodyPart;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -88,7 +87,7 @@ public final class LsoBodyDamageEvents {
                 continue;
             }
 
-            BodyPart bodyPart = BodyPart.valueOf(lsoBodyPart.name());
+            BodyPartEnum bodyPart = BodyPartEnum.valueOf(lsoBodyPart.name());
 
             double chance = BodyDamageProtectionOperations.calculateChance(
                     data,

@@ -7,6 +7,7 @@ import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import sfiomn.legendarysurvivaloverhaul.api.bodydamage.BodyPartEnum;
 
 import java.util.Optional;
 
@@ -500,8 +501,8 @@ public class ModModules {
                                     0.30D,
                                     0.50D,
                                     java.util.Set.of(
-                                            BodyPart.HEAD,
-                                            BodyPart.CHEST
+                                            BodyPartEnum.HEAD,
+                                            BodyPartEnum.CHEST
                                     )
                             ))
                             .build()

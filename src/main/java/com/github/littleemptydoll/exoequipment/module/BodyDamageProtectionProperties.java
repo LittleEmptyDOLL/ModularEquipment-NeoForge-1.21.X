@@ -3,6 +3,7 @@ package com.github.littleemptydoll.exoequipment.module;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import sfiomn.legendarysurvivaloverhaul.api.bodydamage.BodyPartEnum;
 
 import java.util.Locale;
 import java.util.Set;
@@ -10,14 +11,14 @@ import java.util.Set;
 public record BodyDamageProtectionProperties(
         double chance,
         double damageReduction,
-        Set<BodyPart> bodyParts
+        Set<BodyPartEnum> bodyParts
 ) {
-    private static final Codec<BodyPart> BODY_PART_CODEC =
+    private static final Codec<BodyPartEnum> BODY_PART_CODEC =
             Codec.STRING.comapFlatMap(
                     value -> {
                         try {
                             return DataResult.success(
-                                    BodyPart.valueOf(value.toUpperCase(Locale.ROOT))
+                                    BodyPartEnum.valueOf(value.toUpperCase(Locale.ROOT))
                             );
                         } catch (IllegalArgumentException exception) {
                             return DataResult.error(
@@ -28,7 +29,7 @@ public record BodyDamageProtectionProperties(
                     part -> part.name().toLowerCase(Locale.ROOT)
             );
 
-    private static final Codec<Set<BodyPart>> BODY_PARTS_CODEC =
+    private static final Codec<Set<BodyPartEnum>> BODY_PARTS_CODEC =
             BODY_PART_CODEC.listOf().xmap(Set::copyOf, java.util.ArrayList::new);
 
     public static final Codec<BodyDamageProtectionProperties> CODEC =

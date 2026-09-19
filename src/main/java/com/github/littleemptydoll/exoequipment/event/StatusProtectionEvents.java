@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.module.StatusProtectionOperations
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -15,8 +16,12 @@ import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.Optional;
 
+
 @EventBusSubscriber(modid = ExoEquipment.MODID)
 public final class StatusProtectionEvents {
+    private static final ThreadLocal<Boolean> REAPPLYING =
+            ThreadLocal.withInitial(() -> false);
+
     private StatusProtectionEvents() {}
 
     @SubscribeEvent
@@ -78,14 +83,33 @@ public final class StatusProtectionEvents {
             return;
         }
 
-        event.getEffectInstance().mapDuration(duration ->
-                StatusProtectionOperations.applyProtection(
-                        duration,
-                        ExoskeletonItem.getData(stack),
-                        effectId,
-                        runtime.poweredModules()
-                )
+        if (REAPPLYING.get()) {
+            return;
+        }
+
+        MobEffectInstance effect = event.getEffectInstance();
+        int originalDuration = effect.getDuration();
+        int protectedDuration = StatusProtectionOperations.applyProtection(
+                originalDuration,
+                ExoskeletonItem.getData(stack),
+                effectId,
+                runtime.poweredModules()
         );
+
+        if (protectedDuration >= originalDuration) {
+            return;
+        }
+
+        MobEffectInstance protectedEffect = new MobEffectInstance(effect);
+        protectedEffect.mapDuration(duration -> protectedDuration);
+
+        try {
+            REAPPLYING.set(true);
+            entity.removeEffect(effect.getEffect());
+            entity.addEffect(protectedEffect);
+        } finally {
+            REAPPLYING.set(false);
+        }
     }
 
     private static ExoskeletonRuntimeState getRuntime(ItemStack stack) {

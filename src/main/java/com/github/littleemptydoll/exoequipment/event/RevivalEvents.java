@@ -55,7 +55,10 @@ public final class RevivalEvents {
         }
 
         RevivalOperations.RevivalResult result =
-                RevivalOperations.tryRevive(data, runtime);
+                RevivalOperations.tryRevive(
+                        data,
+                        runtime.poweredModules()
+                );
 
         if (!result.revived()) {
             return;
@@ -85,8 +88,8 @@ public final class RevivalEvents {
         }
 
         stack.set(
-                ModDataComponents.EXOSKELETON_RUNTIME.get(),
-                result.runtime()
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                result.data()
         );
 
         event.setCanceled(true);

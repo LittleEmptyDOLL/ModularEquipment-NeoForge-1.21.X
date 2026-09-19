@@ -21,7 +21,9 @@ public record ModuleDefinition(
         Optional<DamageReductionProperties> damageReduction,
         Optional<ShieldProperties> shield,
         Optional<StatusProtectionProperties> statusProtection,
-        Optional<MobilityProperties> mobility
+        Optional<MobilityProperties> mobility,
+        Optional<NightVisionProperties> nightVision,
+        Optional<EntityDetectionProperties> entityDetection
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -64,7 +66,13 @@ public record ModuleDefinition(
                                     .forGetter(ModuleDefinition::statusProtection),
                             MobilityProperties.CODEC
                                     .optionalFieldOf("mobility")
-                                    .forGetter(ModuleDefinition::mobility)
+                                    .forGetter(ModuleDefinition::mobility),
+                            NightVisionProperties.CODEC
+                                    .optionalFieldOf("night_vision")
+                                    .forGetter(ModuleDefinition::nightVision),
+                            EntityDetectionProperties.CODEC
+                                    .optionalFieldOf("entity_detection")
+                                    .forGetter(ModuleDefinition::entityDetection)
                     ).apply(
                             instance,
                             ModuleDefinition::new
@@ -95,6 +103,8 @@ public record ModuleDefinition(
         private ShieldProperties shield;
         private StatusProtectionProperties statusProtection;
         private MobilityProperties mobility;
+        private NightVisionProperties nightVision;
+        private EntityDetectionProperties entityDetection;
 
         private Builder(
                 ResourceLocation id,
@@ -153,6 +163,16 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder nightVision(NightVisionProperties nightVision) {
+            this.nightVision = nightVision;
+            return this;
+        }
+
+        public Builder entityDetection(EntityDetectionProperties entityDetection) {
+            this.entityDetection = entityDetection;
+            return this;
+        }
+
         public ModuleDefinition build() {
             return new ModuleDefinition(
                     id,
@@ -167,7 +187,9 @@ public record ModuleDefinition(
                     Optional.ofNullable(damageReduction),
                     Optional.ofNullable(shield),
                     Optional.ofNullable(statusProtection),
-                    Optional.ofNullable(mobility)
+                    Optional.ofNullable(mobility),
+                    Optional.ofNullable(nightVision),
+                    Optional.ofNullable(entityDetection)
             );
         }
     }

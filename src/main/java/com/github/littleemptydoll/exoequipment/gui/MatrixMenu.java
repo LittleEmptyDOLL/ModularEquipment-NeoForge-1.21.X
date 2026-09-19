@@ -321,7 +321,6 @@ public class MatrixMenu extends AbstractContainerMenu {
         MatrixData updated = MatrixOperations.addModule(matrix, definition, module);
         applyMatrixData(player, updated);
         carried.shrink(1);
-        if (!carried.isEmpty()) carried.remove(ModDataComponents.MODULE_STORED_ENERGY.get());
         setCarried(carried);
         return true;
     }

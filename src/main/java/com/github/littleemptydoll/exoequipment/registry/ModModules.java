@@ -187,7 +187,12 @@ public class ModModules {
                                                     "minecraft",
                                                     "poison"
                                             ),
-                                            0.75D
+                                            0.75D,
+                                            ResourceLocation.fromNamespaceAndPath(
+                                                    "minecraft",
+                                                    "wither"
+                                            ),
+                                            1.0D
                                     )
                             ))
                             .build()

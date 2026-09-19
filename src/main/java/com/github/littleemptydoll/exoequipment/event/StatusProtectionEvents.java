@@ -51,7 +51,7 @@ public final class StatusProtectionEvents {
         );
 
         if (protection >= 1.0D) {
-            event.setResult(MobEffectEvent.Applicable.Result.DENY);
+            event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
         }
     }
 

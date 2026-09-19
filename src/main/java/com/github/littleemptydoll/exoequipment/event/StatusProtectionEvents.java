@@ -60,7 +60,7 @@ public final class StatusProtectionEvents {
     public static void onEffectAdded(MobEffectEvent.Added event) {
         LivingEntity entity = event.getEntity();
 
-        if (entity.level().isClientSide() || REAPPLYING.get()) {
+        if (entity.level().isClientSide()) {
             return;
         }
 
@@ -88,78 +88,12 @@ public final class StatusProtectionEvents {
             return;
         }
 
-        Holder<MobEffect> effect = addedEffect.getEffect();
-
-        /*
-         * MobEffectEvent.Added is fired while LivingEntity.addEffect() is
-         * still processing the incoming effect. We therefore wait until the
-         * current add/update operation has completed and then replace the
-         * actual stored effect with a new instance.
-         */
-        entity.level().getServer().execute(() ->
-                replaceEffectWithProtectedDuration(
-                        entity,
-                        effectId,
-                        protection
+        addedEffect.mapDuration(duration ->
+                Math.max(
+                        0,
+                        (int) Math.floor(duration * (1.0D - protection))
                 )
         );
-    }
-
-    private static void replaceEffectWithProtectedDuration(
-            LivingEntity entity,
-            ResourceLocation effectId,
-            double protection
-    ) {
-        if (!entity.isAlive()) {
-            return;
-        }
-
-        MobEffectInstance current = entity.getActiveEffects().stream()
-                .filter(effect -> effectId.equals(getEffectId(effect)))
-                .findFirst()
-                .orElse(null);
-
-        if (current == null || current.isInfiniteDuration()) {
-            return;
-        }
-
-        int currentDuration = current.getDuration();
-        int protectedDuration = Math.max(
-                0,
-                (int) Math.floor(currentDuration * (1.0D - protection))
-        );
-
-        if (protectedDuration >= currentDuration) {
-            return;
-        }
-
-        int amplifier = current.getAmplifier();
-        boolean ambient = current.isAmbient();
-        boolean visible = current.isVisible();
-        boolean showIcon = current.showIcon();
-
-        Holder<MobEffect> effect = current.getEffect();
-        entity.removeEffect(effect);
-
-        if (protectedDuration <= 0) {
-            return;
-        }
-
-        MobEffectInstance protectedEffect = new MobEffectInstance(
-                effect,
-                protectedDuration,
-                amplifier,
-                ambient,
-                visible,
-                showIcon
-        );
-
-        try {
-            REAPPLYING.set(true);
-            entity.addEffect(protectedEffect);
-        } finally {
-            REAPPLYING.set(false);
-        }
     }
 
     private static ResourceLocation getEffectId(MobEffectInstance effect) {

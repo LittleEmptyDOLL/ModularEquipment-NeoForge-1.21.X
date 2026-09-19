@@ -38,15 +38,15 @@ public final class HealthOperations {
                 InstalledModuleReference reference =
                         new InstalledModuleReference(slot, moduleIndex);
 
-                var definition = ModModules.getDefinition(module.id());
-
                 if (!isPowered(module.id(), reference, poweredModules)) {
                     continue;
                 }
 
-                definition.health().ifPresent(properties ->
-                        additionalHealth += properties.additionalHealth()
-                );
+                var definition = ModModules.getDefinition(module.id());
+
+                additionalHealth += definition.health()
+                        .map(HealthProperties::additionalHealth)
+                        .orElse(0.0D);
             }
         }
 

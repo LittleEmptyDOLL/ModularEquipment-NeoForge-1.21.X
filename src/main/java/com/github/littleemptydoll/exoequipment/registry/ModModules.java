@@ -181,6 +181,7 @@ public class ModModules {
                                     ModuleCategory.DEFENSE,
                                     new ModuleSize(2, 2)
                             )
+                            .energy(new EnergyProperties(10, 1))
                             .statusProtection(new StatusProtectionProperties(
                                     java.util.Map.of(
                                             ResourceLocation.fromNamespaceAndPath(
@@ -214,6 +215,7 @@ public class ModModules {
                                     ModuleCategory.DEFENSE,
                                     new ModuleSize(2, 2)
                             )
+                            .energy(new EnergyProperties(10, 1))
                             .damageReduction(new DamageReductionProperties(
                                     java.util.Map.of(
                                             ResourceLocation.fromNamespaceAndPath(
@@ -247,6 +249,7 @@ public class ModModules {
                                     ModuleCategory.MOBILITY,
                                     new ModuleSize(2, 2)
                             )
+                            .energy(new EnergyProperties(5))
                             .mobility(new MobilityProperties(
                                     0.15D,
                                     0.25D,

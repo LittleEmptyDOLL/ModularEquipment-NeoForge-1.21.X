@@ -21,45 +21,13 @@ public final class StatusProtectionEvents {
     private static final ThreadLocal<Boolean> REAPPLYING =
             ThreadLocal.withInitial(() -> false);
 
-    private static boolean processing = false;
-
     private StatusProtectionEvents() {}
-
-    @SubscribeEvent
-    public static void onEffectApplicable(MobEffectEvent.Applicable event) {
-        LivingEntity entity = event.getEntity();
-
-        if (entity.level().isClientSide()) {
-            return;
-        }
-        ItemStack stack = findExoskeleton(entity).orElse(null);
-        if (stack == null) {
-            return;
-        }
-
-        ExoskeletonRuntimeState runtime = getRuntime(stack);
-        ResourceLocation effectId = getEffectId(event.getEffectInstance());
-
-        if (effectId == null) {
-            return;
-        }
-
-        double protection = StatusProtectionOperations.calculateProtection(
-                ExoskeletonItem.getData(stack),
-                effectId,
-                runtime.poweredModules()
-        );
-
-        if (protection >= 1.0D) {
-            event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
-        }
-    }
 
     @SubscribeEvent
     public static void onApplicable(MobEffectEvent.Applicable event) {
         LivingEntity entity = event.getEntity();
 
-        if (entity.level().isClientSide() || processing) {
+        if (entity.level().isClientSide() || REAPPLYING.get()) {
             return;
         }
 
@@ -69,9 +37,13 @@ public final class StatusProtectionEvents {
         }
 
         MobEffectInstance incoming = event.getEffectInstance();
-        ResourceLocation effectId = getEffectId(incoming);
 
-        if (effectId == null || incoming.isInfiniteDuration()) {
+        if (incoming.isInfiniteDuration()) {
+            return;
+        }
+
+        ResourceLocation effectId = getEffectId(incoming);
+        if (effectId == null) {
             return;
         }
 
@@ -89,23 +61,33 @@ public final class StatusProtectionEvents {
 
         event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
 
-        int newDuration = (int) (incoming.getDuration() * (1.0D - protection));
-        if (newDuration <= 0) {
+        if (protection >= 1.0D) {
             return;
         }
 
-        processing = true;
+        int duration = StatusProtectionOperations.applyProtection(
+                incoming.getDuration(),
+                ExoskeletonItem.getData(stack),
+                effectId,
+                runtime.poweredModules()
+        );
+
+        if (duration <= 0) {
+            return;
+        }
+
+        REAPPLYING.set(true);
         try {
             entity.addEffect(new MobEffectInstance(
                     incoming.getEffect(),
-                    newDuration,
+                    duration,
                     incoming.getAmplifier(),
                     incoming.isAmbient(),
                     incoming.isVisible(),
                     incoming.showIcon()
             ));
         } finally {
-            processing = false;
+            REAPPLYING.set(false);
         }
     }
 

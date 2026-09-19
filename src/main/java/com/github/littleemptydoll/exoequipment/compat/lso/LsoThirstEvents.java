@@ -5,6 +5,7 @@ import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import sfiomn.legendarysurvivaloverhaul.api.thirst.ThirstUtil;
@@ -23,7 +24,7 @@ public final class LsoThirstEvents {
     private LsoThirstEvents() {
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
 

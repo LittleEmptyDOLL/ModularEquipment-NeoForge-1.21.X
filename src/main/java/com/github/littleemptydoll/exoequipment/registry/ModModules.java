@@ -457,4 +457,28 @@ public class ModModules {
                             .build()
     );
 
+
+    public static EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > registerLsoTestThirst() {
+        return REGISTRY.register(
+                "test_lso_thirst",
+                new EquipmentProperties(
+                        EquipmentTier.BASIC,
+                        Rarity.EPIC
+                ),
+                (id, properties) ->
+                        ModuleDefinition.builder(
+                                        id,
+                                        properties,
+                                        ModuleCategory.SURVIVAL,
+                                        new ModuleSize(1, 2)
+                                )
+                                .energy(new EnergyProperties(5))
+                                .thirst(new ThirstProperties(0.50D))
+                                .build()
+        );
+    }
+
 }

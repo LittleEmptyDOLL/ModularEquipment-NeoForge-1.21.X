@@ -48,6 +48,53 @@ public class ModModules {
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
+            > TEST_NIGHT_VISION = REGISTRY.register(
+            "test_night_vision",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.SENSOR,
+                                    new ModuleSize(1, 1)
+                            )
+                            .energy(new EnergyProperties(5))
+                            .nightVision(new NightVisionProperties())
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > TEST_ENTITY_DETECTION = REGISTRY.register(
+            "test_entity_detection",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.SENSOR,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(10))
+                            .entityDetection(new EntityDetectionProperties(
+                                    16.0D,
+                                    true,
+                                    true,
+                                    true
+                            ))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
     > TEST = REGISTRY.register(
             "test",
             new EquipmentProperties(

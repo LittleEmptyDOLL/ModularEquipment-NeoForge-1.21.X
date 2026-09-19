@@ -25,7 +25,8 @@ public record ModuleDefinition(
         Optional<NightVisionProperties> nightVision,
         Optional<EntityDetectionProperties> entityDetection,
         Optional<HungerProperties> hunger,
-        Optional<HealthProperties> health
+        Optional<HealthProperties> health,
+        Optional<RevivalProperties> revival
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -66,7 +67,8 @@ public record ModuleDefinition(
                 nightVision,
                 entityDetection,
                 hunger,
-                health
+                health,
+                revival
         );
     }
 
@@ -94,7 +96,8 @@ public record ModuleDefinition(
                 optional.nightVision(),
                 optional.entityDetection(),
                 optional.hunger(),
-                optional.health()
+                optional.health(),
+                optional.revival()
         );
     }
 
@@ -126,6 +129,7 @@ public record ModuleDefinition(
         private EntityDetectionProperties entityDetection;
         private HungerProperties hunger;
         private HealthProperties health;
+        private RevivalProperties revival;
 
         private Builder(
                 ResourceLocation id,
@@ -204,6 +208,11 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder revival(RevivalProperties revival) {
+            this.revival = revival;
+            return this;
+        }
+
         public ModuleDefinition build() {
             return new ModuleDefinition(
                     id,
@@ -222,7 +231,8 @@ public record ModuleDefinition(
                     Optional.ofNullable(nightVision),
                     Optional.ofNullable(entityDetection),
                     Optional.ofNullable(hunger),
-                    Optional.ofNullable(health)
+                    Optional.ofNullable(health),
+                    Optional.ofNullable(revival)
             );
         }
     }

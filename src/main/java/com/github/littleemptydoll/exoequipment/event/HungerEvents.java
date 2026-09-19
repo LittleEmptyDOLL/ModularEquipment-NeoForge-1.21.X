@@ -32,13 +32,15 @@ public final class HungerEvents {
 
         float currentExhaustion = player.getFoodData().getExhaustionLevel();
 
-        Float previousExhaustion = PREVIOUS_EXHAUSTION.put(
-                player,
-                currentExhaustion
-        );
+        Float previousExhaustion = PREVIOUS_EXHAUSTION.get(player);
 
-        if (previousExhaustion == null
-                || currentExhaustion <= previousExhaustion) {
+        if (previousExhaustion == null) {
+            PREVIOUS_EXHAUSTION.put(player, currentExhaustion);
+            return;
+        }
+
+        if (currentExhaustion <= previousExhaustion) {
+            PREVIOUS_EXHAUSTION.put(player, currentExhaustion);
             return;
         }
 
@@ -54,6 +56,7 @@ public final class HungerEvents {
                         .map(result -> result.stack());
 
         if (exoskeletonStack.isEmpty()) {
+            PREVIOUS_EXHAUSTION.put(player, currentExhaustion);
             return;
         }
 
@@ -79,5 +82,7 @@ public final class HungerEvents {
         if (reducedExhaustion != currentExhaustion) {
             player.getFoodData().setExhaustion(reducedExhaustion);
         }
+
+        PREVIOUS_EXHAUSTION.put(player, reducedExhaustion);
     }
 }

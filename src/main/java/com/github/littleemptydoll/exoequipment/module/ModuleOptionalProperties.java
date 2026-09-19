@@ -18,7 +18,8 @@ public record ModuleOptionalProperties(
         Optional<NightVisionProperties> nightVision,
         Optional<EntityDetectionProperties> entityDetection,
         Optional<HungerProperties> hunger,
-        Optional<HealthProperties> health
+        Optional<HealthProperties> health,
+        Optional<RevivalProperties> revival
 ) {
     public static final MapCodec<ModuleOptionalProperties> CODEC =
             RecordCodecBuilder.mapCodec(instance ->
@@ -61,7 +62,10 @@ public record ModuleOptionalProperties(
                                     .forGetter(ModuleOptionalProperties::hunger),
                             HealthProperties.CODEC
                                     .optionalFieldOf("health")
-                                    .forGetter(ModuleOptionalProperties::health)
+                                    .forGetter(ModuleOptionalProperties::health),
+                            RevivalProperties.CODEC
+                                    .optionalFieldOf("revival")
+                                    .forGetter(ModuleOptionalProperties::revival)
                     ).apply(instance, ModuleOptionalProperties::new)
             );
 }

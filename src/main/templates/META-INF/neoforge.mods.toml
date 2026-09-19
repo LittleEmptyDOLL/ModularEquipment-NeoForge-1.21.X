@@ -33,3 +33,10 @@ Example mod description.
     versionRange="[9.5.1,10)"
     ordering="AFTER"
     side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="legendarysurvivaloverhaul"
+    type="optional"
+    versionRange="[2.3.24,)"
+    ordering="AFTER"
+    side="BOTH"

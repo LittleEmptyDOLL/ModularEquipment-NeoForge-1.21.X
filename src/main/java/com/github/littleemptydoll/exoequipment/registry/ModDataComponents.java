@@ -78,6 +78,24 @@ public final class ModDataComponents {
                     builder -> builder.persistent(com.mojang.serialization.Codec.INT)
             );
 
+    public static final Supplier<DataComponentType<Double>> MODULE_SHIELD_ENERGY =
+            COMPONENTS.registerComponentType(
+                    "module_shield_energy",
+                    builder -> builder.persistent(com.mojang.serialization.Codec.DOUBLE)
+            );
+
+    public static final Supplier<DataComponentType<Integer>> MODULE_SHIELD_RECHARGE_COOLDOWN =
+            COMPONENTS.registerComponentType(
+                    "module_shield_recharge_cooldown",
+                    builder -> builder.persistent(com.mojang.serialization.Codec.INT)
+            );
+
+    public static final Supplier<DataComponentType<Integer>> MODULE_REVIVAL_COOLDOWN =
+            COMPONENTS.registerComponentType(
+                    "module_revival_cooldown",
+                    builder -> builder.persistent(com.mojang.serialization.Codec.INT)
+            );
+
     public static void register(net.neoforged.bus.api.IEventBus eventBus) {
         COMPONENTS.register(eventBus);
     }

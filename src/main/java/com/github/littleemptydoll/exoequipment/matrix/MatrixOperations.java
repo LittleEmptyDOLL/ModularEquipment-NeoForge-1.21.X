@@ -54,8 +54,16 @@ public final class MatrixOperations {
         InstalledModule module = getModuleAt(matrix, x, y);
         if (module == null) return matrix;
         int newRotation = (module.rotation() + 90) % 360;
-        InstalledModule rotatedModule = new InstalledModule(module.id(), module.x(), module.y(), newRotation,
-                module.storedEnergy());
+        InstalledModule rotatedModule = new InstalledModule(
+                module.id(),
+                module.x(),
+                module.y(),
+                newRotation,
+                module.storedEnergy(),
+                module.shieldEnergy(),
+                module.shieldRechargeCooldown(),
+                module.revivalCooldown()
+        );
         return replaceModule(matrix, matrixDefinition, module, rotatedModule);
     }
 
@@ -63,8 +71,16 @@ public final class MatrixOperations {
                                         int fromX, int fromY, int toX, int toY) {
         InstalledModule module = getModuleAt(matrix, fromX, fromY);
         if (module == null) return matrix;
-        InstalledModule movedModule = new InstalledModule(module.id(), toX, toY, module.rotation(),
-                module.storedEnergy());
+        InstalledModule movedModule = new InstalledModule(
+                module.id(),
+                toX,
+                toY,
+                module.rotation(),
+                module.storedEnergy(),
+                module.shieldEnergy(),
+                module.shieldRechargeCooldown(),
+                module.revivalCooldown()
+        );
         return replaceModule(matrix, matrixDefinition, module, movedModule);
     }
 

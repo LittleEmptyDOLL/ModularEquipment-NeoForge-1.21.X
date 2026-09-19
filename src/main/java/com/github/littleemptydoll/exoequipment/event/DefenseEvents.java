@@ -9,6 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.sounds.SoundSource;
+import com.github.littleemptydoll.exoequipment.registry.ModSounds;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -92,11 +94,23 @@ public final class DefenseEvents {
                 runtime
         );
 
-        event.setAmount(
-                (float) Math.max(
-                        0.0D,
-                        remainingDamage
-                )
-        );
+        if (remainingDamage <= 0.0D) {
+            event.setCanceled(true);
+
+            entity.level().playSound(
+                    null,
+                    entity.getX(),
+                    entity.getY(),
+                    entity.getZ(),
+                    ModSounds.SHIELD_HIT.get(),
+                    SoundSource.PLAYERS,
+                    1.0F,
+                    1.0F
+            );
+
+            return;
+        }
+
+        event.setAmount((float) remainingDamage);
     }
 }

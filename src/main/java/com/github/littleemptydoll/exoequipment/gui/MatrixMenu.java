@@ -275,11 +275,49 @@ public class MatrixMenu extends AbstractContainerMenu {
         ItemStack carried = getCarried();
         if (!(carried.getItem() instanceof ModuleItem moduleItem)) return false;
         var moduleDefinition = moduleItem.getDefinition();
-        int storedEnergy = carried.getOrDefault(ModDataComponents.MODULE_STORED_ENERGY.get(), 0);
-        int finalStoredEnergy = storedEnergy;
+        int storedEnergy = carried.getOrDefault(
+                ModDataComponents.MODULE_STORED_ENERGY.get(),
+                0
+        );
+        double shieldEnergy = carried.getOrDefault(
+                ModDataComponents.MODULE_SHIELD_ENERGY.get(),
+                0.0D
+        );
+        int shieldRechargeCooldown = carried.getOrDefault(
+                ModDataComponents.MODULE_SHIELD_RECHARGE_COOLDOWN.get(),
+                0
+        );
+        int revivalCooldown = carried.getOrDefault(
+                ModDataComponents.MODULE_REVIVAL_COOLDOWN.get(),
+                0
+        );
+
         storedEnergy = moduleDefinition.storage()
-                .map(storage -> Math.min(finalStoredEnergy, storage.capacity())).orElse(0);
-        InstalledModule module = new InstalledModule(moduleDefinition.id(), x, y, rotation, storedEnergy);
+                .map(storage -> Math.min(storedEnergy, storage.capacity()))
+                .orElse(0);
+
+        shieldEnergy = moduleDefinition.shield()
+                .map(shield -> Math.min(shieldEnergy, shield.capacity()))
+                .orElse(0.0D);
+
+        shieldRechargeCooldown = moduleDefinition.shield()
+                .map(shield -> Math.min(shieldRechargeCooldown, shield.rechargeDelay()))
+                .orElse(0);
+
+        revivalCooldown = moduleDefinition.revival()
+                .map(revival -> Math.min(revivalCooldown, revival.cooldown()))
+                .orElse(0);
+
+        InstalledModule module = new InstalledModule(
+                moduleDefinition.id(),
+                x,
+                y,
+                rotation,
+                storedEnergy,
+                shieldEnergy,
+                shieldRechargeCooldown,
+                revivalCooldown
+        );
         MatrixData updated = MatrixOperations.addModule(matrix, definition, module);
         applyMatrixData(player, updated);
         carried.shrink(1);
@@ -292,10 +330,51 @@ public class MatrixMenu extends AbstractContainerMenu {
         InstalledModule module = MatrixOperations.getModuleAt(matrix, x, y);
         if (module == null) return false;
         ItemStack moduleStack = ModModules.find(module.id()).getItem().getDefaultInstance();
-        var storage = ModModules.getDefinition(module.id()).storage();
+        var definition = ModModules.getDefinition(module.id());
+
+        var storage = definition.storage();
         if (storage.isPresent() && module.storedEnergy() > 0) {
             int storedEnergy = Math.min(module.storedEnergy(), storage.get().capacity());
-            moduleStack.set(ModDataComponents.MODULE_STORED_ENERGY.get(), storedEnergy);
+            moduleStack.set(
+                    ModDataComponents.MODULE_STORED_ENERGY.get(),
+                    storedEnergy
+            );
+        }
+
+        var shield = definition.shield();
+        if (shield.isPresent()) {
+            double shieldEnergy = Math.min(
+                    module.shieldEnergy(),
+                    shield.get().capacity()
+            );
+
+            if (shieldEnergy > 0.0D) {
+                moduleStack.set(
+                        ModDataComponents.MODULE_SHIELD_ENERGY.get(),
+                        shieldEnergy
+                );
+            }
+
+            if (module.shieldRechargeCooldown() > 0) {
+                moduleStack.set(
+                        ModDataComponents.MODULE_SHIELD_RECHARGE_COOLDOWN.get(),
+                        Math.min(
+                                module.shieldRechargeCooldown(),
+                                shield.get().rechargeDelay()
+                        )
+                );
+            }
+        }
+
+        var revival = definition.revival();
+        if (revival.isPresent() && module.revivalCooldown() > 0) {
+            moduleStack.set(
+                    ModDataComponents.MODULE_REVIVAL_COOLDOWN.get(),
+                    Math.min(
+                            module.revivalCooldown(),
+                            revival.get().cooldown()
+                    )
+            );
         }
         if (!giveModule(player, moduleStack)) return false;
         applyMatrixData(player, MatrixOperations.removeModule(matrix, x, y));
@@ -313,7 +392,16 @@ public class MatrixMenu extends AbstractContainerMenu {
                                int fromX, int fromY, int toX, int toY, int rotation) {
         InstalledModule module = MatrixOperations.getModuleAt(matrix, fromX, fromY);
         if (module == null) return false;
-        InstalledModule movedModule = new InstalledModule(module.id(), toX, toY, rotation, module.storedEnergy());
+        InstalledModule movedModule = new InstalledModule(
+                module.id(),
+                toX,
+                toY,
+                rotation,
+                module.storedEnergy(),
+                module.shieldEnergy(),
+                module.shieldRechargeCooldown(),
+                module.revivalCooldown()
+        );
         MatrixData updated = replaceModule(matrix, definition, module, movedModule);
         if (updated.equals(matrix)) return false;
         applyMatrixData(player, updated);

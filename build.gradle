@@ -30,6 +30,18 @@ repositories {
     maven {
         url = "https://maven.theillusivec4.top/"
     }
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 base {
@@ -90,6 +102,9 @@ configurations {
 dependencies {
     compileOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
     localRuntime "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
+
+    compileOnly "maven.modrinth:TQr3t8Sb:AZzEduN3"
+    localRuntime "maven.modrinth:TQr3t8Sb:AZzEduN3"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

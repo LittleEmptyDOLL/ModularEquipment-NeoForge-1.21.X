@@ -21,16 +21,17 @@ public final class ShieldOperations {
             ExoskeletonRuntimeState runtime
     ) {
         if (damage <= 0.0D) {
-            return new ShieldDamageResult(0.0D, runtime);
+            return new ShieldDamageResult(0.0D, 0.0D, runtime);
         }
 
         List<ShieldTarget> targets = collectShields(data);
         if (targets.isEmpty()) {
-            return new ShieldDamageResult(damage, runtime);
+            return new ShieldDamageResult(damage, 0.0D, runtime);
         }
 
         List<ShieldState> states = normalizeStates(targets, runtime.shields());
         double remaining = damage;
+        double absorbedDamage = 0.0D;
 
         for (ShieldTarget target : targets) {
             if (remaining <= 0.0D) {
@@ -54,17 +55,18 @@ public final class ShieldOperations {
             );
 
             remaining -= absorbed;
+            absorbedDamage += absorbed;
         }
 
-        // Any damage absorbed by the shield system resets the recharge
-        // cooldown of every shield. This prevents an exhausted shield from
-        // recharging while another shield is still taking damage.
-        if (remaining < damage) {
-            states = resetRechargeCooldowns(states, targets);
-        }
+        // Any incoming damage resets the recharge cooldown of every active
+        // shield. This also applies when all shields are already depleted,
+        // preventing them from immediately starting to recharge while the
+        // player is still taking damage.
+        states = resetRechargeCooldowns(states, targets);
 
         return new ShieldDamageResult(
                 Math.max(0.0D, remaining),
+                absorbedDamage,
                 runtime.withShields(states)
         );
     }
@@ -327,6 +329,7 @@ public final class ShieldOperations {
 
     public record ShieldDamageResult(
             double remainingDamage,
+            double absorbedDamage,
             ExoskeletonRuntimeState runtime
     ) {}
 }

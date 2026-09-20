@@ -121,7 +121,7 @@ public final class LsoTemperatureOperations {
                     continue;
                 }
 
-                resistance = Math.max(resistance, properties.resistance());
+                resistance += properties.resistance();
             }
         }
 

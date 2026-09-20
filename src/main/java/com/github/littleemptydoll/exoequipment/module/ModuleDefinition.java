@@ -22,6 +22,7 @@ public record ModuleDefinition(
         Optional<TemperatureImpactProperties> temperatureImpact,
         Optional<DamageReductionProperties> damageReduction,
         Optional<ShieldProperties> shield,
+        Optional<EmergencyShieldProperties> emergencyShield,
         Optional<StatusProtectionProperties> statusProtection,
         Optional<NightVisionProperties> nightVision,
         Optional<EntityDetectionProperties> entityDetection,
@@ -138,6 +139,7 @@ public record ModuleDefinition(
                 temperatureImpact,
                 optional.damageReduction(),
                 optional.shield(),
+                optional.emergencyShield(),
                 optional.statusProtection(),
                 optional.nightVision(),
                 optional.entityDetection(),
@@ -179,6 +181,7 @@ public record ModuleDefinition(
         private TemperatureImpactProperties temperatureImpact;
         private DamageReductionProperties damageReduction;
         private ShieldProperties shield;
+        private EmergencyShieldProperties emergencyShield;
         private StatusProtectionProperties statusProtection;
         private NightVisionProperties nightVision;
         private EntityDetectionProperties entityDetection;
@@ -248,6 +251,11 @@ public record ModuleDefinition(
 
         public Builder shield(ShieldProperties shield) {
             this.shield = shield;
+            return this;
+        }
+
+        public Builder emergencyShield(EmergencyShieldProperties emergencyShield) {
+            this.emergencyShield = emergencyShield;
             return this;
         }
 
@@ -336,6 +344,7 @@ public record ModuleDefinition(
                     Optional.ofNullable(temperatureImpact),
                     Optional.ofNullable(damageReduction),
                     Optional.ofNullable(shield),
+                    Optional.ofNullable(emergencyShield),
                     Optional.ofNullable(statusProtection),
                     Optional.ofNullable(nightVision),
                     Optional.ofNullable(entityDetection),

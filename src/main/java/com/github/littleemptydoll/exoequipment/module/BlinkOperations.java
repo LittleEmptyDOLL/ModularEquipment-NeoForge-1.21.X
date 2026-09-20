@@ -143,6 +143,13 @@ public final class BlinkOperations {
             }
         }
 
+        // If there is no collision-free position, still allow the blink.
+        // Move the destination slightly back from the collision point so that
+        // the player is not placed exactly on the block face.
+        if (hit.getType() == HitResult.Type.BLOCK) {
+            return destination.subtract(direction.scale(COLLISION_EPSILON));
+        }
+
         return null;
     }
 

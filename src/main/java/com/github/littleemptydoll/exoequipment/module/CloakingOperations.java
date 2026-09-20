@@ -14,8 +14,7 @@ public final class CloakingOperations {
     private CloakingOperations() {}
 
     public static ActivationResult activate(
-            ExoskeletonData data,
-            Set<InstalledModuleReference> poweredModules
+            ExoskeletonData data
     ) {
         List<Target> targets = collectTargets(data);
 

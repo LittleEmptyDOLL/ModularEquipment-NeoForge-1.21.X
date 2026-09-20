@@ -114,14 +114,15 @@ public final class BlinkOperations {
         // Search backwards from the requested endpoint until the complete
         // player bounding box fits. This also handles walls whose hit point
         // is too close for the player's width.
-        for (double offset = 0.0D; offset <= travelled; offset += SEARCH_STEP) {
+        for (double offset = 0.0D; offset < travelled; offset += SEARCH_STEP) {
             Vec3 candidate = destination.subtract(direction.scale(offset));
-            if (isSafe(player, candidate)) {
+            if (isSafe(player, candidate)
+                    && candidate.distanceTo(start) > COLLISION_EPSILON) {
                 return candidate;
             }
         }
 
-        return isSafe(player, start) ? start : null;
+        return null;
     }
 
     private static boolean isSafe(ServerPlayer player, Vec3 position) {

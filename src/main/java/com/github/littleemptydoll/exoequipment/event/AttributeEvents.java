@@ -94,6 +94,7 @@ public final class AttributeEvents {
         }
 
         return AttributeOperations.calculate(
+                player,
                 data,
                 runtime.poweredModules()
         );

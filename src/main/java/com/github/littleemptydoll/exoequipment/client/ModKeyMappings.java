@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.client;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.network.CloakingPayload;
 import com.github.littleemptydoll.exoequipment.network.OpenExoskeletonPayload;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
@@ -15,6 +16,13 @@ import org.lwjgl.glfw.GLFW;
 @EventBusSubscriber(modid = ExoEquipment.MODID, value = Dist.CLIENT)
 public final class ModKeyMappings {
 
+    public static final KeyMapping ACTIVATE_CLOAKING = new KeyMapping(
+            "key.exoequipment.activate_cloaking",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_V,
+            "key.categories.exoequipment"
+    );
+
     public static final KeyMapping OPEN_EXOSKELETON = new KeyMapping(
             "key.exoequipment.open_exoskeleton",
             InputConstants.Type.KEYSYM,
@@ -25,6 +33,7 @@ public final class ModKeyMappings {
     @SubscribeEvent
     public static void register(RegisterKeyMappingsEvent event) {
         event.register(OPEN_EXOSKELETON);
+        event.register(ACTIVATE_CLOAKING);
     }
 
     private ModKeyMappings() {}
@@ -37,6 +46,10 @@ final class ModKeyMappingHandler {
     public static void onClientTick(ClientTickEvent.Post event) {
         while (ModKeyMappings.OPEN_EXOSKELETON.consumeClick()) {
             PacketDistributor.sendToServer(new OpenExoskeletonPayload());
+        }
+
+        while (ModKeyMappings.ACTIVATE_CLOAKING.consumeClick()) {
+            PacketDistributor.sendToServer(new CloakingPayload());
         }
     }
 

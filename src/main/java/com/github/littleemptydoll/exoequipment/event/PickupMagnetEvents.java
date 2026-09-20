@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @EventBusSubscriber(modid = ExoEquipment.MODID)
 public final class PickupMagnetEvents {
-    private static final int INTERVAL = 5;
+    private static final int INTERVAL = 1;
 
     private PickupMagnetEvents() {}
 

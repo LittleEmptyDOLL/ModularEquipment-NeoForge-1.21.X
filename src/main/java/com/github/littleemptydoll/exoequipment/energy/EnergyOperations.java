@@ -245,6 +245,36 @@ public final class EnergyOperations {
         );
     }
 
+    public static EnergyConsumptionResult consumeEnergy(
+            ExoskeletonData data,
+            int amount
+    ) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("Energy amount cannot be negative");
+        }
+        if (amount == 0) {
+            return new EnergyConsumptionResult(data, true, 0);
+        }
+        if (data.energySystem().isEmpty()) {
+            return new EnergyConsumptionResult(data, false, 0);
+        }
+
+        var energySystem = ModEnergySystems.getDefinition(
+                data.energySystem().get().definitionId()
+        );
+        int requested = Math.min(amount, energySystem.maxOutput());
+        if (requested < amount) {
+            return new EnergyConsumptionResult(data, false, 0);
+        }
+
+        StorageTransferResult result = discharge(data, amount);
+        return new EnergyConsumptionResult(
+                result.data(),
+                result.amount() == amount,
+                result.amount()
+        );
+    }
+
     private static List<EnergyConsumer> collectConsumers(ExoskeletonData data) {
         List<EnergyConsumer> consumers = new ArrayList<>();
 
@@ -272,6 +302,13 @@ public final class EnergyOperations {
                         ignored -> true,
                         data.temperature()
                 );
+
+                if (module.active()) {
+                    consumption += ModModules.getDefinition(module.id())
+                            .cloaking()
+                            .map(CloakingProperties::consumption)
+                            .orElse(0);
+                }
 
                 if (consumption <= 0) {
                     continue;
@@ -350,6 +387,12 @@ public final class EnergyOperations {
 
         return available;
     }
+
+    public record EnergyConsumptionResult(
+            ExoskeletonData data,
+            boolean sufficient,
+            int consumed
+    ) {}
 
     private record EnergyConsumer(
             InstalledModuleReference reference,

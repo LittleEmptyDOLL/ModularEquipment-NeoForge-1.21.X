@@ -23,18 +23,13 @@ public record ModuleDefinition(
         Optional<DamageReductionProperties> damageReduction,
         Optional<ShieldProperties> shield,
         Optional<StatusProtectionProperties> statusProtection,
-        Optional<MobilityProperties> mobility,
         Optional<NightVisionProperties> nightVision,
         Optional<EntityDetectionProperties> entityDetection,
         Optional<HungerProperties> hunger,
-        Optional<HealthProperties> health,
         Optional<RevivalProperties> revival,
         Optional<RegenerationProperties> regeneration,
         Optional<FallProtectionProperties> fallProtection,
-        Optional<CombatProperties> combat,
-        Optional<UtilityProperties> utility,
-        Optional<ApothicUtilityProperties> apothicUtility,
-        Optional<DamageChanceProtectionProperties> damageChanceProtection,
+        Optional<AttributeProperties> attributes,
         Optional<BodyDamageProtectionProperties> bodyDamageProtection,
         Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
         Optional<ThirstProperties> thirst,
@@ -59,24 +54,15 @@ public record ModuleDefinition(
                                     ModuleDefinition::optionalProperties,
                                     ModuleOptionalProperties.CODEC
                             ),
-                            CombatProperties.CODEC
-                                    .optionalFieldOf("combat")
-                                    .forGetter(ModuleDefinition::combat),
-                            UtilityProperties.CODEC
-                                    .optionalFieldOf("utility")
-                                    .forGetter(ModuleDefinition::utility),
-                            ApothicUtilityProperties.CODEC
-                                    .optionalFieldOf("apothic_utility")
-                                    .forGetter(ModuleDefinition::apothicUtility),
+                            AttributeProperties.CODEC
+                                    .optionalFieldOf("attributes")
+                                    .forGetter(ModuleDefinition::attributes),
                             TemperatureModifierProperties.CODEC
                                     .optionalFieldOf("temperature_modifier")
                                     .forGetter(ModuleDefinition::temperatureModifier),
                             TemperatureImpactProperties.CODEC
                                     .optionalFieldOf("temperature_impact")
                                     .forGetter(ModuleDefinition::temperatureImpact),
-                            DamageChanceProtectionProperties.CODEC
-                                    .optionalFieldOf("damage_chance_protection")
-                                    .forGetter(ModuleDefinition::damageChanceProtection),
                             BodyDamageProtectionProperties.CODEC
                                     .optionalFieldOf("body_damage_protection")
                                     .forGetter(ModuleDefinition::bodyDamageProtection),
@@ -105,11 +91,9 @@ public record ModuleDefinition(
                 damageReduction,
                 shield,
                 statusProtection,
-                mobility,
                 nightVision,
                 entityDetection,
                 hunger,
-                health,
                 revival,
                 regeneration,
                 fallProtection
@@ -122,12 +106,9 @@ public record ModuleDefinition(
             ModuleCategory category,
             ModuleSize size,
             ModuleOptionalProperties optional,
-            Optional<CombatProperties> combat,
-            Optional<UtilityProperties> utility,
-            Optional<ApothicUtilityProperties> apothicUtility,
+            Optional<AttributeProperties> attributes,
             Optional<TemperatureModifierProperties> temperatureModifier,
             Optional<TemperatureImpactProperties> temperatureImpact,
-            Optional<DamageChanceProtectionProperties> damageChanceProtection,
             Optional<BodyDamageProtectionProperties> bodyDamageProtection,
             Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
             Optional<ThirstProperties> thirst,
@@ -148,18 +129,13 @@ public record ModuleDefinition(
                 optional.damageReduction(),
                 optional.shield(),
                 optional.statusProtection(),
-                optional.mobility(),
                 optional.nightVision(),
                 optional.entityDetection(),
                 optional.hunger(),
-                optional.health(),
                 optional.revival(),
                 optional.regeneration(),
                 optional.fallProtection(),
-                combat,
-                utility,
-                apothicUtility,
-                damageChanceProtection,
+                attributes,
                 bodyDamageProtection,
                 bodyDamageRegeneration,
                 thirst,
@@ -192,18 +168,13 @@ public record ModuleDefinition(
         private DamageReductionProperties damageReduction;
         private ShieldProperties shield;
         private StatusProtectionProperties statusProtection;
-        private MobilityProperties mobility;
         private NightVisionProperties nightVision;
         private EntityDetectionProperties entityDetection;
         private HungerProperties hunger;
-        private HealthProperties health;
         private RevivalProperties revival;
         private RegenerationProperties regeneration;
         private FallProtectionProperties fallProtection;
-        private CombatProperties combat;
-        private UtilityProperties utility;
-        private ApothicUtilityProperties apothicUtility;
-        private DamageChanceProtectionProperties damageChanceProtection;
+        private AttributeProperties attributes;
         private BodyDamageProtectionProperties bodyDamageProtection;
         private BodyDamageRegenerationProperties bodyDamageRegeneration;
         private ThirstProperties thirst;
@@ -271,11 +242,6 @@ public record ModuleDefinition(
             return this;
         }
 
-        public Builder mobility(MobilityProperties mobility) {
-            this.mobility = mobility;
-            return this;
-        }
-
         public Builder nightVision(NightVisionProperties nightVision) {
             this.nightVision = nightVision;
             return this;
@@ -288,11 +254,6 @@ public record ModuleDefinition(
 
         public Builder hunger(HungerProperties hunger) {
             this.hunger = hunger;
-            return this;
-        }
-
-        public Builder health(HealthProperties health) {
-            this.health = health;
             return this;
         }
 
@@ -311,23 +272,8 @@ public record ModuleDefinition(
             return this;
         }
 
-        public Builder combat(CombatProperties combat) {
-            this.combat = combat;
-            return this;
-        }
-
-        public Builder utility(UtilityProperties utility) {
-            this.utility = utility;
-            return this;
-        }
-
-        public Builder apothicUtility(ApothicUtilityProperties apothicUtility) {
-            this.apothicUtility = apothicUtility;
-            return this;
-        }
-
-        public Builder damageChanceProtection(DamageChanceProtectionProperties damageChanceProtection) {
-            this.damageChanceProtection = damageChanceProtection;
+        public Builder attributes(AttributeProperties attributes) {
+            this.attributes = attributes;
             return this;
         }
 
@@ -367,18 +313,13 @@ public record ModuleDefinition(
                     Optional.ofNullable(damageReduction),
                     Optional.ofNullable(shield),
                     Optional.ofNullable(statusProtection),
-                    Optional.ofNullable(mobility),
                     Optional.ofNullable(nightVision),
                     Optional.ofNullable(entityDetection),
                     Optional.ofNullable(hunger),
-                    Optional.ofNullable(health),
                     Optional.ofNullable(revival),
                     Optional.ofNullable(regeneration),
                     Optional.ofNullable(fallProtection),
-                    Optional.ofNullable(combat),
-                    Optional.ofNullable(utility),
-                    Optional.ofNullable(apothicUtility),
-                    Optional.ofNullable(damageChanceProtection),
+                    Optional.ofNullable(attributes),
                     Optional.ofNullable(bodyDamageProtection),
                     Optional.ofNullable(bodyDamageRegeneration),
                     Optional.ofNullable(thirst),

@@ -5,7 +5,6 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
@@ -106,18 +105,21 @@ public final class BlinkOperations {
                 ? hit.getLocation().subtract(direction.scale(COLLISION_EPSILON))
                 : requested;
 
-        double travelled = start.distanceTo(destination);
+        Vec3 displacement = destination.subtract(start);
+        double travelled = displacement.length();
         if (travelled <= 0.0D) {
             return null;
         }
 
-        // Search backwards from the requested endpoint until the complete
-        // player bounding box fits. This also handles walls whose hit point
-        // is too close for the player's width.
+        // The ray starts at the player's eyes, while teleportTo expects the
+        // player's feet position. Apply the same displacement to the current
+        // entity position and search backwards until the full bounding box fits.
         for (double offset = 0.0D; offset < travelled; offset += SEARCH_STEP) {
-            Vec3 candidate = destination.subtract(direction.scale(offset));
+            Vec3 candidate = player.position()
+                    .add(displacement)
+                    .subtract(direction.scale(offset));
             if (isSafe(player, candidate)
-                    && candidate.distanceTo(start) > COLLISION_EPSILON) {
+                    && candidate.distanceTo(player.position()) > COLLISION_EPSILON) {
                 return candidate;
             }
         }

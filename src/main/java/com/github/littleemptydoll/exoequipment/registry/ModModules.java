@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -298,12 +299,16 @@ public class ModModules {
                                     new ModuleSize(2, 2)
                             )
                             .energy(new EnergyProperties(5))
-                            .mobility(new MobilityProperties(
-                                    0.15D,
-                                    0.25D,
-                                    0.20D,
-                                    0.50D
-                            ))
+                            .attributes(new AttributeProperties(Map.ofEntries(
+                                    Map.entry(ResourceLocation.parse("minecraft:movement_speed"),
+                                            new AttributeModifierProperties(0.15D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE)),
+                                    Map.entry(ResourceLocation.parse("minecraft:water_movement_efficiency"),
+                                            new AttributeModifierProperties(0.25D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("minecraft:jump_strength"),
+                                            new AttributeModifierProperties(0.20D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE)),
+                                    Map.entry(ResourceLocation.parse("minecraft:step_height"),
+                                            new AttributeModifierProperties(0.50D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE))
+                            )))
                             .build()
     );
 
@@ -324,27 +329,46 @@ public class ModModules {
                                     new ModuleSize(2, 2)
                             )
                             .energy(new EnergyProperties(10))
-                            .combat(new CombatProperties(
-                                    4.0D,
-                                    1.0D,
-                                    0.5D,
-                                    4.0D,
-                                    0.10D,
-                                    0.50D,
-                                    2.0D,
-                                    0.10D,
-                                    1.0D,
-                                    0.10D,
-                                    0.05D,
-                                    0.10D,
-                                    0.05D,
-                                    1.0D,
-                                    1.0D,
-                                    0.25D,
-                                    0.25D,
-                                    0.10D,
-                                    0.25D
-                            ))
+                            .attributes(new AttributeProperties(Map.ofEntries(
+                                    Map.entry(ResourceLocation.parse("minecraft:attack_damage"),
+                                            new AttributeModifierProperties(4.0D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("minecraft:attack_speed"),
+                                            new AttributeModifierProperties(1.0D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("minecraft:attack_knockback"),
+                                            new AttributeModifierProperties(0.5D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("minecraft:entity_interaction_range"),
+                                            new AttributeModifierProperties(4.0D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:crit_chance"),
+                                            new AttributeModifierProperties(0.10D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:crit_damage"),
+                                            new AttributeModifierProperties(0.50D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:armor_pierce"),
+                                            new AttributeModifierProperties(2.0D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:armor_shred"),
+                                            new AttributeModifierProperties(0.10D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:prot_pierce"),
+                                            new AttributeModifierProperties(1.0D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:prot_shred"),
+                                            new AttributeModifierProperties(0.10D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:current_hp_damage"),
+                                            new AttributeModifierProperties(0.05D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:life_steal"),
+                                            new AttributeModifierProperties(0.10D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:overheal"),
+                                            new AttributeModifierProperties(0.05D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:fire_damage"),
+                                            new AttributeModifierProperties(1.0D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:cold_damage"),
+                                            new AttributeModifierProperties(1.0D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:projectile_damage"),
+                                            new AttributeModifierProperties(0.25D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:arrow_damage"),
+                                            new AttributeModifierProperties(0.25D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:arrow_velocity"),
+                                            new AttributeModifierProperties(0.10D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:draw_speed"),
+                                            new AttributeModifierProperties(0.25D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE))
+                            )))
                             .build()
     );
 
@@ -365,24 +389,36 @@ public class ModModules {
                                     new ModuleSize(2, 2)
                             )
                             .energy(new EnergyProperties(10))
-                            .utility(new UtilityProperties(
-                                    0.50D,
-                                    1.0D,
-                                    0.50D,
-                                    2.0D,
-                                    1.0D,
-                                    0.50D,
-                                    0.25D,
-                                    0.25D,
-                                    2.0D,
-                                    2.0D,
-                                    0.50D
-                            ))
-                            .apothicUtility(new ApothicUtilityProperties(
-                                    0.25D,
-                                    0.25D,
-                                    0.10D
-                            ))
+                            .attributes(new AttributeProperties(Map.ofEntries(
+                                    Map.entry(ResourceLocation.parse("minecraft:block_break_speed"),
+                                            new AttributeModifierProperties(0.50D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE)),
+                                    Map.entry(ResourceLocation.parse("minecraft:block_interaction_range"),
+                                            new AttributeModifierProperties(1.0D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("minecraft:burning_time"),
+                                            new AttributeModifierProperties(0.50D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE)),
+                                    Map.entry(ResourceLocation.parse("minecraft:luck"),
+                                            new AttributeModifierProperties(2.0D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("minecraft:mining_efficiency"),
+                                            new AttributeModifierProperties(1.0D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("minecraft:submerged_mining_speed"),
+                                            new AttributeModifierProperties(0.50D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE)),
+                                    Map.entry(ResourceLocation.parse("minecraft:movement_efficiency"),
+                                            new AttributeModifierProperties(0.25D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("minecraft:water_movement_efficiency"),
+                                            new AttributeModifierProperties(0.25D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("minecraft:oxygen_bonus"),
+                                            new AttributeModifierProperties(2.0D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("minecraft:safe_fall_distance"),
+                                            new AttributeModifierProperties(2.0D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("minecraft:step_height"),
+                                            new AttributeModifierProperties(0.50D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:experience_gained"),
+                                            new AttributeModifierProperties(0.25D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:healing_received"),
+                                            new AttributeModifierProperties(0.25D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)),
+                                    Map.entry(ResourceLocation.parse("apothic_attributes:dodge_chance"),
+                                            new AttributeModifierProperties(0.10D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE))
+                            )))
                             .build()
     );
 
@@ -445,7 +481,10 @@ public class ModModules {
                                     new ModuleSize(1, 2)
                             )
                             .energy(new EnergyProperties(5))
-                            .health(new HealthProperties(4.0D))
+                            .attributes(new AttributeProperties(Map.of(
+                                    ResourceLocation.parse("minecraft:max_health"),
+                                    new AttributeModifierProperties(4.0D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE)
+                            )))
                             .build()
     );
 
@@ -537,27 +576,6 @@ public class ModModules {
                             .build()
     );
 
-
-    public static final EquipmentEntry<
-            ModuleDefinition,
-            ModuleItem
-            > TEST_DAMAGE_CHANCE = REGISTRY.register(
-            "test_damage_chance",
-            new EquipmentProperties(
-                    EquipmentTier.BASIC,
-                    Rarity.EPIC
-            ),
-            (id, properties) ->
-                    ModuleDefinition.builder(
-                                    id,
-                                    properties,
-                                    ModuleCategory.DEFENSE,
-                                    new ModuleSize(2, 2)
-                            )
-                            .energy(new EnergyProperties(10, 1))
-                            .damageChanceProtection(new DamageChanceProtectionProperties(0.30D))
-                            .build()
-    );
 
     public static final EquipmentEntry<
             ModuleDefinition,

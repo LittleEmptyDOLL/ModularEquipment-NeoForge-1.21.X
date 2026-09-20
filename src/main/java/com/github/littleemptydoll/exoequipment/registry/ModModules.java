@@ -600,7 +600,6 @@ public class ModModules {
                             .build()
     );
 
-
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem

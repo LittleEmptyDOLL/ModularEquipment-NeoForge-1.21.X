@@ -25,6 +25,10 @@ public record BodyDamageProtectionProperties(
                     ).apply(instance, BodyDamageProtectionProperties::new)
             );
 
+    public BodyDamageProtectionProperties(double chance, double damageReduction) {
+        this(chance, damageReduction, Set.of());
+    }
+
     public BodyDamageProtectionProperties {
         bodyParts = Set.copyOf(bodyParts);
 

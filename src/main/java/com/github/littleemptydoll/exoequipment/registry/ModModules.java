@@ -634,4 +634,28 @@ public class ModModules {
         );
     }
 
+
+    public static EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > registerLsoTestPainkiller() {
+        return REGISTRY.register(
+                "test_lso_painkiller",
+                new EquipmentProperties(
+                        EquipmentTier.BASIC,
+                        Rarity.EPIC
+                ),
+                (id, properties) ->
+                        ModuleDefinition.builder(
+                                        id,
+                                        properties,
+                                        ModuleCategory.SURVIVAL,
+                                        new ModuleSize(2, 2)
+                                )
+                                .energy(new EnergyProperties(5))
+                                .painkiller(new PainkillerProperties())
+                                .build()
+        );
+    }
+
 }

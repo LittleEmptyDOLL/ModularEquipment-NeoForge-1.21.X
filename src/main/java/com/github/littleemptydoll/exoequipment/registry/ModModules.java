@@ -425,6 +425,80 @@ public class ModModules {
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
+            > TEST_CONDITIONAL_ATTRIBUTES = REGISTRY.register(
+            "test_conditional_attributes",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.UTILITY,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(5))
+                            .conditionalAttributes(new ConditionalAttributeProperties(
+                                    java.util.List.of(
+                                            new AttributeCondition(
+                                                    AttributeCondition.Type.SPRINTING,
+                                                    Optional.empty()
+                                            ),
+                                            new AttributeCondition(
+                                                    AttributeCondition.Type.IN_WATER,
+                                                    Optional.empty()
+                                            )
+                                    ),
+                                    new AttributeProperties(Map.of(
+                                            ResourceLocation.parse("minecraft:generic.movement_speed"),
+                                            new AttributeModifierProperties(
+                                                    0.15D,
+                                                    net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+                                            )
+                                    ))
+                            ))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > TEST_CONDITIONAL_HEALTH = REGISTRY.register(
+            "test_conditional_health",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.SURVIVAL,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(5))
+                            .conditionalAttributes(new ConditionalAttributeProperties(
+                                    java.util.List.of(
+                                            new AttributeCondition(
+                                                    AttributeCondition.Type.HEALTH_BELOW,
+                                                    Optional.of(0.30D)
+                                            )
+                                    ),
+                                    new AttributeProperties(Map.of(
+                                            ResourceLocation.parse("minecraft:generic.attack_damage"),
+                                            new AttributeModifierProperties(
+                                                    4.0D,
+                                                    net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE
+                                            )
+                                    ))
+                            ))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
             > TEST_PICKUP_MAGNET = REGISTRY.register(
             "test_pickup_magnet",
             new EquipmentProperties(

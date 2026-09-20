@@ -1,7 +1,6 @@
 package com.github.littleemptydoll.exoequipment.event;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.module.EmergencyShieldOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
@@ -41,14 +40,6 @@ public final class EmergencyShieldEvents {
 
         ItemStack stack = exoskeletonStack.get();
         var data = ExoskeletonItem.getData(stack);
-
-        ExoskeletonRuntimeState runtime =
-                stack.get(ModDataComponents.EXOSKELETON_RUNTIME.get());
-
-        if (runtime == null) {
-            runtime = ExoskeletonRuntimeState.empty();
-        }
-
         var updatedData = EmergencyShieldOperations.tickCooldowns(data);
 
         if (updatedData != data) {

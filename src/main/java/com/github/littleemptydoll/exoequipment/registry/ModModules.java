@@ -217,6 +217,54 @@ public class ModModules {
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
+            > TEST_EMERGENCY_SHIELD_HIGH = REGISTRY.register(
+            "test_emergency_shield_high",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.DEFENSE,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(5, 1))
+                            .emergencyShield(new EmergencyShieldProperties(
+                                    1.0D,
+                                    240
+                            ))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > TEST_EMERGENCY_SHIELD_LOW = REGISTRY.register(
+            "test_emergency_shield_low",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.DEFENSE,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(5, 1))
+                            .emergencyShield(new EmergencyShieldProperties(
+                                    0.5D,
+                                    120
+                            ))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
             > TEST_STATUS_PROTECTION = REGISTRY.register(
             "test_status_protection",
             new EquipmentProperties(

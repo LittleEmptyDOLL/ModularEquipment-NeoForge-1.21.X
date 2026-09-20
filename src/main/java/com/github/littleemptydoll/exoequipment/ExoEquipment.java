@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment;
 
 import com.github.littleemptydoll.exoequipment.compat.lso.LsoIntegration;
+import com.github.littleemptydoll.exoequipment.compat.apothicattributes.ApothicAttributesIntegration;
 import com.github.littleemptydoll.exoequipment.network.ModNetworking;
 import com.github.littleemptydoll.exoequipment.registry.*;
 import net.neoforged.bus.api.IEventBus;
@@ -25,6 +26,10 @@ public class ExoEquipment {
 
         if (ModList.get().isLoaded("legendarysurvivaloverhaul")) {
             LsoIntegration.register(eventBus);
+        }
+
+        if (ModList.get().isLoaded("apothic_attributes")) {
+            ApothicAttributesIntegration.register(eventBus);
         }
 
         ModMatrices.MATRICES.register(eventBus);

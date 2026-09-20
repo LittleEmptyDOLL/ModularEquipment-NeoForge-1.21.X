@@ -16,8 +16,11 @@ import java.util.Set;
 import java.util.UUID;
 
 public final class LsoTemperatureEvents {
-    private static final UUID MODIFIER_UUID = UUID.nameUUIDFromBytes(
-            "exoequipment:lso_temperature".getBytes(StandardCharsets.UTF_8)
+    private static final UUID TEMPERATURE_MODIFIER_UUID = UUID.nameUUIDFromBytes(
+            "exoequipment:lso_temperature_modifier".getBytes(StandardCharsets.UTF_8)
+    );
+    private static final UUID EXOSKELETON_TEMPERATURE_UUID = UUID.nameUUIDFromBytes(
+            "exoequipment:exoskeleton_temperature".getBytes(StandardCharsets.UTF_8)
     );
 
     private LsoTemperatureEvents() {
@@ -42,6 +45,11 @@ public final class LsoTemperatureEvents {
 
         if (exoskeletonStack.isEmpty()) {
             applyModifiers(player, 0.0D, 0.0D, 0.0D, 0.0D);
+            TemperatureUtil.addTemperatureModifier(
+                    player,
+                    0.0D,
+                    EXOSKELETON_TEMPERATURE_UUID
+            );
             return;
         }
 
@@ -68,6 +76,20 @@ public final class LsoTemperatureEvents {
                 modifiers.coldResistance(),
                 modifiers.thermalResistance()
         );
+
+        double resistance = LsoTemperatureOperations
+                .calculateTemperatureImpactResistance(data, poweredModules);
+        double temperatureImpact =
+                (data.temperature()
+                        - com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonTemperatureState.INITIAL_TEMPERATURE)
+                        * com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonTemperatureState.TEMPERATURE_IMPACT_PER_DEGREE
+                        * (1.0D - resistance);
+
+        TemperatureUtil.addTemperatureModifier(
+                player,
+                temperatureImpact,
+                EXOSKELETON_TEMPERATURE_UUID
+        );
     }
 
     private static void applyModifiers(
@@ -80,7 +102,7 @@ public final class LsoTemperatureEvents {
         TemperatureUtil.addTemperatureModifier(
                 player,
                 temperature,
-                MODIFIER_UUID
+                TEMPERATURE_MODIFIER_UUID
         );
         TemperatureUtil.addHeatResistanceModifier(
                 player,

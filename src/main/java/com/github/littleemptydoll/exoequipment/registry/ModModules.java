@@ -140,6 +140,31 @@ public class ModModules {
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
+    > TEST_BLINK = REGISTRY.register(
+            "test_blink",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.MOBILITY,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(5))
+                            .blink(new BlinkProperties(
+                                    12.0D,
+                                    100,
+                                    40
+                            ))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
     > TEST_CONSUMER = REGISTRY.register(
             "test_consumer",
             new EquipmentProperties(

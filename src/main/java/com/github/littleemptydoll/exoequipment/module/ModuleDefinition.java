@@ -31,6 +31,7 @@ public record ModuleDefinition(
         Optional<RevivalProperties> revival,
         Optional<RegenerationProperties> regeneration,
         Optional<FallProtectionProperties> fallProtection,
+        Optional<CombatProperties> combat,
         Optional<DamageChanceProtectionProperties> damageChanceProtection,
         Optional<BodyDamageProtectionProperties> bodyDamageProtection,
         Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
@@ -56,6 +57,9 @@ public record ModuleDefinition(
                                     ModuleDefinition::optionalProperties,
                                     ModuleOptionalProperties.CODEC
                             ),
+                            CombatProperties.CODEC
+                                    .optionalFieldOf("combat")
+                                    .forGetter(ModuleDefinition::combat),
                             TemperatureModifierProperties.CODEC
                                     .optionalFieldOf("temperature_modifier")
                                     .forGetter(ModuleDefinition::temperatureModifier),
@@ -110,6 +114,7 @@ public record ModuleDefinition(
             ModuleCategory category,
             ModuleSize size,
             ModuleOptionalProperties optional,
+            Optional<CombatProperties> combat,
             Optional<TemperatureModifierProperties> temperatureModifier,
             Optional<TemperatureImpactProperties> temperatureImpact,
             Optional<DamageChanceProtectionProperties> damageChanceProtection,
@@ -141,6 +146,7 @@ public record ModuleDefinition(
                 optional.revival(),
                 optional.regeneration(),
                 optional.fallProtection(),
+                combat,
                 damageChanceProtection,
                 bodyDamageProtection,
                 bodyDamageRegeneration,
@@ -182,6 +188,7 @@ public record ModuleDefinition(
         private RevivalProperties revival;
         private RegenerationProperties regeneration;
         private FallProtectionProperties fallProtection;
+        private CombatProperties combat;
         private DamageChanceProtectionProperties damageChanceProtection;
         private BodyDamageProtectionProperties bodyDamageProtection;
         private BodyDamageRegenerationProperties bodyDamageRegeneration;
@@ -290,6 +297,11 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder combat(CombatProperties combat) {
+            this.combat = combat;
+            return this;
+        }
+
         public Builder damageChanceProtection(DamageChanceProtectionProperties damageChanceProtection) {
             this.damageChanceProtection = damageChanceProtection;
             return this;
@@ -339,6 +351,7 @@ public record ModuleDefinition(
                     Optional.ofNullable(revival),
                     Optional.ofNullable(regeneration),
                     Optional.ofNullable(fallProtection),
+                    Optional.ofNullable(combat),
                     Optional.ofNullable(damageChanceProtection),
                     Optional.ofNullable(bodyDamageProtection),
                     Optional.ofNullable(bodyDamageRegeneration),

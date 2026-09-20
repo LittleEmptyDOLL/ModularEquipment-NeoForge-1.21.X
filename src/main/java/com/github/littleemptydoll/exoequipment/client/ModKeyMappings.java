@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.client;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.network.BlinkPayload;
 import com.github.littleemptydoll.exoequipment.network.CloakingPayload;
 import com.github.littleemptydoll.exoequipment.network.OpenExoskeletonPayload;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -23,6 +24,13 @@ public final class ModKeyMappings {
             "key.categories.exoequipment"
     );
 
+    public static final KeyMapping ACTIVATE_BLINK = new KeyMapping(
+            "key.exoequipment.activate_blink",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_B,
+            "key.categories.exoequipment"
+    );
+
     public static final KeyMapping OPEN_EXOSKELETON = new KeyMapping(
             "key.exoequipment.open_exoskeleton",
             InputConstants.Type.KEYSYM,
@@ -34,6 +42,7 @@ public final class ModKeyMappings {
     public static void register(RegisterKeyMappingsEvent event) {
         event.register(OPEN_EXOSKELETON);
         event.register(ACTIVATE_CLOAKING);
+        event.register(ACTIVATE_BLINK);
     }
 
     private ModKeyMappings() {}
@@ -50,6 +59,10 @@ final class ModKeyMappingHandler {
 
         while (ModKeyMappings.ACTIVATE_CLOAKING.consumeClick()) {
             PacketDistributor.sendToServer(new CloakingPayload());
+        }
+
+        while (ModKeyMappings.ACTIVATE_BLINK.consumeClick()) {
+            PacketDistributor.sendToServer(new BlinkPayload());
         }
     }
 

@@ -534,6 +534,34 @@ public class ModModules {
     public static EquipmentEntry<
             ModuleDefinition,
             ModuleItem
+            > registerLsoTestTemperatureModifier() {
+        return REGISTRY.register(
+                "test_lso_temperature_modifier",
+                new EquipmentProperties(
+                        EquipmentTier.BASIC,
+                        Rarity.EPIC
+                ),
+                (id, properties) ->
+                        ModuleDefinition.builder(
+                                        id,
+                                        properties,
+                                        ModuleCategory.THERMAL,
+                                        new ModuleSize(2, 2)
+                                )
+                                .energy(new EnergyProperties(5))
+                                .temperatureModifier(new TemperatureModifierProperties(
+                                        10.0D,
+                                        0.25D,
+                                        0.25D,
+                                        0.25D
+                                ))
+                                .build()
+        );
+    }
+
+    public static EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
             > registerLsoTestThirst() {
         return REGISTRY.register(
                 "test_lso_thirst",

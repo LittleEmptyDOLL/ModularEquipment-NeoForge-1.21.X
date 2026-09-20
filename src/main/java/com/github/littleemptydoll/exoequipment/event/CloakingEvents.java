@@ -1,0 +1,92 @@
+package com.github.littleemptydoll.exoequipment.event;
+
+import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
+import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
+import com.github.littleemptydoll.exoequipment.module.CloakingOperations;
+import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
+import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import top.theillusivec4.curios.api.CuriosApi;
+
+import java.util.Optional;
+
+@EventBusSubscriber(modid = ExoEquipment.MODID)
+public final class CloakingEvents {
+    private CloakingEvents() {}
+
+    @SubscribeEvent
+    public static void onAttack(AttackEntityEvent event) {
+        Player player = event.getEntity();
+        if (player.level().isClientSide() || !player.isInvisible()) {
+            return;
+        }
+
+        deactivate(player);
+    }
+
+    @SubscribeEvent
+    public static void onDamage(LivingIncomingDamageEvent event) {
+        if (!(event.getEntity() instanceof Player player)
+                || player.level().isClientSide()
+                || !player.isInvisible()
+                || event.getAmount() <= 0.0F) {
+            return;
+        }
+
+        deactivate(player);
+    }
+
+    private static void deactivate(Player player) {
+        findExoskeleton(player).ifPresent(stack -> {
+            ExoskeletonData data = ExoskeletonItem.getData(stack);
+
+            for (InstalledModuleReference reference : activeCloakingModules(data)) {
+                data = CloakingOperations.deactivate(data, reference);
+            }
+
+            stack.set(
+                    ModDataComponents.EXOSKELETON_DATA.get(),
+                    data
+            );
+            player.setInvisible(false);
+        });
+    }
+
+    private static java.util.List<InstalledModuleReference> activeCloakingModules(
+            ExoskeletonData data
+    ) {
+        java.util.List<InstalledModuleReference> references = new java.util.ArrayList<>();
+
+        for (int slot = 0; slot < data.matrices().size(); slot++) {
+            var matrix = data.matrices().get(slot).matrix().orElse(null);
+            if (matrix == null) {
+                continue;
+            }
+
+            for (int index = 0; index < matrix.modules().size(); index++) {
+                var module = matrix.modules().get(index);
+                if (module.active()
+                        && com.github.littleemptydoll.exoequipment.registry.ModModules
+                        .getDefinition(module.id()).cloaking().isPresent()) {
+                    references.add(new InstalledModuleReference(slot, index));
+                }
+            }
+        }
+
+        return references;
+    }
+
+    private static Optional<ItemStack> findExoskeleton(Player player) {
+        return CuriosApi.getCuriosInventory(player)
+                .flatMap(curios -> curios.findFirstCurio(
+                        stack -> stack.getItem() instanceof ExoskeletonItem
+                ))
+                .map(result -> result.stack());
+    }
+}

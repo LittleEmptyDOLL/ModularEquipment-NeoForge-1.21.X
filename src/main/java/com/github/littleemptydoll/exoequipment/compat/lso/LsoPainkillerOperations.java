@@ -2,10 +2,10 @@ package com.github.littleemptydoll.exoequipment.compat.lso;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
-import com.github.littleemptydoll.exoequipment.exoskeleton.InstalledModule;
-import com.github.littleemptydoll.exoequipment.exoskeleton.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
+import com.github.littleemptydoll.exoequipment.module.InstalledModule;
+import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
 
 import java.util.Set;

@@ -24,6 +24,34 @@ public final class ModNetworking {
         PayloadRegistrar registrar = event.registrar("1");
 
         registrar.playToServer(
+                CloakingPayload.TYPE,
+                CloakingPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (!(context.player() instanceof ServerPlayer serverPlayer)) {
+                        return;
+                    }
+
+                    ExoskeletonMenuProvider.findBodyExoskeleton(serverPlayer)
+                            .ifPresent(exoskeleton -> {
+                                var result = com.github.littleemptydoll.exoequipment.module.CloakingOperations
+                                        .activate(
+                                                com.github.littleemptydoll.exoequipment.item.ExoskeletonItem.getData(exoskeleton),
+                                                java.util.Set.of()
+                                        );
+
+                                if (result.activated()) {
+                                    exoskeleton.set(
+                                            com.github.littleemptydoll.exoequipment.registry.ModDataComponents
+                                                    .EXOSKELETON_DATA.get(),
+                                            result.data()
+                                    );
+                                    serverPlayer.setInvisible(true);
+                                }
+                            });
+                })
+        );
+
+        registrar.playToServer(
                 OpenExoskeletonPayload.TYPE,
                 OpenExoskeletonPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {

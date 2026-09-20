@@ -498,11 +498,7 @@ public class ModModules {
                             .energy(new EnergyProperties(10, 1))
                             .bodyDamageProtection(new BodyDamageProtectionProperties(
                                     0.30D,
-                                    0.50D,
-                                    java.util.Set.of(
-                                            BodyPart.HEAD,
-                                            BodyPart.CHEST
-                                    )
+                                    0.50D
                             ))
                             .build()
     );

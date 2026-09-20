@@ -482,27 +482,6 @@ public class ModModules {
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
-            > TEST_BODY_DAMAGE_REGENERATION = REGISTRY.register(
-            "test_body_damage_regeneration",
-            new EquipmentProperties(
-                    EquipmentTier.BASIC,
-                    Rarity.EPIC
-            ),
-            (id, properties) ->
-                    ModuleDefinition.builder(
-                                    id,
-                                    properties,
-                                    ModuleCategory.SURVIVAL,
-                                    new ModuleSize(2, 2)
-                            )
-                            .energy(new EnergyProperties(5))
-                            .bodyDamageRegeneration(new BodyDamageRegenerationProperties(1.0D))
-                            .build()
-    );
-
-    public static final EquipmentEntry<
-            ModuleDefinition,
-            ModuleItem
             > TEST_BODY_DAMAGE_PROTECTION = REGISTRY.register(
             "test_body_damage_protection",
             new EquipmentProperties(
@@ -527,6 +506,29 @@ public class ModModules {
                             ))
                             .build()
     );
+
+    public static EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > registerLsoTestBodyDamageRegeneration() {
+        return REGISTRY.register(
+                "test_body_damage_regeneration",
+                new EquipmentProperties(
+                        EquipmentTier.BASIC,
+                        Rarity.EPIC
+                ),
+                (id, properties) ->
+                        ModuleDefinition.builder(
+                                        id,
+                                        properties,
+                                        ModuleCategory.SURVIVAL,
+                                        new ModuleSize(2, 2)
+                                )
+                                .energy(new EnergyProperties(5))
+                                .bodyDamageRegeneration(new BodyDamageRegenerationProperties(1.0D))
+                                .build()
+        );
+    }
 
     public static EquipmentEntry<
             ModuleDefinition,

@@ -22,23 +22,10 @@ import java.util.Optional;
 
 @EventBusSubscriber(modid = ExoEquipment.MODID)
 public final class CombatEvents {
-    private static final ResourceLocation ATTACK_DAMAGE_ID =
-            ResourceLocation.fromNamespaceAndPath(
-                    ExoEquipment.MODID,
-                    "combat_attack_damage"
-            );
-
-    private static final ResourceLocation ATTACK_SPEED_ID =
-            ResourceLocation.fromNamespaceAndPath(
-                    ExoEquipment.MODID,
-                    "combat_attack_speed"
-            );
-
-    private static final ResourceLocation ENTITY_INTERACTION_RANGE_ID =
-            ResourceLocation.fromNamespaceAndPath(
-                    ExoEquipment.MODID,
-                    "combat_entity_interaction_range"
-            );
+    private static final ResourceLocation ATTACK_DAMAGE_ID = id("combat_attack_damage");
+    private static final ResourceLocation ATTACK_SPEED_ID = id("combat_attack_speed");
+    private static final ResourceLocation ATTACK_KNOCKBACK_ID = id("combat_attack_knockback");
+    private static final ResourceLocation ENTITY_INTERACTION_RANGE_ID = id("combat_entity_interaction_range");
 
     private CombatEvents() {}
 
@@ -46,117 +33,60 @@ public final class CombatEvents {
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
 
-        updateAttribute(
-                player,
-                Attributes.ATTACK_DAMAGE,
-                ATTACK_DAMAGE_ID,
-                AttributeModifier.Operation.ADD_VALUE,
-                0.0D
-        );
-
-        updateAttribute(
-                player,
-                Attributes.ATTACK_SPEED,
-                ATTACK_SPEED_ID,
-                AttributeModifier.Operation.ADD_VALUE,
-                0.0D
-        );
-
-        updateAttribute(
-                player,
-                Attributes.ENTITY_INTERACTION_RANGE,
-                ENTITY_INTERACTION_RANGE_ID,
-                AttributeModifier.Operation.ADD_VALUE,
-                0.0D
-        );
+        updateAttribute(player, Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE_ID, 0.0D);
+        updateAttribute(player, Attributes.ATTACK_SPEED, ATTACK_SPEED_ID, 0.0D);
+        updateAttribute(player, Attributes.ATTACK_KNOCKBACK, ATTACK_KNOCKBACK_ID, 0.0D);
+        updateAttribute(player, Attributes.ENTITY_INTERACTION_RANGE, ENTITY_INTERACTION_RANGE_ID, 0.0D);
 
         Optional<ItemStack> exoskeletonStack = findExoskeleton(player);
-
-        if (exoskeletonStack.isEmpty()) {
-            return;
-        }
+        if (exoskeletonStack.isEmpty()) return;
 
         ItemStack stack = exoskeletonStack.get();
         ExoskeletonData data = ExoskeletonItem.getData(stack);
 
-        ExoskeletonRuntimeState runtime = stack.get(
-                ModDataComponents.EXOSKELETON_RUNTIME.get()
-        );
-
-        if (runtime == null) {
-            runtime = ExoskeletonRuntimeState.empty();
-        }
+        ExoskeletonRuntimeState runtime = stack.get(ModDataComponents.EXOSKELETON_RUNTIME.get());
+        if (runtime == null) runtime = ExoskeletonRuntimeState.empty();
 
         CombatOperations.CombatValues values =
-                CombatOperations.calculate(
-                        data,
-                        runtime.poweredModules()
-                );
+                CombatOperations.calculate(data, runtime.poweredModules());
 
-        updateAttribute(
-                player,
-                Attributes.ATTACK_DAMAGE,
-                ATTACK_DAMAGE_ID,
-                AttributeModifier.Operation.ADD_VALUE,
-                values.attackDamage()
-        );
-
-        updateAttribute(
-                player,
-                Attributes.ATTACK_SPEED,
-                ATTACK_SPEED_ID,
-                AttributeModifier.Operation.ADD_VALUE,
-                values.attackSpeed()
-        );
-
-        updateAttribute(
-                player,
-                Attributes.ENTITY_INTERACTION_RANGE,
-                ENTITY_INTERACTION_RANGE_ID,
-                AttributeModifier.Operation.ADD_VALUE,
-                values.entityInteractionRange()
-        );
+        updateAttribute(player, Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE_ID, values.attackDamage());
+        updateAttribute(player, Attributes.ATTACK_SPEED, ATTACK_SPEED_ID, values.attackSpeed());
+        updateAttribute(player, Attributes.ATTACK_KNOCKBACK, ATTACK_KNOCKBACK_ID, values.attackKnockback());
+        updateAttribute(player, Attributes.ENTITY_INTERACTION_RANGE, ENTITY_INTERACTION_RANGE_ID, values.entityInteractionRange());
     }
 
     private static void updateAttribute(
             Player player,
             net.minecraft.core.Holder<Attribute> attribute,
             ResourceLocation id,
-            AttributeModifier.Operation operation,
             double amount
     ) {
         AttributeInstance instance = player.getAttribute(attribute);
-
-        if (instance == null) {
-            return;
-        }
+        if (instance == null) return;
 
         AttributeModifier existing = instance.getModifier(id);
+        if (existing != null && existing.amount() == amount
+                && existing.operation() == AttributeModifier.Operation.ADD_VALUE) return;
 
-        if (existing != null
-                && existing.amount() == amount
-                && existing.operation() == operation) {
-            return;
-        }
-
-        if (existing != null) {
-            instance.removeModifier(id);
-        }
+        if (existing != null) instance.removeModifier(id);
 
         if (amount != 0.0D) {
             instance.addOrUpdateTransientModifier(
-                    new AttributeModifier(id, amount, operation)
+                    new AttributeModifier(id, amount, AttributeModifier.Operation.ADD_VALUE)
             );
         }
     }
 
+    private static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(ExoEquipment.MODID, path);
+    }
+
     private static Optional<ItemStack> findExoskeleton(Player player) {
         return CuriosApi.getCuriosInventory(player)
-                .flatMap(curios ->
-                        curios.findFirstCurio(
-                                stack -> stack.getItem() instanceof ExoskeletonItem
-                        )
-                )
+                .flatMap(curios -> curios.findFirstCurio(
+                        stack -> stack.getItem() instanceof ExoskeletonItem
+                ))
                 .map(result -> result.stack());
     }
 }

@@ -101,26 +101,36 @@ public final class BlinkOperations {
                 player
         ));
 
-        Vec3 destination = hit.getType() == HitResult.Type.BLOCK
-                ? hit.getLocation().subtract(direction.scale(COLLISION_EPSILON))
-                : requested;
+        double travelled = hit.getType() == HitResult.Type.BLOCK
+                ? start.distanceTo(hit.getLocation())
+                : distance;
 
-        Vec3 displacement = destination.subtract(start);
-        double travelled = displacement.length();
-        if (travelled <= 0.0D) {
+        travelled = Math.max(0.0D, travelled - COLLISION_EPSILON);
+        if (travelled <= COLLISION_EPSILON) {
             return null;
         }
 
-        // The ray starts at the player's eyes, while teleportTo expects the
-        // player's feet position. Apply the same displacement to the current
-        // entity position and search backwards until the full bounding box fits.
-        for (double offset = 0.0D; offset < travelled; offset += SEARCH_STEP) {
-            Vec3 candidate = player.position()
-                    .add(displacement)
-                    .subtract(direction.scale(offset));
+        // The ray starts at the player's eyes, but teleportTo uses the
+        // player's feet position. Apply only the horizontal/vertical
+        // displacement along the look direction to the current entity
+        // position, rather than using the eye position as the destination.
+        Vec3 destination = player.position().add(direction.scale(travelled));
+
+        // Start at the requested destination and move backwards until the
+        // entire player bounding box fits. Always test the final point so
+        // short-distance blinks are not lost because SEARCH_STEP is larger
+        // than the remaining distance.
+        for (double offset = 0.0D; offset <= travelled; offset += SEARCH_STEP) {
+            double actualOffset = Math.min(offset, travelled);
+            Vec3 candidate = destination.subtract(direction.scale(actualOffset));
+
             if (isSafe(player, candidate)
                     && candidate.distanceTo(player.position()) > COLLISION_EPSILON) {
                 return candidate;
+            }
+
+            if (actualOffset >= travelled) {
+                break;
             }
         }
 

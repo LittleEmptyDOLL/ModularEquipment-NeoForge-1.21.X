@@ -14,6 +14,7 @@ public record SystemStatus(int severity, int flags) {
     public static final int FLAG_OVERSIZED_MODULE = 1 << 2;
     public static final int FLAG_FRAME_MISSING = 1 << 3;
     public static final int FLAG_CONTROLLER_MISSING = 1 << 4;
+    public static final int FLAG_ENERGY_THROUGHPUT = 1 << 5;
 
     public static SystemStatus calculate(ExoskeletonData data) {
         EnergyState energy = EnergyState.calculate(data);
@@ -34,7 +35,7 @@ public record SystemStatus(int severity, int flags) {
             severity = maxSeverity(severity, YELLOW);
         }
 
-        //Энерго система имеет последнее слово
+        // Энерго система имеет последнее слово
         if (energy.maxInput() == 0 && energy.maxOutput() == 0) {
             severity = GRAY;
         } else if (energy.generation() == 0
@@ -42,9 +43,17 @@ public record SystemStatus(int severity, int flags) {
                 && energy.consumption() > 0) {
             flags |= FLAG_ENERGY_CRITICAL;
             severity = RED;
-        } else if (energy.netGeneration() < 0) {
-            flags |= FLAG_ENERGY_WARNING;
-            severity = YELLOW;
+        } else {
+            if (energy.consumption() > energy.maxOutput()
+                    || energy.consumption() > energy.maxInput() + energy.generation()) {
+                flags |= FLAG_ENERGY_THROUGHPUT;
+                severity = maxSeverity(severity, YELLOW);
+            }
+
+            if (energy.netGeneration() < 0) {
+                flags |= FLAG_ENERGY_WARNING;
+                severity = maxSeverity(severity, YELLOW);
+            }
         }
 
         return new SystemStatus(severity, flags);

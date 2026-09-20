@@ -30,6 +30,7 @@ public record ModuleDefinition(
         Optional<RegenerationProperties> regeneration,
         Optional<FallProtectionProperties> fallProtection,
         Optional<AttributeProperties> attributes,
+        Optional<PickupMagnetProperties> pickupMagnet,
         Optional<BodyDamageProtectionProperties> bodyDamageProtection,
         Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
         Optional<ThirstProperties> thirst,
@@ -57,6 +58,9 @@ public record ModuleDefinition(
                             AttributeProperties.CODEC
                                     .optionalFieldOf("attributes")
                                     .forGetter(ModuleDefinition::attributes),
+                            PickupMagnetProperties.CODEC
+                                    .optionalFieldOf("pickup_magnet")
+                                    .forGetter(ModuleDefinition::pickupMagnet),
                             TemperatureModifierProperties.CODEC
                                     .optionalFieldOf("temperature_modifier")
                                     .forGetter(ModuleDefinition::temperatureModifier),
@@ -107,6 +111,7 @@ public record ModuleDefinition(
             ModuleSize size,
             ModuleOptionalProperties optional,
             Optional<AttributeProperties> attributes,
+            Optional<PickupMagnetProperties> pickupMagnet,
             Optional<TemperatureModifierProperties> temperatureModifier,
             Optional<TemperatureImpactProperties> temperatureImpact,
             Optional<BodyDamageProtectionProperties> bodyDamageProtection,
@@ -136,6 +141,7 @@ public record ModuleDefinition(
                 optional.regeneration(),
                 optional.fallProtection(),
                 attributes,
+                pickupMagnet,
                 bodyDamageProtection,
                 bodyDamageRegeneration,
                 thirst,
@@ -175,6 +181,7 @@ public record ModuleDefinition(
         private RegenerationProperties regeneration;
         private FallProtectionProperties fallProtection;
         private AttributeProperties attributes;
+        private PickupMagnetProperties pickupMagnet;
         private BodyDamageProtectionProperties bodyDamageProtection;
         private BodyDamageRegenerationProperties bodyDamageRegeneration;
         private ThirstProperties thirst;
@@ -277,6 +284,11 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder pickupMagnet(PickupMagnetProperties pickupMagnet) {
+            this.pickupMagnet = pickupMagnet;
+            return this;
+        }
+
         public Builder bodyDamageProtection(BodyDamageProtectionProperties bodyDamageProtection) {
             this.bodyDamageProtection = bodyDamageProtection;
             return this;
@@ -320,6 +332,7 @@ public record ModuleDefinition(
                     Optional.ofNullable(regeneration),
                     Optional.ofNullable(fallProtection),
                     Optional.ofNullable(attributes),
+                    Optional.ofNullable(pickupMagnet),
                     Optional.ofNullable(bodyDamageProtection),
                     Optional.ofNullable(bodyDamageRegeneration),
                     Optional.ofNullable(thirst),

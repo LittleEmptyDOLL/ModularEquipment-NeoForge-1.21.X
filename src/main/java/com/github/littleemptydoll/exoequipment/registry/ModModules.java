@@ -115,6 +115,31 @@ public class ModModules {
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
+    > TEST_CLOAKING = REGISTRY.register(
+            "test_cloaking",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.UTILITY,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(20))
+                            .cloaking(new CloakingProperties(
+                                    200,
+                                    30,
+                                    200
+                            ))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
     > TEST_CONSUMER = REGISTRY.register(
             "test_consumer",
             new EquipmentProperties(

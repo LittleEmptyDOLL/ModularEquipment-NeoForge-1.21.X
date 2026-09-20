@@ -7,7 +7,7 @@ import com.github.littleemptydoll.exoequipment.module.PickupMagnetOperations;
 import com.github.littleemptydoll.exoequipment.module.PickupMagnetProperties;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.item.ExperienceOrb;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;

@@ -9,5 +9,6 @@ public final class ApothicAttributesIntegration {
 
     public static void register(IEventBus modEventBus) {
         NeoForge.EVENT_BUS.register(ApothicCombatEvents.class);
+        NeoForge.EVENT_BUS.register(ApothicUtilityEvents.class);
     }
 }

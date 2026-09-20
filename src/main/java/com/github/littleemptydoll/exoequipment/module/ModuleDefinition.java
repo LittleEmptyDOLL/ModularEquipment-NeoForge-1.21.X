@@ -18,6 +18,7 @@ public record ModuleDefinition(
         Optional<StorageProperties> storage,
         Optional<ThermalProperties> thermal,
         Optional<TemperatureProperties> temperature,
+        Optional<TemperatureModifierProperties> temperatureModifier,
         Optional<DamageReductionProperties> damageReduction,
         Optional<ShieldProperties> shield,
         Optional<StatusProtectionProperties> statusProtection,
@@ -53,6 +54,9 @@ public record ModuleDefinition(
                                     ModuleDefinition::optionalProperties,
                                     ModuleOptionalProperties.CODEC
                             ),
+                            TemperatureModifierProperties.CODEC
+                                    .optionalFieldOf("temperature_modifier")
+                                    .forGetter(ModuleDefinition::temperatureModifier),
                             DamageChanceProtectionProperties.CODEC
                                     .optionalFieldOf("damage_chance_protection")
                                     .forGetter(ModuleDefinition::damageChanceProtection),
@@ -98,6 +102,7 @@ public record ModuleDefinition(
             ModuleCategory category,
             ModuleSize size,
             ModuleOptionalProperties optional,
+            Optional<TemperatureModifierProperties> temperatureModifier,
             Optional<DamageChanceProtectionProperties> damageChanceProtection,
             Optional<BodyDamageProtectionProperties> bodyDamageProtection,
             Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
@@ -113,6 +118,7 @@ public record ModuleDefinition(
                 optional.storage(),
                 optional.thermal(),
                 optional.temperature(),
+                temperatureModifier,
                 optional.damageReduction(),
                 optional.shield(),
                 optional.statusProtection(),
@@ -151,6 +157,7 @@ public record ModuleDefinition(
         private StorageProperties storage;
         private ThermalProperties thermal;
         private TemperatureProperties temperature;
+        private TemperatureModifierProperties temperatureModifier;
         private DamageReductionProperties damageReduction;
         private ShieldProperties shield;
         private StatusProtectionProperties statusProtection;
@@ -201,6 +208,11 @@ public record ModuleDefinition(
 
         public Builder temperature(TemperatureProperties temperature) {
             this.temperature = temperature;
+            return this;
+        }
+
+        public Builder temperatureModifier(TemperatureModifierProperties temperatureModifier) {
+            this.temperatureModifier = temperatureModifier;
             return this;
         }
 
@@ -290,6 +302,7 @@ public record ModuleDefinition(
                     Optional.ofNullable(storage),
                     Optional.ofNullable(thermal),
                     Optional.ofNullable(temperature),
+                    Optional.ofNullable(temperatureModifier),
                     Optional.ofNullable(damageReduction),
                     Optional.ofNullable(shield),
                     Optional.ofNullable(statusProtection),

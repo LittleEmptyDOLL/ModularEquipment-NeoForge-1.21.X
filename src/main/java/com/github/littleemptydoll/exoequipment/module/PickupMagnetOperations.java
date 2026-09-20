@@ -14,7 +14,7 @@ import java.util.Set;
 
 public final class PickupMagnetOperations {
     private static final double MIN_ACCELERATION = 0.04D;
-    private static final double MAX_ACCELERATION = 0.35D;
+    private static final double MAX_ACCELERATION = 1.0D;
 
     private PickupMagnetOperations() {}
 

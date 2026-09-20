@@ -1,10 +1,8 @@
 package com.github.littleemptydoll.exoequipment.module;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import java.util.Locale;
 import java.util.Set;
 
 public record BodyDamageProtectionProperties(
@@ -12,25 +10,6 @@ public record BodyDamageProtectionProperties(
         double damageReduction,
         Set<BodyPart> bodyParts
 ) {
-    private static final Codec<BodyPart> BODY_PART_CODEC =
-            Codec.STRING.comapFlatMap(
-                    value -> {
-                        try {
-                            return DataResult.success(
-                                    BodyPart.valueOf(value.toUpperCase(Locale.ROOT))
-                            );
-                        } catch (IllegalArgumentException exception) {
-                            return DataResult.error(
-                                    () -> "Unknown body part: " + value
-                            );
-                        }
-                    },
-                    part -> part.name().toLowerCase(Locale.ROOT)
-            );
-
-    private static final Codec<Set<BodyPart>> BODY_PARTS_CODEC =
-            BODY_PART_CODEC.listOf().xmap(Set::copyOf, java.util.ArrayList::new);
-
     public static final Codec<BodyDamageProtectionProperties> CODEC =
             RecordCodecBuilder.create(instance ->
                     instance.group(
@@ -40,8 +19,8 @@ public record BodyDamageProtectionProperties(
                             Codec.DOUBLE
                                     .fieldOf("damage_reduction")
                                     .forGetter(BodyDamageProtectionProperties::damageReduction),
-                            BODY_PARTS_CODEC
-                                    .fieldOf("body_parts")
+                            BodyPart.SET_CODEC
+                                    .optionalFieldOf("body_parts", Set.of())
                                     .forGetter(BodyDamageProtectionProperties::bodyParts)
                     ).apply(instance, BodyDamageProtectionProperties::new)
             );
@@ -62,12 +41,6 @@ public record BodyDamageProtectionProperties(
                 || damageReduction > 1.0D) {
             throw new IllegalArgumentException(
                     "Body damage reduction must be between 0 and 1"
-            );
-        }
-
-        if (bodyParts.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Body damage protection must target at least one body part"
             );
         }
     }

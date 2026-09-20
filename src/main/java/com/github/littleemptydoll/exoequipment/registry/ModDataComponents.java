@@ -96,6 +96,12 @@ public final class ModDataComponents {
                     builder -> builder.persistent(com.mojang.serialization.Codec.INT)
             );
 
+    public static final Supplier<DataComponentType<Integer>> MODULE_EMERGENCY_SHIELD_COOLDOWN =
+            COMPONENTS.registerComponentType(
+                    "module_emergency_shield_cooldown",
+                    builder -> builder.persistent(com.mojang.serialization.Codec.INT)
+            );
+
     public static void register(net.neoforged.bus.api.IEventBus eventBus) {
         COMPONENTS.register(eventBus);
     }

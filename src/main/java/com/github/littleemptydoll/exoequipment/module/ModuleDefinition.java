@@ -38,7 +38,8 @@ public record ModuleDefinition(
         Optional<BodyDamageProtectionProperties> bodyDamageProtection,
         Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
         Optional<ThirstProperties> thirst,
-        Optional<PainkillerProperties> painkiller
+        Optional<PainkillerProperties> painkiller,
+        Optional<BlockScannerProperties> blockScanner
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -88,7 +89,10 @@ public record ModuleDefinition(
                                     .forGetter(ModuleDefinition::thirst),
                             PainkillerProperties.CODEC
                                     .optionalFieldOf("painkiller")
-                                    .forGetter(ModuleDefinition::painkiller)
+                                    .forGetter(ModuleDefinition::painkiller),
+                            BlockScannerProperties.CODEC
+                                    .optionalFieldOf("block_scanner")
+                                    .forGetter(ModuleDefinition::blockScanner)
                     ).apply(
                             instance,
                             ModuleDefinition::fromCodec
@@ -131,7 +135,8 @@ public record ModuleDefinition(
             Optional<BodyDamageProtectionProperties> bodyDamageProtection,
             Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
             Optional<ThirstProperties> thirst,
-            Optional<PainkillerProperties> painkiller
+            Optional<PainkillerProperties> painkiller,
+            Optional<BlockScannerProperties> blockScanner
     ) {
         return new ModuleDefinition(
                 id,
@@ -163,7 +168,8 @@ public record ModuleDefinition(
                 bodyDamageProtection,
                 bodyDamageRegeneration,
                 thirst,
-                painkiller
+                painkiller,
+                blockScanner
         );
     }
 
@@ -208,6 +214,7 @@ public record ModuleDefinition(
         private BodyDamageRegenerationProperties bodyDamageRegeneration;
         private ThirstProperties thirst;
         private PainkillerProperties painkiller;
+        private BlockScannerProperties blockScanner;
 
         private Builder(
                 ResourceLocation id,
@@ -351,6 +358,11 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder blockScanner(BlockScannerProperties blockScanner) {
+            this.blockScanner = blockScanner;
+            return this;
+        }
+
         public ModuleDefinition build() {
             return new ModuleDefinition(
                     id,
@@ -382,7 +394,8 @@ public record ModuleDefinition(
                     Optional.ofNullable(bodyDamageProtection),
                     Optional.ofNullable(bodyDamageRegeneration),
                     Optional.ofNullable(thirst),
-                    Optional.ofNullable(painkiller)
+                    Optional.ofNullable(painkiller),
+                    Optional.ofNullable(blockScanner)
             );
         }
     }

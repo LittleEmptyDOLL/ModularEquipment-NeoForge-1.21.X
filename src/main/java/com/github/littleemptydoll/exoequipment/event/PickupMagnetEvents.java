@@ -29,6 +29,10 @@ public final class PickupMagnetEvents {
             return;
         }
 
+        if (player.isCrouching()) {
+            return;
+        }
+
         if (player.tickCount % INTERVAL != 0) {
             return;
         }

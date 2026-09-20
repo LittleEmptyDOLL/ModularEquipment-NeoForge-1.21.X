@@ -4,12 +4,14 @@ import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.module.DefenseOperations;
 import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
+import com.github.littleemptydoll.exoequipment.module.EmergencyShieldOperations;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
 import com.github.littleemptydoll.exoequipment.registry.ModSounds;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -79,6 +81,29 @@ public final class DefenseEvents {
                 );
 
         data = shieldResult.data();
+
+        if (shieldResult.shieldDestroyed()) {
+            EmergencyShieldOperations.EmergencyShieldResult emergencyResult =
+                    EmergencyShieldOperations.activate(
+                            data,
+                            runtime.poweredModules()
+                    );
+
+            data = emergencyResult.data();
+
+            if (emergencyResult.activated()) {
+                entity.level().playSound(
+                        null,
+                        entity.getX(),
+                        entity.getY(),
+                        entity.getZ(),
+                        SoundEvents.NOTE_BLOCK_PLING,
+                        SoundSource.PLAYERS,
+                        0.8F,
+                        1.6F
+                );
+            }
+        }
 
         double remainingDamage = DefenseOperations.applyDamageReduction(
                 shieldResult.remainingDamage(),

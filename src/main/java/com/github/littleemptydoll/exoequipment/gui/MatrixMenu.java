@@ -326,9 +326,11 @@ public class MatrixMenu extends AbstractContainerMenu {
                 .orElse(0);
 
         int finalAbilityCooldown = abilityCooldown;
-        abilityCooldown = moduleDefinition.cloaking()
-                .map(cloaking -> Math.min(finalAbilityCooldown, cloaking.cooldown()))
-                .orElse(0);
+        int maxAbilityCooldown = Math.max(
+                moduleDefinition.cloaking().map(CloakingProperties::cooldown).orElse(0),
+                moduleDefinition.blink().map(BlinkProperties::cooldown).orElse(0)
+        );
+        abilityCooldown = Math.min(finalAbilityCooldown, maxAbilityCooldown);
 
         InstalledModule module = new InstalledModule(
                 moduleDefinition.id(),
@@ -413,14 +415,14 @@ public class MatrixMenu extends AbstractContainerMenu {
         }
 
         if (module.abilityCooldown() > 0) {
-            var cloaking = definition.cloaking();
-            if (cloaking.isPresent()) {
+            int maxAbilityCooldown = Math.max(
+                    definition.cloaking().map(CloakingProperties::cooldown).orElse(0),
+                    definition.blink().map(BlinkProperties::cooldown).orElse(0)
+            );
+            if (maxAbilityCooldown > 0) {
                 moduleStack.set(
                         ModDataComponents.MODULE_ABILITY_COOLDOWN.get(),
-                        Math.min(
-                                module.abilityCooldown(),
-                                cloaking.get().cooldown()
-                        )
+                        Math.min(module.abilityCooldown(), maxAbilityCooldown)
                 );
             }
         }

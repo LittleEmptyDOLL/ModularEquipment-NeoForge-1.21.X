@@ -14,11 +14,9 @@ public record ModuleOptionalProperties(
         Optional<DamageReductionProperties> damageReduction,
         Optional<ShieldProperties> shield,
         Optional<StatusProtectionProperties> statusProtection,
-        Optional<MobilityProperties> mobility,
         Optional<NightVisionProperties> nightVision,
         Optional<EntityDetectionProperties> entityDetection,
         Optional<HungerProperties> hunger,
-        Optional<HealthProperties> health,
         Optional<RevivalProperties> revival,
         Optional<RegenerationProperties> regeneration,
         Optional<FallProtectionProperties> fallProtection
@@ -50,9 +48,6 @@ public record ModuleOptionalProperties(
                             StatusProtectionProperties.CODEC
                                     .optionalFieldOf("status_protection")
                                     .forGetter(ModuleOptionalProperties::statusProtection),
-                            MobilityProperties.CODEC
-                                    .optionalFieldOf("mobility")
-                                    .forGetter(ModuleOptionalProperties::mobility),
                             NightVisionProperties.CODEC
                                     .optionalFieldOf("night_vision")
                                     .forGetter(ModuleOptionalProperties::nightVision),
@@ -62,9 +57,6 @@ public record ModuleOptionalProperties(
                             HungerProperties.CODEC
                                     .optionalFieldOf("hunger")
                                     .forGetter(ModuleOptionalProperties::hunger),
-                            HealthProperties.CODEC
-                                    .optionalFieldOf("health")
-                                    .forGetter(ModuleOptionalProperties::health),
                             RevivalProperties.CODEC
                                     .optionalFieldOf("revival")
                                     .forGetter(ModuleOptionalProperties::revival),

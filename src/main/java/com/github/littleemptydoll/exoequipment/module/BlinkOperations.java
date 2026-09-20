@@ -125,9 +125,6 @@ public final class BlinkOperations {
                 : requested;
 
         double travelled = start.distanceTo(destination);
-        if (travelled <= COLLISION_EPSILON) {
-            return null;
-        }
 
         // The exact hit position can intersect the player's bounding box.
         // If that happens, move the target back along the same ray until

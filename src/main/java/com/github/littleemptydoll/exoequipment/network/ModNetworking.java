@@ -260,6 +260,15 @@ public final class ModNetworking {
         );
 
         registrar.playToClient(
+                BlockScannerPayload.TYPE,
+                BlockScannerPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() ->
+                        com.github.littleemptydoll.exoequipment.client.BlockScannerClient
+                                .setPositions(payload.positions())
+                )
+        );
+
+        registrar.playToClient(
                 SensorHighlightPayload.TYPE,
                 SensorHighlightPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(

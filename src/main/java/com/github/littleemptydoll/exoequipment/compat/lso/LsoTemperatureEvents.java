@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public final class LsoTemperatureEvents {
-    private static final UUID TEMPERATURE_TEMPERATURE_MODIFIER_UUID = UUID.nameUUIDFromBytes(
+    private static final UUID TEMPERATURE_MODIFIER_UUID = UUID.nameUUIDFromBytes(
             "exoequipment:lso_temperature_modifier".getBytes(StandardCharsets.UTF_8)
     );
     private static final UUID EXOSKELETON_TEMPERATURE_UUID = UUID.nameUUIDFromBytes(
@@ -104,7 +104,7 @@ public final class LsoTemperatureEvents {
         TemperatureUtil.addTemperatureModifier(
                 player,
                 temperature,
-                TEMPERATURE_TEMPERATURE_MODIFIER_UUID
+                TEMPERATURE_MODIFIER_UUID
         );
         TemperatureUtil.addHeatResistanceModifier(
                 player,

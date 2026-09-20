@@ -11,7 +11,8 @@ public final class LsoIntegration {
     public static void register(IEventBus modEventBus) {
         ModModules.registerLsoTestThirst();
         ModModules.registerLsoTestBodyDamageRegeneration();
-        ModModules.registerLsoTestTemperatureModifier();
+        ModModules.registerLsoTestTemperatureHotModifier();
+        ModModules.registerLsoTestTemperatureColdModifier();
         ModModules.registerLsoTestTemperatureImpact();
         NeoForge.EVENT_BUS.register(LsoTemperatureEvents.class);
         NeoForge.EVENT_BUS.register(LsoThirstEvents.class);

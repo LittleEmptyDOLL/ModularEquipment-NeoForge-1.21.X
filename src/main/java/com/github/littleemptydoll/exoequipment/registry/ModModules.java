@@ -534,9 +534,9 @@ public class ModModules {
     public static EquipmentEntry<
             ModuleDefinition,
             ModuleItem
-            > registerLsoTestTemperatureModifier() {
+            > registerLsoTestTemperatureHotModifier() {
         return REGISTRY.register(
-                "test_lso_temperature_modifier",
+                "test_lso_temperature_hot_modifier",
                 new EquipmentProperties(
                         EquipmentTier.BASIC,
                         Rarity.EPIC
@@ -551,6 +551,34 @@ public class ModModules {
                                 .energy(new EnergyProperties(5))
                                 .temperatureModifier(new TemperatureModifierProperties(
                                         10.0D,
+                                        0.25D,
+                                        0.25D,
+                                        0.25D
+                                ))
+                                .build()
+        );
+    }
+
+    public static EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > registerLsoTestTemperatureColdModifier() {
+        return REGISTRY.register(
+                "test_lso_temperature_cold_modifier",
+                new EquipmentProperties(
+                        EquipmentTier.BASIC,
+                        Rarity.EPIC
+                ),
+                (id, properties) ->
+                        ModuleDefinition.builder(
+                                        id,
+                                        properties,
+                                        ModuleCategory.THERMAL,
+                                        new ModuleSize(2, 2)
+                                )
+                                .energy(new EnergyProperties(5))
+                                .temperatureModifier(new TemperatureModifierProperties(
+                                        -10.0D,
                                         0.25D,
                                         0.25D,
                                         0.25D

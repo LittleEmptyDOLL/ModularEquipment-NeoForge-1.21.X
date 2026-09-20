@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -39,6 +40,17 @@ public final class CloakingEvents {
         }
 
         deactivate(player);
+    }
+
+    @SubscribeEvent
+    public static void onChangeTarget(LivingChangeTargetEvent event) {
+        if (!(event.getEntity() instanceof Mob mob)
+                || !(event.getNewAboutToBeSetTarget() instanceof Player player)
+                || !isCloakingActive(player)) {
+            return;
+        }
+
+        event.setNewAboutToBeSetTarget(null);
     }
 
     @SubscribeEvent

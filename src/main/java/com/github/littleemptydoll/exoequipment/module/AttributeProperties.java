@@ -1,30 +1,23 @@
 package com.github.littleemptydoll.exoequipment.module;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Map;
 
 public record AttributeProperties(
-        Map<ResourceLocation, AttributeModifierProperties> modifiers
+        Map<ResourceLocation, AttributeModifierProperties> attributes
 ) {
     public static final Codec<AttributeProperties> CODEC =
-            RecordCodecBuilder.create(instance ->
-                    instance.group(
-                            Codec.unboundedMap(
-                                            ResourceLocation.CODEC,
-                                            AttributeModifierProperties.CODEC
-                                    )
-                                    .optionalFieldOf("attributes", Map.of())
-                                    .forGetter(AttributeProperties::modifiers)
-                    ).apply(instance, AttributeProperties::new)
-            );
+            Codec.unboundedMap(
+                    ResourceLocation.CODEC,
+                    AttributeModifierProperties.CODEC
+            ).xmap(AttributeProperties::new, AttributeProperties::attributes);
 
     public AttributeProperties {
-        modifiers = Map.copyOf(modifiers);
+        attributes = Map.copyOf(attributes);
 
-        for (Map.Entry<ResourceLocation, AttributeModifierProperties> entry : modifiers.entrySet()) {
+        for (Map.Entry<ResourceLocation, AttributeModifierProperties> entry : attributes.entrySet()) {
             if (entry.getKey() == null || entry.getValue() == null) {
                 throw new IllegalArgumentException("Attribute definitions must not contain null entries");
             }

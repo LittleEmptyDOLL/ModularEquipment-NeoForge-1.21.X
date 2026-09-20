@@ -9,6 +9,15 @@ public record ExoskeletonTemperatureState(
     public static final double INITIAL_TEMPERATURE = 20.0D;
 
     /**
+     * Player temperature impact per one degree of exoskeleton temperature
+     * deviation from INITIAL_TEMPERATURE.
+     *
+     * 0.1 means that a 10°C deviation of the exoskeleton produces a 1°C
+     * temperature modifier for the player before insulation is applied.
+     */
+    public static final double TEMPERATURE_IMPACT_PER_DEGREE = 0.1D;
+
+    /**
      * Passive heat exchange with the environment.
      * Positive values pull the temperature back toward INITIAL_TEMPERATURE.
      */

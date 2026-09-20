@@ -292,16 +292,19 @@ public final class EnergyOperations {
                     continue;
                 }
 
-                var energy = ModModules.getDefinition(module.id()).energy();
-                if (energy.isEmpty() || energy.get().consumption() <= 0) {
-                    continue;
-                }
+                var definition = ModModules.getDefinition(module.id());
+                var energy = definition.energy();
+                int consumption = energy
+                        .map(EnergyProperties::consumption)
+                        .orElse(0);
 
-                int consumption = MatrixOperations.calculateEnergyConsumption(
-                        new MatrixData(matrix.id(), List.of(module)),
-                        ignored -> true,
-                        data.temperature()
-                );
+                if (consumption > 0) {
+                    consumption = MatrixOperations.calculateEnergyConsumption(
+                            new MatrixData(matrix.id(), List.of(module)),
+                            ignored -> true,
+                            data.temperature()
+                    );
+                }
 
                 if (module.active()) {
                     consumption += ModModules.getDefinition(module.id())

@@ -22,6 +22,7 @@ public record InstalledModule(
                             ResourceLocation.CODEC.fieldOf("id").forGetter(InstalledModule::id),
                             Codec.INT.fieldOf("x").forGetter(InstalledModule::x),
                             Codec.INT.fieldOf("y").forGetter(InstalledModule::y),
+                            Codec.INT.fieldOf("rotation").forGetter(InstalledModule::rotation),
                             Codec.INT.optionalFieldOf("stored_energy", 0).forGetter(InstalledModule::storedEnergy),
                             Codec.DOUBLE.optionalFieldOf("shield_energy", 0.0D).forGetter(InstalledModule::shieldEnergy),
                             Codec.INT.optionalFieldOf("shield_recharge_cooldown", 0).forGetter(InstalledModule::shieldRechargeCooldown),

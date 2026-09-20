@@ -19,6 +19,7 @@ public record ModuleDefinition(
         Optional<ThermalProperties> thermal,
         Optional<TemperatureProperties> temperature,
         Optional<TemperatureModifierProperties> temperatureModifier,
+        Optional<TemperatureImpactProperties> temperatureImpact,
         Optional<DamageReductionProperties> damageReduction,
         Optional<ShieldProperties> shield,
         Optional<StatusProtectionProperties> statusProtection,
@@ -57,6 +58,9 @@ public record ModuleDefinition(
                             TemperatureModifierProperties.CODEC
                                     .optionalFieldOf("temperature_modifier")
                                     .forGetter(ModuleDefinition::temperatureModifier),
+                            TemperatureImpactProperties.CODEC
+                                    .optionalFieldOf("temperature_impact")
+                                    .forGetter(ModuleDefinition::temperatureImpact),
                             DamageChanceProtectionProperties.CODEC
                                     .optionalFieldOf("damage_chance_protection")
                                     .forGetter(ModuleDefinition::damageChanceProtection),
@@ -103,6 +107,7 @@ public record ModuleDefinition(
             ModuleSize size,
             ModuleOptionalProperties optional,
             Optional<TemperatureModifierProperties> temperatureModifier,
+            Optional<TemperatureImpactProperties> temperatureImpact,
             Optional<DamageChanceProtectionProperties> damageChanceProtection,
             Optional<BodyDamageProtectionProperties> bodyDamageProtection,
             Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
@@ -119,6 +124,7 @@ public record ModuleDefinition(
                 optional.thermal(),
                 optional.temperature(),
                 temperatureModifier,
+                temperatureImpact,
                 optional.damageReduction(),
                 optional.shield(),
                 optional.statusProtection(),
@@ -158,6 +164,7 @@ public record ModuleDefinition(
         private ThermalProperties thermal;
         private TemperatureProperties temperature;
         private TemperatureModifierProperties temperatureModifier;
+        private TemperatureImpactProperties temperatureImpact;
         private DamageReductionProperties damageReduction;
         private ShieldProperties shield;
         private StatusProtectionProperties statusProtection;
@@ -213,6 +220,11 @@ public record ModuleDefinition(
 
         public Builder temperatureModifier(TemperatureModifierProperties temperatureModifier) {
             this.temperatureModifier = temperatureModifier;
+            return this;
+        }
+
+        public Builder temperatureImpact(TemperatureImpactProperties temperatureImpact) {
+            this.temperatureImpact = temperatureImpact;
             return this;
         }
 
@@ -303,6 +315,7 @@ public record ModuleDefinition(
                     Optional.ofNullable(thermal),
                     Optional.ofNullable(temperature),
                     Optional.ofNullable(temperatureModifier),
+                    Optional.ofNullable(temperatureImpact),
                     Optional.ofNullable(damageReduction),
                     Optional.ofNullable(shield),
                     Optional.ofNullable(statusProtection),

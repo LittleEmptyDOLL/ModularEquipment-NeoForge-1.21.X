@@ -327,7 +327,23 @@ public class ModModules {
                             .combat(new CombatProperties(
                                     4.0D,
                                     1.0D,
-                                    4.0D
+                                    0.5D,
+                                    4.0D,
+                                    0.10D,
+                                    0.50D,
+                                    2.0D,
+                                    0.10D,
+                                    1.0D,
+                                    0.10D,
+                                    0.05D,
+                                    0.10D,
+                                    0.05D,
+                                    1.0D,
+                                    1.0D,
+                                    0.25D,
+                                    0.25D,
+                                    0.10D,
+                                    0.25D
                             ))
                             .build()
     );

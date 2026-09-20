@@ -6,6 +6,8 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -54,6 +56,16 @@ public final class BlinkOperations {
             );
 
             player.teleportTo(destination.x, destination.y, destination.z);
+            player.level().playSound(
+                    null,
+                    player.getX(),
+                    player.getY(),
+                    player.getZ(),
+                    SoundEvents.ENDERMAN_TELEPORT,
+                    SoundSource.PLAYERS,
+                    0.8F,
+                    1.0F
+            );
             return new ActivationResult(updated, true);
         }
 

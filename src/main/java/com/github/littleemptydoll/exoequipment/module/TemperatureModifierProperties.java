@@ -9,6 +9,18 @@ public record TemperatureModifierProperties(
         double coldResistance,
         double thermalResistance
 ) {
+    public TemperatureModifierProperties {
+        if (heatResistance < 0.0D) {
+            throw new IllegalArgumentException("Heat resistance cannot be negative");
+        }
+        if (coldResistance < 0.0D) {
+            throw new IllegalArgumentException("Cold resistance cannot be negative");
+        }
+        if (thermalResistance < 0.0D) {
+            throw new IllegalArgumentException("Thermal resistance cannot be negative");
+        }
+    }
+
     public static final Codec<TemperatureModifierProperties> CODEC =
             RecordCodecBuilder.create(instance ->
                     instance.group(

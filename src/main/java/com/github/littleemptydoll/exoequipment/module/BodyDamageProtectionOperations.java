@@ -6,6 +6,8 @@ import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public final class BodyDamageProtectionOperations {
@@ -18,9 +20,7 @@ public final class BodyDamageProtectionOperations {
     ) {
         double remainingChance = 1.0D;
 
-        for (ModuleProtection protection : protections(
-                data, bodyPart, poweredModules
-        )) {
+        for (ModuleProtection protection : protections(data, bodyPart, poweredModules)) {
             remainingChance *= 1.0D - protection.properties().chance();
 
             if (remainingChance <= 0.0D) {
@@ -38,9 +38,7 @@ public final class BodyDamageProtectionOperations {
     ) {
         double multiplier = 1.0D;
 
-        for (ModuleProtection protection : protections(
-                data, bodyPart, poweredModules
-        )) {
+        for (ModuleProtection protection : protections(data, bodyPart, poweredModules)) {
             multiplier *= 1.0D - protection.properties().damageReduction();
 
             if (multiplier <= 0.0D) {
@@ -51,12 +49,12 @@ public final class BodyDamageProtectionOperations {
         return Math.max(0.0D, multiplier);
     }
 
-    private static java.util.List<ModuleProtection> protections(
+    private static List<ModuleProtection> protections(
             ExoskeletonData data,
             BodyPart bodyPart,
             Set<InstalledModuleReference> poweredModules
     ) {
-        java.util.List<ModuleProtection> result = new java.util.ArrayList<>();
+        List<ModuleProtection> result = new ArrayList<>();
 
         for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
             MatrixData matrix = data.matrices().get(slot).matrix().orElse(null);
@@ -88,7 +86,7 @@ public final class BodyDamageProtectionOperations {
                         definition.bodyDamageProtection().orElse(null);
 
                 if (properties == null
-                        || !properties.bodyParts().contains(bodyPart)) {
+                        || !BodyPart.applies(properties.bodyParts(), bodyPart)) {
                     continue;
                 }
 

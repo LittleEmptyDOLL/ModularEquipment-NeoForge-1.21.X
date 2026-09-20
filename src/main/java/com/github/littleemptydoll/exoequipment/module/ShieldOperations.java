@@ -32,7 +32,6 @@ public final class ShieldOperations {
         ExoskeletonData updatedData = data;
         double remaining = damage;
         double absorbedDamage = 0.0D;
-        boolean shieldDestroyed = false;
 
         for (ShieldTarget target : targets) {
             if (remaining <= 0.0D) {
@@ -46,10 +45,9 @@ public final class ShieldOperations {
                 continue;
             }
 
-            double previousEnergy = module.shieldEnergy();
             double absorbed = Math.min(
                     remaining,
-                    previousEnergy
+                    module.shieldEnergy()
             );
 
             updatedData = updateModule(
@@ -62,10 +60,15 @@ public final class ShieldOperations {
 
             remaining -= absorbed;
             absorbedDamage += absorbed;
-            if (previousEnergy > 0.0D && previousEnergy - absorbed <= 0.0D) {
-                shieldDestroyed = true;
-            }
         }
+
+        // Emergency Shield is triggered only when all active shields have
+        // been depleted. A single destroyed shield is not enough while
+        // another shield still has energy available.
+        boolean shieldDestroyed = targets.stream()
+                .allMatch(target ->
+                        getModule(updatedData, target.reference()).shieldEnergy() <= 0.0D
+                );
 
         // Any incoming damage resets the recharge cooldown of every active
         // shield, including depleted shields.

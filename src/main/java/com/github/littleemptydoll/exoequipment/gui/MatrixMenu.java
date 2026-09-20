@@ -7,6 +7,8 @@ import com.github.littleemptydoll.exoequipment.item.ModuleItem;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
+import com.github.littleemptydoll.exoequipment.module.BlinkProperties;
+import com.github.littleemptydoll.exoequipment.module.CloakingProperties;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.ModMatrices;

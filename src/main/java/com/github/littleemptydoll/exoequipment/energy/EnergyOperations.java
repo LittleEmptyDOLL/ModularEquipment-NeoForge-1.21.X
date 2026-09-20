@@ -309,7 +309,7 @@ public final class EnergyOperations {
                 if (module.active()) {
                     consumption += ModModules.getDefinition(module.id())
                             .cloaking()
-                            .map(CloakingProperties::consumption)
+                            .map(CloakingProperties::activeConsumption)
                             .orElse(0);
                 }
 

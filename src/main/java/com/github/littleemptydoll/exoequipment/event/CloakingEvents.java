@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.module.CloakingOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -13,6 +14,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import com.github.littleemptydoll.exoequipment.network.CloakingStatePayload;
@@ -102,6 +104,28 @@ public final class CloakingEvents {
 
     public static boolean isCloakingActive(Player player) {
         return player.getPersistentData().getBoolean(CLOAKING_MARKER);
+    }
+
+    public static void markInactive(Player player) {
+        player.getPersistentData().remove(CLOAKING_MARKER);
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                player,
+                new CloakingStatePayload(player.getId(), false)
+        );
+    }
+
+    @SubscribeEvent
+    public static void onStartTracking(PlayerEvent.StartTracking event) {
+        if (!(event.getEntity() instanceof ServerPlayer serverPlayer)
+                || !(event.getTarget() instanceof Player target)
+                || !isCloakingActive(target)) {
+            return;
+        }
+
+        PacketDistributor.sendToPlayer(
+                serverPlayer,
+                new CloakingStatePayload(target.getId(), true)
+        );
     }
 
     @SubscribeEvent

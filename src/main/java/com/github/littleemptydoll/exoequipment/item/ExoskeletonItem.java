@@ -8,6 +8,7 @@ import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
 import com.github.littleemptydoll.exoequipment.module.SensorOperations;
 import com.github.littleemptydoll.exoequipment.module.RevivalOperations;
 import com.github.littleemptydoll.exoequipment.module.StatusProtectionOperations;
+import com.github.littleemptydoll.exoequipment.module.CloakingOperations;
 import com.github.littleemptydoll.exoequipment.exoskeleton.*;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
@@ -110,6 +111,12 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
                 updatedData,
                 runtime.poweredModules()
         );
+
+        boolean cloakingWasActive = CloakingOperations.hasActive(updatedData);
+        updatedData = CloakingOperations.tick(
+                updatedData,
+                runtime.poweredModules()
+        );
         updatedData = RevivalOperations.tick(
                 updatedData,
                 runtime.poweredModules()
@@ -134,6 +141,19 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
                             false
                     )
             );
+        }
+
+        boolean cloakingIsActive = CloakingOperations.hasActive(updatedData);
+        if (cloakingWasActive != cloakingIsActive
+                || com.github.littleemptydoll.exoequipment.event.CloakingEvents
+                .isCloakingActive(slotContext.entity()) != cloakingIsActive) {
+            if (cloakingIsActive) {
+                com.github.littleemptydoll.exoequipment.event.CloakingEvents
+                        .markActive(slotContext.entity());
+            } else {
+                com.github.littleemptydoll.exoequipment.event.CloakingEvents
+                        .markInactive(slotContext.entity());
+            }
         }
 
         if (slotContext.entity().tickCount % TEMPERATURE_UPDATE_INTERVAL == 0) {

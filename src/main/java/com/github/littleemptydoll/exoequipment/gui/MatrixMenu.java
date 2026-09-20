@@ -412,10 +412,6 @@ public class MatrixMenu extends AbstractContainerMenu {
             );
         }
 
-        if (module.active()) {
-            com.github.littleemptydoll.exoequipment.event.CloakingEvents.markInactive(player);
-        }
-
         if (module.abilityCooldown() > 0) {
             var cloaking = definition.cloaking();
             if (cloaking.isPresent()) {
@@ -430,6 +426,11 @@ public class MatrixMenu extends AbstractContainerMenu {
         }
 
         if (!giveModule(player, moduleStack)) return false;
+
+        if (module.active()) {
+            com.github.littleemptydoll.exoequipment.event.CloakingEvents.markInactive(player);
+        }
+
         applyMatrixData(player, MatrixOperations.removeModule(matrix, x, y));
         return true;
     }

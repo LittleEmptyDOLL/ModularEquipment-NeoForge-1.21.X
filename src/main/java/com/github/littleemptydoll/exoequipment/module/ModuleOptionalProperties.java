@@ -15,7 +15,6 @@ public record ModuleOptionalProperties(
         Optional<ShieldProperties> shield,
         Optional<EmergencyShieldProperties> emergencyShield,
         Optional<CloakingProperties> cloaking,
-        Optional<BlinkProperties> blink,
         Optional<StatusProtectionProperties> statusProtection,
         Optional<NightVisionProperties> nightVision,
         Optional<EntityDetectionProperties> entityDetection,
@@ -54,9 +53,6 @@ public record ModuleOptionalProperties(
                             CloakingProperties.CODEC
                                     .optionalFieldOf("cloaking")
                                     .forGetter(ModuleOptionalProperties::cloaking),
-                            BlinkProperties.CODEC
-                                    .optionalFieldOf("blink")
-                                    .forGetter(ModuleOptionalProperties::blink),
                             StatusProtectionProperties.CODEC
                                     .optionalFieldOf("status_protection")
                                     .forGetter(ModuleOptionalProperties::statusProtection),

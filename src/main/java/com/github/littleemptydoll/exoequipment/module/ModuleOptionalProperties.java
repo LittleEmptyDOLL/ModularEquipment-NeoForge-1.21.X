@@ -13,6 +13,7 @@ public record ModuleOptionalProperties(
         Optional<TemperatureProperties> temperature,
         Optional<DamageReductionProperties> damageReduction,
         Optional<ShieldProperties> shield,
+        Optional<EmergencyShieldProperties> emergencyShield,
         Optional<StatusProtectionProperties> statusProtection,
         Optional<NightVisionProperties> nightVision,
         Optional<EntityDetectionProperties> entityDetection,
@@ -45,6 +46,9 @@ public record ModuleOptionalProperties(
                             ShieldProperties.CODEC
                                     .optionalFieldOf("shield")
                                     .forGetter(ModuleOptionalProperties::shield),
+                            EmergencyShieldProperties.CODEC
+                                    .optionalFieldOf("emergency_shield")
+                                    .forGetter(ModuleOptionalProperties::emergencyShield),
                             StatusProtectionProperties.CODEC
                                     .optionalFieldOf("status_protection")
                                     .forGetter(ModuleOptionalProperties::statusProtection),

@@ -70,13 +70,15 @@ public final class CombatEvents {
                 0.0D
         );
 
-        Optional<ItemStack> stack = findExoskeleton(player);
+        Optional<ItemStack> exoskeletonStack = findExoskeleton(player);
 
-        if (stack.isEmpty()) {
+        if (exoskeletonStack.isEmpty()) {
             return;
         }
 
-        ExoskeletonData data = ExoskeletonItem.getData(stack.get());
+        ItemStack stack = exoskeletonStack.get();
+        ExoskeletonData data = ExoskeletonItem.getData(stack);
+
         ExoskeletonRuntimeState runtime = stack.get(
                 ModDataComponents.EXOSKELETON_RUNTIME.get()
         );

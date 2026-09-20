@@ -19,7 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public final class BlinkOperations {
-    private static final double COLLISION_EPSILON = 0.05D;
+    private static final double COLLISION_EPSILON = 0.5D;
     private static final double SEARCH_STEP = 0.10D;
 
     private BlinkOperations() {}

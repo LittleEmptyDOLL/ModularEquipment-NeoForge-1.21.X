@@ -7,6 +7,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import com.github.littleemptydoll.exoequipment.client.CloakingClientState;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.client.event.RenderNameTagEvent;
 
 @EventBusSubscriber(
         modid = ExoEquipment.MODID,
@@ -17,6 +18,13 @@ public final class CloakingClientEvents {
 
     @SubscribeEvent
     public static void onRenderPlayer(RenderPlayerEvent.Pre event) {
+        if (CloakingClientState.isActive(event.getEntity().getId())) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRenderNameTag(RenderNameTagEvent event) {
         if (CloakingClientState.isActive(event.getEntity().getId())) {
             event.setCanceled(true);
         }

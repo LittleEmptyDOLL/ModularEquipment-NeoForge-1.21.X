@@ -30,6 +30,7 @@ public record ModuleDefinition(
         Optional<RegenerationProperties> regeneration,
         Optional<FallProtectionProperties> fallProtection,
         Optional<AttributeProperties> attributes,
+        Optional<ConditionalAttributeProperties> conditionalAttributes,
         Optional<PickupMagnetProperties> pickupMagnet,
         Optional<BodyDamageProtectionProperties> bodyDamageProtection,
         Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
@@ -58,6 +59,9 @@ public record ModuleDefinition(
                             AttributeProperties.CODEC
                                     .optionalFieldOf("attributes")
                                     .forGetter(ModuleDefinition::attributes),
+                            ConditionalAttributeProperties.CODEC
+                                    .optionalFieldOf("conditional_attributes")
+                                    .forGetter(ModuleDefinition::conditionalAttributes),
                             PickupMagnetProperties.CODEC
                                     .optionalFieldOf("pickup_magnet")
                                     .forGetter(ModuleDefinition::pickupMagnet),
@@ -111,6 +115,7 @@ public record ModuleDefinition(
             ModuleSize size,
             ModuleOptionalProperties optional,
             Optional<AttributeProperties> attributes,
+            Optional<ConditionalAttributeProperties> conditionalAttributes,
             Optional<PickupMagnetProperties> pickupMagnet,
             Optional<TemperatureModifierProperties> temperatureModifier,
             Optional<TemperatureImpactProperties> temperatureImpact,
@@ -141,6 +146,7 @@ public record ModuleDefinition(
                 optional.regeneration(),
                 optional.fallProtection(),
                 attributes,
+                conditionalAttributes,
                 pickupMagnet,
                 bodyDamageProtection,
                 bodyDamageRegeneration,
@@ -181,6 +187,7 @@ public record ModuleDefinition(
         private RegenerationProperties regeneration;
         private FallProtectionProperties fallProtection;
         private AttributeProperties attributes;
+        private ConditionalAttributeProperties conditionalAttributes;
         private PickupMagnetProperties pickupMagnet;
         private BodyDamageProtectionProperties bodyDamageProtection;
         private BodyDamageRegenerationProperties bodyDamageRegeneration;
@@ -284,6 +291,11 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder conditionalAttributes(ConditionalAttributeProperties conditionalAttributes) {
+            this.conditionalAttributes = conditionalAttributes;
+            return this;
+        }
+
         public Builder pickupMagnet(PickupMagnetProperties pickupMagnet) {
             this.pickupMagnet = pickupMagnet;
             return this;
@@ -332,6 +344,7 @@ public record ModuleDefinition(
                     Optional.ofNullable(regeneration),
                     Optional.ofNullable(fallProtection),
                     Optional.ofNullable(attributes),
+                    Optional.ofNullable(conditionalAttributes),
                     Optional.ofNullable(pickupMagnet),
                     Optional.ofNullable(bodyDamageProtection),
                     Optional.ofNullable(bodyDamageRegeneration),

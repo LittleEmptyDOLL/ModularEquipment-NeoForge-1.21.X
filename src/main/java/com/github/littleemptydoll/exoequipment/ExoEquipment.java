@@ -1,9 +1,7 @@
 package com.github.littleemptydoll.exoequipment;
 
 import com.github.littleemptydoll.exoequipment.compat.lso.LsoIntegration;
-import com.github.littleemptydoll.exoequipment.compat.apothicattributes.ApothicAttributesIntegration;
 import com.github.littleemptydoll.exoequipment.network.ModNetworking;
-import com.github.littleemptydoll.exoequipment.module.UtilityEvents;
 import com.github.littleemptydoll.exoequipment.registry.*;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
@@ -24,14 +22,8 @@ public class ExoEquipment {
         ModMenus.register(eventBus);
         ModNetworking.register(eventBus);
         ModSounds.register(eventBus);
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.register(UtilityEvents.class);
-
         if (ModList.get().isLoaded("legendarysurvivaloverhaul")) {
             LsoIntegration.register(eventBus);
-        }
-
-        if (ModList.get().isLoaded("apothic_attributes")) {
-            ApothicAttributesIntegration.register(eventBus);
         }
 
         ModMatrices.MATRICES.register(eventBus);

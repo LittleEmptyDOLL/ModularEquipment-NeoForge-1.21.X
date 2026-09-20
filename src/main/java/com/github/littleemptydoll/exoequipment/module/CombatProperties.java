@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.module;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public record CombatProperties(
@@ -27,27 +28,72 @@ public record CombatProperties(
     public static final Codec<CombatProperties> CODEC =
             RecordCodecBuilder.create(instance ->
                     instance.group(
-                            Codec.DOUBLE.optionalFieldOf("attack_damage", 0.0D).forGetter(CombatProperties::attackDamage),
-                            Codec.DOUBLE.optionalFieldOf("attack_speed", 0.0D).forGetter(CombatProperties::attackSpeed),
-                            Codec.DOUBLE.optionalFieldOf("attack_knockback", 0.0D).forGetter(CombatProperties::attackKnockback),
-                            Codec.DOUBLE.optionalFieldOf("entity_interaction_range", 0.0D).forGetter(CombatProperties::entityInteractionRange),
-                            Codec.DOUBLE.optionalFieldOf("crit_chance", 0.0D).forGetter(CombatProperties::critChance),
-                            Codec.DOUBLE.optionalFieldOf("crit_damage", 0.0D).forGetter(CombatProperties::critDamage),
-                            Codec.DOUBLE.optionalFieldOf("armor_pierce", 0.0D).forGetter(CombatProperties::armorPierce),
-                            Codec.DOUBLE.optionalFieldOf("armor_shred", 0.0D).forGetter(CombatProperties::armorShred),
-                            Codec.DOUBLE.optionalFieldOf("prot_pierce", 0.0D).forGetter(CombatProperties::protPierce),
-                            Codec.DOUBLE.optionalFieldOf("prot_shred", 0.0D).forGetter(CombatProperties::protShred),
-                            Codec.DOUBLE.optionalFieldOf("current_hp_damage", 0.0D).forGetter(CombatProperties::currentHpDamage),
-                            Codec.DOUBLE.optionalFieldOf("life_steal", 0.0D).forGetter(CombatProperties::lifeSteal),
-                            Codec.DOUBLE.optionalFieldOf("overheal", 0.0D).forGetter(CombatProperties::overheal),
-                            Codec.DOUBLE.optionalFieldOf("fire_damage", 0.0D).forGetter(CombatProperties::fireDamage),
-                            Codec.DOUBLE.optionalFieldOf("cold_damage", 0.0D).forGetter(CombatProperties::coldDamage),
-                            Codec.DOUBLE.optionalFieldOf("projectile_damage", 0.0D).forGetter(CombatProperties::projectileDamage),
-                            Codec.DOUBLE.optionalFieldOf("arrow_damage", 0.0D).forGetter(CombatProperties::arrowDamage),
-                            Codec.DOUBLE.optionalFieldOf("arrow_velocity", 0.0D).forGetter(CombatProperties::arrowVelocity),
-                            Codec.DOUBLE.optionalFieldOf("draw_speed", 0.0D).forGetter(CombatProperties::drawSpeed)
-                    ).apply(instance, CombatProperties::new)
+                            RecordCodecBuilder.of(
+                                    CombatProperties::vanillaProperties,
+                                    VanillaCombatProperties.CODEC
+                            ),
+                            RecordCodecBuilder.of(
+                                    CombatProperties::apothicProperties,
+                                    ApothicCombatProperties.CODEC
+                            )
+                    ).apply(instance, CombatProperties::fromCodec)
             );
+
+    private VanillaCombatProperties vanillaProperties() {
+        return new VanillaCombatProperties(
+                attackDamage,
+                attackSpeed,
+                attackKnockback,
+                entityInteractionRange
+        );
+    }
+
+    private ApothicCombatProperties apothicProperties() {
+        return new ApothicCombatProperties(
+                critChance,
+                critDamage,
+                armorPierce,
+                armorShred,
+                protPierce,
+                protShred,
+                currentHpDamage,
+                lifeSteal,
+                overheal,
+                fireDamage,
+                coldDamage,
+                projectileDamage,
+                arrowDamage,
+                arrowVelocity,
+                drawSpeed
+        );
+    }
+
+    private static CombatProperties fromCodec(
+            VanillaCombatProperties vanilla,
+            ApothicCombatProperties apothic
+    ) {
+        return new CombatProperties(
+                vanilla.attackDamage(),
+                vanilla.attackSpeed(),
+                vanilla.attackKnockback(),
+                vanilla.entityInteractionRange(),
+                apothic.critChance(),
+                apothic.critDamage(),
+                apothic.armorPierce(),
+                apothic.armorShred(),
+                apothic.protPierce(),
+                apothic.protShred(),
+                apothic.currentHpDamage(),
+                apothic.lifeSteal(),
+                apothic.overheal(),
+                apothic.fireDamage(),
+                apothic.coldDamage(),
+                apothic.projectileDamage(),
+                apothic.arrowDamage(),
+                apothic.arrowVelocity(),
+                apothic.drawSpeed()
+        );
+    }
 
     public CombatProperties {
         validateNonNegative(attackDamage, "attack damage");
@@ -77,5 +123,80 @@ public record CombatProperties(
                     "Combat " + name + " must be finite and non-negative"
             );
         }
+    }
+
+    private record VanillaCombatProperties(
+            double attackDamage,
+            double attackSpeed,
+            double attackKnockback,
+            double entityInteractionRange
+    ) {
+        private static final MapCodec<VanillaCombatProperties> CODEC =
+                RecordCodecBuilder.mapCodec(instance ->
+                        instance.group(
+                                Codec.DOUBLE.optionalFieldOf("attack_damage", 0.0D)
+                                        .forGetter(VanillaCombatProperties::attackDamage),
+                                Codec.DOUBLE.optionalFieldOf("attack_speed", 0.0D)
+                                        .forGetter(VanillaCombatProperties::attackSpeed),
+                                Codec.DOUBLE.optionalFieldOf("attack_knockback", 0.0D)
+                                        .forGetter(VanillaCombatProperties::attackKnockback),
+                                Codec.DOUBLE.optionalFieldOf("entity_interaction_range", 0.0D)
+                                        .forGetter(VanillaCombatProperties::entityInteractionRange)
+                        ).apply(instance, VanillaCombatProperties::new)
+                );
+    }
+
+    private record ApothicCombatProperties(
+            double critChance,
+            double critDamage,
+            double armorPierce,
+            double armorShred,
+            double protPierce,
+            double protShred,
+            double currentHpDamage,
+            double lifeSteal,
+            double overheal,
+            double fireDamage,
+            double coldDamage,
+            double projectileDamage,
+            double arrowDamage,
+            double arrowVelocity,
+            double drawSpeed
+    ) {
+        private static final MapCodec<ApothicCombatProperties> CODEC =
+                RecordCodecBuilder.mapCodec(instance ->
+                        instance.group(
+                                Codec.DOUBLE.optionalFieldOf("crit_chance", 0.0D)
+                                        .forGetter(ApothicCombatProperties::critChance),
+                                Codec.DOUBLE.optionalFieldOf("crit_damage", 0.0D)
+                                        .forGetter(ApothicCombatProperties::critDamage),
+                                Codec.DOUBLE.optionalFieldOf("armor_pierce", 0.0D)
+                                        .forGetter(ApothicCombatProperties::armorPierce),
+                                Codec.DOUBLE.optionalFieldOf("armor_shred", 0.0D)
+                                        .forGetter(ApothicCombatProperties::armorShred),
+                                Codec.DOUBLE.optionalFieldOf("prot_pierce", 0.0D)
+                                        .forGetter(ApothicCombatProperties::protPierce),
+                                Codec.DOUBLE.optionalFieldOf("prot_shred", 0.0D)
+                                        .forGetter(ApothicCombatProperties::protShred),
+                                Codec.DOUBLE.optionalFieldOf("current_hp_damage", 0.0D)
+                                        .forGetter(ApothicCombatProperties::currentHpDamage),
+                                Codec.DOUBLE.optionalFieldOf("life_steal", 0.0D)
+                                        .forGetter(ApothicCombatProperties::lifeSteal),
+                                Codec.DOUBLE.optionalFieldOf("overheal", 0.0D)
+                                        .forGetter(ApothicCombatProperties::overheal),
+                                Codec.DOUBLE.optionalFieldOf("fire_damage", 0.0D)
+                                        .forGetter(ApothicCombatProperties::fireDamage),
+                                Codec.DOUBLE.optionalFieldOf("cold_damage", 0.0D)
+                                        .forGetter(ApothicCombatProperties::coldDamage),
+                                Codec.DOUBLE.optionalFieldOf("projectile_damage", 0.0D)
+                                        .forGetter(ApothicCombatProperties::projectileDamage),
+                                Codec.DOUBLE.optionalFieldOf("arrow_damage", 0.0D)
+                                        .forGetter(ApothicCombatProperties::arrowDamage),
+                                Codec.DOUBLE.optionalFieldOf("arrow_velocity", 0.0D)
+                                        .forGetter(ApothicCombatProperties::arrowVelocity),
+                                Codec.DOUBLE.optionalFieldOf("draw_speed", 0.0D)
+                                        .forGetter(ApothicCombatProperties::drawSpeed)
+                        ).apply(instance, ApothicCombatProperties::new)
+                );
     }
 }

@@ -9,6 +9,7 @@ import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.Optional;
+import java.util.Set;
 
 public class ModModules {
     private ModModules() {}
@@ -498,7 +499,11 @@ public class ModModules {
                             .energy(new EnergyProperties(10, 1))
                             .bodyDamageProtection(new BodyDamageProtectionProperties(
                                     0.30D,
-                                    0.50D
+                                    0.50D,
+                                    Set.of(
+                                            BodyPart.HEAD,
+                                            BodyPart.CHEST
+                                    )
                             ))
                             .build()
     );

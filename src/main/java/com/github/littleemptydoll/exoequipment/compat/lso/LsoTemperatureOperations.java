@@ -81,7 +81,7 @@ public final class LsoTemperatureOperations {
             ExoskeletonData data,
             Set<InstalledModuleReference> poweredModules
     ) {
-        double resistance = 0.0D;
+        double resistance = 1.0D;
 
         for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
             var matrix = data.matrices()
@@ -121,11 +121,15 @@ public final class LsoTemperatureOperations {
                     continue;
                 }
 
-                resistance += properties.resistance();
+                resistance *= 1.0D - properties.resistance();
+
+                if (resistance <= 0.0D) {
+                    return 1.0D;
+                }
             }
         }
 
-        return Math.min(1.0D, resistance);
+        return Math.max(0.0D, Math.min(1.0D, 1.0D - resistance));
     }
 }
 

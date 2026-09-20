@@ -44,8 +44,7 @@ public final class ModNetworking {
                             .ifPresent(exoskeleton -> {
                                 var result = com.github.littleemptydoll.exoequipment.module.CloakingOperations
                                         .activate(
-                                                com.github.littleemptydoll.exoequipment.item.ExoskeletonItem.getData(exoskeleton),
-                                                java.util.Set.of()
+                                                com.github.littleemptydoll.exoequipment.item.ExoskeletonItem.getData(exoskeleton)
                                         );
 
                                 if (result.activated()) {

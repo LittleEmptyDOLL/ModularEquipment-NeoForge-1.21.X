@@ -1,6 +1,8 @@
 package com.github.littleemptydoll.exoequipment.compat.lso;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonTemperatureState;
+import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.world.entity.player.Player;
@@ -16,7 +18,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public final class LsoTemperatureEvents {
-    private static final UUID TEMPERATURE_MODIFIER_UUID = UUID.nameUUIDFromBytes(
+    private static final UUID TEMPERATURE_TEMPERATURE_MODIFIER_UUID = UUID.nameUUIDFromBytes(
             "exoequipment:lso_temperature_modifier".getBytes(StandardCharsets.UTF_8)
     );
     private static final UUID EXOSKELETON_TEMPERATURE_UUID = UUID.nameUUIDFromBytes(
@@ -59,7 +61,7 @@ public final class LsoTemperatureEvents {
         ExoskeletonRuntimeState runtime =
                 stack.get(ModDataComponents.EXOSKELETON_RUNTIME.get());
 
-        Set<com.github.littleemptydoll.exoequipment.module.InstalledModuleReference> poweredModules =
+        Set<InstalledModuleReference> poweredModules =
                 runtime == null
                         ? Set.of()
                         : runtime.poweredModules();
@@ -81,8 +83,8 @@ public final class LsoTemperatureEvents {
                 .calculateTemperatureImpactResistance(data, poweredModules);
         double temperatureImpact =
                 (data.temperature()
-                        - com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonTemperatureState.INITIAL_TEMPERATURE)
-                        * com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonTemperatureState.TEMPERATURE_IMPACT_PER_DEGREE
+                        - ExoskeletonTemperatureState.INITIAL_TEMPERATURE)
+                        * ExoskeletonTemperatureState.TEMPERATURE_IMPACT_PER_DEGREE
                         * (1.0D - resistance);
 
         TemperatureUtil.addTemperatureModifier(
@@ -102,22 +104,22 @@ public final class LsoTemperatureEvents {
         TemperatureUtil.addTemperatureModifier(
                 player,
                 temperature,
-                TEMPERATURE_MODIFIER_UUID
+                TEMPERATURE_TEMPERATURE_MODIFIER_UUID
         );
         TemperatureUtil.addHeatResistanceModifier(
                 player,
                 heatResistance,
-                MODIFIER_UUID
+                TEMPERATURE_MODIFIER_UUID
         );
         TemperatureUtil.addColdResistanceModifier(
                 player,
                 coldResistance,
-                MODIFIER_UUID
+                TEMPERATURE_MODIFIER_UUID
         );
         TemperatureUtil.addThermalResistanceModifier(
                 player,
                 thermalResistance,
-                MODIFIER_UUID
+                TEMPERATURE_MODIFIER_UUID
         );
     }
 }

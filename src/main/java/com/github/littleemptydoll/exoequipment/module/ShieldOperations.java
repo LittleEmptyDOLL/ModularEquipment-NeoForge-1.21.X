@@ -20,13 +20,13 @@ public final class ShieldOperations {
             Set<InstalledModuleReference> poweredModules
     ) {
         if (damage <= 0.0D) {
-            return new ShieldDamageResult(0.0D, 0.0D, data);
+            return new ShieldDamageResult(0.0D, 0.0D, data, false);
         }
 
         List<ShieldTarget> targets = collectShields(data);
 
         if (targets.isEmpty()) {
-            return new ShieldDamageResult(damage, 0.0D, data);
+            return new ShieldDamageResult(damage, 0.0D, data, false);
         }
 
         ExoskeletonData updatedData = data;

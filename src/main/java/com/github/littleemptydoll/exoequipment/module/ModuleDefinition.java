@@ -32,6 +32,8 @@ public record ModuleDefinition(
         Optional<RegenerationProperties> regeneration,
         Optional<FallProtectionProperties> fallProtection,
         Optional<CombatProperties> combat,
+        Optional<UtilityProperties> utility,
+        Optional<ApothicUtilityProperties> apothicUtility,
         Optional<DamageChanceProtectionProperties> damageChanceProtection,
         Optional<BodyDamageProtectionProperties> bodyDamageProtection,
         Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
@@ -60,6 +62,12 @@ public record ModuleDefinition(
                             CombatProperties.CODEC
                                     .optionalFieldOf("combat")
                                     .forGetter(ModuleDefinition::combat),
+                            UtilityProperties.CODEC
+                                    .optionalFieldOf("utility")
+                                    .forGetter(ModuleDefinition::utility),
+                            ApothicUtilityProperties.CODEC
+                                    .optionalFieldOf("apothic_utility")
+                                    .forGetter(ModuleDefinition::apothicUtility),
                             TemperatureModifierProperties.CODEC
                                     .optionalFieldOf("temperature_modifier")
                                     .forGetter(ModuleDefinition::temperatureModifier),
@@ -115,6 +123,8 @@ public record ModuleDefinition(
             ModuleSize size,
             ModuleOptionalProperties optional,
             Optional<CombatProperties> combat,
+            Optional<UtilityProperties> utility,
+            Optional<ApothicUtilityProperties> apothicUtility,
             Optional<TemperatureModifierProperties> temperatureModifier,
             Optional<TemperatureImpactProperties> temperatureImpact,
             Optional<DamageChanceProtectionProperties> damageChanceProtection,
@@ -147,6 +157,8 @@ public record ModuleDefinition(
                 optional.regeneration(),
                 optional.fallProtection(),
                 combat,
+                utility,
+                apothicUtility,
                 damageChanceProtection,
                 bodyDamageProtection,
                 bodyDamageRegeneration,
@@ -189,6 +201,8 @@ public record ModuleDefinition(
         private RegenerationProperties regeneration;
         private FallProtectionProperties fallProtection;
         private CombatProperties combat;
+        private UtilityProperties utility;
+        private ApothicUtilityProperties apothicUtility;
         private DamageChanceProtectionProperties damageChanceProtection;
         private BodyDamageProtectionProperties bodyDamageProtection;
         private BodyDamageRegenerationProperties bodyDamageRegeneration;
@@ -302,6 +316,16 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder utility(UtilityProperties utility) {
+            this.utility = utility;
+            return this;
+        }
+
+        public Builder apothicUtility(ApothicUtilityProperties apothicUtility) {
+            this.apothicUtility = apothicUtility;
+            return this;
+        }
+
         public Builder damageChanceProtection(DamageChanceProtectionProperties damageChanceProtection) {
             this.damageChanceProtection = damageChanceProtection;
             return this;
@@ -352,6 +376,8 @@ public record ModuleDefinition(
                     Optional.ofNullable(regeneration),
                     Optional.ofNullable(fallProtection),
                     Optional.ofNullable(combat),
+                    Optional.ofNullable(utility),
+                    Optional.ofNullable(apothicUtility),
                     Optional.ofNullable(damageChanceProtection),
                     Optional.ofNullable(bodyDamageProtection),
                     Optional.ofNullable(bodyDamageRegeneration),

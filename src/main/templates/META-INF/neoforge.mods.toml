@@ -40,10 +40,3 @@ Example mod description.
     versionRange="[2.3.24,)"
     ordering="AFTER"
     side="BOTH"
-
-[[dependencies.${mod_id}]]
-    modId="apothic_attributes"
-    type="optional"
-    versionRange="[2.10.1,3)"
-    ordering="AFTER"
-    side="BOTH"

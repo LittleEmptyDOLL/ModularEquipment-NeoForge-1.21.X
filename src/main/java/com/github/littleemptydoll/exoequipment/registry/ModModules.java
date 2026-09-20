@@ -559,6 +559,30 @@ public class ModModules {
         );
     }
 
+
+    public static EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > registerLsoTestTemperatureImpact() {
+        return REGISTRY.register(
+                "test_lso_temperature_impact",
+                new EquipmentProperties(
+                        EquipmentTier.BASIC,
+                        Rarity.EPIC
+                ),
+                (id, properties) ->
+                        ModuleDefinition.builder(
+                                        id,
+                                        properties,
+                                        ModuleCategory.THERMAL,
+                                        new ModuleSize(2, 2)
+                                )
+                                .energy(new EnergyProperties(5))
+                                .temperatureImpact(new TemperatureImpactProperties(0.50D))
+                                .build()
+        );
+    }
+
     public static EquipmentEntry<
             ModuleDefinition,
             ModuleItem

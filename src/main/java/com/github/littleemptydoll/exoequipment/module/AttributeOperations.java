@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +16,7 @@ public final class AttributeOperations {
     private AttributeOperations() {}
 
     public static Map<AttributeKey, Double> calculate(
+            Player player,
             ExoskeletonData data,
             Set<InstalledModuleReference> poweredModules
     ) {
@@ -40,15 +42,38 @@ public final class AttributeOperations {
                 }
 
                 definition.attributes().ifPresent(attributes ->
-                        attributes.attributes().forEach((attributeId, modifier) -> {
-                            AttributeKey key = new AttributeKey(attributeId, modifier.operation());
-                            values.merge(key, modifier.amount(), Double::sum);
-                        })
+                        addAttributes(values, attributes)
+                );
+
+                definition.conditionalAttributes().ifPresent(conditional ->
+                        addConditionalAttributes(player, values, conditional)
                 );
             }
         }
 
         return values;
+    }
+
+    private static void addAttributes(
+            Map<AttributeKey, Double> values,
+            AttributeProperties attributes
+    ) {
+        attributes.attributes().forEach((attributeId, modifier) -> {
+            AttributeKey key = new AttributeKey(attributeId, modifier.operation());
+            values.merge(key, modifier.amount(), Double::sum);
+        });
+    }
+
+    private static void addConditionalAttributes(
+            Player player,
+            Map<AttributeKey, Double> values,
+            ConditionalAttributeProperties conditional
+    ) {
+        if (conditional.conditions().stream().allMatch(
+                condition -> AttributeConditionOperations.matches(player, condition)
+        )) {
+            addAttributes(values, conditional.attributes());
+        }
     }
 
     public record AttributeKey(

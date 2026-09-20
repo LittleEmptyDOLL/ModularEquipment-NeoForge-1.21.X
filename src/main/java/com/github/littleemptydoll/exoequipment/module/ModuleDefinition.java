@@ -31,6 +31,7 @@ public record ModuleDefinition(
         Optional<FallProtectionProperties> fallProtection,
         Optional<DamageChanceProtectionProperties> damageChanceProtection,
         Optional<BodyDamageProtectionProperties> bodyDamageProtection,
+        Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
         Optional<ThirstProperties> thirst
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
@@ -58,6 +59,9 @@ public record ModuleDefinition(
                             BodyDamageProtectionProperties.CODEC
                                     .optionalFieldOf("body_damage_protection")
                                     .forGetter(ModuleDefinition::bodyDamageProtection),
+                            BodyDamageRegenerationProperties.CODEC
+                                    .optionalFieldOf("body_damage_regeneration")
+                                    .forGetter(ModuleDefinition::bodyDamageRegeneration),
                             ThirstProperties.CODEC
                                     .optionalFieldOf("thirst")
                                     .forGetter(ModuleDefinition::thirst)
@@ -96,6 +100,7 @@ public record ModuleDefinition(
             ModuleOptionalProperties optional,
             Optional<DamageChanceProtectionProperties> damageChanceProtection,
             Optional<BodyDamageProtectionProperties> bodyDamageProtection,
+            Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
             Optional<ThirstProperties> thirst
     ) {
         return new ModuleDefinition(
@@ -121,6 +126,7 @@ public record ModuleDefinition(
                 optional.fallProtection(),
                 damageChanceProtection,
                 bodyDamageProtection,
+                bodyDamageRegeneration,
                 thirst
         );
     }
@@ -158,6 +164,7 @@ public record ModuleDefinition(
         private FallProtectionProperties fallProtection;
         private DamageChanceProtectionProperties damageChanceProtection;
         private BodyDamageProtectionProperties bodyDamageProtection;
+        private BodyDamageRegenerationProperties bodyDamageRegeneration;
         private ThirstProperties thirst;
 
         private Builder(
@@ -262,6 +269,11 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder bodyDamageRegeneration(BodyDamageRegenerationProperties bodyDamageRegeneration) {
+            this.bodyDamageRegeneration = bodyDamageRegeneration;
+            return this;
+        }
+
         public Builder thirst(ThirstProperties thirst) {
             this.thirst = thirst;
             return this;
@@ -291,6 +303,7 @@ public record ModuleDefinition(
                     Optional.ofNullable(fallProtection),
                     Optional.ofNullable(damageChanceProtection),
                     Optional.ofNullable(bodyDamageProtection),
+                    Optional.ofNullable(bodyDamageRegeneration),
                     Optional.ofNullable(thirst)
             );
         }

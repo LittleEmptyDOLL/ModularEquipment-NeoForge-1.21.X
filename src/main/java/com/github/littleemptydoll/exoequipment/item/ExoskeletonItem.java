@@ -8,6 +8,7 @@ import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
 import com.github.littleemptydoll.exoequipment.module.SensorOperations;
 import com.github.littleemptydoll.exoequipment.module.RevivalOperations;
 import com.github.littleemptydoll.exoequipment.module.StatusProtectionOperations;
+import com.github.littleemptydoll.exoequipment.module.BlinkOperations;
 import com.github.littleemptydoll.exoequipment.module.CloakingOperations;
 import com.github.littleemptydoll.exoequipment.exoskeleton.*;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
@@ -118,6 +119,7 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
                 updatedData,
                 runtime.poweredModules()
         );
+        updatedData = BlinkOperations.tick(updatedData);
         updatedData = RevivalOperations.tick(
                 updatedData,
                 runtime.poweredModules()

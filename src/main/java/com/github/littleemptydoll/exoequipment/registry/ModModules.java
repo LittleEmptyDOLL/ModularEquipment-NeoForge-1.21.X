@@ -351,6 +351,44 @@ public class ModModules {
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
+            > TEST_UTILITY = REGISTRY.register(
+            "test_utility",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.UTILITY,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(10))
+                            .utility(new UtilityProperties(
+                                    0.50D,
+                                    1.0D,
+                                    0.50D,
+                                    2.0D,
+                                    1.0D,
+                                    0.50D,
+                                    0.25D,
+                                    0.25D,
+                                    2.0D,
+                                    2.0D,
+                                    0.50D
+                            ))
+                            .apothicUtility(new ApothicUtilityProperties(
+                                    0.25D,
+                                    0.25D,
+                                    0.10D
+                            ))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
             > TEST_COOLER = REGISTRY.register(
             "test_cooler",
             new EquipmentProperties(

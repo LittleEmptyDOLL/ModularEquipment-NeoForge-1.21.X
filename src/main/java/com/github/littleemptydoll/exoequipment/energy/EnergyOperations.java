@@ -321,7 +321,7 @@ public final class EnergyOperations {
                         new EnergyConsumer(
                                 new InstalledModuleReference(slot, moduleIndex),
                                 consumption,
-                                energy.get().priority()
+                                energy.map(EnergyProperties::priority).orElse(0)
                         )
                 );
             }

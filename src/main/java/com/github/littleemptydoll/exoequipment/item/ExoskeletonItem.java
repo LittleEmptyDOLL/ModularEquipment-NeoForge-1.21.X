@@ -14,6 +14,7 @@ import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.util.EquipmentItemUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -146,13 +147,13 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
         boolean cloakingIsActive = CloakingOperations.hasActive(updatedData);
         if (cloakingWasActive != cloakingIsActive
                 || com.github.littleemptydoll.exoequipment.event.CloakingEvents
-                .isCloakingActive(slotContext.entity()) != cloakingIsActive) {
+                .isCloakingActive((Player) slotContext.entity()) != cloakingIsActive) {
             if (cloakingIsActive) {
                 com.github.littleemptydoll.exoequipment.event.CloakingEvents
-                        .markActive(slotContext.entity());
+                        .markActive((Player) slotContext.entity());
             } else {
                 com.github.littleemptydoll.exoequipment.event.CloakingEvents
-                        .markInactive(slotContext.entity());
+                        .markInactive((Player) slotContext.entity());
             }
         }
 

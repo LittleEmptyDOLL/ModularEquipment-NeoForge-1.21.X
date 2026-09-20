@@ -63,7 +63,9 @@ public final class MatrixOperations {
                 module.shieldEnergy(),
                 module.shieldRechargeCooldown(),
                 module.revivalCooldown(),
-                module.emergencyShieldCooldown()
+                module.emergencyShieldCooldown(),
+                module.active(),
+                module.abilityCooldown()
         );
         return replaceModule(matrix, matrixDefinition, module, rotatedModule);
     }
@@ -81,7 +83,9 @@ public final class MatrixOperations {
                 module.shieldEnergy(),
                 module.shieldRechargeCooldown(),
                 module.revivalCooldown(),
-                module.emergencyShieldCooldown()
+                module.emergencyShieldCooldown(),
+                module.active(),
+                module.abilityCooldown()
         );
         return replaceModule(matrix, matrixDefinition, module, movedModule);
     }

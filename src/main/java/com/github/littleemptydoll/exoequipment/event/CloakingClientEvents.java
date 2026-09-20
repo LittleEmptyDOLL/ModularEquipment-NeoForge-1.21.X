@@ -2,12 +2,14 @@ package com.github.littleemptydoll.exoequipment.event;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import com.github.littleemptydoll.exoequipment.client.CloakingClientState;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.client.event.RenderNameTagEvent;
+import net.neoforged.neoforge.common.util.TriState;
 
 @EventBusSubscriber(
         modid = ExoEquipment.MODID,
@@ -26,7 +28,7 @@ public final class CloakingClientEvents {
     @SubscribeEvent
     public static void onRenderNameTag(RenderNameTagEvent event) {
         if (CloakingClientState.isActive(event.getEntity().getId())) {
-            event.setCanceled(true);
+            event.setCanRender(TriState.FALSE);
         }
     }
 

@@ -32,6 +32,7 @@ public final class ShieldOperations {
         ExoskeletonData updatedData = data;
         double remaining = damage;
         double absorbedDamage = 0.0D;
+        boolean shieldDestroyed = false;
 
         for (ShieldTarget target : targets) {
             if (remaining <= 0.0D) {
@@ -45,9 +46,10 @@ public final class ShieldOperations {
                 continue;
             }
 
+            double previousEnergy = module.shieldEnergy();
             double absorbed = Math.min(
                     remaining,
-                    module.shieldEnergy()
+                    previousEnergy
             );
 
             updatedData = updateModule(
@@ -60,6 +62,9 @@ public final class ShieldOperations {
 
             remaining -= absorbed;
             absorbedDamage += absorbed;
+            if (previousEnergy > 0.0D && previousEnergy - absorbed <= 0.0D) {
+                shieldDestroyed = true;
+            }
         }
 
         // Any incoming damage resets the recharge cooldown of every active
@@ -79,7 +84,8 @@ public final class ShieldOperations {
         return new ShieldDamageResult(
                 Math.max(0.0D, remaining),
                 absorbedDamage,
-                updatedData
+                updatedData,
+                shieldDestroyed
         );
     }
 
@@ -288,7 +294,8 @@ public final class ShieldOperations {
     public record ShieldDamageResult(
             double remainingDamage,
             double absorbedDamage,
-            ExoskeletonData data
+            ExoskeletonData data,
+            boolean shieldDestroyed
     ) {}
     
     private record ShieldTarget(

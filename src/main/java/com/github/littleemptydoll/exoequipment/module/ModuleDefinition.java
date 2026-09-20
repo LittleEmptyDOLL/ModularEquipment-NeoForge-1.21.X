@@ -99,6 +99,7 @@ public record ModuleDefinition(
                 temperature,
                 damageReduction,
                 shield,
+                emergencyShield,
                 statusProtection,
                 nightVision,
                 entityDetection,

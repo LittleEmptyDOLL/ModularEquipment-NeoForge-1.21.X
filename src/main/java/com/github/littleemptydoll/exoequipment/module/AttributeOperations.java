@@ -40,7 +40,7 @@ public final class AttributeOperations {
                 }
 
                 definition.attributes().ifPresent(attributes ->
-                        attributes.modifiers().forEach((attributeId, modifier) -> {
+                        attributes.attributes().forEach((attributeId, modifier) -> {
                             AttributeKey key = new AttributeKey(attributeId, modifier.operation());
                             values.merge(key, modifier.amount(), Double::sum);
                         })

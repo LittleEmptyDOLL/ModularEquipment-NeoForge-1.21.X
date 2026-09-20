@@ -10,6 +10,7 @@ import com.github.littleemptydoll.exoequipment.gui.MatrixMenu;
 import com.github.littleemptydoll.exoequipment.gui.MatrixMenuProvider;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
+import com.github.littleemptydoll.exoequipment.module.BlinkOperations;
 import com.github.littleemptydoll.exoequipment.module.CloakingOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,6 +35,31 @@ public final class ModNetworking {
                         com.github.littleemptydoll.exoequipment.client.CloakingClientState
                                 .setActive(payload.entityId(), payload.active())
                 )
+        );
+
+        registrar.playToServer(
+                BlinkPayload.TYPE,
+                BlinkPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (!(context.player() instanceof ServerPlayer serverPlayer)) {
+                        return;
+                    }
+
+                    ExoskeletonMenuProvider.findBodyExoskeleton(serverPlayer)
+                            .ifPresent(exoskeleton -> {
+                                var result = BlinkOperations.activate(
+                                        ExoskeletonItem.getData(exoskeleton),
+                                        serverPlayer
+                                );
+
+                                if (result.activated()) {
+                                    exoskeleton.set(
+                                            ModDataComponents.EXOSKELETON_DATA.get(),
+                                            result.data()
+                                    );
+                                }
+                            });
+                })
         );
 
         registrar.playToServer(

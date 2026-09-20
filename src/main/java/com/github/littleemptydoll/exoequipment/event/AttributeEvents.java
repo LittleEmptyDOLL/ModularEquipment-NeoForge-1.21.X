@@ -20,6 +20,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import top.theillusivec4.curios.api.CuriosApi;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
@@ -28,7 +29,8 @@ import java.util.WeakHashMap;
 
 @EventBusSubscriber(modid = ExoEquipment.MODID)
 public final class AttributeEvents {
-    private static final Map<Player, Set<AttributeOperations.AttributeKey>> APPLIED = new WeakHashMap<>();
+    private static final Map<Player, Set<AttributeOperations.AttributeKey>> APPLIED =
+            Collections.synchronizedMap(new WeakHashMap<>());
 
     private AttributeEvents() {}
 
@@ -42,7 +44,13 @@ public final class AttributeEvents {
         Set<AttributeOperations.AttributeKey> previous =
                 APPLIED.computeIfAbsent(player, ignored -> new HashSet<>());
 
-        for (AttributeOperations.AttributeKey key : previous) {
+        Set<AttributeOperations.AttributeKey> previousSnapshot;
+
+        synchronized (previous) {
+            previousSnapshot = new HashSet<>(previous);
+        }
+
+        for (AttributeOperations.AttributeKey key : previousSnapshot) {
             if (!desired.containsKey(key)) {
                 removeModifier(player, key);
             }
@@ -58,8 +66,10 @@ public final class AttributeEvents {
             }
         }
 
-        previous.clear();
-        previous.addAll(applied);
+        synchronized (previous) {
+            previous.clear();
+            previous.addAll(applied);
+        }
     }
 
     private static Map<AttributeOperations.AttributeKey, Double> findAttributes(Player player) {

@@ -425,6 +425,30 @@ public class ModModules {
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
+            > TEST_PICKUP_MAGNET = REGISTRY.register(
+            "test_pickup_magnet",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.UTILITY,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(5))
+                            .pickupMagnet(new PickupMagnetProperties(
+                                    8.0D,
+                                    PickupMagnetProperties.Mode.BOTH
+                            ))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
             > TEST_COOLER = REGISTRY.register(
             "test_cooler",
             new EquipmentProperties(

@@ -12,6 +12,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+import com.github.littleemptydoll.exoequipment.network.CloakingStatePayload;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.Optional;
@@ -23,7 +27,7 @@ public final class CloakingEvents {
     @SubscribeEvent
     public static void onAttack(AttackEntityEvent event) {
         Player player = event.getEntity();
-        if (player.level().isClientSide() || !player.isInvisible()) {
+        if (player.level().isClientSide() || !isCloakingActive(player)) {
             return;
         }
 
@@ -34,7 +38,7 @@ public final class CloakingEvents {
     public static void onDamage(LivingIncomingDamageEvent event) {
         if (!(event.getEntity() instanceof Player player)
                 || player.level().isClientSide()
-                || !player.isInvisible()
+                || !isCloakingActive(player)
                 || event.getAmount() <= 0.0F) {
             return;
         }
@@ -54,7 +58,11 @@ public final class CloakingEvents {
                     ModDataComponents.EXOSKELETON_DATA.get(),
                     data
             );
-            player.setInvisible(false);
+            player.getPersistentData().remove(CLOAKING_MARKER);
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                    player,
+                    new CloakingStatePayload(player.getId(), false)
+            );
         });
     }
 
@@ -80,6 +88,44 @@ public final class CloakingEvents {
         }
 
         return references;
+    }
+
+    private static final String CLOAKING_MARKER = "exoequipment_cloaking";
+
+    public static void markActive(Player player) {
+        player.getPersistentData().putBoolean(CLOAKING_MARKER, true);
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                player,
+                new CloakingStatePayload(player.getId(), true)
+        );
+    }
+
+    public static boolean isCloakingActive(Player player) {
+        return player.getPersistentData().getBoolean(CLOAKING_MARKER);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTick(PlayerTickEvent.Post event) {
+        Player player = event.getEntity();
+        if (player.level().isClientSide() || !isCloakingActive(player)) {
+            return;
+        }
+
+        Optional<ItemStack> exoskeleton = findExoskeleton(player);
+        if (exoskeleton.isEmpty()) {
+            player.getPersistentData().remove(CLOAKING_MARKER);
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                    player,
+                    new CloakingStatePayload(player.getId(), false)
+            );
+        }
+    }
+
+    @SubscribeEvent
+    public static void onClone(PlayerEvent.Clone event) {
+        if (event.getOriginal().getPersistentData().getBoolean(CLOAKING_MARKER)) {
+            event.getEntity().getPersistentData().remove(CLOAKING_MARKER);
+        }
     }
 
     private static Optional<ItemStack> findExoskeleton(Player player) {

@@ -295,6 +295,10 @@ public class MatrixMenu extends AbstractContainerMenu {
                 ModDataComponents.MODULE_EMERGENCY_SHIELD_COOLDOWN.get(),
                 0
         );
+        int abilityCooldown = carried.getOrDefault(
+                ModDataComponents.MODULE_ABILITY_COOLDOWN.get(),
+                0
+        );
 
         int finalStoredEnergy = storedEnergy;
         storedEnergy = moduleDefinition.storage()
@@ -321,6 +325,11 @@ public class MatrixMenu extends AbstractContainerMenu {
                 .map(emergencyShield -> Math.min(finalEmergencyShieldCooldown, emergencyShield.cooldown()))
                 .orElse(0);
 
+        int finalAbilityCooldown = abilityCooldown;
+        abilityCooldown = moduleDefinition.cloaking()
+                .map(cloaking -> Math.min(finalAbilityCooldown, cloaking.cooldown()))
+                .orElse(0);
+
         InstalledModule module = new InstalledModule(
                 moduleDefinition.id(),
                 x,
@@ -330,7 +339,9 @@ public class MatrixMenu extends AbstractContainerMenu {
                 shieldEnergy,
                 shieldRechargeCooldown,
                 revivalCooldown,
-                emergencyShieldCooldown
+                emergencyShieldCooldown,
+                false,
+                abilityCooldown
         );
         MatrixData updated = MatrixOperations.addModule(matrix, definition, module);
         applyMatrixData(player, updated);
@@ -401,6 +412,23 @@ public class MatrixMenu extends AbstractContainerMenu {
             );
         }
 
+        if (module.active()) {
+            com.github.littleemptydoll.exoequipment.event.CloakingEvents.markInactive(player);
+        }
+
+        if (module.abilityCooldown() > 0) {
+            var cloaking = definition.cloaking();
+            if (cloaking.isPresent()) {
+                moduleStack.set(
+                        ModDataComponents.MODULE_ABILITY_COOLDOWN.get(),
+                        Math.min(
+                                module.abilityCooldown(),
+                                cloaking.get().cooldown()
+                        )
+                );
+            }
+        }
+
         if (!giveModule(player, moduleStack)) return false;
         applyMatrixData(player, MatrixOperations.removeModule(matrix, x, y));
         return true;
@@ -426,7 +454,9 @@ public class MatrixMenu extends AbstractContainerMenu {
                 module.shieldEnergy(),
                 module.shieldRechargeCooldown(),
                 module.revivalCooldown(),
-                module.emergencyShieldCooldown()
+                module.emergencyShieldCooldown(),
+                module.active(),
+                module.abilityCooldown()
         );
         MatrixData updated = replaceModule(matrix, definition, module, movedModule);
         if (updated.equals(matrix)) return false;

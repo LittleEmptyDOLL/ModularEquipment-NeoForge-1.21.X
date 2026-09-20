@@ -62,7 +62,8 @@ public final class MatrixOperations {
                 module.storedEnergy(),
                 module.shieldEnergy(),
                 module.shieldRechargeCooldown(),
-                module.revivalCooldown()
+                module.revivalCooldown(),
+                module.emergencyShieldCooldown()
         );
         return replaceModule(matrix, matrixDefinition, module, rotatedModule);
     }
@@ -79,7 +80,8 @@ public final class MatrixOperations {
                 module.storedEnergy(),
                 module.shieldEnergy(),
                 module.shieldRechargeCooldown(),
-                module.revivalCooldown()
+                module.revivalCooldown(),
+                module.emergencyShieldCooldown()
         );
         return replaceModule(matrix, matrixDefinition, module, movedModule);
     }

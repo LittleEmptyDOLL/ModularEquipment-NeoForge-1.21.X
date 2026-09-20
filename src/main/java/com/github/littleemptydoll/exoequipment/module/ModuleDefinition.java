@@ -23,6 +23,7 @@ public record ModuleDefinition(
         Optional<DamageReductionProperties> damageReduction,
         Optional<ShieldProperties> shield,
         Optional<EmergencyShieldProperties> emergencyShield,
+        Optional<CloakingProperties> cloaking,
         Optional<StatusProtectionProperties> statusProtection,
         Optional<NightVisionProperties> nightVision,
         Optional<EntityDetectionProperties> entityDetection,
@@ -100,6 +101,7 @@ public record ModuleDefinition(
                 damageReduction,
                 shield,
                 emergencyShield,
+                cloaking,
                 statusProtection,
                 nightVision,
                 entityDetection,
@@ -141,6 +143,7 @@ public record ModuleDefinition(
                 optional.damageReduction(),
                 optional.shield(),
                 optional.emergencyShield(),
+                optional.cloaking(),
                 optional.statusProtection(),
                 optional.nightVision(),
                 optional.entityDetection(),
@@ -183,6 +186,7 @@ public record ModuleDefinition(
         private DamageReductionProperties damageReduction;
         private ShieldProperties shield;
         private EmergencyShieldProperties emergencyShield;
+        private CloakingProperties cloaking;
         private StatusProtectionProperties statusProtection;
         private NightVisionProperties nightVision;
         private EntityDetectionProperties entityDetection;
@@ -257,6 +261,11 @@ public record ModuleDefinition(
 
         public Builder emergencyShield(EmergencyShieldProperties emergencyShield) {
             this.emergencyShield = emergencyShield;
+            return this;
+        }
+
+        public Builder cloaking(CloakingProperties cloaking) {
+            this.cloaking = cloaking;
             return this;
         }
 
@@ -346,6 +355,7 @@ public record ModuleDefinition(
                     Optional.ofNullable(damageReduction),
                     Optional.ofNullable(shield),
                     Optional.ofNullable(emergencyShield),
+                    Optional.ofNullable(cloaking),
                     Optional.ofNullable(statusProtection),
                     Optional.ofNullable(nightVision),
                     Optional.ofNullable(entityDetection),

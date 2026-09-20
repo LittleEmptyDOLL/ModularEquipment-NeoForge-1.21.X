@@ -59,6 +59,9 @@ public record ModuleDefinition(
                                     ModuleDefinition::optionalProperties,
                                     ModuleOptionalProperties.CODEC
                             ),
+                            BlinkProperties.CODEC
+                                    .optionalFieldOf("blink")
+                                    .forGetter(ModuleDefinition::blink),
                             AttributeProperties.CODEC
                                     .optionalFieldOf("attributes")
                                     .forGetter(ModuleDefinition::attributes),
@@ -103,7 +106,6 @@ public record ModuleDefinition(
                 shield,
                 emergencyShield,
                 cloaking,
-                blink,
                 statusProtection,
                 nightVision,
                 entityDetection,
@@ -120,6 +122,7 @@ public record ModuleDefinition(
             ModuleCategory category,
             ModuleSize size,
             ModuleOptionalProperties optional,
+            Optional<BlinkProperties> blink,
             Optional<AttributeProperties> attributes,
             Optional<ConditionalAttributeProperties> conditionalAttributes,
             Optional<PickupMagnetProperties> pickupMagnet,
@@ -146,7 +149,7 @@ public record ModuleDefinition(
                 optional.shield(),
                 optional.emergencyShield(),
                 optional.cloaking(),
-                optional.blink(),
+                blink,
                 optional.statusProtection(),
                 optional.nightVision(),
                 optional.entityDetection(),

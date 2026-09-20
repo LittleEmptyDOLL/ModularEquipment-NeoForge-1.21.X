@@ -291,6 +291,10 @@ public class MatrixMenu extends AbstractContainerMenu {
                 ModDataComponents.MODULE_REVIVAL_COOLDOWN.get(),
                 0
         );
+        int emergencyShieldCooldown = carried.getOrDefault(
+                ModDataComponents.MODULE_EMERGENCY_SHIELD_COOLDOWN.get(),
+                0
+        );
 
         int finalStoredEnergy = storedEnergy;
         storedEnergy = moduleDefinition.storage()
@@ -312,6 +316,11 @@ public class MatrixMenu extends AbstractContainerMenu {
                 .map(revival -> Math.min(finalRevivalCooldown, revival.cooldown()))
                 .orElse(0);
 
+        int finalEmergencyShieldCooldown = emergencyShieldCooldown;
+        emergencyShieldCooldown = moduleDefinition.emergencyShield()
+                .map(emergencyShield -> Math.min(finalEmergencyShieldCooldown, emergencyShield.cooldown()))
+                .orElse(0);
+
         InstalledModule module = new InstalledModule(
                 moduleDefinition.id(),
                 x,
@@ -320,7 +329,8 @@ public class MatrixMenu extends AbstractContainerMenu {
                 storedEnergy,
                 shieldEnergy,
                 shieldRechargeCooldown,
-                revivalCooldown
+                revivalCooldown,
+                emergencyShieldCooldown
         );
         MatrixData updated = MatrixOperations.addModule(matrix, definition, module);
         applyMatrixData(player, updated);
@@ -379,6 +389,18 @@ public class MatrixMenu extends AbstractContainerMenu {
                     )
             );
         }
+
+        var emergencyShield = definition.emergencyShield();
+        if (emergencyShield.isPresent() && module.emergencyShieldCooldown() > 0) {
+            moduleStack.set(
+                    ModDataComponents.MODULE_EMERGENCY_SHIELD_COOLDOWN.get(),
+                    Math.min(
+                            module.emergencyShieldCooldown(),
+                            emergencyShield.get().cooldown()
+                    )
+            );
+        }
+
         if (!giveModule(player, moduleStack)) return false;
         applyMatrixData(player, MatrixOperations.removeModule(matrix, x, y));
         return true;
@@ -403,7 +425,8 @@ public class MatrixMenu extends AbstractContainerMenu {
                 module.storedEnergy(),
                 module.shieldEnergy(),
                 module.shieldRechargeCooldown(),
-                module.revivalCooldown()
+                module.revivalCooldown(),
+                module.emergencyShieldCooldown()
         );
         MatrixData updated = replaceModule(matrix, definition, module, movedModule);
         if (updated.equals(matrix)) return false;

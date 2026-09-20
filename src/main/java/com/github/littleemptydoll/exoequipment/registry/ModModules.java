@@ -950,4 +950,35 @@ public class ModModules {
         );
     }
 
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
+            > TEST_BLOCK_SCANNER = REGISTRY.register(
+            "test_block_scanner",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.SENSOR,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(5))
+                            .blockScanner(new BlockScannerProperties(
+                                    16.0D,
+                                    java.util.List.of(
+                                            ResourceLocation.parse("minecraft:iron_ore"),
+                                            ResourceLocation.parse("minecraft:deepslate_iron_ore")
+                                    ),
+                                    java.util.List.of(
+                                            ResourceLocation.parse("minecraft:ores")
+                                    )
+                            ))
+                            .build()
+    );
+
 }

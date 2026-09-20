@@ -101,25 +101,25 @@ public final class BlinkOperations {
                 player
         ));
 
-        double travelled = hit.getType() == HitResult.Type.BLOCK
-                ? start.distanceTo(hit.getLocation())
-                : distance;
+        // Blink follows the same basic rule as an Ender Pearl:
+        // the ray starts at the player's eyes and, when it hits a block,
+        // the hit position itself becomes the teleport target.
+        //
+        // Do not convert the hit position to the player's feet position
+        // and do not shift it downward. This is important when the ray
+        // hits the ground or a nearby block.
+        Vec3 destination = hit.getType() == HitResult.Type.BLOCK
+                ? hit.getLocation()
+                : requested;
 
-        travelled = Math.max(0.0D, travelled - COLLISION_EPSILON);
+        double travelled = start.distanceTo(destination);
         if (travelled <= COLLISION_EPSILON) {
             return null;
         }
 
-        // The ray starts at the player's eyes, but teleportTo uses the
-        // player's feet position. Apply only the horizontal/vertical
-        // displacement along the look direction to the current entity
-        // position, rather than using the eye position as the destination.
-        Vec3 destination = player.position().add(direction.scale(travelled));
-
-        // Start at the requested destination and move backwards until the
-        // entire player bounding box fits. Always test the final point so
-        // short-distance blinks are not lost because SEARCH_STEP is larger
-        // than the remaining distance.
+        // The exact hit position can intersect the player's bounding box.
+        // If that happens, move the target back along the same ray until
+        // the complete player bounding box fits.
         for (double offset = 0.0D; offset <= travelled; offset += SEARCH_STEP) {
             double actualOffset = Math.min(offset, travelled);
             Vec3 candidate = destination.subtract(direction.scale(actualOffset));

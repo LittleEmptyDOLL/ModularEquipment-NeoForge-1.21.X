@@ -310,6 +310,31 @@ public class ModModules {
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
+            > TEST_COMBAT = REGISTRY.register(
+            "test_combat",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.COMBAT,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(10))
+                            .combat(new CombatProperties(
+                                    4.0D,
+                                    1.0D,
+                                    4.0D
+                            ))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
             > TEST_COOLER = REGISTRY.register(
             "test_cooler",
             new EquipmentProperties(

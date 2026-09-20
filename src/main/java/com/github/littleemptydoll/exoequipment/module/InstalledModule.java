@@ -14,7 +14,9 @@ public record InstalledModule(
         double shieldEnergy,
         int shieldRechargeCooldown,
         int revivalCooldown,
-        int emergencyShieldCooldown
+        int emergencyShieldCooldown,
+        boolean active,
+        int abilityCooldown
 ) {
     public static final Codec<InstalledModule> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -27,16 +29,18 @@ public record InstalledModule(
                             Codec.DOUBLE.optionalFieldOf("shield_energy", 0.0D).forGetter(InstalledModule::shieldEnergy),
                             Codec.INT.optionalFieldOf("shield_recharge_cooldown", 0).forGetter(InstalledModule::shieldRechargeCooldown),
                             Codec.INT.optionalFieldOf("revival_cooldown", 0).forGetter(InstalledModule::revivalCooldown),
-                            Codec.INT.optionalFieldOf("emergency_shield_cooldown", 0).forGetter(InstalledModule::emergencyShieldCooldown)
+                            Codec.INT.optionalFieldOf("emergency_shield_cooldown", 0).forGetter(InstalledModule::emergencyShieldCooldown),
+                            Codec.BOOL.optionalFieldOf("active", false).forGetter(InstalledModule::active),
+                            Codec.INT.optionalFieldOf("ability_cooldown", 0).forGetter(InstalledModule::abilityCooldown)
                     ).apply(instance, InstalledModule::new)
             );
 
     public InstalledModule(ResourceLocation id, int x, int y, int rotation) {
-        this(id, x, y, rotation, 0, 0.0D, 0, 0, 0);
+        this(id, x, y, rotation, 0, 0.0D, 0, 0, 0, false, 0);
     }
 
     public InstalledModule(ResourceLocation id, int x, int y, int rotation, int storedEnergy) {
-        this(id, x, y, rotation, storedEnergy, 0.0D, 0, 0, 0);
+        this(id, x, y, rotation, storedEnergy, 0.0D, 0, 0, 0, false, 0);
     }
 
     public InstalledModule {
@@ -50,25 +54,35 @@ public record InstalledModule(
             throw new IllegalArgumentException("Revival cooldown cannot be negative");
         if (emergencyShieldCooldown < 0)
             throw new IllegalArgumentException("Emergency shield cooldown cannot be negative");
+        if (abilityCooldown < 0)
+            throw new IllegalArgumentException("Ability cooldown cannot be negative");
     }
 
     public InstalledModule withStoredEnergy(int value) {
-        return new InstalledModule(id, x, y, rotation, value, shieldEnergy, shieldRechargeCooldown, revivalCooldown, emergencyShieldCooldown);
+        return new InstalledModule(id, x, y, rotation, value, shieldEnergy, shieldRechargeCooldown, revivalCooldown, emergencyShieldCooldown, active, abilityCooldown);
     }
 
     public InstalledModule withShieldEnergy(double value) {
-        return new InstalledModule(id, x, y, rotation, storedEnergy, value, shieldRechargeCooldown, revivalCooldown, emergencyShieldCooldown);
+        return new InstalledModule(id, x, y, rotation, storedEnergy, value, shieldRechargeCooldown, revivalCooldown, emergencyShieldCooldown, active, abilityCooldown);
     }
 
     public InstalledModule withShieldRechargeCooldown(int value) {
-        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, value, revivalCooldown, emergencyShieldCooldown);
+        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, value, revivalCooldown, emergencyShieldCooldown, active, abilityCooldown);
     }
 
     public InstalledModule withRevivalCooldown(int value) {
-        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, shieldRechargeCooldown, value, emergencyShieldCooldown);
+        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, shieldRechargeCooldown, value, emergencyShieldCooldown, active, abilityCooldown);
     }
 
     public InstalledModule withEmergencyShieldCooldown(int value) {
-        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, shieldRechargeCooldown, revivalCooldown, value);
+        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, shieldRechargeCooldown, revivalCooldown, value, active, abilityCooldown);
+    }
+
+    public InstalledModule withActive(boolean value) {
+        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, shieldRechargeCooldown, revivalCooldown, emergencyShieldCooldown, value, abilityCooldown);
+    }
+
+    public InstalledModule withAbilityCooldown(int value) {
+        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, shieldRechargeCooldown, revivalCooldown, emergencyShieldCooldown, active, value);
     }
 }

@@ -23,6 +23,15 @@ public final class ModNetworking {
     private static void registerPayloads(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1");
 
+        registrar.playToClient(
+                CloakingStatePayload.TYPE,
+                CloakingStatePayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() ->
+                        com.github.littleemptydoll.exoequipment.client.CloakingClientState
+                                .setActive(payload.entityId(), payload.active())
+                )
+        );
+
         registrar.playToServer(
                 CloakingPayload.TYPE,
                 CloakingPayload.STREAM_CODEC,
@@ -45,7 +54,8 @@ public final class ModNetworking {
                                                     .EXOSKELETON_DATA.get(),
                                             result.data()
                                     );
-                                    serverPlayer.setInvisible(true);
+                                    com.github.littleemptydoll.exoequipment.event.CloakingEvents
+                                            .markActive(serverPlayer);
                                 }
                             });
                 })

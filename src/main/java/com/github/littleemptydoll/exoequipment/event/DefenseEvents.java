@@ -61,14 +61,6 @@ public final class DefenseEvents {
 
         DamageSource source = event.getSource();
 
-        if (com.github.littleemptydoll.exoequipment.module.DamageChanceProtectionOperations.blocksDamage(
-                data,
-                runtime.poweredModules()
-        )) {
-            event.setCanceled(true);
-            return;
-        }
-
         ResourceLocation damageType =
                 source.typeHolder()
                         .unwrapKey()

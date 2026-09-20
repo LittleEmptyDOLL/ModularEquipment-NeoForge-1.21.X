@@ -20,6 +20,10 @@ public final class CloakingClientState {
         return ACTIVE_ENTITIES.contains(entityId);
     }
 
+    public static Set<Integer> activeEntities() {
+        return Set.copyOf(ACTIVE_ENTITIES);
+    }
+
     public static void clear() {
         ACTIVE_ENTITIES.clear();
     }

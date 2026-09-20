@@ -1,13 +1,17 @@
 package com.github.littleemptydoll.exoequipment.network;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.event.CloakingEvents;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenu;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenuProvider;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonProfileMenu;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonProfileMenuProvider;
 import com.github.littleemptydoll.exoequipment.gui.MatrixMenu;
 import com.github.littleemptydoll.exoequipment.gui.MatrixMenuProvider;
+import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
+import com.github.littleemptydoll.exoequipment.module.CloakingOperations;
+import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -42,19 +46,21 @@ public final class ModNetworking {
 
                     ExoskeletonMenuProvider.findBodyExoskeleton(serverPlayer)
                             .ifPresent(exoskeleton -> {
-                                var result = com.github.littleemptydoll.exoequipment.module.CloakingOperations
-                                        .activate(
-                                                com.github.littleemptydoll.exoequipment.item.ExoskeletonItem.getData(exoskeleton)
-                                        );
+                                if (CloakingEvents.isCloakingActive(serverPlayer)) {
+                                    CloakingEvents.deactivate(serverPlayer);
+                                    return;
+                                }
+
+                                var result = CloakingOperations.activate(
+                                        ExoskeletonItem.getData(exoskeleton)
+                                );
 
                                 if (result.activated()) {
                                     exoskeleton.set(
-                                            com.github.littleemptydoll.exoequipment.registry.ModDataComponents
-                                                    .EXOSKELETON_DATA.get(),
+                                            ModDataComponents.EXOSKELETON_DATA.get(),
                                             result.data()
                                     );
-                                    com.github.littleemptydoll.exoequipment.event.CloakingEvents
-                                            .markActive(serverPlayer);
+                                    CloakingEvents.markActive(serverPlayer);
                                 }
                             });
                 })

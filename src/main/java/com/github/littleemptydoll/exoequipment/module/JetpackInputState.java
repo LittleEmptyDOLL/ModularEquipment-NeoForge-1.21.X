@@ -27,7 +27,15 @@ public final class JetpackInputState {
     }
 
     public static boolean isThrusting(Player player) {
-        return get(player) != 0;
+        return isEnergyActive(player);
+    }
+
+    public static boolean isEnergyActive(Player player) {
+        byte input = get(player);
+        if (player.isFallFlying()) {
+            return has(input, UP);
+        }
+        return input != 0;
     }
 
     public static boolean has(byte input, int flag) {

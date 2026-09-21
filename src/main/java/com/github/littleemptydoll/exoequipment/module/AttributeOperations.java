@@ -20,9 +20,22 @@ public final class AttributeOperations {
             ExoskeletonData data,
             Set<InstalledModuleReference> poweredModules
     ) {
+        return calculate(player, data, null, poweredModules);
+    }
+
+    public static Map<AttributeKey, Double> calculate(
+            Player player,
+            ExoskeletonData data,
+            Integer matrixSlot,
+            Set<InstalledModuleReference> poweredModules
+    ) {
         Map<AttributeKey, Double> values = new HashMap<>();
 
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
+        Iterable<Integer> slots = matrixSlot == null
+                ? ExoskeletonState.activeMatrixSlots(data)::iterator
+                : java.util.List.of(matrixSlot);
+
+        for (int slot : slots) {
             var matrix = data.matrices().get(slot).matrix().orElse(null);
             if (matrix == null) continue;
 

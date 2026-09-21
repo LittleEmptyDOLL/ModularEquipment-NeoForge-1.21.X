@@ -3,6 +3,7 @@ package com.github.littleemptydoll.exoequipment.client;
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.network.BlinkPayload;
 import com.github.littleemptydoll.exoequipment.network.FlightPayload;
+import com.github.littleemptydoll.exoequipment.network.JetpackInputPayload;
 import com.github.littleemptydoll.exoequipment.network.CloakingPayload;
 import com.github.littleemptydoll.exoequipment.network.OpenExoskeletonPayload;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -65,6 +66,27 @@ final class ModKeyMappingHandler {
         while (ModKeyMappings.ACTIVATE_FLIGHT.consumeClick()) {
             PacketDistributor.sendToServer(new FlightPayload());
         }
+
+        byte jetpackInput = 0;
+        if (Minecraft.getInstance().options.keyUp.isDown()) {
+            jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.UP;
+        }
+        if (Minecraft.getInstance().options.keyDown.isDown()) {
+            jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.DOWN;
+        }
+        if (Minecraft.getInstance().options.keyLeft.isDown()) {
+            jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.LEFT;
+        }
+        if (Minecraft.getInstance().options.keyRight.isDown()) {
+            jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.RIGHT;
+        }
+        if (Minecraft.getInstance().options.keyJump.isDown()) {
+            jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.UP;
+        }
+        if (Minecraft.getInstance().options.keyShift.isDown()) {
+            jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.DOWN;
+        }
+        PacketDistributor.sendToServer(new JetpackInputPayload(jetpackInput));
 
         while (ModKeyMappings.OPEN_EXOSKELETON.consumeClick()) {
             PacketDistributor.sendToServer(new OpenExoskeletonPayload());

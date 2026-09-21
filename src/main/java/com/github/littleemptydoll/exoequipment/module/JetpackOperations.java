@@ -68,6 +68,13 @@ public final class JetpackOperations {
         }
 
         double newY = velocity.y + vertical;
+
+        if (JetpackInputState.has(input, JetpackInputState.UP)) {
+            newY = Math.max(newY, properties.verticalThrust());
+        } else if (JetpackInputState.has(input, JetpackInputState.DOWN)) {
+            newY = Math.min(newY, -properties.verticalThrust());
+        }
+
         newY = Math.max(
                 -properties.maxVerticalSpeed(),
                 Math.min(properties.maxVerticalSpeed(), newY)

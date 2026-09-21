@@ -975,7 +975,7 @@ public class ModModules {
                                             ResourceLocation.parse("minecraft:deepslate_iron_ore")
                                     ),
                                     java.util.List.of(
-                                            ResourceLocation.parse("minecraft:ores")
+                                            ResourceLocation.parse("c:ores")
                                     )
                             ))
                             .build()

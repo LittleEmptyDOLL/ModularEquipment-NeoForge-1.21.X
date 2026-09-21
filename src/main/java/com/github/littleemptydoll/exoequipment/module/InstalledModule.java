@@ -16,7 +16,8 @@ public record InstalledModule(
         int revivalCooldown,
         int emergencyShieldCooldown,
         boolean active,
-        int abilityCooldown
+        int abilityCooldown,
+        boolean flightActive
 ) {
     public static final Codec<InstalledModule> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -31,16 +32,17 @@ public record InstalledModule(
                             Codec.INT.optionalFieldOf("revival_cooldown", 0).forGetter(InstalledModule::revivalCooldown),
                             Codec.INT.optionalFieldOf("emergency_shield_cooldown", 0).forGetter(InstalledModule::emergencyShieldCooldown),
                             Codec.BOOL.optionalFieldOf("active", false).forGetter(InstalledModule::active),
-                            Codec.INT.optionalFieldOf("ability_cooldown", 0).forGetter(InstalledModule::abilityCooldown)
+                            Codec.INT.optionalFieldOf("ability_cooldown", 0).forGetter(InstalledModule::abilityCooldown),
+                            Codec.BOOL.optionalFieldOf("flight_active", false).forGetter(InstalledModule::flightActive)
                     ).apply(instance, InstalledModule::new)
             );
 
     public InstalledModule(ResourceLocation id, int x, int y, int rotation) {
-        this(id, x, y, rotation, 0, 0.0D, 0, 0, 0, false, 0);
+        this(id, x, y, rotation, 0, 0.0D, 0, 0, 0, false, 0, false);
     }
 
     public InstalledModule(ResourceLocation id, int x, int y, int rotation, int storedEnergy) {
-        this(id, x, y, rotation, storedEnergy, 0.0D, 0, 0, 0, false, 0);
+        this(id, x, y, rotation, storedEnergy, 0.0D, 0, 0, 0, false, 0, false);
     }
 
     public InstalledModule {
@@ -59,30 +61,34 @@ public record InstalledModule(
     }
 
     public InstalledModule withStoredEnergy(int value) {
-        return new InstalledModule(id, x, y, rotation, value, shieldEnergy, shieldRechargeCooldown, revivalCooldown, emergencyShieldCooldown, active, abilityCooldown);
+        return new InstalledModule(id, x, y, rotation, value, shieldEnergy, shieldRechargeCooldown, revivalCooldown, emergencyShieldCooldown, active, abilityCooldown, flightActive);
     }
 
     public InstalledModule withShieldEnergy(double value) {
-        return new InstalledModule(id, x, y, rotation, storedEnergy, value, shieldRechargeCooldown, revivalCooldown, emergencyShieldCooldown, active, abilityCooldown);
+        return new InstalledModule(id, x, y, rotation, storedEnergy, value, shieldRechargeCooldown, revivalCooldown, emergencyShieldCooldown, active, abilityCooldown, flightActive);
     }
 
     public InstalledModule withShieldRechargeCooldown(int value) {
-        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, value, revivalCooldown, emergencyShieldCooldown, active, abilityCooldown);
+        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, value, revivalCooldown, emergencyShieldCooldown, active, abilityCooldown, flightActive);
     }
 
     public InstalledModule withRevivalCooldown(int value) {
-        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, shieldRechargeCooldown, value, emergencyShieldCooldown, active, abilityCooldown);
+        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, shieldRechargeCooldown, value, emergencyShieldCooldown, active, abilityCooldown, flightActive);
     }
 
     public InstalledModule withEmergencyShieldCooldown(int value) {
-        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, shieldRechargeCooldown, revivalCooldown, value, active, abilityCooldown);
+        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, shieldRechargeCooldown, revivalCooldown, value, active, abilityCooldown, flightActive);
     }
 
     public InstalledModule withActive(boolean value) {
-        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, shieldRechargeCooldown, revivalCooldown, emergencyShieldCooldown, value, abilityCooldown);
+        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, shieldRechargeCooldown, revivalCooldown, emergencyShieldCooldown, value, abilityCooldown, flightActive);
     }
 
     public InstalledModule withAbilityCooldown(int value) {
-        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, shieldRechargeCooldown, revivalCooldown, emergencyShieldCooldown, active, value);
+        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, shieldRechargeCooldown, revivalCooldown, emergencyShieldCooldown, active, value, flightActive);
+    }
+
+    public InstalledModule withFlightActive(boolean value) {
+        return new InstalledModule(id, x, y, rotation, storedEnergy, shieldEnergy, shieldRechargeCooldown, revivalCooldown, emergencyShieldCooldown, active, abilityCooldown, value);
     }
 }

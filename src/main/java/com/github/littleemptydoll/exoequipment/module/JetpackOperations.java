@@ -48,6 +48,10 @@ public final class JetpackOperations {
             return data;
         }
 
+        if (player.onGround()) {
+            return data;
+        }
+
         applyNormalThrust(player, input, properties);
         return data;
     }
@@ -68,13 +72,6 @@ public final class JetpackOperations {
         }
 
         double newY = velocity.y + vertical;
-
-        if (JetpackInputState.has(input, JetpackInputState.UP)) {
-            newY = Math.max(newY, properties.verticalThrust());
-        } else if (JetpackInputState.has(input, JetpackInputState.DOWN)) {
-            newY = Math.min(newY, -properties.verticalThrust());
-        }
-
         newY = Math.max(
                 -properties.maxVerticalSpeed(),
                 Math.min(properties.maxVerticalSpeed(), newY)
@@ -95,7 +92,7 @@ public final class JetpackOperations {
             strafeInput -= 1.0D;
         }
 
-        Vec3 horizontal = Vec3.ZERO;
+        Vec3 targetHorizontal = Vec3.ZERO;
         if (forwardInput != 0.0D || strafeInput != 0.0D) {
             Vec3 forward = player.getLookAngle();
             forward = new Vec3(forward.x, 0.0D, forward.z);
@@ -109,17 +106,19 @@ public final class JetpackOperations {
                     .add(right.scale(strafeInput));
 
             if (direction.lengthSqr() > 1.0E-8D) {
-                horizontal = direction.normalize()
+                targetHorizontal = direction.normalize()
                         .scale(properties.horizontalSpeed());
             }
         }
 
-        double horizontalSpeedSqr = velocity.x * velocity.x + velocity.z * velocity.z;
-        Vec3 newHorizontal = horizontal;
-        if (horizontalSpeedSqr > 0.0D && horizontal.lengthSqr() == 0.0D) {
-            newHorizontal = new Vec3(velocity.x, 0.0D, velocity.z)
-                    .scale(0.95D);
-        }
+        Vec3 currentHorizontal = new Vec3(velocity.x, 0.0D, velocity.z);
+        double horizontalAcceleration = properties.horizontalSpeed() * 0.10D;
+
+        Vec3 newHorizontal = approachVector(
+                currentHorizontal,
+                targetHorizontal,
+                horizontalAcceleration
+        );
 
         player.setDeltaMovement(
                 new Vec3(
@@ -128,6 +127,21 @@ public final class JetpackOperations {
                         newHorizontal.z
                 )
         );
+    }
+
+    private static Vec3 approachVector(
+            Vec3 current,
+            Vec3 target,
+            double maxChange
+    ) {
+        Vec3 delta = target.subtract(current);
+        double distance = delta.length();
+
+        if (distance <= maxChange || distance < 1.0E-8D) {
+            return target;
+        }
+
+        return current.add(delta.scale(maxChange / distance));
     }
 
     private static void applyElytraBoost(

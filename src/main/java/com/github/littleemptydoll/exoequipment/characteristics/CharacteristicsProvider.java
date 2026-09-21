@@ -368,9 +368,6 @@ public final class CharacteristicsProvider {
                 if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
                 var definition = ModModules.getDefinition(module.id());
                 flight |= definition.flight().isPresent();
-                definition.jetpack().ifPresent(p -> {
-                    // values are accumulated below through mutable holders
-                });
             }
         }
 
@@ -382,17 +379,11 @@ public final class CharacteristicsProvider {
             for (InstalledModule module : matrix.modules()) {
                 if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
                 var definition = ModModules.getDefinition(module.id());
-                definition.jetpack().ifPresent(p -> {
-                    // handled below via local array is not possible in Java lambdas
-                });
                 if (definition.jetpack().isPresent()) {
                     JetpackProperties p = definition.jetpack().get();
                     jetpackThrust = Math.max(jetpackThrust, p.verticalThrust());
                     jetpackSpeed = Math.max(jetpackSpeed, p.horizontalSpeed());
-                    p.elytra().ifPresent(e -> {
-                        // no-op; values are handled in a direct pass below
-                    });
-                }
+                    }
                 definition.blink().ifPresent(p -> {
                     blinkDistance = Math.max(blinkDistance, p.distance());
                     blinkEnergy = Math.max(blinkEnergy, p.activationEnergy());
@@ -456,9 +447,6 @@ public final class CharacteristicsProvider {
             for (InstalledModule module : matrix.modules()) {
                 if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
                 var definition = ModModules.getDefinition(module.id());
-                definition.revival().ifPresent(p -> {
-                    // aggregated below without relying on module activation state
-                });
                 if (definition.revival().isPresent()) {
                     RevivalProperties p = definition.revival().get();
                     revivalRestore = Math.max(revivalRestore, p.restoreHealth());
@@ -497,15 +485,14 @@ public final class CharacteristicsProvider {
                 if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
                 var definition = ModModules.getDefinition(module.id());
                 nightVision |= definition.nightVision().isPresent();
-                definition.entityDetection().ifPresent(p -> {
-                    // values are assigned in the direct branch below
-                });
                 if (definition.entityDetection().isPresent()) {
                     EntityDetectionProperties p = definition.entityDetection().get();
                     entityRange = Math.max(entityRange, p.range());
                     players |= p.players(); mobs |= p.mobs(); hostile |= p.hostile();
                 }
-                definition.blockScanner().ifPresent(p -> blockRange = Math.max(blockRange, p.range()));
+                if (definition.blockScanner().isPresent()) {
+                    blockRange = Math.max(blockRange, definition.blockScanner().get().range());
+                }
             }
         }
 
@@ -544,9 +531,6 @@ public final class CharacteristicsProvider {
             for (InstalledModule module : matrix.modules()) {
                 if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
                 var definition = ModModules.getDefinition(module.id());
-                definition.cloaking().ifPresent(p -> {
-                    // direct assignment below
-                });
                 if (definition.cloaking().isPresent()) {
                     CloakingProperties p = definition.cloaking().get();
                     cloakConsumption = Math.max(cloakConsumption, p.activeConsumption());

@@ -2,9 +2,12 @@ package com.github.littleemptydoll.exoequipment.client;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import net.minecraft.client.Minecraft;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
@@ -19,6 +22,28 @@ import java.util.List;
         value = Dist.CLIENT
 )
 public final class BlockScannerClient {
+    private static final RenderType SEE_THROUGH_LINES = RenderType.create(
+            "exoequipment:block_scanner",
+            DefaultVertexFormat.POSITION_COLOR,
+            VertexFormat.Mode.LINES,
+            256,
+            false,
+            false,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
+                    .setLineState(RenderStateShard.DEFAULT_LINE)
+                    .setDepthTestState(RenderStateShard.NO_DEPTH_TEST)
+                    .setTransparencyState(RenderStateShard.NO_TRANSPARENCY)
+                    .setTextureState(RenderStateShard.NO_TEXTURE)
+                    .setLightmapState(RenderStateShard.NO_LIGHTMAP)
+                    .setOverlayState(RenderStateShard.NO_OVERLAY)
+                    .setCullState(RenderStateShard.NO_CULL)
+                    .setLayeringState(RenderStateShard.NO_LAYERING)
+                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                    .setOutputState(RenderStateShard.MAIN_TARGET)
+                    .createCompositeState(false)
+    );
+
     private static volatile List<BlockPos> positions = List.of();
 
     private BlockScannerClient() {}
@@ -47,7 +72,7 @@ public final class BlockScannerClient {
         MultiBufferSource.BufferSource bufferSource =
                 minecraft.renderBuffers().bufferSource();
 
-        var consumer = bufferSource.getBuffer(RenderType.lines());
+        var consumer = bufferSource.getBuffer(SEE_THROUGH_LINES);
 
         event.getPoseStack().pushPose();
         event.getPoseStack().translate(

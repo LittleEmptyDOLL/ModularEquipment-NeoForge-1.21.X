@@ -70,10 +70,10 @@ final class ModKeyMappingHandler {
 
         byte jetpackInput = 0;
         if (Minecraft.getInstance().options.keyUp.isDown()) {
-            jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.UP;
+            jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.FORWARD;
         }
         if (Minecraft.getInstance().options.keyDown.isDown()) {
-            jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.DOWN;
+            jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.BACK;
         }
         if (Minecraft.getInstance().options.keyLeft.isDown()) {
             jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.LEFT;

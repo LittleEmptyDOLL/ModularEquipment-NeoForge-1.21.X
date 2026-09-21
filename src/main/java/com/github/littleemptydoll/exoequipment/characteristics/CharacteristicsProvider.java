@@ -11,6 +11,14 @@ import com.github.littleemptydoll.exoequipment.module.BodyDamageProtectionOperat
 import com.github.littleemptydoll.exoequipment.module.BodyPart;
 import com.github.littleemptydoll.exoequipment.module.DefenseOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
+import com.github.littleemptydoll.exoequipment.module.InstalledModule;
+import com.github.littleemptydoll.exoequipment.module.JetpackProperties;
+import com.github.littleemptydoll.exoequipment.module.ElytraBoostProperties;
+import com.github.littleemptydoll.exoequipment.module.RevivalProperties;
+import com.github.littleemptydoll.exoequipment.module.EntityDetectionProperties;
+import com.github.littleemptydoll.exoequipment.module.PickupMagnetProperties;
+import com.github.littleemptydoll.exoequipment.module.CloakingProperties;
+import com.github.littleemptydoll.exoequipment.module.EmergencyShieldProperties;
 import com.github.littleemptydoll.exoequipment.module.RegenerationOperations;
 import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
@@ -34,6 +42,10 @@ public final class CharacteristicsProvider {
         addShield(result, context);
         addRegeneration(result, context);
         addAttributes(result, context);
+        addMobility(result, context);
+        addSurvival(result, context);
+        addSensors(result, context);
+        addUtility(result, context);
 
         result.sort(
                 Comparator.comparing(Characteristic::category)
@@ -330,6 +342,230 @@ public final class CharacteristicsProvider {
                     CharacteristicType.CURRENT,
                     healthPerSecond
             ));
+        }
+    }
+
+    private static void addMobility(
+            List<Characteristic> result,
+            CharacteristicsContext context
+    ) {
+        int matrixStart = context.isMatrixScope() ? context.matrixSlot() : 0;
+        int matrixEnd = context.isMatrixScope() ? context.matrixSlot() + 1 : context.data().matrices().size();
+
+        boolean flight = false;
+        double jetpackThrust = 0.0D;
+        double jetpackSpeed = 0.0D;
+        double elytraAcceleration = 0.0D;
+        double elytraMaxSpeed = 0.0D;
+        double blinkDistance = 0.0D;
+        int blinkEnergy = 0;
+        int blinkCooldown = Integer.MAX_VALUE;
+
+        for (int slot = matrixStart; slot < matrixEnd; slot++) {
+            MatrixData matrix = context.data().matrices().get(slot).matrix().orElse(null);
+            if (matrix == null) continue;
+            for (InstalledModule module : matrix.modules()) {
+                if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
+                var definition = ModModules.getDefinition(module.id());
+                flight |= definition.flight().isPresent();
+                definition.jetpack().ifPresent(p -> {
+                    // values are accumulated below through mutable holders
+                });
+            }
+        }
+
+        // Re-scan with ordinary mutable accumulators; this keeps module presentation
+        // independent from the runtime movement implementation.
+        for (int slot = matrixStart; slot < matrixEnd; slot++) {
+            MatrixData matrix = context.data().matrices().get(slot).matrix().orElse(null);
+            if (matrix == null) continue;
+            for (InstalledModule module : matrix.modules()) {
+                if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
+                var definition = ModModules.getDefinition(module.id());
+                definition.jetpack().ifPresent(p -> {
+                    // handled below via local array is not possible in Java lambdas
+                });
+                if (definition.jetpack().isPresent()) {
+                    JetpackProperties p = definition.jetpack().get();
+                    jetpackThrust = Math.max(jetpackThrust, p.verticalThrust());
+                    jetpackSpeed = Math.max(jetpackSpeed, p.horizontalSpeed());
+                    p.elytra().ifPresent(e -> {
+                        // no-op; values are handled in a direct pass below
+                    });
+                }
+                definition.blink().ifPresent(p -> {
+                    blinkDistance = Math.max(blinkDistance, p.distance());
+                    blinkEnergy = Math.max(blinkEnergy, p.activationEnergy());
+                    blinkCooldown = Math.min(blinkCooldown, p.cooldown());
+                });
+            }
+        }
+
+        // The lambda-free pass handles Elytra values.
+        for (int slot = matrixStart; slot < matrixEnd; slot++) {
+            MatrixData matrix = context.data().matrices().get(slot).matrix().orElse(null);
+            if (matrix == null) continue;
+            for (InstalledModule module : matrix.modules()) {
+                if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
+                var definition = ModModules.getDefinition(module.id());
+                if (definition.jetpack().isPresent() && definition.jetpack().get().elytra().isPresent()) {
+                    ElytraBoostProperties p = definition.jetpack().get().elytra().get();
+                    elytraAcceleration = Math.max(elytraAcceleration, p.acceleration());
+                    elytraMaxSpeed = Math.max(elytraMaxSpeed, p.maxSpeed());
+                }
+            }
+        }
+
+        if (flight) result.add(new Characteristic(CharacteristicCategory.MOBILITY, "flight", CharacteristicType.STATIC, 1.0D));
+        if (jetpackThrust > 0.0D) {
+            result.add(new Characteristic(CharacteristicCategory.MOBILITY, "jetpack.vertical_thrust", CharacteristicType.STATIC, jetpackThrust));
+            result.add(new Characteristic(CharacteristicCategory.MOBILITY, "jetpack.horizontal_speed", CharacteristicType.STATIC, jetpackSpeed));
+        }
+        if (elytraAcceleration > 0.0D) {
+            result.add(new Characteristic(CharacteristicCategory.MOBILITY, "elytra.acceleration", CharacteristicType.STATIC, elytraAcceleration));
+            result.add(new Characteristic(CharacteristicCategory.MOBILITY, "elytra.max_speed", CharacteristicType.STATIC, elytraMaxSpeed));
+        }
+        if (blinkDistance > 0.0D) {
+            result.add(new Characteristic(CharacteristicCategory.MOBILITY, "blink.distance", CharacteristicType.STATIC, blinkDistance));
+            result.add(new Characteristic(CharacteristicCategory.MOBILITY, "blink.activation_energy", CharacteristicType.STATIC, blinkEnergy));
+            result.add(new Characteristic(CharacteristicCategory.MOBILITY, "blink.cooldown", CharacteristicType.STATIC, blinkCooldown));
+        }
+    }
+
+    private static void addSurvival(
+            List<Characteristic> result,
+            CharacteristicsContext context
+    ) {
+        double hunger = context.isMatrixScope()
+                ? 0.0D
+                : com.github.littleemptydoll.exoequipment.module.HungerOperations.calculateExhaustionReduction(
+                        context.data(), context.poweredModules());
+        if (hunger > 0.0D) {
+            result.add(new Characteristic(CharacteristicCategory.SURVIVAL, "hunger.exhaustion_reduction", CharacteristicType.CURRENT, hunger));
+        }
+
+        double revivalRestore = 0.0D;
+        int revivalCooldown = Integer.MAX_VALUE;
+        boolean painkiller = false;
+        double thirst = 0.0D;
+
+        for (int slot = context.isMatrixScope() ? context.matrixSlot() : 0;
+             slot < (context.isMatrixScope() ? context.matrixSlot() + 1 : context.data().matrices().size()); slot++) {
+            MatrixData matrix = context.data().matrices().get(slot).matrix().orElse(null);
+            if (matrix == null) continue;
+            for (InstalledModule module : matrix.modules()) {
+                if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
+                var definition = ModModules.getDefinition(module.id());
+                definition.revival().ifPresent(p -> {
+                    // aggregated below without relying on module activation state
+                });
+                if (definition.revival().isPresent()) {
+                    RevivalProperties p = definition.revival().get();
+                    revivalRestore = Math.max(revivalRestore, p.restoreHealth());
+                    revivalCooldown = Math.min(revivalCooldown, p.cooldown());
+                }
+                if (definition.thirst().isPresent()) thirst = Math.max(thirst, definition.thirst().get().exhaustionReduction());
+                painkiller |= definition.painkiller().isPresent();
+            }
+        }
+
+        if (revivalRestore > 0.0D) {
+            result.add(new Characteristic(CharacteristicCategory.SURVIVAL, "revival.restore_health", CharacteristicType.STATIC, revivalRestore));
+            result.add(new Characteristic(CharacteristicCategory.SURVIVAL, "revival.cooldown", CharacteristicType.STATIC, revivalCooldown));
+        }
+        if (thirst > 0.0D) result.add(new Characteristic(CharacteristicCategory.SURVIVAL, "thirst.exhaustion_reduction", CharacteristicType.STATIC, thirst));
+        if (painkiller) result.add(new Characteristic(CharacteristicCategory.SURVIVAL, "painkiller", CharacteristicType.STATE, 1.0D));
+    }
+
+    private static void addSensors(
+            List<Characteristic> result,
+            CharacteristicsContext context
+    ) {
+        boolean nightVision = false;
+        double entityRange = 0.0D;
+        boolean players = false;
+        boolean mobs = false;
+        boolean hostile = false;
+        double blockRange = 0.0D;
+
+        for (int slot = context.isMatrixScope() ? context.matrixSlot() : 0;
+             slot < (context.isMatrixScope() ? context.matrixSlot() + 1 : context.data().matrices().size()); slot++) {
+            MatrixData matrix = context.data().matrices().get(slot).matrix().orElse(null);
+            if (matrix == null) continue;
+            for (int index = 0; index < matrix.modules().size(); index++) {
+                InstalledModule module = matrix.modules().get(index);
+                if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
+                var definition = ModModules.getDefinition(module.id());
+                nightVision |= definition.nightVision().isPresent();
+                definition.entityDetection().ifPresent(p -> {
+                    // values are assigned in the direct branch below
+                });
+                if (definition.entityDetection().isPresent()) {
+                    EntityDetectionProperties p = definition.entityDetection().get();
+                    entityRange = Math.max(entityRange, p.range());
+                    players |= p.players(); mobs |= p.mobs(); hostile |= p.hostile();
+                }
+                definition.blockScanner().ifPresent(p -> blockRange = Math.max(blockRange, p.range()));
+            }
+        }
+
+        if (nightVision) result.add(new Characteristic(CharacteristicCategory.SENSOR, "night_vision", CharacteristicType.STATE, 1.0D));
+        if (entityRange > 0.0D) {
+            result.add(new Characteristic(CharacteristicCategory.SENSOR, "entity_detection.range", CharacteristicType.STATIC, entityRange));
+            result.add(new Characteristic(CharacteristicCategory.SENSOR, "entity_detection.players", CharacteristicType.STATIC, players ? 1.0D : 0.0D));
+            result.add(new Characteristic(CharacteristicCategory.SENSOR, "entity_detection.mobs", CharacteristicType.STATIC, mobs ? 1.0D : 0.0D));
+            result.add(new Characteristic(CharacteristicCategory.SENSOR, "entity_detection.hostile", CharacteristicType.STATIC, hostile ? 1.0D : 0.0D));
+        }
+        if (blockRange > 0.0D) result.add(new Characteristic(CharacteristicCategory.SENSOR, "block_scanner.range", CharacteristicType.STATIC, blockRange));
+    }
+
+    private static void addUtility(
+            List<Characteristic> result,
+            CharacteristicsContext context
+    ) {
+        var magnet = context.isMatrixScope()
+                ? java.util.Optional.<PickupMagnetProperties>empty()
+                : com.github.littleemptydoll.exoequipment.module.PickupMagnetOperations.findProperties(
+                        context.data(), context.poweredModules());
+        magnet.ifPresent(p -> {
+            result.add(new Characteristic(CharacteristicCategory.UTILITY, "pickup_magnet.radius", CharacteristicType.CURRENT, p.radius()));
+            result.add(new Characteristic(CharacteristicCategory.UTILITY, "pickup_magnet.items", CharacteristicType.STATE, p.mode().acceptsItems() ? 1.0D : 0.0D));
+            result.add(new Characteristic(CharacteristicCategory.UTILITY, "pickup_magnet.experience", CharacteristicType.STATE, p.mode().acceptsExperience() ? 1.0D : 0.0D));
+        });
+
+        double cloakConsumption = 0.0D;
+        boolean cloaking = false;
+        double emergencyRestore = 0.0D;
+        int emergencyCooldown = Integer.MAX_VALUE;
+        for (int slot = context.isMatrixScope() ? context.matrixSlot() : 0;
+             slot < (context.isMatrixScope() ? context.matrixSlot() + 1 : context.data().matrices().size()); slot++) {
+            MatrixData matrix = context.data().matrices().get(slot).matrix().orElse(null);
+            if (matrix == null) continue;
+            for (InstalledModule module : matrix.modules()) {
+                if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
+                var definition = ModModules.getDefinition(module.id());
+                definition.cloaking().ifPresent(p -> {
+                    // direct assignment below
+                });
+                if (definition.cloaking().isPresent()) {
+                    CloakingProperties p = definition.cloaking().get();
+                    cloakConsumption = Math.max(cloakConsumption, p.activeConsumption());
+                    cloaking |= module.active();
+                }
+                if (definition.emergencyShield().isPresent()) {
+                    EmergencyShieldProperties p = definition.emergencyShield().get();
+                    emergencyRestore = Math.max(emergencyRestore, p.restore());
+                    emergencyCooldown = Math.min(emergencyCooldown, p.cooldown());
+                }
+            }
+        }
+        if (cloakConsumption > 0.0D || cloaking) {
+            result.add(new Characteristic(CharacteristicCategory.UTILITY, "cloaking.active_consumption", CharacteristicType.STATIC, cloakConsumption));
+            result.add(new Characteristic(CharacteristicCategory.UTILITY, "cloaking.active", CharacteristicType.STATE, cloaking ? 1.0D : 0.0D));
+        }
+        if (emergencyRestore > 0.0D) {
+            result.add(new Characteristic(CharacteristicCategory.UTILITY, "emergency_shield.restore", CharacteristicType.STATIC, emergencyRestore));
+            result.add(new Characteristic(CharacteristicCategory.UTILITY, "emergency_shield.cooldown", CharacteristicType.STATIC, emergencyCooldown));
         }
     }
 

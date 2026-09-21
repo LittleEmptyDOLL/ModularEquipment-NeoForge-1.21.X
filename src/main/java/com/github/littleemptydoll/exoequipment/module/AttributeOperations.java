@@ -32,7 +32,7 @@ public final class AttributeOperations {
         Map<AttributeKey, Double> values = new HashMap<>();
 
         Iterable<Integer> slots = matrixSlot == null
-                ? ExoskeletonState.activeMatrixSlots(data)::iterator
+                ? () -> ExoskeletonState.activeMatrixSlots(data).iterator()
                 : java.util.List.of(matrixSlot);
 
         for (int slot : slots) {

@@ -8,6 +8,7 @@ import java.util.Optional;
 public record ModuleExtendedProperties(
         Optional<BlinkProperties> blink,
         Optional<FlightProperties> flight,
+        Optional<JetpackProperties> jetpack,
         Optional<AttributeProperties> attributes,
         Optional<ConditionalAttributeProperties> conditionalAttributes,
         Optional<PickupMagnetProperties> pickupMagnet,
@@ -26,6 +27,8 @@ public record ModuleExtendedProperties(
                                     .forGetter(ModuleExtendedProperties::blink),
                             FlightProperties.CODEC.optionalFieldOf("flight")
                                     .forGetter(ModuleExtendedProperties::flight),
+                            JetpackProperties.CODEC.optionalFieldOf("jetpack")
+                                    .forGetter(ModuleExtendedProperties::jetpack),
                             AttributeProperties.CODEC.optionalFieldOf("attributes")
                                     .forGetter(ModuleExtendedProperties::attributes),
                             ConditionalAttributeProperties.CODEC.optionalFieldOf("conditional_attributes")

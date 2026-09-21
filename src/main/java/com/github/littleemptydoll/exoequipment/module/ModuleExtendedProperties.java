@@ -17,8 +17,7 @@ public record ModuleExtendedProperties(
         Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
         Optional<ThirstProperties> thirst,
         Optional<PainkillerProperties> painkiller,
-        Optional<BlockScannerProperties> blockScanner,
-        Optional<FallProtectionProperties> fallProtection
+        Optional<BlockScannerProperties> blockScanner
 ) {
     public static final MapCodec<ModuleExtendedProperties> CODEC =
             RecordCodecBuilder.mapCodec(instance ->
@@ -46,9 +45,7 @@ public record ModuleExtendedProperties(
                             PainkillerProperties.CODEC.optionalFieldOf("painkiller")
                                     .forGetter(ModuleExtendedProperties::painkiller),
                             BlockScannerProperties.CODEC.optionalFieldOf("block_scanner")
-                                    .forGetter(ModuleExtendedProperties::blockScanner),
-                            FallProtectionProperties.CODEC.optionalFieldOf("fall_protection")
-                                    .forGetter(ModuleExtendedProperties::fallProtection)
+                                    .forGetter(ModuleExtendedProperties::blockScanner)
                     ).apply(instance, ModuleExtendedProperties::new)
             );
 }

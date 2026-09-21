@@ -5,6 +5,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
@@ -68,9 +69,10 @@ public final class JetpackOperations {
         double newY = velocity.y;
         if (JetpackInputState.has(input, JetpackInputState.UP)
                 || JetpackInputState.has(input, JetpackInputState.DOWN)) {
+            double gravity = player.getAttributeValue(Attributes.GRAVITY);
             double targetY = JetpackInputState.has(input, JetpackInputState.UP)
-                    ? properties.verticalThrust()
-                    : -properties.verticalThrust();
+                    ? properties.verticalThrust() + gravity
+                    : -properties.verticalThrust() + gravity;
 
             newY = approach(
                     velocity.y,

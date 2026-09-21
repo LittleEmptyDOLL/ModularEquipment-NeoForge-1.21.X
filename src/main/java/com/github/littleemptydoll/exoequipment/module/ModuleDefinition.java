@@ -25,6 +25,7 @@ public record ModuleDefinition(
         Optional<EmergencyShieldProperties> emergencyShield,
         Optional<CloakingProperties> cloaking,
         Optional<BlinkProperties> blink,
+        Optional<FlightProperties> flight,
         Optional<StatusProtectionProperties> statusProtection,
         Optional<NightVisionProperties> nightVision,
         Optional<EntityDetectionProperties> entityDetection,

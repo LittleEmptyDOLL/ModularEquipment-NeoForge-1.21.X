@@ -10,6 +10,7 @@ import com.github.littleemptydoll.exoequipment.module.RevivalOperations;
 import com.github.littleemptydoll.exoequipment.module.StatusProtectionOperations;
 import com.github.littleemptydoll.exoequipment.module.BlinkOperations;
 import com.github.littleemptydoll.exoequipment.module.CloakingOperations;
+import com.github.littleemptydoll.exoequipment.module.FlightOperations;
 import com.github.littleemptydoll.exoequipment.exoskeleton.*;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
@@ -120,6 +121,10 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
                 runtime.poweredModules()
         );
         updatedData = BlinkOperations.tick(updatedData);
+        updatedData = FlightOperations.tick(
+                updatedData,
+                runtime.poweredModules()
+        );
         updatedData = RevivalOperations.tick(
                 updatedData,
                 runtime.poweredModules()
@@ -155,6 +160,18 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
                         .markActive((Player) slotContext.entity());
             } else {
                 com.github.littleemptydoll.exoequipment.event.CloakingEvents
+                        .markInactive((Player) slotContext.entity());
+            }
+        }
+
+        boolean flightIsActive = FlightOperations.hasActive(updatedData);
+        if (com.github.littleemptydoll.exoequipment.event.FlightEvents
+                .isActive((Player) slotContext.entity()) != flightIsActive) {
+            if (flightIsActive) {
+                com.github.littleemptydoll.exoequipment.event.FlightEvents
+                        .markActive((Player) slotContext.entity());
+            } else {
+                com.github.littleemptydoll.exoequipment.event.FlightEvents
                         .markInactive((Player) slotContext.entity());
             }
         }

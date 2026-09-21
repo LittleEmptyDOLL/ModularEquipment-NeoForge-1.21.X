@@ -245,9 +245,11 @@ public final class CharacteristicsProvider {
             com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData data
     ) {
         Set<ResourceLocation> result = new HashSet<>();
+
         for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
             collectDamageTypes(data, slot, result);
         }
+
         return result;
     }
 
@@ -265,24 +267,22 @@ public final class CharacteristicsProvider {
             int slot,
             Set<ResourceLocation> result
     ) {
-            MatrixData matrix = data.matrices()
-                    .get(slot)
-                    .matrix()
-                    .orElse(null);
+        MatrixData matrix = data.matrices()
+                .get(slot)
+                .matrix()
+                .orElse(null);
 
-            if (matrix == null) {
-                continue;
-            }
-
-            matrix.modules().forEach(module ->
-                    ModModules.getDefinition(module.id())
-                            .damageReduction()
-                            .ifPresent(properties ->
-                                    result.addAll(properties.reductions().keySet())
-                            )
-            );
+        if (matrix == null) {
+            return;
         }
 
+        matrix.modules().forEach(module ->
+                ModModules.getDefinition(module.id())
+                        .damageReduction()
+                        .ifPresent(properties ->
+                                result.addAll(properties.reductions().keySet())
+                        )
+        );
     }
 
     private static double calculateBodyDamageChance(

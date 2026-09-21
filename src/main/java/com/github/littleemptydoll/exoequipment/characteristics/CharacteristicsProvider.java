@@ -570,13 +570,14 @@ public final class CharacteristicsProvider {
             List<Characteristic> result,
             CharacteristicsContext context
     ) {
-        if (context.player() == null || context.isMatrixScope()) {
+        if (context.player() == null) {
             return;
         }
 
         AttributeOperations.calculate(
                 context.player(),
                 context.data(),
+                context.isMatrixScope() ? context.matrixSlot() : null,
                 context.poweredModules()
         ).forEach((key, value) -> {
             String operation = switch (key.operation()) {

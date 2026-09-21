@@ -2,6 +2,7 @@ package com.github.littleemptydoll.exoequipment.network;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.event.CloakingEvents;
+import com.github.littleemptydoll.exoequipment.event.FlightEvents;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenu;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenuProvider;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonProfileMenu;
@@ -12,6 +13,7 @@ import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
 import com.github.littleemptydoll.exoequipment.module.BlinkOperations;
 import com.github.littleemptydoll.exoequipment.module.CloakingOperations;
+import com.github.littleemptydoll.exoequipment.module.FlightOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
@@ -87,6 +89,69 @@ public final class ModNetworking {
                                             result.data()
                                     );
                                     CloakingEvents.markActive(serverPlayer);
+                                }
+                            });
+                })
+        );
+
+        registrar.playToServer(
+                FlightPayload.TYPE,
+                FlightPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (!(context.player() instanceof ServerPlayer serverPlayer)
+                            || serverPlayer.isCreative()
+                            || serverPlayer.isSpectator()) {
+                        return;
+                    }
+
+                    ExoskeletonMenuProvider.findBodyExoskeleton(serverPlayer)
+                            .ifPresent(exoskeleton -> {
+                                if (FlightEvents.isActive(serverPlayer)) {
+                                    ExoskeletonItem.getData(exoskeleton);
+                                    FlightEvents.markInactive(serverPlayer);
+                                    var data = ExoskeletonItem.getData(exoskeleton);
+                                    var refs = new java.util.ArrayList<com.github.littleemptydoll.exoequipment.module.InstalledModuleReference>();
+
+                                    for (int slot = 0; slot < data.matrices().size(); slot++) {
+                                        var matrix = data.matrices().get(slot).matrix().orElse(null);
+                                        if (matrix == null) continue;
+                                        for (int index = 0; index < matrix.modules().size(); index++) {
+                                            var module = matrix.modules().get(index);
+                                            if (module.flightActive()) {
+                                                refs.add(new com.github.littleemptydoll.exoequipment.module.InstalledModuleReference(slot, index));
+                                            }
+                                        }
+                                    }
+
+                                    for (var reference : refs) {
+                                        data = FlightOperations.deactivate(data, reference);
+                                    }
+
+                                    exoskeleton.set(
+                                            ModDataComponents.EXOSKELETON_DATA.get(),
+                                            data
+                                    );
+                                    return;
+                                }
+
+                                var runtime = exoskeleton.get(
+                                        ModDataComponents.EXOSKELETON_RUNTIME.get()
+                                );
+                                if (runtime == null) {
+                                    runtime = com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState.empty();
+                                }
+
+                                var result = FlightOperations.activate(
+                                        ExoskeletonItem.getData(exoskeleton),
+                                        runtime.poweredModules()
+                                );
+
+                                if (result.activated()) {
+                                    exoskeleton.set(
+                                            ModDataComponents.EXOSKELETON_DATA.get(),
+                                            result.data()
+                                    );
+                                    FlightEvents.markActive(serverPlayer);
                                 }
                             });
                 })

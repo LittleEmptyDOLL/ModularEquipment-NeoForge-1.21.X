@@ -185,18 +185,16 @@ public final class CharacteristicsProvider {
             List<Characteristic> result,
             CharacteristicsContext context
     ) {
-        if (context.isMatrixScope()) {
-            return;
-        }
-
-        Set<ResourceLocation> damageTypes = collectDamageTypes(context.data());
+        Set<ResourceLocation> damageTypes = context.isMatrixScope()
+                ? collectDamageTypes(context.data(), context.matrixSlot())
+                : collectDamageTypes(context.data());
 
         for (ResourceLocation damageType : damageTypes) {
-            double multiplier = DefenseOperations.calculateDamageMultiplier(
-                    context.data(),
-                    damageType,
-                    context.poweredModules()
-            );
+            double multiplier = context.isMatrixScope()
+                    ? DefenseOperations.calculateDamageMultiplier(
+                            context.data(), context.matrixSlot(), damageType, context.poweredModules())
+                    : DefenseOperations.calculateDamageMultiplier(
+                            context.data(), damageType, context.poweredModules());
 
             double reduction = 1.0D - multiplier;
 
@@ -213,16 +211,14 @@ public final class CharacteristicsProvider {
         }
 
         for (BodyPart bodyPart : BodyPart.values()) {
-            double chance = BodyDamageProtectionOperations.calculateChance(
-                    context.data(),
-                    bodyPart,
-                    context.poweredModules()
-            );
-            double multiplier = BodyDamageProtectionOperations.calculateDamageMultiplier(
-                    context.data(),
-                    bodyPart,
-                    context.poweredModules()
-            );
+            double chance = context.isMatrixScope()
+                    ? calculateBodyDamageChance(context, bodyPart)
+                    : BodyDamageProtectionOperations.calculateChance(
+                            context.data(), bodyPart, context.poweredModules());
+            double multiplier = context.isMatrixScope()
+                    ? calculateBodyDamageMultiplier(context, bodyPart)
+                    : BodyDamageProtectionOperations.calculateDamageMultiplier(
+                            context.data(), bodyPart, context.poweredModules());
             double reduction = 1.0D - multiplier;
 
             if (chance > 0.0D) {
@@ -249,8 +245,26 @@ public final class CharacteristicsProvider {
             com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData data
     ) {
         Set<ResourceLocation> result = new HashSet<>();
-
         for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
+            collectDamageTypes(data, slot, result);
+        }
+        return result;
+    }
+
+    private static Set<ResourceLocation> collectDamageTypes(
+            com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData data,
+            int matrixSlot
+    ) {
+        Set<ResourceLocation> result = new HashSet<>();
+        collectDamageTypes(data, matrixSlot, result);
+        return result;
+    }
+
+    private static void collectDamageTypes(
+            com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData data,
+            int slot,
+            Set<ResourceLocation> result
+    ) {
             MatrixData matrix = data.matrices()
                     .get(slot)
                     .matrix()
@@ -269,19 +283,59 @@ public final class CharacteristicsProvider {
             );
         }
 
-        return result;
+    }
+
+    private static double calculateBodyDamageChance(
+            CharacteristicsContext context,
+            BodyPart bodyPart
+    ) {
+        MatrixData matrix = getSelectedMatrix(context);
+        if (matrix == null) return 0.0D;
+
+        double remainingChance = 1.0D;
+        for (int moduleIndex = 0; moduleIndex < matrix.modules().size(); moduleIndex++) {
+            var module = matrix.modules().get(moduleIndex);
+            if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
+            var reference = new InstalledModuleReference(context.matrixSlot(), moduleIndex);
+            var definition = ModModules.getDefinition(module.id());
+            if (definition.energy().filter(energy -> energy.consumption() > 0).isPresent()
+                    && !context.poweredModules().contains(reference)) continue;
+            var properties = definition.bodyDamageProtection().orElse(null);
+            if (properties == null || !BodyPart.applies(properties.bodyParts(), bodyPart)) continue;
+            remainingChance *= 1.0D - properties.chance();
+        }
+        return Math.max(0.0D, Math.min(1.0D, 1.0D - remainingChance));
+    }
+
+    private static double calculateBodyDamageMultiplier(
+            CharacteristicsContext context,
+            BodyPart bodyPart
+    ) {
+        MatrixData matrix = getSelectedMatrix(context);
+        if (matrix == null) return 1.0D;
+
+        double multiplier = 1.0D;
+        for (int moduleIndex = 0; moduleIndex < matrix.modules().size(); moduleIndex++) {
+            var module = matrix.modules().get(moduleIndex);
+            if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
+            var reference = new InstalledModuleReference(context.matrixSlot(), moduleIndex);
+            var definition = ModModules.getDefinition(module.id());
+            if (definition.energy().filter(energy -> energy.consumption() > 0).isPresent()
+                    && !context.poweredModules().contains(reference)) continue;
+            var properties = definition.bodyDamageProtection().orElse(null);
+            if (properties == null || !BodyPart.applies(properties.bodyParts(), bodyPart)) continue;
+            multiplier *= 1.0D - properties.damageReduction();
+        }
+        return Math.max(0.0D, multiplier);
     }
 
     private static void addShield(
             List<Characteristic> result,
             CharacteristicsContext context
     ) {
-        if (context.isMatrixScope()) {
-            return;
-        }
-
-        ShieldOperations.ShieldStatus status =
-                ShieldOperations.getStatus(context.data());
+        ShieldOperations.ShieldStatus status = context.isMatrixScope()
+                ? ShieldOperations.getStatus(context.data(), context.matrixSlot())
+                : ShieldOperations.getStatus(context.data());
 
         if (!status.hasShields()) {
             return;
@@ -305,14 +359,11 @@ public final class CharacteristicsProvider {
             List<Characteristic> result,
             CharacteristicsContext context
     ) {
-        if (context.isMatrixScope()) {
-            return;
-        }
-
-        double healthPerSecond = RegenerationOperations.calculateHealthPerSecond(
-                context.data(),
-                context.poweredModules()
-        );
+        double healthPerSecond = context.isMatrixScope()
+                ? RegenerationOperations.calculateHealthPerSecond(
+                        context.data(), context.matrixSlot(), context.poweredModules())
+                : RegenerationOperations.calculateHealthPerSecond(
+                        context.data(), context.poweredModules());
 
         if (healthPerSecond > 0.0D) {
             result.add(new Characteristic(

@@ -311,6 +311,13 @@ public final class EnergyOperations {
                             .orElse(0);
                 }
 
+                if (module.flightActive()) {
+                    consumption += ModModules.getDefinition(module.id())
+                            .flight()
+                            .map(FlightProperties::activeConsumption)
+                            .orElse(0);
+                }
+
                 if (consumption <= 0) {
                     continue;
                 }

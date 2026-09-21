@@ -116,6 +116,23 @@ public final class ShieldOperations {
         return new ShieldStatus(currentEnergy, capacity);
     }
 
+    public static ShieldStatus getStatus(
+            ExoskeletonData data,
+            int matrixSlot
+    ) {
+        List<ShieldTarget> targets = collectShields(data, Set.of(matrixSlot));
+        if (targets.isEmpty()) return ShieldStatus.empty();
+
+        double currentEnergy = 0.0D;
+        int capacity = 0;
+        for (ShieldTarget target : targets) {
+            InstalledModule module = getModule(data, target.reference());
+            currentEnergy += Math.min(module.shieldEnergy(), target.properties().capacity());
+            capacity += target.properties().capacity();
+        }
+        return new ShieldStatus(currentEnergy, capacity);
+    }
+
     public static ExoskeletonData tick(
             ExoskeletonData data,
             Set<InstalledModuleReference> poweredModules
@@ -162,9 +179,16 @@ public final class ShieldOperations {
     private static List<ShieldTarget> collectShields(
             ExoskeletonData data
     ) {
+        return collectShields(data, ExoskeletonState.activeMatrixSlots(data));
+    }
+
+    private static List<ShieldTarget> collectShields(
+            ExoskeletonData data,
+            Set<Integer> matrixSlots
+    ) {
         List<ShieldTarget> targets = new ArrayList<>();
 
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
+        for (int slot : matrixSlots) {
             MatrixData matrix = data.matrices()
                     .get(slot)
                     .matrix()

@@ -222,6 +222,19 @@ public final class CharacteristicsProvider {
             ));
         }
 
+        if (!context.isMatrixScope()) {
+            double fallReduction = 1.0D - com.github.littleemptydoll.exoequipment.module.FallProtectionOperations
+                    .calculateDamageMultiplier(context.data(), context.poweredModules());
+            if (fallReduction > 0.0D) {
+                result.add(new Characteristic(
+                        CharacteristicCategory.DEFENSE,
+                        "fall_damage_reduction",
+                        CharacteristicType.CURRENT,
+                        fallReduction
+                ));
+            }
+        }
+
         for (BodyPart bodyPart : BodyPart.values()) {
             double chance = context.isMatrixScope()
                     ? BodyDamageProtectionOperations.calculateChance(
@@ -572,13 +585,27 @@ public final class CharacteristicsProvider {
                 case ADD_MULTIPLIED_TOTAL -> "add_multiplied_total";
             };
 
+            CharacteristicCategory category = attributeCategory(key.attributeId());
             result.add(new Characteristic(
-                    CharacteristicCategory.ATTRIBUTES,
+                    category,
                     "attribute." + key.attributeId() + "." + operation,
                     CharacteristicType.CURRENT,
                     value
             ));
         });
+    }
+
+    private static CharacteristicCategory attributeCategory(ResourceLocation attributeId) {
+        return switch (attributeId.toString()) {
+            case "minecraft:generic.movement_speed" -> CharacteristicCategory.MOBILITY;
+            case "minecraft:generic.attack_damage",
+                 "minecraft:generic.attack_speed" -> CharacteristicCategory.COMBAT;
+            case "minecraft:generic.armor",
+                 "minecraft:generic.armor_toughness" -> CharacteristicCategory.DEFENSE;
+            case "minecraft:generic.max_health",
+                 "minecraft:generic.knockback_resistance" -> CharacteristicCategory.SURVIVAL;
+            default -> CharacteristicCategory.ATTRIBUTES;
+        };
     }
 
     private static MatrixData getSelectedMatrix(CharacteristicsContext context) {

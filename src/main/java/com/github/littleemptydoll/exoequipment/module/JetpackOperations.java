@@ -70,14 +70,22 @@ public final class JetpackOperations {
                     ? properties.verticalThrust() + gravity
                     : -properties.verticalThrust() + gravity;
 
+            double verticalAcceleration = gravity
+                    + properties.verticalThrust() * AXIS_ACCELERATION_FACTOR;
+
             newY = approach(
                     velocity.y,
                     targetY,
-                    properties.verticalThrust() * AXIS_ACCELERATION_FACTOR
+                    verticalAcceleration
             );
         }
 
         Vec3 newHorizontal = new Vec3(velocity.x, 0.0D, velocity.z);
+
+        if (player.onGround()) {
+            player.setDeltaMovement(new Vec3(newHorizontal.x, newY, newHorizontal.z));
+            return;
+        }
 
         double forwardInput = 0.0D;
         double strafeInput = 0.0D;

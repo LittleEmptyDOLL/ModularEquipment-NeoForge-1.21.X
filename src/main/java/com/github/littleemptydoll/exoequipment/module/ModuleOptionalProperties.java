@@ -21,7 +21,7 @@ public record ModuleOptionalProperties(
         Optional<HungerProperties> hunger,
         Optional<RevivalProperties> revival,
         Optional<RegenerationProperties> regeneration,
-        Optional<FlightProperties> flight
+        Optional<FallProtectionProperties> fallProtection
 ) {
     public static final MapCodec<ModuleOptionalProperties> CODEC =
             RecordCodecBuilder.mapCodec(instance ->
@@ -71,9 +71,9 @@ public record ModuleOptionalProperties(
                             RegenerationProperties.CODEC
                                     .optionalFieldOf("regeneration")
                                     .forGetter(ModuleOptionalProperties::regeneration),
-                            FlightProperties.CODEC
-                                    .optionalFieldOf("flight")
-                                    .forGetter(ModuleOptionalProperties::flight)
+                            FallProtectionProperties.CODEC
+                                    .optionalFieldOf("fall_protection")
+                                    .forGetter(ModuleOptionalProperties::fallProtection)
                     ).apply(instance, ModuleOptionalProperties::new)
             );
 }

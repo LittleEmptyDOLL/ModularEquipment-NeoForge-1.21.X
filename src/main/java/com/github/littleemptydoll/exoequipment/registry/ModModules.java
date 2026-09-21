@@ -186,6 +186,36 @@ public class ModModules {
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
+    > TEST_JETPACK = REGISTRY.register(
+            "test_jetpack",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.MOBILITY,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(5, 1))
+                            .jetpack(new JetpackProperties(
+                                    0.08D,
+                                    0.8D,
+                                    0.15D,
+                                    10,
+                                    Optional.of(new ElytraBoostProperties(
+                                            0.08D,
+                                            2.5D
+                                    ))
+                            ))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
     > TEST_CONSUMER = REGISTRY.register(
             "test_consumer",
             new EquipmentProperties(

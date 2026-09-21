@@ -84,6 +84,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("key.exoequipment.open_exoskeleton", "Open exoskeleton");
         add("key.exoequipment.activate_cloaking", "Activate cloaking");
         add("key.exoequipment.activate_blink", "Activate blink");
+        add("key.exoequipment.activate_flight", "Activate flight");
         add("key.categories.exoequipment", "ExoEquipment");
     }
 }

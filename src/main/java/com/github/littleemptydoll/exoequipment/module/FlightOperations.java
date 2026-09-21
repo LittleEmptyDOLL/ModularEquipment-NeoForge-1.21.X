@@ -80,13 +80,25 @@ public final class FlightOperations {
             Target target,
             Set<InstalledModuleReference> poweredModules
     ) {
-        return target.module().flightActive()
-                ? poweredModules.contains(target.reference())
-                : ModModules.getDefinition(target.module().id())
-                .energy()
+        var definition = ModModules.getDefinition(target.module().id());
+
+        if (!target.module().flightActive()) {
+            return definition.energy()
+                    .map(EnergyProperties::consumption)
+                    .map(consumption -> consumption <= 0 || poweredModules.contains(target.reference()))
+                    .orElse(true);
+        }
+
+        int activeConsumption = target.properties().activeConsumption();
+        int passiveConsumption = definition.energy()
                 .map(EnergyProperties::consumption)
-                .map(consumption -> consumption <= 0 || poweredModules.contains(target.reference()))
-                .orElse(true);
+                .orElse(0);
+
+        if (passiveConsumption <= 0 && activeConsumption <= 0) {
+            return true;
+        }
+
+        return poweredModules.contains(target.reference());
     }
 
     private static List<Target> collectTargets(ExoskeletonData data) {

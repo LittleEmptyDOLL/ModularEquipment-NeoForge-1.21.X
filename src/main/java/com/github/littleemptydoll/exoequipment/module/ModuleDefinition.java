@@ -25,6 +25,7 @@ public record ModuleDefinition(
         Optional<EmergencyShieldProperties> emergencyShield,
         Optional<CloakingProperties> cloaking,
         Optional<BlinkProperties> blink,
+        Optional<FlightProperties> flight,
         Optional<StatusProtectionProperties> statusProtection,
         Optional<NightVisionProperties> nightVision,
         Optional<EntityDetectionProperties> entityDetection,
@@ -63,6 +64,9 @@ public record ModuleDefinition(
                             BlinkProperties.CODEC
                                     .optionalFieldOf("blink")
                                     .forGetter(ModuleDefinition::blink),
+                            FlightProperties.CODEC
+                                    .optionalFieldOf("flight")
+                                    .forGetter(ModuleDefinition::flight),
                             AttributeProperties.CODEC
                                     .optionalFieldOf("attributes")
                                     .forGetter(ModuleDefinition::attributes),
@@ -127,6 +131,7 @@ public record ModuleDefinition(
             ModuleSize size,
             ModuleOptionalProperties optional,
             Optional<BlinkProperties> blink,
+            Optional<FlightProperties> flight,
             Optional<AttributeProperties> attributes,
             Optional<ConditionalAttributeProperties> conditionalAttributes,
             Optional<PickupMagnetProperties> pickupMagnet,
@@ -155,6 +160,7 @@ public record ModuleDefinition(
                 optional.emergencyShield(),
                 optional.cloaking(),
                 blink,
+                flight,
                 optional.statusProtection(),
                 optional.nightVision(),
                 optional.entityDetection(),
@@ -200,6 +206,7 @@ public record ModuleDefinition(
         private EmergencyShieldProperties emergencyShield;
         private CloakingProperties cloaking;
         private BlinkProperties blink;
+        private FlightProperties flight;
         private StatusProtectionProperties statusProtection;
         private NightVisionProperties nightVision;
         private EntityDetectionProperties entityDetection;
@@ -285,6 +292,11 @@ public record ModuleDefinition(
 
         public Builder blink(BlinkProperties blink) {
             this.blink = blink;
+            return this;
+        }
+
+        public Builder flight(FlightProperties flight) {
+            this.flight = flight;
             return this;
         }
 
@@ -381,6 +393,7 @@ public record ModuleDefinition(
                     Optional.ofNullable(emergencyShield),
                     Optional.ofNullable(cloaking),
                     Optional.ofNullable(blink),
+                    Optional.ofNullable(flight),
                     Optional.ofNullable(statusProtection),
                     Optional.ofNullable(nightVision),
                     Optional.ofNullable(entityDetection),

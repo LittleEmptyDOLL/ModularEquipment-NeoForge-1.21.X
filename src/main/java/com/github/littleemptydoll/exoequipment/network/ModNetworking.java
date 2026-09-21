@@ -14,6 +14,7 @@ import com.github.littleemptydoll.exoequipment.item.MatrixItem;
 import com.github.littleemptydoll.exoequipment.module.BlinkOperations;
 import com.github.littleemptydoll.exoequipment.module.CloakingOperations;
 import com.github.littleemptydoll.exoequipment.module.FlightOperations;
+import com.github.littleemptydoll.exoequipment.module.JetpackInputState;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
@@ -91,6 +92,16 @@ public final class ModNetworking {
                                     CloakingEvents.markActive(serverPlayer);
                                 }
                             });
+                })
+        );
+
+        registrar.playToServer(
+                JetpackInputPayload.TYPE,
+                JetpackInputPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer serverPlayer) {
+                        JetpackInputState.set(serverPlayer, payload.input());
+                    }
                 })
         );
 

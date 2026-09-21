@@ -435,6 +435,10 @@ public class MatrixMenu extends AbstractContainerMenu {
             com.github.littleemptydoll.exoequipment.event.CloakingEvents.markInactive(player);
         }
 
+        if (module.flightActive()) {
+            com.github.littleemptydoll.exoequipment.event.FlightEvents.markInactive(player);
+        }
+
         applyMatrixData(player, MatrixOperations.removeModule(matrix, x, y));
         return true;
     }
@@ -461,7 +465,8 @@ public class MatrixMenu extends AbstractContainerMenu {
                 module.revivalCooldown(),
                 module.emergencyShieldCooldown(),
                 module.active(),
-                module.abilityCooldown()
+                module.abilityCooldown(),
+                module.flightActive()
         );
         MatrixData updated = replaceModule(matrix, definition, module, movedModule);
         if (updated.equals(matrix)) return false;

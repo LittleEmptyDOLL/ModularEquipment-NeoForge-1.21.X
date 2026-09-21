@@ -66,7 +66,7 @@ public final class EnergyOperations {
             Player player
     ) {
         if (externalProvider == null) {
-            return tick(data, 0);
+            return tick(data, 0, amount -> amount, player);
         }
 
         int externalAvailable = externalProvider.availableEnergy();
@@ -337,15 +337,17 @@ public final class EnergyOperations {
                             .orElse(0);
                 }
 
-                if (player != null
-                        && JetpackInputState.isThrusting(player)) {
-                    consumption += ModModules.getDefinition(module.id())
-                            .jetpack()
+                boolean jetpackActive = player != null
+                        && JetpackInputState.isEnergyActive(player)
+                        && definition.jetpack().isPresent();
+
+                if (jetpackActive) {
+                    consumption += definition.jetpack()
                             .map(JetpackProperties::energyConsumption)
                             .orElse(0);
                 }
 
-                if (consumption <= 0) {
+                if (consumption <= 0 && !jetpackActive) {
                     continue;
                 }
 

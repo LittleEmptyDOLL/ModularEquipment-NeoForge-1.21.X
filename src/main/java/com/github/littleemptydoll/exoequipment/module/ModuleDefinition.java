@@ -61,42 +61,10 @@ public record ModuleDefinition(
                                     ModuleDefinition::optionalProperties,
                                     ModuleOptionalProperties.CODEC
                             ),
-                            BlinkProperties.CODEC
-                                    .optionalFieldOf("blink")
-                                    .forGetter(ModuleDefinition::blink),
-                            AttributeProperties.CODEC
-                                    .optionalFieldOf("attributes")
-                                    .forGetter(ModuleDefinition::attributes),
-                            ConditionalAttributeProperties.CODEC
-                                    .optionalFieldOf("conditional_attributes")
-                                    .forGetter(ModuleDefinition::conditionalAttributes),
-                            PickupMagnetProperties.CODEC
-                                    .optionalFieldOf("pickup_magnet")
-                                    .forGetter(ModuleDefinition::pickupMagnet),
-                            TemperatureModifierProperties.CODEC
-                                    .optionalFieldOf("temperature_modifier")
-                                    .forGetter(ModuleDefinition::temperatureModifier),
-                            TemperatureImpactProperties.CODEC
-                                    .optionalFieldOf("temperature_impact")
-                                    .forGetter(ModuleDefinition::temperatureImpact),
-                            BodyDamageProtectionProperties.CODEC
-                                    .optionalFieldOf("body_damage_protection")
-                                    .forGetter(ModuleDefinition::bodyDamageProtection),
-                            BodyDamageRegenerationProperties.CODEC
-                                    .optionalFieldOf("body_damage_regeneration")
-                                    .forGetter(ModuleDefinition::bodyDamageRegeneration),
-                            ThirstProperties.CODEC
-                                    .optionalFieldOf("thirst")
-                                    .forGetter(ModuleDefinition::thirst),
-                            PainkillerProperties.CODEC
-                                    .optionalFieldOf("painkiller")
-                                    .forGetter(ModuleDefinition::painkiller),
-                            BlockScannerProperties.CODEC
-                                    .optionalFieldOf("block_scanner")
-                                    .forGetter(ModuleDefinition::blockScanner),
-                            FallProtectionProperties.CODEC
-                                    .optionalFieldOf("fall_protection")
-                                    .forGetter(ModuleDefinition::fallProtection)
+                            RecordCodecBuilder.of(
+                                    ModuleDefinition::extendedProperties,
+                                    ModuleExtendedProperties.CODEC
+                            )
                     ).apply(
                             instance,
                             ModuleDefinition::fromCodec
@@ -120,7 +88,25 @@ public record ModuleDefinition(
                 hunger,
                 revival,
                 regeneration,
-                flight
+                fallProtection
+        );
+    }
+
+    private ModuleExtendedProperties extendedProperties() {
+        return new ModuleExtendedProperties(
+                blink,
+                flight,
+                attributes,
+                conditionalAttributes,
+                pickupMagnet,
+                temperatureModifier,
+                temperatureImpact,
+                bodyDamageProtection,
+                bodyDamageRegeneration,
+                thirst,
+                painkiller,
+                blockScanner,
+                fallProtection
         );
     }
 
@@ -130,18 +116,7 @@ public record ModuleDefinition(
             ModuleCategory category,
             ModuleSize size,
             ModuleOptionalProperties optional,
-            Optional<BlinkProperties> blink,
-            Optional<AttributeProperties> attributes,
-            Optional<ConditionalAttributeProperties> conditionalAttributes,
-            Optional<PickupMagnetProperties> pickupMagnet,
-            Optional<TemperatureModifierProperties> temperatureModifier,
-            Optional<TemperatureImpactProperties> temperatureImpact,
-            Optional<BodyDamageProtectionProperties> bodyDamageProtection,
-            Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
-            Optional<ThirstProperties> thirst,
-            Optional<PainkillerProperties> painkiller,
-            Optional<BlockScannerProperties> blockScanner,
-            Optional<FallProtectionProperties> fallProtection
+            ModuleExtendedProperties extended
     ) {
         return new ModuleDefinition(
                 id,
@@ -153,29 +128,29 @@ public record ModuleDefinition(
                 optional.storage(),
                 optional.thermal(),
                 optional.temperature(),
-                temperatureModifier,
-                temperatureImpact,
+                extended.temperatureModifier(),
+                extended.temperatureImpact(),
                 optional.damageReduction(),
                 optional.shield(),
                 optional.emergencyShield(),
                 optional.cloaking(),
-                blink,
-                optional.flight(),
+                extended.blink(),
+                extended.flight(),
                 optional.statusProtection(),
                 optional.nightVision(),
                 optional.entityDetection(),
                 optional.hunger(),
                 optional.revival(),
                 optional.regeneration(),
-                fallProtection,
-                attributes,
-                conditionalAttributes,
-                pickupMagnet,
-                bodyDamageProtection,
-                bodyDamageRegeneration,
-                thirst,
-                painkiller,
-                blockScanner
+                optional.fallProtection(),
+                extended.attributes(),
+                extended.conditionalAttributes(),
+                extended.pickupMagnet(),
+                extended.bodyDamageProtection(),
+                extended.bodyDamageRegeneration(),
+                extended.thirst(),
+                extended.painkiller(),
+                extended.blockScanner()
         );
     }
 

@@ -201,9 +201,8 @@ public class ModModules {
                             )
                             .energy(new EnergyProperties(5, 1))
                             .jetpack(new JetpackProperties(
-                                    0.08D,
-                                    0.8D,
-                                    0.15D,
+                                    0.5D,
+                                    0.5D,
                                     10,
                                     Optional.of(new ElytraBoostProperties(
                                             0.08D,

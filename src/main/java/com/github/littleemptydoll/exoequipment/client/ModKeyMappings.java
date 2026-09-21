@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.network.FlightPayload;
 import com.github.littleemptydoll.exoequipment.network.JetpackInputPayload;
 import com.github.littleemptydoll.exoequipment.network.CloakingPayload;
 import com.github.littleemptydoll.exoequipment.network.OpenExoskeletonPayload;
+import com.github.littleemptydoll.exoequipment.module.JetpackInputState;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -63,7 +64,17 @@ public final class ModKeyMappings {
 final class ModKeyMappingHandler {
 
     @SubscribeEvent
-    public static void onClientTick(ClientTickEvent.Post event) {
+    public static void onClientTickPre(ClientTickEvent.Pre event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.getConnection() == null || minecraft.player == null) {
+            return;
+        }
+
+        JetpackInputState.set(minecraft.player, readJetpackInput());
+    }
+
+    @SubscribeEvent
+    public static void onClientTickPost(ClientTickEvent.Post event) {
         if (Minecraft.getInstance().getConnection() == null) {
             return;
         }
@@ -72,25 +83,7 @@ final class ModKeyMappingHandler {
             PacketDistributor.sendToServer(new FlightPayload());
         }
 
-        byte jetpackInput = 0;
-        if (Minecraft.getInstance().options.keyUp.isDown()) {
-            jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.FORWARD;
-        }
-        if (Minecraft.getInstance().options.keyDown.isDown()) {
-            jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.BACK;
-        }
-        if (Minecraft.getInstance().options.keyLeft.isDown()) {
-            jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.LEFT;
-        }
-        if (Minecraft.getInstance().options.keyRight.isDown()) {
-            jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.RIGHT;
-        }
-        if (Minecraft.getInstance().options.keyJump.isDown()) {
-            jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.UP;
-        }
-        if (Minecraft.getInstance().options.keyShift.isDown()) {
-            jetpackInput |= com.github.littleemptydoll.exoequipment.module.JetpackInputState.DOWN;
-        }
+        byte jetpackInput = readJetpackInput();
         PacketDistributor.sendToServer(new JetpackInputPayload(jetpackInput));
 
         while (ModKeyMappings.OPEN_EXOSKELETON.consumeClick()) {
@@ -104,6 +97,32 @@ final class ModKeyMappingHandler {
         while (ModKeyMappings.ACTIVATE_BLINK.consumeClick()) {
             PacketDistributor.sendToServer(new BlinkPayload());
         }
+    }
+
+    private static byte readJetpackInput() {
+        Minecraft minecraft = Minecraft.getInstance();
+        byte input = 0;
+
+        if (minecraft.options.keyUp.isDown()) {
+            input |= JetpackInputState.FORWARD;
+        }
+        if (minecraft.options.keyDown.isDown()) {
+            input |= JetpackInputState.BACK;
+        }
+        if (minecraft.options.keyLeft.isDown()) {
+            input |= JetpackInputState.LEFT;
+        }
+        if (minecraft.options.keyRight.isDown()) {
+            input |= JetpackInputState.RIGHT;
+        }
+        if (minecraft.options.keyJump.isDown()) {
+            input |= JetpackInputState.UP;
+        }
+        if (minecraft.options.keyShift.isDown()) {
+            input |= JetpackInputState.DOWN;
+        }
+
+        return input;
     }
 
     private ModKeyMappingHandler() {}

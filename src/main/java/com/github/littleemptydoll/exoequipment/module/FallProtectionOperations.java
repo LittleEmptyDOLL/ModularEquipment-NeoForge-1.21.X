@@ -10,6 +10,40 @@ import java.util.Set;
 public final class FallProtectionOperations {
     private FallProtectionOperations() {}
 
+    public static double calculateDamageMultiplier(
+            ExoskeletonData data,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        double damage = 1.0D;
+        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
+            var matrix = data.matrices().get(slot).matrix().orElse(null);
+            if (matrix == null) continue;
+
+            for (int moduleIndex = 0; moduleIndex < matrix.modules().size(); moduleIndex++) {
+                InstalledModule module = matrix.modules().get(moduleIndex);
+                if (!FrameOperations.isModuleSupported(data, module)) continue;
+
+                InstalledModuleReference reference =
+                        new InstalledModuleReference(slot, moduleIndex);
+                var definition = ModModules.getDefinition(module.id());
+
+                if (definition.energy()
+                        .filter(energy -> energy.consumption() > 0)
+                        .isPresent()
+                        && !poweredModules.contains(reference)) {
+                    continue;
+                }
+
+                var properties = definition.fallProtection().orElse(null);
+                if (properties == null) continue;
+
+                damage *= 1.0D - properties.damageReduction();
+                if (damage <= 0.0D) return 0.0D;
+            }
+        }
+        return Math.max(0.0D, damage);
+    }
+
     public static double applyProtection(
             double damage,
             ExoskeletonData data,

@@ -71,9 +71,9 @@ public record ModuleOptionalProperties(
                             RegenerationProperties.CODEC
                                     .optionalFieldOf("regeneration")
                                     .forGetter(ModuleOptionalProperties::regeneration),
-                            FallProtectionProperties.CODEC
-                                    .optionalFieldOf("fall_protection")
-                                    .forGetter(ModuleOptionalProperties::fallProtection)
+                            FlightProperties.CODEC
+                                    .optionalFieldOf("flight")
+                                    .forGetter(ModuleOptionalProperties::flight)
                     ).apply(instance, ModuleOptionalProperties::new)
             );
 }

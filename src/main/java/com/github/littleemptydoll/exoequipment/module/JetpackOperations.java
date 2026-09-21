@@ -51,10 +51,6 @@ public final class JetpackOperations {
             return data;
         }
 
-        if (player.onGround()) {
-            return data;
-        }
-
         applyNormalThrust(player, input, properties);
         return data;
     }

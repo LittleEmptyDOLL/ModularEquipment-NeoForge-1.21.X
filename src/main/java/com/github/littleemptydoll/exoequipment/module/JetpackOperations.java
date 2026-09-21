@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Set;
 
 public final class JetpackOperations {
+    private static final double DEFAULT_GRAVITY = 0.08D;
+    private static final double HORIZONTAL_ACCELERATION_FACTOR = 0.10D;
+    private static final double HORIZONTAL_BRAKING_FACTOR = 0.25D;
+
     private JetpackOperations() {}
 
     public static ExoskeletonData tick(
@@ -63,19 +67,13 @@ public final class JetpackOperations {
     ) {
         Vec3 velocity = player.getDeltaMovement();
 
-        double vertical = 0.0D;
+        double newY = velocity.y;
         if (JetpackInputState.has(input, JetpackInputState.UP)) {
-            vertical += properties.verticalThrust();
+            newY += DEFAULT_GRAVITY + properties.verticalThrust();
         }
         if (JetpackInputState.has(input, JetpackInputState.DOWN)) {
-            vertical -= properties.verticalThrust();
+            newY -= properties.verticalThrust();
         }
-
-        double newY = velocity.y + vertical;
-        newY = Math.max(
-                -properties.maxVerticalSpeed(),
-                Math.min(properties.maxVerticalSpeed(), newY)
-        );
 
         double forwardInput = 0.0D;
         double strafeInput = 0.0D;
@@ -112,12 +110,14 @@ public final class JetpackOperations {
         }
 
         Vec3 currentHorizontal = new Vec3(velocity.x, 0.0D, velocity.z);
-        double horizontalAcceleration = properties.horizontalSpeed() * 0.10D;
+        double horizontalChange = targetHorizontal.lengthSqr() == 0.0D
+                ? properties.horizontalSpeed() * HORIZONTAL_BRAKING_FACTOR
+                : properties.horizontalSpeed() * HORIZONTAL_ACCELERATION_FACTOR;
 
         Vec3 newHorizontal = approachVector(
                 currentHorizontal,
                 targetHorizontal,
-                horizontalAcceleration
+                horizontalChange
         );
 
         player.setDeltaMovement(

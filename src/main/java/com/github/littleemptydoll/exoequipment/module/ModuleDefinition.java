@@ -25,7 +25,6 @@ public record ModuleDefinition(
         Optional<EmergencyShieldProperties> emergencyShield,
         Optional<CloakingProperties> cloaking,
         Optional<BlinkProperties> blink,
-        Optional<FlightProperties> flight,
         Optional<StatusProtectionProperties> statusProtection,
         Optional<NightVisionProperties> nightVision,
         Optional<EntityDetectionProperties> entityDetection,
@@ -64,9 +63,6 @@ public record ModuleDefinition(
                             BlinkProperties.CODEC
                                     .optionalFieldOf("blink")
                                     .forGetter(ModuleDefinition::blink),
-                            FlightProperties.CODEC
-                                    .optionalFieldOf("flight")
-                                    .forGetter(ModuleDefinition::flight),
                             AttributeProperties.CODEC
                                     .optionalFieldOf("attributes")
                                     .forGetter(ModuleDefinition::attributes),
@@ -96,7 +92,10 @@ public record ModuleDefinition(
                                     .forGetter(ModuleDefinition::painkiller),
                             BlockScannerProperties.CODEC
                                     .optionalFieldOf("block_scanner")
-                                    .forGetter(ModuleDefinition::blockScanner)
+                                    .forGetter(ModuleDefinition::blockScanner),
+                            FallProtectionProperties.CODEC
+                                    .optionalFieldOf("fall_protection")
+                                    .forGetter(ModuleDefinition::fallProtection)
                     ).apply(
                             instance,
                             ModuleDefinition::fromCodec
@@ -120,7 +119,7 @@ public record ModuleDefinition(
                 hunger,
                 revival,
                 regeneration,
-                fallProtection
+                flight
         );
     }
 
@@ -131,7 +130,6 @@ public record ModuleDefinition(
             ModuleSize size,
             ModuleOptionalProperties optional,
             Optional<BlinkProperties> blink,
-            Optional<FlightProperties> flight,
             Optional<AttributeProperties> attributes,
             Optional<ConditionalAttributeProperties> conditionalAttributes,
             Optional<PickupMagnetProperties> pickupMagnet,
@@ -141,7 +139,8 @@ public record ModuleDefinition(
             Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
             Optional<ThirstProperties> thirst,
             Optional<PainkillerProperties> painkiller,
-            Optional<BlockScannerProperties> blockScanner
+            Optional<BlockScannerProperties> blockScanner,
+            Optional<FallProtectionProperties> fallProtection
     ) {
         return new ModuleDefinition(
                 id,
@@ -160,14 +159,13 @@ public record ModuleDefinition(
                 optional.emergencyShield(),
                 optional.cloaking(),
                 blink,
-                flight,
                 optional.statusProtection(),
                 optional.nightVision(),
                 optional.entityDetection(),
                 optional.hunger(),
                 optional.revival(),
                 optional.regeneration(),
-                optional.fallProtection(),
+                fallProtection,
                 attributes,
                 conditionalAttributes,
                 pickupMagnet,
@@ -393,7 +391,6 @@ public record ModuleDefinition(
                     Optional.ofNullable(emergencyShield),
                     Optional.ofNullable(cloaking),
                     Optional.ofNullable(blink),
-                    Optional.ofNullable(flight),
                     Optional.ofNullable(statusProtection),
                     Optional.ofNullable(nightVision),
                     Optional.ofNullable(entityDetection),

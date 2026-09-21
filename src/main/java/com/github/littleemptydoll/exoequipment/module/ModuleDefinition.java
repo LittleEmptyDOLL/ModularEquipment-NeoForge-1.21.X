@@ -105,8 +105,7 @@ public record ModuleDefinition(
                 bodyDamageRegeneration,
                 thirst,
                 painkiller,
-                blockScanner,
-                fallProtection
+                blockScanner
         );
     }
 

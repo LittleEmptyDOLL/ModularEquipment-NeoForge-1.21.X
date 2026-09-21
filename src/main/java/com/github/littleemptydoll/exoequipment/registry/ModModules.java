@@ -165,6 +165,27 @@ public class ModModules {
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
+    > TEST_FLIGHT = REGISTRY.register(
+            "test_flight",
+            new EquipmentProperties(
+                    EquipmentTier.BASIC,
+                    Rarity.EPIC
+            ),
+            (id, properties) ->
+                    ModuleDefinition.builder(
+                                    id,
+                                    properties,
+                                    ModuleCategory.MOBILITY,
+                                    new ModuleSize(2, 2)
+                            )
+                            .energy(new EnergyProperties(5))
+                            .flight(new FlightProperties(10))
+                            .build()
+    );
+
+    public static final EquipmentEntry<
+            ModuleDefinition,
+            ModuleItem
     > TEST_CONSUMER = REGISTRY.register(
             "test_consumer",
             new EquipmentProperties(

@@ -1,11 +1,9 @@
 package com.github.littleemptydoll.exoequipment.characteristics;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonProfile;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.List;
 import java.util.Set;
 
 public record CharacteristicsContext(
@@ -23,8 +21,12 @@ public record CharacteristicsContext(
                 ? Set.of()
                 : Set.copyOf(poweredModules);
 
-        if (matrixSlot != null && matrixSlot < 0) {
-            throw new IllegalArgumentException("Matrix slot cannot be negative");
+        if (matrixSlot != null) {
+            if (matrixSlot < 0 || matrixSlot >= data.matrices().size()) {
+                throw new IllegalArgumentException(
+                        "Matrix slot is out of range: " + matrixSlot
+                );
+            }
         }
     }
 
@@ -42,12 +44,8 @@ public record CharacteristicsContext(
             Set<InstalledModuleReference> poweredModules,
             int matrixSlot
     ) {
-        if (matrixSlot >= data.matrices().size()) {
-            throw new IllegalArgumentException("Matrix slot is out of range: " + matrixSlot);
-        }
-
         return new CharacteristicsContext(
-                scopedData(data, matrixSlot),
+                data,
                 player,
                 poweredModules,
                 matrixSlot
@@ -56,30 +54,5 @@ public record CharacteristicsContext(
 
     public boolean isMatrixScope() {
         return matrixSlot != null;
-    }
-
-    private static ExoskeletonData scopedData(
-            ExoskeletonData data,
-            int matrixSlot
-    ) {
-        if (data.profiles().isEmpty()) {
-            return data;
-        }
-
-        List<ExoskeletonProfile> profiles = data.profiles().stream()
-                .map(profile -> new ExoskeletonProfile(
-                        profile.name(),
-                        profile.activeMatrices().contains(matrixSlot)
-                                ? List.of(matrixSlot)
-                                : List.of()
-                ))
-                .toList();
-
-        int activeProfile = data.activeProfile();
-        if (activeProfile < 0 || activeProfile >= profiles.size()) {
-            return data;
-        }
-
-        return data.withProfiles(profiles, activeProfile);
     }
 }

@@ -5,6 +5,8 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeSta
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.module.JetpackOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -22,10 +24,6 @@ public final class JetpackEvents {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
-
-        if (player.level().isClientSide()) {
-            return;
-        }
 
         Optional<ItemStack> exoskeleton = findExoskeleton(player);
         if (exoskeleton.isEmpty()) {
@@ -52,6 +50,14 @@ public final class JetpackEvents {
             stack.set(
                     ModDataComponents.EXOSKELETON_DATA.get(),
                     updatedData
+            );
+        }
+
+        if (!player.level().isClientSide()
+                && player instanceof ServerPlayer serverPlayer
+                && !updatedData.equals(data)) {
+            serverPlayer.connection.send(
+                    new ClientboundSetEntityMotionPacket(serverPlayer)
             );
         }
     }

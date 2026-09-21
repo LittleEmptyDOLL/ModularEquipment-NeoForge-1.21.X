@@ -212,11 +212,13 @@ public final class CharacteristicsProvider {
 
         for (BodyPart bodyPart : BodyPart.values()) {
             double chance = context.isMatrixScope()
-                    ? calculateBodyDamageChance(context, bodyPart)
+                    ? BodyDamageProtectionOperations.calculateChance(
+                            context.data(), context.matrixSlot(), bodyPart, context.poweredModules())
                     : BodyDamageProtectionOperations.calculateChance(
                             context.data(), bodyPart, context.poweredModules());
             double multiplier = context.isMatrixScope()
-                    ? calculateBodyDamageMultiplier(context, bodyPart)
+                    ? BodyDamageProtectionOperations.calculateDamageMultiplier(
+                            context.data(), context.matrixSlot(), bodyPart, context.poweredModules())
                     : BodyDamageProtectionOperations.calculateDamageMultiplier(
                             context.data(), bodyPart, context.poweredModules());
             double reduction = 1.0D - multiplier;
@@ -283,50 +285,6 @@ public final class CharacteristicsProvider {
                                 result.addAll(properties.reductions().keySet())
                         )
         );
-    }
-
-    private static double calculateBodyDamageChance(
-            CharacteristicsContext context,
-            BodyPart bodyPart
-    ) {
-        MatrixData matrix = getSelectedMatrix(context);
-        if (matrix == null) return 0.0D;
-
-        double remainingChance = 1.0D;
-        for (int moduleIndex = 0; moduleIndex < matrix.modules().size(); moduleIndex++) {
-            var module = matrix.modules().get(moduleIndex);
-            if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
-            var reference = new InstalledModuleReference(context.matrixSlot(), moduleIndex);
-            var definition = ModModules.getDefinition(module.id());
-            if (definition.energy().filter(energy -> energy.consumption() > 0).isPresent()
-                    && !context.poweredModules().contains(reference)) continue;
-            var properties = definition.bodyDamageProtection().orElse(null);
-            if (properties == null || !BodyPart.applies(properties.bodyParts(), bodyPart)) continue;
-            remainingChance *= 1.0D - properties.chance();
-        }
-        return Math.max(0.0D, Math.min(1.0D, 1.0D - remainingChance));
-    }
-
-    private static double calculateBodyDamageMultiplier(
-            CharacteristicsContext context,
-            BodyPart bodyPart
-    ) {
-        MatrixData matrix = getSelectedMatrix(context);
-        if (matrix == null) return 1.0D;
-
-        double multiplier = 1.0D;
-        for (int moduleIndex = 0; moduleIndex < matrix.modules().size(); moduleIndex++) {
-            var module = matrix.modules().get(moduleIndex);
-            if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
-            var reference = new InstalledModuleReference(context.matrixSlot(), moduleIndex);
-            var definition = ModModules.getDefinition(module.id());
-            if (definition.energy().filter(energy -> energy.consumption() > 0).isPresent()
-                    && !context.poweredModules().contains(reference)) continue;
-            var properties = definition.bodyDamageProtection().orElse(null);
-            if (properties == null || !BodyPart.applies(properties.bodyParts(), bodyPart)) continue;
-            multiplier *= 1.0D - properties.damageReduction();
-        }
-        return Math.max(0.0D, multiplier);
     }
 
     private static void addShield(

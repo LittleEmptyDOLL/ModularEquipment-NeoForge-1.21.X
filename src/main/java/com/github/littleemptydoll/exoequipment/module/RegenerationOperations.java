@@ -12,6 +12,30 @@ public final class RegenerationOperations {
 
     public static double calculateHealthPerSecond(
             ExoskeletonData data,
+            int matrixSlot,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        var matrix = data.matrices().get(matrixSlot).matrix().orElse(null);
+        if (matrix == null) return 0.0D;
+
+        double healthPerSecond = 0.0D;
+        for (int moduleIndex = 0; moduleIndex < matrix.modules().size(); moduleIndex++) {
+            InstalledModule module = matrix.modules().get(moduleIndex);
+            if (!FrameOperations.isModuleSupported(data, module)) continue;
+
+            InstalledModuleReference reference = new InstalledModuleReference(matrixSlot, moduleIndex);
+            var definition = ModModules.getDefinition(module.id());
+            if (definition.energy().filter(energy -> energy.consumption() > 0).isPresent()
+                    && !poweredModules.contains(reference)) continue;
+
+            healthPerSecond += definition.regeneration()
+                    .map(RegenerationProperties::healthPerSecond).orElse(0.0D);
+        }
+        return healthPerSecond;
+    }
+
+    public static double calculateHealthPerSecond(
+            ExoskeletonData data,
             Set<InstalledModuleReference> poweredModules
     ) {
         double healthPerSecond = 0.0D;

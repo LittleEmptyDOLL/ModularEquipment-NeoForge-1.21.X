@@ -45,6 +45,35 @@ public record InstalledModule(
         this(id, x, y, rotation, storedEnergy, 0.0D, 0, 0, 0, false, 0, false);
     }
 
+    public InstalledModule(
+            ResourceLocation id,
+            int x,
+            int y,
+            int rotation,
+            int storedEnergy,
+            double shieldEnergy,
+            int shieldRechargeCooldown,
+            int revivalCooldown,
+            int emergencyShieldCooldown,
+            boolean active,
+            int abilityCooldown
+    ) {
+        this(
+                id,
+                x,
+                y,
+                rotation,
+                storedEnergy,
+                shieldEnergy,
+                shieldRechargeCooldown,
+                revivalCooldown,
+                emergencyShieldCooldown,
+                active,
+                abilityCooldown,
+                false
+        );
+    }
+
     public InstalledModule {
         rotation = MatrixOperations.normalizeRotation(rotation);
         if (storedEnergy < 0) throw new IllegalArgumentException("Stored energy cannot be negative");

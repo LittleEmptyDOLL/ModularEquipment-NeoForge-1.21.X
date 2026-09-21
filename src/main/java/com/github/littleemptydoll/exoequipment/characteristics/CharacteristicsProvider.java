@@ -7,12 +7,18 @@ import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixState;
 import com.github.littleemptydoll.exoequipment.module.AttributeOperations;
-import com.github.littleemptydoll.exoequipment.module.InstalledModule;
+import com.github.littleemptydoll.exoequipment.module.BodyDamageProtectionOperations;
+import com.github.littleemptydoll.exoequipment.module.BodyPart;
+import com.github.littleemptydoll.exoequipment.module.DefenseOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import com.github.littleemptydoll.exoequipment.module.RegenerationOperations;
+import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
+import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +30,9 @@ public final class CharacteristicsProvider {
 
         addEnergy(result, context);
         addThermal(result, context);
+        addDefense(result, context);
+        addShield(result, context);
+        addRegeneration(result, context);
         addAttributes(result, context);
 
         result.sort(
@@ -172,6 +181,149 @@ public final class CharacteristicsProvider {
         ));
     }
 
+    private static void addDefense(
+            List<Characteristic> result,
+            CharacteristicsContext context
+    ) {
+        if (context.isMatrixScope()) {
+            return;
+        }
+
+        Set<ResourceLocation> damageTypes = collectDamageTypes(context.data());
+
+        for (ResourceLocation damageType : damageTypes) {
+            double multiplier = DefenseOperations.calculateDamageMultiplier(
+                    context.data(),
+                    damageType,
+                    context.poweredModules()
+            );
+
+            double reduction = 1.0D - multiplier;
+
+            if (reduction <= 0.0D) {
+                continue;
+            }
+
+            result.add(new Characteristic(
+                    CharacteristicCategory.DEFENSE,
+                    "damage_reduction." + damageType,
+                    CharacteristicType.CURRENT,
+                    reduction
+            ));
+        }
+
+        for (BodyPart bodyPart : BodyPart.values()) {
+            double chance = BodyDamageProtectionOperations.calculateChance(
+                    context.data(),
+                    bodyPart,
+                    context.poweredModules()
+            );
+            double multiplier = BodyDamageProtectionOperations.calculateDamageMultiplier(
+                    context.data(),
+                    bodyPart,
+                    context.poweredModules()
+            );
+            double reduction = 1.0D - multiplier;
+
+            if (chance > 0.0D) {
+                result.add(new Characteristic(
+                        CharacteristicCategory.DEFENSE,
+                        "body." + bodyPart.name().toLowerCase() + ".chance",
+                        CharacteristicType.CURRENT,
+                        chance
+                ));
+            }
+
+            if (reduction > 0.0D) {
+                result.add(new Characteristic(
+                        CharacteristicCategory.DEFENSE,
+                        "body." + bodyPart.name().toLowerCase() + ".reduction",
+                        CharacteristicType.CURRENT,
+                        reduction
+                ));
+            }
+        }
+    }
+
+    private static Set<ResourceLocation> collectDamageTypes(
+            com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData data
+    ) {
+        Set<ResourceLocation> result = new HashSet<>();
+
+        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
+            MatrixData matrix = data.matrices()
+                    .get(slot)
+                    .matrix()
+                    .orElse(null);
+
+            if (matrix == null) {
+                continue;
+            }
+
+            matrix.modules().forEach(module ->
+                    ModModules.getDefinition(module.id())
+                            .damageReduction()
+                            .ifPresent(properties ->
+                                    result.addAll(properties.reductions().keySet())
+                            )
+            );
+        }
+
+        return result;
+    }
+
+    private static void addShield(
+            List<Characteristic> result,
+            CharacteristicsContext context
+    ) {
+        if (context.isMatrixScope()) {
+            return;
+        }
+
+        ShieldOperations.ShieldStatus status =
+                ShieldOperations.getStatus(context.data());
+
+        if (!status.hasShields()) {
+            return;
+        }
+
+        result.add(new Characteristic(
+                CharacteristicCategory.SHIELD,
+                "current_energy",
+                CharacteristicType.CURRENT,
+                status.currentEnergy()
+        ));
+        result.add(new Characteristic(
+                CharacteristicCategory.SHIELD,
+                "capacity",
+                CharacteristicType.CURRENT,
+                status.capacity()
+        ));
+    }
+
+    private static void addRegeneration(
+            List<Characteristic> result,
+            CharacteristicsContext context
+    ) {
+        if (context.isMatrixScope()) {
+            return;
+        }
+
+        double healthPerSecond = RegenerationOperations.calculateHealthPerSecond(
+                context.data(),
+                context.poweredModules()
+        );
+
+        if (healthPerSecond > 0.0D) {
+            result.add(new Characteristic(
+                    CharacteristicCategory.REGENERATION,
+                    "health_per_second",
+                    CharacteristicType.CURRENT,
+                    healthPerSecond
+            ));
+        }
+    }
+
     private static void addAttributes(
             List<Characteristic> result,
             CharacteristicsContext context
@@ -180,12 +332,10 @@ public final class CharacteristicsProvider {
             return;
         }
 
-        Set<InstalledModuleReference> poweredModules = context.poweredModules();
-
         AttributeOperations.calculate(
                 context.player(),
                 context.data(),
-                poweredModules
+                context.poweredModules()
         ).forEach((key, value) -> {
             String operation = switch (key.operation()) {
                 case ADD_VALUE -> "add_value";

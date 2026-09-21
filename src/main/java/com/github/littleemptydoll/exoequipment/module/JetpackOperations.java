@@ -14,9 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 public final class JetpackOperations {
-    private static final double DEFAULT_GRAVITY = 0.08D;
-    private static final double HORIZONTAL_ACCELERATION_FACTOR = 0.10D;
-    private static final double HORIZONTAL_BRAKING_FACTOR = 0.25D;
+    private static final double AXIS_ACCELERATION_FACTOR = 0.10D;
 
     private JetpackOperations() {}
 
@@ -68,12 +66,20 @@ public final class JetpackOperations {
         Vec3 velocity = player.getDeltaMovement();
 
         double newY = velocity.y;
-        if (JetpackInputState.has(input, JetpackInputState.UP)) {
-            newY += DEFAULT_GRAVITY + properties.verticalThrust();
+        if (JetpackInputState.has(input, JetpackInputState.UP)
+                || JetpackInputState.has(input, JetpackInputState.DOWN)) {
+            double targetY = JetpackInputState.has(input, JetpackInputState.UP)
+                    ? properties.verticalThrust()
+                    : -properties.verticalThrust();
+
+            newY = approach(
+                    velocity.y,
+                    targetY,
+                    properties.verticalThrust() * AXIS_ACCELERATION_FACTOR
+            );
         }
-        if (JetpackInputState.has(input, JetpackInputState.DOWN)) {
-            newY -= properties.verticalThrust();
-        }
+
+        Vec3 newHorizontal = new Vec3(velocity.x, 0.0D, velocity.z);
 
         double forwardInput = 0.0D;
         double strafeInput = 0.0D;
@@ -90,7 +96,6 @@ public final class JetpackOperations {
             strafeInput -= 1.0D;
         }
 
-        Vec3 targetHorizontal = Vec3.ZERO;
         if (forwardInput != 0.0D || strafeInput != 0.0D) {
             Vec3 forward = player.getLookAngle();
             forward = new Vec3(forward.x, 0.0D, forward.z);
@@ -104,21 +109,16 @@ public final class JetpackOperations {
                     .add(right.scale(strafeInput));
 
             if (direction.lengthSqr() > 1.0E-8D) {
-                targetHorizontal = direction.normalize()
+                Vec3 targetHorizontal = direction.normalize()
                         .scale(properties.horizontalSpeed());
+
+                newHorizontal = approachVector(
+                        newHorizontal,
+                        targetHorizontal,
+                        properties.horizontalSpeed() * AXIS_ACCELERATION_FACTOR
+                );
             }
         }
-
-        Vec3 currentHorizontal = new Vec3(velocity.x, 0.0D, velocity.z);
-        double horizontalChange = targetHorizontal.lengthSqr() == 0.0D
-                ? properties.horizontalSpeed() * HORIZONTAL_BRAKING_FACTOR
-                : properties.horizontalSpeed() * HORIZONTAL_ACCELERATION_FACTOR;
-
-        Vec3 newHorizontal = approachVector(
-                currentHorizontal,
-                targetHorizontal,
-                horizontalChange
-        );
 
         player.setDeltaMovement(
                 new Vec3(
@@ -127,6 +127,19 @@ public final class JetpackOperations {
                         newHorizontal.z
                 )
         );
+    }
+
+    private static double approach(
+            double current,
+            double target,
+            double maxChange
+    ) {
+        double delta = target - current;
+        if (Math.abs(delta) <= maxChange) {
+            return target;
+        }
+
+        return current + Math.copySign(maxChange, delta);
     }
 
     private static Vec3 approachVector(

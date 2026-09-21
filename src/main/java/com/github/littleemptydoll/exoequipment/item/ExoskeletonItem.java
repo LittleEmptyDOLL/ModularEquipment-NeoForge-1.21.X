@@ -11,7 +11,6 @@ import com.github.littleemptydoll.exoequipment.module.StatusProtectionOperations
 import com.github.littleemptydoll.exoequipment.module.BlinkOperations;
 import com.github.littleemptydoll.exoequipment.module.CloakingOperations;
 import com.github.littleemptydoll.exoequipment.module.FlightOperations;
-import com.github.littleemptydoll.exoequipment.module.JetpackOperations;
 import com.github.littleemptydoll.exoequipment.exoskeleton.*;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
@@ -126,11 +125,6 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
         );
         updatedData = BlinkOperations.tick(updatedData);
         updatedData = FlightOperations.tick(
-                updatedData,
-                runtime.poweredModules()
-        );
-        updatedData = JetpackOperations.tick(
-                player,
                 updatedData,
                 runtime.poweredModules()
         );

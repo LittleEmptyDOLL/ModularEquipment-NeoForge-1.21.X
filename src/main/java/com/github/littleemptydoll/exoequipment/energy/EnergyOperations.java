@@ -8,6 +8,7 @@ import com.github.littleemptydoll.exoequipment.module.*;
 import com.github.littleemptydoll.exoequipment.registry.ModEnergySystems;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -56,6 +57,14 @@ public final class EnergyOperations {
             ExoskeletonData data,
             ExternalEnergyProvider externalProvider
     ) {
+        return tick(data, externalProvider, null);
+    }
+
+    public static EnergyTickResult tick(
+            ExoskeletonData data,
+            ExternalEnergyProvider externalProvider,
+            Player player
+    ) {
         if (externalProvider == null) {
             return tick(data, 0);
         }
@@ -68,7 +77,8 @@ public final class EnergyOperations {
         return tick(
                 data,
                 externalAvailable,
-                amount -> externalProvider.extractEnergy(amount, false)
+                amount -> externalProvider.extractEnergy(amount, false),
+                player
         );
     }
 
@@ -85,13 +95,22 @@ public final class EnergyOperations {
             throw new IllegalArgumentException("External available energy cannot be negative");
         }
 
-        return tick(data, externalAvailable, amount -> amount);
+        return tick(data, externalAvailable, amount -> amount, null);
     }
 
     private static EnergyTickResult tick(
             ExoskeletonData data,
             int externalAvailable,
             ExternalEnergyExtractor externalExtractor
+    ) {
+        return tick(data, externalAvailable, externalExtractor, null);
+    }
+
+    private static EnergyTickResult tick(
+            ExoskeletonData data,
+            int externalAvailable,
+            ExternalEnergyExtractor externalExtractor,
+            Player player
     ) {
         if (data.energySystem().isEmpty()) {
             return new EnergyTickResult(
@@ -119,7 +138,7 @@ public final class EnergyOperations {
         ExoskeletonData updatedData = data;
         Set<InstalledModuleReference> poweredModules = new LinkedHashSet<>();
 
-        List<EnergyConsumer> consumers = collectConsumers(data);
+        List<EnergyConsumer> consumers = collectConsumers(data, player);
         consumers.sort(Comparator.comparingInt(EnergyConsumer::priority).reversed());
 
         for (EnergyConsumer consumer : consumers) {
@@ -273,7 +292,7 @@ public final class EnergyOperations {
         );
     }
 
-    private static List<EnergyConsumer> collectConsumers(ExoskeletonData data) {
+    private static List<EnergyConsumer> collectConsumers(ExoskeletonData data, Player player) {
         List<EnergyConsumer> consumers = new ArrayList<>();
 
         for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
@@ -315,6 +334,14 @@ public final class EnergyOperations {
                     consumption += ModModules.getDefinition(module.id())
                             .flight()
                             .map(FlightProperties::activeConsumption)
+                            .orElse(0);
+                }
+
+                if (player != null
+                        && JetpackInputState.isThrusting(player)) {
+                    consumption += ModModules.getDefinition(module.id())
+                            .jetpack()
+                            .map(JetpackProperties::energyConsumption)
                             .orElse(0);
                 }
 

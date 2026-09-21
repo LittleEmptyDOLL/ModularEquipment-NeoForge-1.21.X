@@ -21,6 +21,10 @@ public final class JetpackOperations {
             ExoskeletonData data,
             Set<InstalledModuleReference> poweredModules
     ) {
+        if (FlightOperations.hasActive(data)) {
+            return data;
+        }
+
         byte input = JetpackInputState.get(player);
         if (input == 0) {
             return data;

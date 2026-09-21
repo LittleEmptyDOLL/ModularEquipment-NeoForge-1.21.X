@@ -64,6 +64,10 @@ final class ModKeyMappingHandler {
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
+        if (Minecraft.getInstance().getConnection() == null) {
+            return;
+        }
+
         while (ModKeyMappings.ACTIVATE_FLIGHT.consumeClick()) {
             PacketDistributor.sendToServer(new FlightPayload());
         }

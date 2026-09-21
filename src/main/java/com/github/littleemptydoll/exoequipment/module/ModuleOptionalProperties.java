@@ -21,7 +21,7 @@ public record ModuleOptionalProperties(
         Optional<HungerProperties> hunger,
         Optional<RevivalProperties> revival,
         Optional<RegenerationProperties> regeneration,
-        Optional<FallProtectionProperties> fallProtection
+        Optional<FlightProperties> flight
 ) {
     public static final MapCodec<ModuleOptionalProperties> CODEC =
             RecordCodecBuilder.mapCodec(instance ->

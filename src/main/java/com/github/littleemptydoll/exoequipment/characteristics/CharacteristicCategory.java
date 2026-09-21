@@ -10,5 +10,6 @@ public enum CharacteristicCategory {
     MOBILITY,
     SURVIVAL,
     SENSOR,
-    UTILITY
+    UTILITY,
+    COMBAT
 }

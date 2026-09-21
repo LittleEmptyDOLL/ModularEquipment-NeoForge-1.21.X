@@ -26,6 +26,7 @@ public record ModuleDefinition(
         Optional<CloakingProperties> cloaking,
         Optional<BlinkProperties> blink,
         Optional<FlightProperties> flight,
+        Optional<JetpackProperties> jetpack,
         Optional<StatusProtectionProperties> statusProtection,
         Optional<NightVisionProperties> nightVision,
         Optional<EntityDetectionProperties> entityDetection,
@@ -96,6 +97,7 @@ public record ModuleDefinition(
         return new ModuleExtendedProperties(
                 blink,
                 flight,
+                jetpack,
                 attributes,
                 conditionalAttributes,
                 pickupMagnet,
@@ -135,6 +137,7 @@ public record ModuleDefinition(
                 optional.cloaking(),
                 extended.blink(),
                 extended.flight(),
+                extended.jetpack(),
                 optional.statusProtection(),
                 optional.nightVision(),
                 optional.entityDetection(),
@@ -181,6 +184,7 @@ public record ModuleDefinition(
         private CloakingProperties cloaking;
         private BlinkProperties blink;
         private FlightProperties flight;
+        private JetpackProperties jetpack;
         private StatusProtectionProperties statusProtection;
         private NightVisionProperties nightVision;
         private EntityDetectionProperties entityDetection;
@@ -271,6 +275,11 @@ public record ModuleDefinition(
 
         public Builder flight(FlightProperties flight) {
             this.flight = flight;
+            return this;
+        }
+
+        public Builder jetpack(JetpackProperties jetpack) {
+            this.jetpack = jetpack;
             return this;
         }
 
@@ -368,6 +377,7 @@ public record ModuleDefinition(
                     Optional.ofNullable(cloaking),
                     Optional.ofNullable(blink),
                     Optional.ofNullable(flight),
+                    Optional.ofNullable(jetpack),
                     Optional.ofNullable(statusProtection),
                     Optional.ofNullable(nightVision),
                     Optional.ofNullable(entityDetection),

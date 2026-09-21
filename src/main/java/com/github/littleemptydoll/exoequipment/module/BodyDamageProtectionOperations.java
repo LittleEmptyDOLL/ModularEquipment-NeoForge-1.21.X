@@ -49,6 +49,88 @@ public final class BodyDamageProtectionOperations {
         return Math.max(0.0D, multiplier);
     }
 
+    public static double calculateChance(
+            ExoskeletonData data,
+            int matrixSlot,
+            BodyPart bodyPart,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        double remainingChance = 1.0D;
+
+        for (ModuleProtection protection : protections(data, matrixSlot, bodyPart, poweredModules)) {
+            remainingChance *= 1.0D - protection.properties().chance();
+            if (remainingChance <= 0.0D) {
+                return 1.0D;
+            }
+        }
+
+        return Math.max(0.0D, Math.min(1.0D, 1.0D - remainingChance));
+    }
+
+    public static double calculateDamageMultiplier(
+            ExoskeletonData data,
+            int matrixSlot,
+            BodyPart bodyPart,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        double multiplier = 1.0D;
+
+        for (ModuleProtection protection : protections(data, matrixSlot, bodyPart, poweredModules)) {
+            multiplier *= 1.0D - protection.properties().damageReduction();
+            if (multiplier <= 0.0D) {
+                return 0.0D;
+            }
+        }
+
+        return Math.max(0.0D, multiplier);
+    }
+
+    private static List<ModuleProtection> protections(
+            ExoskeletonData data,
+            int matrixSlot,
+            BodyPart bodyPart,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        List<ModuleProtection> result = new ArrayList<>();
+        MatrixData matrix = data.matrices().get(matrixSlot).matrix().orElse(null);
+
+        if (matrix == null) {
+            return result;
+        }
+
+        for (int moduleIndex = 0; moduleIndex < matrix.modules().size(); moduleIndex++) {
+            InstalledModule module = matrix.modules().get(moduleIndex);
+
+            if (!FrameOperations.isModuleSupported(data, module)) {
+                continue;
+            }
+
+            InstalledModuleReference reference =
+                    new InstalledModuleReference(matrixSlot, moduleIndex);
+
+            var definition = ModModules.getDefinition(module.id());
+
+            if (definition.energy()
+                    .filter(energy -> energy.consumption() > 0)
+                    .isPresent()
+                    && !poweredModules.contains(reference)) {
+                continue;
+            }
+
+            BodyDamageProtectionProperties properties =
+                    definition.bodyDamageProtection().orElse(null);
+
+            if (properties == null
+                    || !BodyPart.applies(properties.bodyParts(), bodyPart)) {
+                continue;
+            }
+
+            result.add(new ModuleProtection(reference, properties));
+        }
+
+        return result;
+    }
+
     private static List<ModuleProtection> protections(
             ExoskeletonData data,
             BodyPart bodyPart,

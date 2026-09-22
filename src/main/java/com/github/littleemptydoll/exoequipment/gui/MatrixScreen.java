@@ -510,6 +510,9 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (characteristicsPanel.mouseDragged(mouseX, mouseY, button)) {
+            return true;
+        }
         if (button == 0 && draggingModule) {
             int[] cell = getCellAtMouse((int) mouseX, (int) mouseY);
             if (cell != null && (cell[0] != dragStartMouseX || cell[1] != dragStartMouseY)) dragMoved = true;
@@ -520,6 +523,9 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (characteristicsPanel.mouseReleased(mouseX, mouseY, button)) {
+            return true;
+        }
         if (button == 0 && draggingModule) {
             int[] cell = getCellAtMouse((int) mouseX, (int) mouseY);
             InstalledModule module = draggedModule;
@@ -546,22 +552,6 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
                 draggedModule = null;
                 hasLastDragPreview = false;
             }
-            return true;
-        }
-        return super.mouseReleased(mouseX, mouseY, button);
-    }
-
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (characteristicsPanel.mouseDragged(mouseX, mouseY, button)) {
-            return true;
-        }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
-    }
-
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (characteristicsPanel.mouseReleased(mouseX, mouseY, button)) {
             return true;
         }
         return super.mouseReleased(mouseX, mouseY, button);

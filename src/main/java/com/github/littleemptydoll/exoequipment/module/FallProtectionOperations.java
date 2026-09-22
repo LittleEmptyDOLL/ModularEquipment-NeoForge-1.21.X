@@ -37,7 +37,8 @@ public final class FallProtectionOperations {
                 var properties = definition.fallProtection().orElse(null);
                 if (properties == null) continue;
 
-                damage *= 1.0D - properties.damageReduction();
+                double efficiency = com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(definition, data.temperature());
+                damage *= 1.0D - properties.damageReduction() * efficiency;
                 if (damage <= 0.0D) return 0.0D;
             }
         }
@@ -87,7 +88,8 @@ public final class FallProtectionOperations {
                     continue;
                 }
 
-                multiplier *= 1.0D - properties.damageReduction();
+                double efficiency = com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(definition, data.temperature());
+                multiplier *= 1.0D - properties.damageReduction() * efficiency;
 
                 if (multiplier <= 0.0D) {
                     return 0.0D;

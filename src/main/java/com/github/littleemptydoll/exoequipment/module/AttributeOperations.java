@@ -55,11 +55,11 @@ public final class AttributeOperations {
                 }
 
                 definition.attributes().ifPresent(attributes ->
-                        addAttributes(values, attributes)
+                        addAttributes(values, attributes, definition, data)
                 );
 
                 definition.conditionalAttributes().ifPresent(conditional ->
-                        addConditionalAttributes(player, values, conditional)
+                        addConditionalAttributes(player, values, conditional, definition, data)
                 );
             }
         }
@@ -69,23 +69,28 @@ public final class AttributeOperations {
 
     private static void addAttributes(
             Map<AttributeKey, Double> values,
-            AttributeProperties attributes
+            AttributeProperties attributes,
+            ModuleDefinition definition,
+            ExoskeletonData data
     ) {
         attributes.attributes().forEach((attributeId, modifier) -> {
             AttributeKey key = new AttributeKey(attributeId, modifier.operation());
-            values.merge(key, modifier.amount(), Double::sum);
+            double efficiency = com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(definition, data.temperature());
+            values.merge(key, modifier.amount() * efficiency, Double::sum);
         });
     }
 
     private static void addConditionalAttributes(
             Player player,
             Map<AttributeKey, Double> values,
-            ConditionalAttributeProperties conditional
+            ConditionalAttributeProperties conditional,
+            ModuleDefinition definition,
+            ExoskeletonData data
     ) {
         if (conditional.conditions().stream().allMatch(
                 condition -> AttributeConditionOperations.matches(player, condition)
         )) {
-            addAttributes(values, conditional.attributes());
+            addAttributes(values, conditional.attributes(), definition, data);
         }
     }
 

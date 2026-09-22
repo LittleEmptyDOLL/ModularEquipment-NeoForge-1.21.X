@@ -1,6 +1,8 @@
 package com.github.littleemptydoll.exoequipment.gui;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
+import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicsContext;
 import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicsProvider;
 import com.github.littleemptydoll.exoequipment.item.ModuleItem;
@@ -76,7 +78,22 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         this.characteristicsPanel = new CharacteristicsPanel(() -> {
             var data = menu.getSourceExoskeletonData();
             if (data == null) {
-                return List.of();
+                data = ExoskeletonData.empty()
+                        .withFrame(new Frame(
+                                ResourceLocation.fromNamespaceAndPath(
+                                        ExoEquipment.MODID,
+                                        "experimental"
+                                )
+                        ))
+                        .withMatrix(0, menu.getMatrixData());
+                return CharacteristicsProvider.collect(
+                        CharacteristicsContext.matrix(
+                                data,
+                                minecraft == null ? null : minecraft.player,
+                                java.util.Set.of(),
+                                0
+                        )
+                );
             }
             return CharacteristicsProvider.collect(
                     CharacteristicsContext.matrix(

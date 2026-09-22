@@ -69,7 +69,7 @@ public final class DefenseOperations {
                     continue;
                 }
 
-                double reduction = properties.reduction(damageType);
+                double reduction = properties.reduction(damageType) * com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(module.id(), data.temperature());
 
                 multiplier *= 1.0D - reduction;
 

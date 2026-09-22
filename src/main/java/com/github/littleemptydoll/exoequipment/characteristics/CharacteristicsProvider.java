@@ -204,9 +204,9 @@ public final class CharacteristicsProvider {
         for (ResourceLocation damageType : damageTypes) {
             double multiplier = context.isMatrixScope()
                     ? DefenseOperations.calculateDamageMultiplier(
-                            context.data(), context.matrixSlot(), damageType, context.poweredModules())
+                            context.data(), context.matrixSlot(), damageType, effectivePoweredModules(context))
                     : DefenseOperations.calculateDamageMultiplier(
-                            context.data(), damageType, context.poweredModules());
+                            context.data(), damageType, effectivePoweredModules(context));
 
             double reduction = 1.0D - multiplier;
 
@@ -224,7 +224,7 @@ public final class CharacteristicsProvider {
 
         if (!context.isMatrixScope()) {
             double fallReduction = 1.0D - com.github.littleemptydoll.exoequipment.module.FallProtectionOperations
-                    .calculateDamageMultiplier(context.data(), context.poweredModules());
+                    .calculateDamageMultiplier(context.data(), effectivePoweredModules(context));
             if (fallReduction > 0.0D) {
                 result.add(new Characteristic(
                         CharacteristicCategory.DEFENSE,
@@ -238,14 +238,14 @@ public final class CharacteristicsProvider {
         for (BodyPart bodyPart : BodyPart.values()) {
             double chance = context.isMatrixScope()
                     ? BodyDamageProtectionOperations.calculateChance(
-                            context.data(), context.matrixSlot(), bodyPart, context.poweredModules())
+                            context.data(), context.matrixSlot(), bodyPart, effectivePoweredModules(context))
                     : BodyDamageProtectionOperations.calculateChance(
-                            context.data(), bodyPart, context.poweredModules());
+                            context.data(), bodyPart, effectivePoweredModules(context));
             double multiplier = context.isMatrixScope()
                     ? BodyDamageProtectionOperations.calculateDamageMultiplier(
-                            context.data(), context.matrixSlot(), bodyPart, context.poweredModules())
+                            context.data(), context.matrixSlot(), bodyPart, effectivePoweredModules(context))
                     : BodyDamageProtectionOperations.calculateDamageMultiplier(
-                            context.data(), bodyPart, context.poweredModules());
+                            context.data(), bodyPart, effectivePoweredModules(context));
             double reduction = 1.0D - multiplier;
 
             if (chance > 0.0D) {
@@ -344,9 +344,9 @@ public final class CharacteristicsProvider {
     ) {
         double healthPerSecond = context.isMatrixScope()
                 ? RegenerationOperations.calculateHealthPerSecond(
-                        context.data(), context.matrixSlot(), context.poweredModules())
+                        context.data(), context.matrixSlot(), effectivePoweredModules(context))
                 : RegenerationOperations.calculateHealthPerSecond(
-                        context.data(), context.poweredModules());
+                        context.data(), effectivePoweredModules(context));
 
         if (healthPerSecond > 0.0D) {
             result.add(new Characteristic(
@@ -482,7 +482,7 @@ public final class CharacteristicsProvider {
         double hunger = context.isMatrixScope()
                 ? 0.0D
                 : com.github.littleemptydoll.exoequipment.module.HungerOperations.calculateExhaustionReduction(
-                        context.data(), context.poweredModules());
+                        context.data(), effectivePoweredModules(context));
         if (hunger > 0.0D) {
             result.add(new Characteristic(CharacteristicCategory.SURVIVAL, "hunger.exhaustion_reduction", CharacteristicType.CURRENT, hunger));
         }
@@ -565,7 +565,7 @@ public final class CharacteristicsProvider {
         var magnet = context.isMatrixScope()
                 ? java.util.Optional.<PickupMagnetProperties>empty()
                 : com.github.littleemptydoll.exoequipment.module.PickupMagnetOperations.findProperties(
-                        context.data(), context.poweredModules());
+                        context.data(), effectivePoweredModules(context));
         magnet.ifPresent(p -> {
             result.add(new Characteristic(CharacteristicCategory.UTILITY, "pickup_magnet.radius", CharacteristicType.CURRENT, p.radius()));
             result.add(new Characteristic(CharacteristicCategory.UTILITY, "pickup_magnet.items", CharacteristicType.STATE, p.mode().acceptsItems() ? 1.0D : 0.0D));
@@ -617,7 +617,7 @@ public final class CharacteristicsProvider {
                 context.player(),
                 context.data(),
                 context.isMatrixScope() ? context.matrixSlot() : null,
-                context.poweredModules()
+                effectivePoweredModules(context)
         ).forEach((key, value) -> {
             String operation = switch (key.operation()) {
                 case ADD_VALUE -> "add_value";
@@ -646,6 +646,33 @@ public final class CharacteristicsProvider {
                  "minecraft:generic.knockback_resistance" -> CharacteristicCategory.SURVIVAL;
             default -> CharacteristicCategory.ATTRIBUTES;
         };
+    }
+
+
+    private static Set<InstalledModuleReference> effectivePoweredModules(
+            CharacteristicsContext context
+    ) {
+        if (!context.isMatrixScope()) {
+            return context.poweredModules();
+        }
+
+        Set<InstalledModuleReference> result = new HashSet<>();
+
+        int slot = context.matrixSlot();
+        if (slot < 0 || slot >= context.data().matrices().size()) {
+            return result;
+        }
+
+        MatrixData matrix = context.data().matrices().get(slot).matrix().orElse(null);
+        if (matrix == null) {
+            return result;
+        }
+
+        for (int index = 0; index < matrix.modules().size(); index++) {
+            result.add(new InstalledModuleReference(slot, index));
+        }
+
+        return result;
     }
 
     private static MatrixData getSelectedMatrix(CharacteristicsContext context) {

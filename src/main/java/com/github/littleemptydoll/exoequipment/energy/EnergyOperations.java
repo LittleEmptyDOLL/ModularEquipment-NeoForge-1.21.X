@@ -262,6 +262,18 @@ public final class EnergyOperations {
         );
     }
 
+    public static int calculateCurrentConsumption(
+            ExoskeletonData data,
+            Player player,
+            java.util.Set<InstalledModuleReference> poweredModules
+    ) {
+        return collectConsumers(data, player).stream()
+                .filter(consumer -> poweredModules == null
+                        || poweredModules.contains(consumer.reference()))
+                .mapToInt(EnergyConsumer::consumption)
+                .sum();
+    }
+
     public static EnergyConsumptionResult consumeEnergy(
             ExoskeletonData data,
             int amount

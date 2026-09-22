@@ -40,7 +40,7 @@ public final class BodyDamageProtectionOperations {
         double multiplier = 1.0D;
 
         for (ModuleProtection protection : protections(data, bodyPart, poweredModules)) {
-            double efficiency = com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(ModModules.getDefinition(protection.reference().moduleId()), data.temperature());
+            double efficiency = com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(ModModules.getDefinition(protection.moduleId()), data.temperature());
             multiplier *= 1.0D - protection.properties().damageReduction() * efficiency;
 
             if (multiplier <= 0.0D) {
@@ -176,7 +176,7 @@ public final class BodyDamageProtectionOperations {
                     continue;
                 }
 
-                result.add(new ModuleProtection(reference, properties));
+                result.add(new ModuleProtection(reference, module.id(), properties));
             }
         }
 

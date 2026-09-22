@@ -8,6 +8,7 @@ import com.github.littleemptydoll.exoequipment.registry.ModModules;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -179,7 +180,10 @@ public final class ShieldOperations {
     private static List<ShieldTarget> collectShields(
             ExoskeletonData data
     ) {
-        return collectShields(data, ExoskeletonState.activeMatrixSlots(data));
+        return collectShields(
+                data,
+                new HashSet<>(ExoskeletonState.activeMatrixSlots(data))
+        );
     }
 
     private static List<ShieldTarget> collectShields(

@@ -109,9 +109,9 @@ public final class ShieldOperations {
 
             currentEnergy += Math.min(
                     module.shieldEnergy(),
-                    target.properties().capacity()
+                    scaledCapacity(target, data)
             );
-            capacity += target.properties().capacity();
+            capacity += (int) Math.round(scaledCapacity(target, data));
         }
 
         return new ShieldStatus(currentEnergy, capacity);
@@ -160,9 +160,9 @@ public final class ShieldOperations {
             }
 
             double recharged = Math.min(
-                    target.properties().capacity(),
+                    scaledCapacity(target, updatedData),
                     module.shieldEnergy()
-                            + target.properties().rechargeRate()
+                            + target.properties().rechargeRate() * efficiency(target, updatedData)
             );
 
             if (recharged != module.shieldEnergy()) {
@@ -241,7 +241,7 @@ public final class ShieldOperations {
         return targets;
     }
 
-    private static boolean isPowered(
+    private static double efficiency(ShieldTarget target, ExoskeletonData data) {\n        return com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(target.moduleId(), data.temperature());\n    }\n\n    private static double scaledCapacity(ShieldTarget target, ExoskeletonData data) {\n        return Math.max(0.0D, target.properties().capacity() * efficiency(target, data));\n    }\n\n    private static boolean isPowered(
             ShieldTarget target,
             Set<InstalledModuleReference> poweredModules
     ) {

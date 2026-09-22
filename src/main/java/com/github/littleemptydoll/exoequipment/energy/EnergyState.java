@@ -70,6 +70,14 @@ public record EnergyState(
                 ))
                 .sum();
 
+        // A matrix can be removed while it still contains charged storage.
+        // The remaining active network can therefore temporarily have more
+        // stored energy than its current capacity. The charge remains stored
+        // in the individual modules and will become available again if the
+        // matrix is reinstalled; the network snapshot itself must only expose
+        // the amount that fits into the current active capacity.
+        storedEnergy = Math.min(storedEnergy, state.energyStorageCapacity());
+
         return new EnergyState(
                 storedEnergy,
                 state.energyStorageCapacity(),

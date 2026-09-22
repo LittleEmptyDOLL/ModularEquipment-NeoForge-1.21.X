@@ -52,7 +52,8 @@ public final class BodyDamageRegenerationOperations {
                     continue;
                 }
 
-                healthPerSecond += properties.healthPerSecond();
+                double efficiency = com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(definition, data.temperature());
+                healthPerSecond += properties.healthPerSecond() * efficiency;
             }
         }
 

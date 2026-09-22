@@ -247,6 +247,22 @@ public final class ModNetworking {
         );
 
         registrar.playToClient(
+                ExoskeletonSyncPayload.TYPE,
+                ExoskeletonSyncPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() == null) {
+                        return;
+                    }
+
+                    if (context.player().containerMenu instanceof ExoskeletonMenu menu) {
+                        menu.applyExoskeletonSync(payload.exoskeleton());
+                    } else if (context.player().containerMenu instanceof MatrixMenu menu) {
+                        menu.applyExoskeletonSync(payload.exoskeleton());
+                    }
+                })
+        );
+
+        registrar.playToClient(
                 ExoskeletonProfileNameSyncPayload.TYPE,
                 ExoskeletonProfileNameSyncPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {

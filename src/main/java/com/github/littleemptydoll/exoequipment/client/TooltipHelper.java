@@ -155,6 +155,14 @@ public final class TooltipHelper {
         return Component.translatable("tooltip.exoequipment.heat_generation", styledValue(heatGeneration, efficiency));
     }
 
+    public static Component property(String name, Object value) {
+        return Component.literal(NameUtils.toDisplayName(name) + ": " + value);
+    }
+
+    public static Component property(String name, Component value) {
+        return Component.literal(NameUtils.toDisplayName(name) + ": ").append(value);
+    }
+
     public static Component temperature(double min, double max) {
         return Component.translatable("tooltip.exoequipment.temperature", min, max);
     }

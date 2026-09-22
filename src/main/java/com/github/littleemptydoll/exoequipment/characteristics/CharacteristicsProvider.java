@@ -363,7 +363,9 @@ public final class CharacteristicsProvider {
             CharacteristicsContext context
     ) {
         int matrixStart = context.isMatrixScope() ? context.matrixSlot() : 0;
-        int matrixEnd = context.isMatrixScope() ? context.matrixSlot() + 1 : context.data().matrices().size();
+        int matrixEnd = context.isMatrixScope()
+                ? context.matrixSlot() + 1
+                : context.data().matrices().size();
 
         boolean flight = false;
         double jetpackThrust = 0.0D;
@@ -377,62 +379,99 @@ public final class CharacteristicsProvider {
         for (int slot = matrixStart; slot < matrixEnd; slot++) {
             MatrixData matrix = context.data().matrices().get(slot).matrix().orElse(null);
             if (matrix == null) continue;
+
             for (InstalledModule module : matrix.modules()) {
                 if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
+
                 var definition = ModModules.getDefinition(module.id());
+
                 flight |= definition.flight().isPresent();
-            }
-        }
 
-        // Re-scan with ordinary mutable accumulators; this keeps module presentation
-        // independent from the runtime movement implementation.
-        for (int slot = matrixStart; slot < matrixEnd; slot++) {
-            MatrixData matrix = context.data().matrices().get(slot).matrix().orElse(null);
-            if (matrix == null) continue;
-            for (InstalledModule module : matrix.modules()) {
-                if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
-                var definition = ModModules.getDefinition(module.id());
                 if (definition.jetpack().isPresent()) {
-                    JetpackProperties p = definition.jetpack().get();
-                    jetpackThrust = Math.max(jetpackThrust, p.verticalThrust());
-                    jetpackSpeed = Math.max(jetpackSpeed, p.horizontalSpeed());
-                    }
-                definition.blink().ifPresent(p -> {
-                    blinkDistance = Math.max(blinkDistance, p.distance());
-                    blinkEnergy = Math.max(blinkEnergy, p.activationEnergy());
-                    blinkCooldown = Math.min(blinkCooldown, p.cooldown());
-                });
-            }
-        }
+                    JetpackProperties jetpack = definition.jetpack().get();
+                    jetpackThrust = Math.max(jetpackThrust, jetpack.verticalThrust());
+                    jetpackSpeed = Math.max(jetpackSpeed, jetpack.horizontalSpeed());
 
-        // The lambda-free pass handles Elytra values.
-        for (int slot = matrixStart; slot < matrixEnd; slot++) {
-            MatrixData matrix = context.data().matrices().get(slot).matrix().orElse(null);
-            if (matrix == null) continue;
-            for (InstalledModule module : matrix.modules()) {
-                if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
-                var definition = ModModules.getDefinition(module.id());
-                if (definition.jetpack().isPresent() && definition.jetpack().get().elytra().isPresent()) {
-                    ElytraBoostProperties p = definition.jetpack().get().elytra().get();
-                    elytraAcceleration = Math.max(elytraAcceleration, p.acceleration());
-                    elytraMaxSpeed = Math.max(elytraMaxSpeed, p.maxSpeed());
+                    if (jetpack.elytra().isPresent()) {
+                        ElytraBoostProperties elytra = jetpack.elytra().get();
+                        elytraAcceleration = Math.max(
+                                elytraAcceleration,
+                                elytra.acceleration()
+                        );
+                        elytraMaxSpeed = Math.max(
+                                elytraMaxSpeed,
+                                elytra.maxSpeed()
+                        );
+                    }
+                }
+
+                if (definition.blink().isPresent()) {
+                    var blink = definition.blink().get();
+                    blinkDistance = Math.max(blinkDistance, blink.distance());
+                    blinkEnergy = Math.max(blinkEnergy, blink.activationEnergy());
+                    blinkCooldown = Math.min(blinkCooldown, blink.cooldown());
                 }
             }
         }
 
-        if (flight) result.add(new Characteristic(CharacteristicCategory.MOBILITY, "flight", CharacteristicType.STATIC, 1.0D));
+        if (flight) {
+            result.add(new Characteristic(
+                    CharacteristicCategory.MOBILITY,
+                    "flight",
+                    CharacteristicType.STATIC,
+                    1.0D
+            ));
+        }
+
         if (jetpackThrust > 0.0D) {
-            result.add(new Characteristic(CharacteristicCategory.MOBILITY, "jetpack.vertical_thrust", CharacteristicType.STATIC, jetpackThrust));
-            result.add(new Characteristic(CharacteristicCategory.MOBILITY, "jetpack.horizontal_speed", CharacteristicType.STATIC, jetpackSpeed));
+            result.add(new Characteristic(
+                    CharacteristicCategory.MOBILITY,
+                    "jetpack.vertical_thrust",
+                    CharacteristicType.STATIC,
+                    jetpackThrust
+            ));
+            result.add(new Characteristic(
+                    CharacteristicCategory.MOBILITY,
+                    "jetpack.horizontal_speed",
+                    CharacteristicType.STATIC,
+                    jetpackSpeed
+            ));
         }
+
         if (elytraAcceleration > 0.0D) {
-            result.add(new Characteristic(CharacteristicCategory.MOBILITY, "elytra.acceleration", CharacteristicType.STATIC, elytraAcceleration));
-            result.add(new Characteristic(CharacteristicCategory.MOBILITY, "elytra.max_speed", CharacteristicType.STATIC, elytraMaxSpeed));
+            result.add(new Characteristic(
+                    CharacteristicCategory.MOBILITY,
+                    "elytra.acceleration",
+                    CharacteristicType.STATIC,
+                    elytraAcceleration
+            ));
+            result.add(new Characteristic(
+                    CharacteristicCategory.MOBILITY,
+                    "elytra.max_speed",
+                    CharacteristicType.STATIC,
+                    elytraMaxSpeed
+            ));
         }
+
         if (blinkDistance > 0.0D) {
-            result.add(new Characteristic(CharacteristicCategory.MOBILITY, "blink.distance", CharacteristicType.STATIC, blinkDistance));
-            result.add(new Characteristic(CharacteristicCategory.MOBILITY, "blink.activation_energy", CharacteristicType.STATIC, blinkEnergy));
-            result.add(new Characteristic(CharacteristicCategory.MOBILITY, "blink.cooldown", CharacteristicType.STATIC, blinkCooldown));
+            result.add(new Characteristic(
+                    CharacteristicCategory.MOBILITY,
+                    "blink.distance",
+                    CharacteristicType.STATIC,
+                    blinkDistance
+            ));
+            result.add(new Characteristic(
+                    CharacteristicCategory.MOBILITY,
+                    "blink.activation_energy",
+                    CharacteristicType.STATIC,
+                    blinkEnergy
+            ));
+            result.add(new Characteristic(
+                    CharacteristicCategory.MOBILITY,
+                    "blink.cooldown",
+                    CharacteristicType.STATIC,
+                    blinkCooldown
+            ));
         }
     }
 

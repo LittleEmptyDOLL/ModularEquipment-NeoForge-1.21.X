@@ -7,6 +7,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.exoskeleton.SystemStatus;
 import com.github.littleemptydoll.exoequipment.network.ExoskeletonSyncPayload;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 import com.github.littleemptydoll.exoequipment.item.*;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
@@ -214,7 +215,7 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
         if (!player.level().isClientSide()
                 && player.tickCount % 5 == 0) {
             PacketDistributor.sendToPlayer(
-                    player,
+                    (ServerPlayer) player,
                     new ExoskeletonSyncPayload(exoskeleton.copy())
             );
         }

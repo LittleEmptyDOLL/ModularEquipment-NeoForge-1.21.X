@@ -272,7 +272,7 @@ public class MatrixMenu extends AbstractContainerMenu {
                 && sourceType == SOURCE_EXOSKELETON
                 && playerInventory.player.tickCount % 5 == 0) {
             PacketDistributor.sendToPlayer(
-                    playerInventory.player,
+                    (ServerPlayer) playerInventory.player,
                     new ExoskeletonSyncPayload(sourceExoskeleton.copy())
             );
         }

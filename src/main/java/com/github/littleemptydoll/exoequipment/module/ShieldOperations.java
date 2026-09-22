@@ -128,8 +128,8 @@ public final class ShieldOperations {
         int capacity = 0;
         for (ShieldTarget target : targets) {
             InstalledModule module = getModule(data, target.reference());
-            currentEnergy += Math.min(module.shieldEnergy(), target.properties().capacity());
-            capacity += target.properties().capacity();
+            currentEnergy += Math.min(module.shieldEnergy(), scaledCapacity(target, data));
+            capacity += (int) Math.round(scaledCapacity(target, data));
         }
         return new ShieldStatus(currentEnergy, capacity);
     }

@@ -106,7 +106,8 @@ public final class DefenseOperations {
                     .damageReduction().orElse(null);
             if (properties == null) continue;
 
-            multiplier *= 1.0D - properties.reduction(damageType);
+            double efficiency = com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(module.id(), data.temperature());
+            multiplier *= 1.0D - properties.reduction(damageType) * efficiency;
             if (multiplier <= 0.0D) return 0.0D;
         }
         return Math.max(0.0D, multiplier);

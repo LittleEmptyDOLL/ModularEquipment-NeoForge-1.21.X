@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.gui;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
+import com.github.littleemptydoll.exoequipment.network.ExoskeletonSyncPayload;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
 import com.github.littleemptydoll.exoequipment.item.ModuleItem;
@@ -22,6 +23,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class MatrixMenu extends AbstractContainerMenu {
 
@@ -243,6 +245,37 @@ public class MatrixMenu extends AbstractContainerMenu {
         }
         var runtime = sourceExoskeleton.get(com.github.littleemptydoll.exoequipment.registry.ModDataComponents.EXOSKELETON_RUNTIME.get());
         return runtime == null ? java.util.Set.of() : runtime.poweredModules();
+    }
+
+    public void applyExoskeletonSync(ItemStack syncedStack) {
+        if (sourceExoskeleton == null
+                || !(syncedStack.getItem() instanceof com.github.littleemptydoll.exoequipment.item.ExoskeletonItem)) {
+            return;
+        }
+
+        var data = syncedStack.get(ModDataComponents.EXOSKELETON_DATA.get());
+        var runtime = syncedStack.get(ModDataComponents.EXOSKELETON_RUNTIME.get());
+
+        if (data != null) {
+            sourceExoskeleton.set(ModDataComponents.EXOSKELETON_DATA.get(), data);
+        }
+        if (runtime != null) {
+            sourceExoskeleton.set(ModDataComponents.EXOSKELETON_RUNTIME.get(), runtime);
+        }
+    }
+
+    @Override
+    public void broadcastChanges() {
+        super.broadcastChanges();
+
+        if (!playerInventory.player.level().isClientSide()
+                && sourceType == SOURCE_EXOSKELETON
+                && playerInventory.player.tickCount % 5 == 0) {
+            PacketDistributor.sendToPlayer(
+                    playerInventory.player,
+                    new ExoskeletonSyncPayload(sourceExoskeleton.copy())
+            );
+        }
     }
 
     public int getSourceType() { return sourceType; }

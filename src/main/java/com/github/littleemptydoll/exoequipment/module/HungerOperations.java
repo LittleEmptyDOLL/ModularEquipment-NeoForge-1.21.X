@@ -53,7 +53,8 @@ public final class HungerOperations {
                     continue;
                 }
 
-                double reduction = properties.exhaustionReduction();
+                double efficiency = com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(ModModules.getDefinition(module.id()), data.temperature());
+                double reduction = properties.exhaustionReduction() * efficiency;
 
                 multiplier *= 1.0D - reduction;
 

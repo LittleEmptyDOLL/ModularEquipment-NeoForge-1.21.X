@@ -66,7 +66,8 @@ public final class StatusProtectionOperations {
                     continue;
                 }
 
-                double protection = properties.protection(effectId);
+                double protection = properties.protection(effectId)
+                        * com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(definition, data.temperature());
                 remaining *= 1.0D - protection;
 
                 if (remaining <= 0.0D) {

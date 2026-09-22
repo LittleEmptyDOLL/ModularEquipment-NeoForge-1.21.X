@@ -55,7 +55,8 @@ public final class PickupMagnetOperations {
                     continue;
                 }
 
-                radius = Math.max(radius, properties.radius());
+                double efficiency = com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(ModModules.getDefinition(module.id()), data.temperature());
+                radius = Math.max(radius, properties.radius() * efficiency);
                 items |= properties.mode().acceptsItems();
                 experience |= properties.mode().acceptsExperience();
             }

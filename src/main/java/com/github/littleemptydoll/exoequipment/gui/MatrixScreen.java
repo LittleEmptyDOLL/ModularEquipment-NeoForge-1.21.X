@@ -1,6 +1,8 @@
 package com.github.littleemptydoll.exoequipment.gui;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicsContext;
+import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicsProvider;
 import com.github.littleemptydoll.exoequipment.item.ModuleItem;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
@@ -48,6 +50,7 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     private static final int MODULE_PREVIEW_BORDER_COLOR = 0xFF9ED9EA;
 
     private boolean characteristicsHovered;
+    private final CharacteristicsPanel characteristicsPanel;
     private boolean draggingModule;
     private InstalledModule draggedModule;
     private int draggedRotation;
@@ -70,6 +73,20 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         super(menu, inventory, title);
         this.imageWidth = menu.getImageWidth();
         this.imageHeight = menu.getImageHeight();
+        this.characteristicsPanel = new CharacteristicsPanel(() -> {
+            var data = menu.getSourceExoskeletonData();
+            if (data == null) {
+                return List.of();
+            }
+            return CharacteristicsProvider.collect(
+                    CharacteristicsContext.matrix(
+                            data,
+                            minecraft == null ? null : minecraft.player,
+                            menu.getPoweredModules(),
+                            menu.getSourceIndex()
+                    )
+            );
+        });
     }
 
     @Override
@@ -412,6 +429,15 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (characteristicsPanel.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
+
+        if (button == 0 && characteristicsHovered) {
+            characteristicsPanel.toggle();
+            return true;
+        }
+
         int[] cell = getCellAtMouse((int) mouseX, (int) mouseY);
         if (button == 1) {
             if (draggingModule && draggedModule != null) {
@@ -508,6 +534,30 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (characteristicsPanel.mouseDragged(mouseX, mouseY, button)) {
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (characteristicsPanel.mouseReleased(mouseX, mouseY, button)) {
+            return true;
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (characteristicsPanel.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
     private void sendAction(int action, int x, int y, int targetX, int targetY, int rotation) {
         PacketDistributor.sendToServer(new MatrixActionPayload(action, x, y, targetX, targetY, rotation));
     }
@@ -523,6 +573,8 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
 
         renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+        characteristicsPanel.updatePosition(leftPos, topPos, imageWidth, width);
         renderTooltip(guiGraphics, mouseX, mouseY);
+        characteristicsPanel.render(guiGraphics, font, mouseX, mouseY);
     }
 }

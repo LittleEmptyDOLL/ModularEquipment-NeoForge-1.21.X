@@ -241,7 +241,15 @@ public final class ShieldOperations {
         return targets;
     }
 
-    private static double efficiency(ShieldTarget target, ExoskeletonData data) {\n        return com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(target.moduleId(), data.temperature());\n    }\n\n    private static double scaledCapacity(ShieldTarget target, ExoskeletonData data) {\n        return Math.max(0.0D, target.properties().capacity() * efficiency(target, data));\n    }\n\n    private static boolean isPowered(
+    private static double efficiency(ShieldTarget target, ExoskeletonData data) {
+        return com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(target.moduleId(), data.temperature());
+    }
+
+    private static double scaledCapacity(ShieldTarget target, ExoskeletonData data) {
+        return Math.max(0.0D, target.properties().capacity() * efficiency(target, data));
+    }
+
+    private static boolean isPowered(
             ShieldTarget target,
             Set<InstalledModuleReference> poweredModules
     ) {

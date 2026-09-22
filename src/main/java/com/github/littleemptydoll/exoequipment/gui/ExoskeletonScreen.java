@@ -1,6 +1,8 @@
 package com.github.littleemptydoll.exoequipment.gui;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicsContext;
+import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicsProvider;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.SystemStatus;
 import com.github.littleemptydoll.exoequipment.network.OpenMatrixPayload;
@@ -82,6 +84,7 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
 
     private boolean profileHovered;
     private boolean expandedButtonHovered;
+    private final CharacteristicsPanel characteristicsPanel;
 
     public ExoskeletonScreen(
             ExoskeletonMenu menu,
@@ -91,6 +94,15 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
         super(menu, inventory, title);
         this.imageWidth = IMAGE_WIDTH;
         this.imageHeight = IMAGE_HEIGHT;
+        this.characteristicsPanel = new CharacteristicsPanel(() ->
+                CharacteristicsProvider.collect(
+                        CharacteristicsContext.exoskeleton(
+                                menu.getExoskeletonData(),
+                                minecraft == null ? null : minecraft.player,
+                                menu.getPoweredModules()
+                        )
+                )
+        );
     }
 
     @Override
@@ -396,6 +408,16 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (characteristicsPanel.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
+
+        if (button == 0
+                && expandedButtonHovered) {
+            characteristicsPanel.toggle();
+            return true;
+        }
+
         if (button == 1 && hasShiftDown()) {
             Slot hoveredSlot = getSlotUnderMouse();
 
@@ -447,7 +469,33 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
 
         renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+        characteristicsPanel.updatePosition(leftPos, topPos, imageWidth, width);
         renderTooltip(guiGraphics, mouseX, mouseY);
+        characteristicsPanel.render(guiGraphics, font, mouseX, mouseY);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (characteristicsPanel.mouseDragged(mouseX, mouseY, button)) {
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (characteristicsPanel.mouseReleased(mouseX, mouseY, button)) {
+            return true;
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (characteristicsPanel.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     private boolean isInside(

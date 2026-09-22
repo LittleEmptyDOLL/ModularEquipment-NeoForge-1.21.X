@@ -367,6 +367,7 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         if (stack.isEmpty()) return;
 
         List<Component> tooltip = new ArrayList<>();
+        tooltip.add(stack.getHoverName());
         if (stack.getItem() instanceof ModuleItem moduleItem) {
             moduleItem.appendHoverTextWithTemperature(
                     stack,

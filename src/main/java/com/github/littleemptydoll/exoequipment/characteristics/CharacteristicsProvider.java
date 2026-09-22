@@ -2,6 +2,7 @@ package com.github.littleemptydoll.exoequipment.characteristics;
 
 import com.github.littleemptydoll.exoequipment.energy.EnergyState;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
+import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
 import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
@@ -12,6 +13,7 @@ import com.github.littleemptydoll.exoequipment.module.BodyPart;
 import com.github.littleemptydoll.exoequipment.module.DefenseOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
+import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import com.github.littleemptydoll.exoequipment.module.JetpackProperties;
 import com.github.littleemptydoll.exoequipment.module.ElytraBoostProperties;
 import com.github.littleemptydoll.exoequipment.module.RevivalProperties;
@@ -385,30 +387,30 @@ public final class CharacteristicsProvider {
 
                 var definition = ModModules.getDefinition(module.id());
 
-                flight |= definition.flight().isPresent();
+                flight |= definition.flight().isPresent() && efficiency(definition, context) > 0.0D;
 
                 if (definition.jetpack().isPresent()) {
                     JetpackProperties jetpack = definition.jetpack().get();
-                    jetpackThrust = Math.max(jetpackThrust, jetpack.verticalThrust());
-                    jetpackSpeed = Math.max(jetpackSpeed, jetpack.horizontalSpeed());
+                    jetpackThrust = Math.max(jetpackThrust, scale(jetpack.verticalThrust(), definition, context));
+                    jetpackSpeed = Math.max(jetpackSpeed, scale(jetpack.horizontalSpeed(), definition, context));
 
                     if (jetpack.elytra().isPresent()) {
                         ElytraBoostProperties elytra = jetpack.elytra().get();
                         elytraAcceleration = Math.max(
                                 elytraAcceleration,
-                                elytra.acceleration()
+                                scale(elytra.acceleration(), definition, context)
                         );
                         elytraMaxSpeed = Math.max(
                                 elytraMaxSpeed,
-                                elytra.maxSpeed()
+                                scale(elytra.maxSpeed(), definition, context)
                         );
                     }
                 }
 
                 if (definition.blink().isPresent()) {
                     var blink = definition.blink().get();
-                    blinkDistance = Math.max(blinkDistance, blink.distance());
-                    blinkEnergy = Math.max(blinkEnergy, blink.activationEnergy());
+                    blinkDistance = Math.max(blinkDistance, scale(blink.distance(), definition, context));
+                    blinkEnergy = Math.max(blinkEnergy, (int) Math.round(scale(blink.activationEnergy(), definition, context)));
                     blinkCooldown = Math.min(blinkCooldown, blink.cooldown());
                 }
             }
@@ -501,10 +503,10 @@ public final class CharacteristicsProvider {
                 var definition = ModModules.getDefinition(module.id());
                 if (definition.revival().isPresent()) {
                     RevivalProperties p = definition.revival().get();
-                    revivalRestore = Math.max(revivalRestore, p.restoreHealth());
+                    revivalRestore = Math.max(revivalRestore, scale(p.restoreHealth(), definition, context));
                     revivalCooldown = Math.min(revivalCooldown, p.cooldown());
                 }
-                if (definition.thirst().isPresent()) thirst = Math.max(thirst, definition.thirst().get().exhaustionReduction());
+                if (definition.thirst().isPresent()) thirst = Math.max(thirst, scale(definition.thirst().get().exhaustionReduction(), definition, context));
                 painkiller |= definition.painkiller().isPresent();
             }
         }
@@ -539,11 +541,11 @@ public final class CharacteristicsProvider {
                 nightVision |= definition.nightVision().isPresent();
                 if (definition.entityDetection().isPresent()) {
                     EntityDetectionProperties p = definition.entityDetection().get();
-                    entityRange = Math.max(entityRange, p.range());
+                    entityRange = Math.max(entityRange, scale(p.range(), definition, context));
                     players |= p.players(); mobs |= p.mobs(); hostile |= p.hostile();
                 }
                 if (definition.blockScanner().isPresent()) {
-                    blockRange = Math.max(blockRange, definition.blockScanner().get().range());
+                    blockRange = Math.max(blockRange, scale(definition.blockScanner().get().range(), definition, context));
                 }
             }
         }
@@ -585,12 +587,12 @@ public final class CharacteristicsProvider {
                 var definition = ModModules.getDefinition(module.id());
                 if (definition.cloaking().isPresent()) {
                     CloakingProperties p = definition.cloaking().get();
-                    cloakConsumption = Math.max(cloakConsumption, p.activeConsumption());
+                    cloakConsumption = Math.max(cloakConsumption, scale(p.activeConsumption(), definition, context));
                     cloaking |= module.active();
                 }
                 if (definition.emergencyShield().isPresent()) {
                     EmergencyShieldProperties p = definition.emergencyShield().get();
-                    emergencyRestore = Math.max(emergencyRestore, p.restore());
+                    emergencyRestore = Math.max(emergencyRestore, scale(p.restore(), definition, context));
                     emergencyCooldown = Math.min(emergencyCooldown, p.cooldown());
                 }
             }
@@ -648,6 +650,14 @@ public final class CharacteristicsProvider {
         };
     }
 
+
+    private static double efficiency(ModuleDefinition definition, CharacteristicsContext context) {
+        return TemperatureOperations.calculateModuleEfficiency(definition, context.data().temperature());
+    }
+
+    private static double scale(double value, ModuleDefinition definition, CharacteristicsContext context) {
+        return Math.max(0.0D, value * efficiency(definition, context));
+    }
 
     private static Set<InstalledModuleReference> effectivePoweredModules(
             CharacteristicsContext context

@@ -5,6 +5,9 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonContainer;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.exoskeleton.SystemStatus;
+import com.github.littleemptydoll.exoequipment.network.ExoskeletonSyncPayload;
+import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import net.neoforged.neoforge.network.PacketDistributor;
 import com.github.littleemptydoll.exoequipment.item.*;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
 import com.github.littleemptydoll.exoequipment.network.ExoskeletonProfileNameSyncPayload;
@@ -186,6 +189,35 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
 
     public double getTemperature() {
         return syncedData[DATA_TEMPERATURE] / 10.0D;
+    }
+
+    public void applyExoskeletonSync(ItemStack syncedStack) {
+        if (!(syncedStack.getItem() instanceof ExoskeletonItem)) {
+            return;
+        }
+
+        var data = syncedStack.get(ModDataComponents.EXOSKELETON_DATA.get());
+        var runtime = syncedStack.get(ModDataComponents.EXOSKELETON_RUNTIME.get());
+
+        if (data != null) {
+            exoskeleton.set(ModDataComponents.EXOSKELETON_DATA.get(), data);
+        }
+        if (runtime != null) {
+            exoskeleton.set(ModDataComponents.EXOSKELETON_RUNTIME.get(), runtime);
+        }
+    }
+
+    @Override
+    public void broadcastChanges() {
+        super.broadcastChanges();
+
+        if (!player.level().isClientSide()
+                && player.tickCount % 5 == 0) {
+            PacketDistributor.sendToPlayer(
+                    player,
+                    new ExoskeletonSyncPayload(exoskeleton.copy())
+            );
+        }
     }
 
     public boolean isMatrixActive(int slot) {

@@ -233,6 +233,18 @@ public class MatrixMenu extends AbstractContainerMenu {
     public int getImageWidth() { return imageWidth; }
     public int getImageHeight() { return imageHeight; }
     public int getInventoryY() { return inventoryY; }
+    public ExoskeletonData getSourceExoskeletonData() {
+        return sourceExoskeleton == null ? null : ExoskeletonItem.getData(sourceExoskeleton);
+    }
+
+    public java.util.Set<com.github.littleemptydoll.exoequipment.module.InstalledModuleReference> getPoweredModules() {
+        if (sourceExoskeleton == null) {
+            return java.util.Set.of();
+        }
+        var runtime = sourceExoskeleton.get(com.github.littleemptydoll.exoequipment.registry.ModDataComponents.EXOSKELETON_RUNTIME.get());
+        return runtime == null ? java.util.Set.of() : runtime.poweredModules();
+    }
+
     public int getSourceType() { return sourceType; }
     public int getSourceIndex() { return sourceIndex; }
 

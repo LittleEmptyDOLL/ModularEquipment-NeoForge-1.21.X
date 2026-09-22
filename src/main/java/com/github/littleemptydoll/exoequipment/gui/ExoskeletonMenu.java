@@ -136,6 +136,15 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
         return mask;
     }
 
+    public ExoskeletonData getExoskeletonData() {
+        return ExoskeletonItem.getData(exoskeleton);
+    }
+
+    public java.util.Set<com.github.littleemptydoll.exoequipment.module.InstalledModuleReference> getPoweredModules() {
+        var runtime = exoskeleton.get(com.github.littleemptydoll.exoequipment.registry.ModDataComponents.EXOSKELETON_RUNTIME.get());
+        return runtime == null ? java.util.Set.of() : runtime.poweredModules();
+    }
+
     public int getEnergyStored() {
         return syncedData[DATA_ENERGY_STORED];
     }

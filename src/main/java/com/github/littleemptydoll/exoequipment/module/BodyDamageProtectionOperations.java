@@ -21,7 +21,7 @@ public final class BodyDamageProtectionOperations {
         double remainingChance = 1.0D;
 
         for (ModuleProtection protection : protections(data, bodyPart, poweredModules)) {
-            double efficiency = com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(ModModules.getDefinition(protection.reference().moduleId()), data.temperature());
+            double efficiency = com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(ModModules.getDefinition(protection.moduleId()), data.temperature());
             remainingChance *= 1.0D - protection.properties().chance() * efficiency;
 
             if (remainingChance <= 0.0D) {
@@ -129,7 +129,7 @@ public final class BodyDamageProtectionOperations {
                 continue;
             }
 
-            result.add(new ModuleProtection(reference, properties));
+            result.add(new ModuleProtection(reference, module.id(), properties));
         }
 
         return result;
@@ -185,6 +185,7 @@ public final class BodyDamageProtectionOperations {
 
     private record ModuleProtection(
             InstalledModuleReference reference,
+            net.minecraft.resources.ResourceLocation moduleId,
             BodyDamageProtectionProperties properties
     ) {}
 }

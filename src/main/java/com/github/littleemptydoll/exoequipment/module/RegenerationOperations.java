@@ -29,7 +29,9 @@ public final class RegenerationOperations {
                     && !poweredModules.contains(reference)) continue;
 
             healthPerSecond += definition.regeneration()
-                    .map(RegenerationProperties::healthPerSecond).orElse(0.0D);
+                    .map(RegenerationProperties::healthPerSecond)
+                    .map(value -> value * com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(definition, data.temperature()))
+                    .orElse(0.0D);
         }
         return healthPerSecond;
     }
@@ -68,6 +70,7 @@ public final class RegenerationOperations {
 
                 healthPerSecond += definition.regeneration()
                         .map(RegenerationProperties::healthPerSecond)
+                        .map(value -> value * com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(definition, data.temperature()))
                         .orElse(0.0D);
             }
         }

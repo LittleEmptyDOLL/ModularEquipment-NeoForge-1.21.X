@@ -89,14 +89,20 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
             }
         }
 
-        definition.damageReduction().ifPresent(value ->
-                value.reductions().forEach((id, reduction) ->
-                        tooltip.add(TooltipHelper.property(
-                                "damage " + id.getPath(),
-                                String.format(java.util.Locale.ROOT, "%.1f%%", reduction * efficiency * 100.0D)
-                        ))
-                )
-        );
+        definition.damageReduction().ifPresent(value -> {
+            value.defaultReduction().ifPresent(reduction ->
+                    tooltip.add(TooltipHelper.property(
+                            "damage all",
+                            String.format(java.util.Locale.ROOT, "%.1f%%", reduction * efficiency * 100.0D)
+                    ))
+            );
+            value.reductions().forEach((id, reduction) ->
+                    tooltip.add(TooltipHelper.property(
+                            "damage " + id.getPath(),
+                            String.format(java.util.Locale.ROOT, "%.1f%%", reduction * efficiency * 100.0D)
+                    ))
+            );
+        });
 
         definition.shield().ifPresent(value -> {
             tooltip.add(TooltipHelper.property("shield capacity", applyEfficiency(value.capacity(), efficiency)));
@@ -145,10 +151,6 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
                                 String.format(java.util.Locale.ROOT, "%.1f%%", Math.min(1.0D, protection * efficiency) * 100.0D)
                         ))
                 )
-        );
-
-        definition.nightVision().ifPresent(value ->
-                tooltip.add(TooltipHelper.property("night vision", "Yes"))
         );
 
         definition.entityDetection().ifPresent(value -> {
@@ -243,10 +245,6 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
                         "thirst exhaustion reduction",
                         String.format(java.util.Locale.ROOT, "%.1f%%", Math.min(1.0D, value.exhaustionReduction() * efficiency) * 100.0D)
                 ))
-        );
-
-        definition.painkiller().ifPresent(value ->
-                tooltip.add(TooltipHelper.property("painkiller", "Yes"))
         );
 
         definition.blockScanner().ifPresent(value -> {

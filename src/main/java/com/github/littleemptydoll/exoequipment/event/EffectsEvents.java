@@ -1,15 +1,14 @@
 package com.github.littleemptydoll.exoequipment.event;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.module.EffectsOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.effect.MobEffect;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,7 +17,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -26,7 +25,7 @@ import java.util.WeakHashMap;
 
 @EventBusSubscriber(modid = ExoEquipment.MODID)
 public final class EffectsEvents {
-    private static final Map<Player, Set<ResourceLocation>> APPLIED =
+    private static final Map<Player, Map<ResourceLocation, Integer>> APPLIED =
             Collections.synchronizedMap(new WeakHashMap<>());
 
     private EffectsEvents() {}
@@ -38,49 +37,32 @@ public final class EffectsEvents {
             return;
         }
 
-        Map<ResourceLocation, Integer> desired = findEffects(player);
-
-        Set<ResourceLocation> previous = APPLIED.computeIfAbsent(
-                player,
-                ignored -> new HashSet<>()
-        );
-
-        Set<ResourceLocation> previousSnapshot;
-        synchronized (previous) {
-            previousSnapshot = new HashSet<>(previous);
-        }
-
-        for (ResourceLocation effectId : previousSnapshot) {
-            if (!desired.containsKey(effectId)) {
-                removeEffect(player, effectId);
-            }
-        }
+        Map<ResourceLocation, Integer> appliedNow = new HashMap<>();
 
         Optional<ItemStack> exoskeletonStack = findExoskeleton(player);
         if (exoskeletonStack.isPresent()) {
-            EffectsOperations.apply(
+            appliedNow.putAll(EffectsOperations.apply(
                     player,
                     ExoskeletonItem.getData(exoskeletonStack.get()),
                     getPoweredModules(exoskeletonStack.get())
-            );
+            ));
         }
+
+        Map<ResourceLocation, Integer> previous = APPLIED.computeIfAbsent(
+                player,
+                ignored -> new HashMap<>()
+        );
 
         synchronized (previous) {
+            for (Map.Entry<ResourceLocation, Integer> entry : previous.entrySet()) {
+                if (!appliedNow.containsKey(entry.getKey())) {
+                    removeEffect(player, entry.getKey(), entry.getValue());
+                }
+            }
+
             previous.clear();
-            previous.addAll(desired.keySet());
+            previous.putAll(appliedNow);
         }
-    }
-
-    private static Map<ResourceLocation, Integer> findEffects(Player player) {
-        Optional<ItemStack> stack = findExoskeleton(player);
-        if (stack.isEmpty()) {
-            return Map.of();
-        }
-
-        return EffectsOperations.collectEffects(
-                ExoskeletonItem.getData(stack.get()),
-                getPoweredModules(stack.get())
-        );
     }
 
     private static Set<InstalledModuleReference> getPoweredModules(ItemStack stack) {
@@ -101,8 +83,19 @@ public final class EffectsEvents {
                 .map(result -> result.stack());
     }
 
-    private static void removeEffect(Player player, ResourceLocation effectId) {
-        BuiltInRegistries.MOB_EFFECT.getHolder(effectId)
-                .ifPresent(player::removeEffect);
+    private static void removeEffect(
+            Player player,
+            ResourceLocation effectId,
+            int amplifier
+    ) {
+        BuiltInRegistries.MOB_EFFECT.getHolder(effectId).ifPresent(effect -> {
+            MobEffectInstance current = player.getEffect(effect);
+
+            if (current != null
+                    && current.getAmplifier() == amplifier
+                    && current.getDuration() == MobEffectInstance.INFINITE_DURATION) {
+                player.removeEffect(effect);
+            }
+        });
     }
 }

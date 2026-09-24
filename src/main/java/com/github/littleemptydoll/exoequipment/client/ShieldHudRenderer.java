@@ -1,16 +1,15 @@
 package com.github.littleemptydoll.exoequipment.client;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
-import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
@@ -34,6 +33,9 @@ public final class ShieldHudRenderer {
 
     private static final int BAR_WIDTH = 81;
     private static final int BAR_HEIGHT = 4;
+
+    private static final int VANILLA_INITIAL_LEFT_HEIGHT = 39;
+    private static final int SHIELD_OFFSET_ABOVE_ARMOR = 25;
 
     private ShieldHudRenderer() {}
 
@@ -84,7 +86,8 @@ public final class ShieldHudRenderer {
         int screenWidth = guiGraphics.guiWidth();
         int screenHeight = guiGraphics.guiHeight();
         int x = screenWidth / 2 - 91;
-        int y = screenHeight - 64;
+        int armorY = getVanillaArmorY(minecraft, screenHeight);
+        int y = armorY - SHIELD_OFFSET_ABOVE_ARMOR;
 
         guiGraphics.renderItem(
                 new ItemStack(Items.SHIELD),
@@ -136,5 +139,34 @@ public final class ShieldHudRenderer {
                     0xFF55FFFF
             );
         }
+    }
+
+    private static int getVanillaArmorY(
+            Minecraft minecraft,
+            int screenHeight
+    ) {
+        var player = minecraft.player;
+
+        int leftHeight = VANILLA_INITIAL_LEFT_HEIGHT;
+
+        float maxHealth = Math.max(
+                (float) player.getAttributeValue(Attributes.MAX_HEALTH),
+                player.getHealth()
+        );
+
+        int absorption = Mth.ceil(player.getAbsorptionAmount());
+
+        int healthRows = Mth.ceil(
+                (maxHealth + absorption) / 2.0F / 10.0F
+        );
+
+        int rowHeight = Math.max(
+                10 - (healthRows - 2),
+                3
+        );
+
+        leftHeight += (healthRows - 1) * rowHeight + 10;
+
+        return screenHeight - leftHeight + 10;
     }
 }

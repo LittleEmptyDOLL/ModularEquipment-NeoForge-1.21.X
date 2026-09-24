@@ -19,6 +19,5 @@ public final class LsoIntegration {
         NeoForge.EVENT_BUS.register(LsoThirstEvents.class);
         NeoForge.EVENT_BUS.register(LsoBodyDamageEvents.class);
         NeoForge.EVENT_BUS.register(LsoBodyDamageRegenerationEvents.class);
-        NeoForge.EVENT_BUS.register(LsoPainkillerEvents.class);
     }
 }

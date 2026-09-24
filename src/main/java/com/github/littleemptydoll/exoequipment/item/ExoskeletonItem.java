@@ -5,7 +5,6 @@ import com.github.littleemptydoll.exoequipment.energy.EnergyOperations;
 import com.github.littleemptydoll.exoequipment.energy.EnergyTickResult;
 import com.github.littleemptydoll.exoequipment.energy.NeoForgeEnergyProvider;
 import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
-import com.github.littleemptydoll.exoequipment.module.EffectsOperations;
 import com.github.littleemptydoll.exoequipment.module.RevivalOperations;
 import com.github.littleemptydoll.exoequipment.module.StatusProtectionOperations;
 import com.github.littleemptydoll.exoequipment.module.BlinkOperations;
@@ -135,13 +134,6 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
                 updatedData,
                 runtime.poweredModules()
         );
-
-        EffectsOperations.apply(
-                slotContext.entity(),
-                updatedData,
-                runtime.poweredModules()
-        );
-
         boolean cloakingIsActive = CloakingOperations.hasActive(updatedData);
         if (cloakingWasActive != cloakingIsActive
                 || com.github.littleemptydoll.exoequipment.event.CloakingEvents

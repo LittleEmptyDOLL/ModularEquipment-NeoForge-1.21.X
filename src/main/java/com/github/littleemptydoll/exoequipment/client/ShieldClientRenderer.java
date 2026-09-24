@@ -10,8 +10,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 @EventBusSubscriber(
         modid = ExoEquipment.MODID,
-        value = Dist.CLIENT,
-        bus = EventBusSubscriber.Bus.MOD
+        value = Dist.CLIENT
 )
 public final class ShieldClientRenderer {
     private ShieldClientRenderer() {}

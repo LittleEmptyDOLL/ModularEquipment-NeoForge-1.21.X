@@ -53,10 +53,14 @@ public final class EffectsOperations {
         if (effect == null) return;
 
         MobEffectInstance existing = entity.getEffect(effect);
-        if (existing != null
-                && existing.getAmplifier() > amplifier
-                && existing.getDuration() > EFFECT_DURATION) {
-            return;
+        if (existing != null) {
+            if (existing.getAmplifier() > amplifier) {
+                return;
+            }
+            if (existing.getAmplifier() == amplifier
+                    && existing.getDuration() > EFFECT_DURATION) {
+                return;
+            }
         }
 
         entity.addEffect(new MobEffectInstance(

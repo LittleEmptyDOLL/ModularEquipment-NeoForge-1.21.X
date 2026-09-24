@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.energy.EnergyTickResult;
 import com.github.littleemptydoll.exoequipment.energy.NeoForgeEnergyProvider;
 import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
 import com.github.littleemptydoll.exoequipment.module.SensorOperations;
+import com.github.littleemptydoll.exoequipment.module.EffectsOperations;
 import com.github.littleemptydoll.exoequipment.module.RevivalOperations;
 import com.github.littleemptydoll.exoequipment.module.StatusProtectionOperations;
 import com.github.littleemptydoll.exoequipment.module.BlinkOperations;
@@ -19,8 +20,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
@@ -138,21 +137,11 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
                 runtime.poweredModules()
         );
 
-        if (SensorOperations.hasNightVision(
+        EffectsOperations.apply(
+                slotContext.entity(),
                 updatedData,
                 runtime.poweredModules()
-        )) {
-            slotContext.entity().addEffect(
-                    new MobEffectInstance(
-                            MobEffects.NIGHT_VISION,
-                            5,
-                            0,
-                            true,
-                            false,
-                            false
-                    )
-            );
-        }
+        );
 
         boolean cloakingIsActive = CloakingOperations.hasActive(updatedData);
         if (cloakingWasActive != cloakingIsActive

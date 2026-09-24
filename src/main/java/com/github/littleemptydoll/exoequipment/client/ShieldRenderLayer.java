@@ -28,18 +28,31 @@ public final class ShieldRenderLayer
         extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 
     private static final int COLOR = 0x6638E8FF;
-    private static final int GLINT_COLOR = 0xFFFFFFFF;
 
     private static final float DEFORMATION = 0.045F;
     private static final float GLINT_DEFORMATION = 0.065F;
 
-    private static final float ACTIVATION_DURATION = 8.0F;
-    private static final float DISCHARGE_DURATION = 7.0F;
+    /*
+     * Shield data is synchronized through the Curios ItemStack and can arrive
+     * on the client in discrete updates. We therefore do not treat every
+     * 0 <-> 0 transition as a visual state transition. Instead, the renderer
+     * interpolates a client-side visual energy value toward the latest
+     * synchronized value. This prevents flicker when the server changes or
+     * recharges the shield.
+     */
+    private static final float VISUAL_RESPONSE = 0.35F;
+    private static final float MIN_VISIBLE_ENERGY = 0.01F;
 
     private static final ResourceLocation WHITE_TEXTURE =
             ResourceLocation.fromNamespaceAndPath(
                     "minecraft",
                     "textures/misc/white.png"
+            );
+
+    private static final ResourceLocation GLINT_TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(
+                    "minecraft",
+                    "textures/misc/enchanted_glint_entity.png"
             );
 
     private final PlayerModel<AbstractClientPlayer> shieldModel;
@@ -113,19 +126,28 @@ public final class ShieldRenderLayer
         ShieldOperations.ShieldStatus status =
                 ShieldOperations.getStatus(data);
 
-        double currentEnergy = status.currentEnergy();
+        float targetEnergy = getEnergyRatio(status);
 
         VisualState state =
                 visualStates.computeIfAbsent(
                         player,
-                        ignored -> new VisualState(currentEnergy, ageInTicks)
+                        ignored -> new VisualState(targetEnergy)
                 );
 
-        state.update(currentEnergy, ageInTicks);
+        state.update(targetEnergy);
 
-        float alpha = state.getAlpha(currentEnergy, ageInTicks);
+        float energy = state.visualEnergy();
 
-        if (alpha <= 0.0F) {
+        /*
+         * Once the client has received that the shield module itself is gone,
+         * there is no reason to keep the old visual state around.
+         */
+        if (!status.hasShields() && energy <= MIN_VISIBLE_ENERGY) {
+            visualStates.remove(player);
+            return;
+        }
+
+        if (energy <= MIN_VISIBLE_ENERGY) {
             return;
         }
 
@@ -134,6 +156,8 @@ public final class ShieldRenderLayer
         prepareModel(sourceModel, shieldModel);
         prepareModel(sourceModel, glintModel);
 
+        float alpha = calculateAlpha(energy);
+
         renderShield(
                 poseStack,
                 bufferSource,
@@ -141,14 +165,33 @@ public final class ShieldRenderLayer
                 alpha
         );
 
-        if (state.shouldRenderGlint(currentEnergy, ageInTicks)) {
-            renderGlint(
-                    poseStack,
-                    bufferSource,
-                    glintModel,
-                    alpha
-            );
+        renderGlint(
+                poseStack,
+                bufferSource,
+                glintModel,
+                alpha,
+                ageInTicks
+        );
+    }
+
+    private static float getEnergyRatio(
+            ShieldOperations.ShieldStatus status
+    ) {
+        if (!status.hasShields() || status.capacity() <= 0) {
+            return 0.0F;
         }
+
+        return clamp01(
+                (float) (status.currentEnergy() / status.capacity())
+        );
+    }
+
+    private static float calculateAlpha(float energy) {
+        /*
+         * Keep the shield readable even when partially depleted while still
+         * making a nearly empty shield fade naturally.
+         */
+        return 0.12F + 0.58F * smoothStep(energy);
     }
 
     private static void prepareModel(
@@ -184,24 +227,39 @@ public final class ShieldRenderLayer
             PoseStack poseStack,
             MultiBufferSource bufferSource,
             PlayerModel<AbstractClientPlayer> model,
-            float alpha
+            float alpha,
+            float ageInTicks
     ) {
+        /*
+         * armorEntityGlint() did not produce a visible result on this custom
+         * geometry. Use the vanilla energy_swirl pipeline instead: it is
+         * emissive, additive and explicitly scrolls texture coordinates.
+         */
+        float u = ageInTicks * 0.012F;
+        float v = ageInTicks * 0.009F;
+
         VertexConsumer buffer =
-                bufferSource.getBuffer(RenderType.armorEntityGlint());
+                bufferSource.getBuffer(
+                        RenderType.energySwirl(
+                                GLINT_TEXTURE,
+                                u,
+                                v
+                        )
+                );
 
         model.renderToBuffer(
                 poseStack,
                 buffer,
                 LightTexture.FULL_BRIGHT,
                 OverlayTexture.NO_OVERLAY,
-                withAlpha(GLINT_COLOR, alpha)
+                withAlpha(0xCCFFFFFF, alpha)
         );
     }
 
     private static int withAlpha(int color, float alpha) {
         int clampedAlpha = Math.round(
                 ((color >>> 24) & 0xFF)
-                        * Math.max(0.0F, Math.min(1.0F, alpha))
+                        * clamp01(alpha)
         );
 
         return (color & 0x00FFFFFF) | (clampedAlpha << 24);
@@ -226,7 +284,10 @@ public final class ShieldRenderLayer
         copyModelPart(source.leftPants, target.leftPants);
     }
 
-    private static void copyModelPart(ModelPart source, ModelPart target) {
+    private static void copyModelPart(
+            ModelPart source,
+            ModelPart target
+    ) {
         target.x = source.x;
         target.y = source.y;
         target.z = source.z;
@@ -261,85 +322,34 @@ public final class ShieldRenderLayer
         target.leftPants.visible = source.leftPants.visible;
     }
 
+    private static float clamp01(float value) {
+        return Math.max(0.0F, Math.min(1.0F, value));
+    }
+
+    private static float smoothStep(float value) {
+        return value * value * (3.0F - 2.0F * value);
+    }
+
     private static final class VisualState {
-        private double previousEnergy;
-        private float activationStart;
-        private float dischargeStart = Float.NEGATIVE_INFINITY;
+        private float visualEnergy;
 
-        private VisualState(double initialEnergy, float ageInTicks) {
-            this.previousEnergy = initialEnergy;
-            this.activationStart =
-                    initialEnergy > 0.0D
-                            ? ageInTicks - ACTIVATION_DURATION
-                            : Float.NEGATIVE_INFINITY;
+        private VisualState(float initialEnergy) {
+            this.visualEnergy = initialEnergy;
         }
 
-        private void update(double currentEnergy, float ageInTicks) {
-            boolean wasActive = previousEnergy > 0.0D;
-            boolean isActive = currentEnergy > 0.0D;
+        private void update(float targetEnergy) {
+            visualEnergy +=
+                    (targetEnergy - visualEnergy) * VISUAL_RESPONSE;
 
-            if (!wasActive && isActive) {
-                activationStart = ageInTicks;
-                dischargeStart = Float.NEGATIVE_INFINITY;
-            } else if (wasActive && !isActive) {
-                dischargeStart = ageInTicks;
+            if (Math.abs(targetEnergy - visualEnergy) < 0.001F) {
+                visualEnergy = targetEnergy;
             }
 
-            previousEnergy = currentEnergy;
+            visualEnergy = clamp01(visualEnergy);
         }
 
-        private float getAlpha(double currentEnergy, float ageInTicks) {
-            if (currentEnergy > 0.0D) {
-                float activationProgress =
-                        (ageInTicks - activationStart) / ACTIVATION_DURATION;
-
-                if (activationProgress < 1.0F) {
-                    float t = clamp01(activationProgress);
-                    return smoothStep(t);
-                }
-
-                return 1.0F;
-            }
-
-            if (dischargeStart != Float.NEGATIVE_INFINITY) {
-                float dischargeProgress =
-                        (ageInTicks - dischargeStart) / DISCHARGE_DURATION;
-
-                if (dischargeProgress >= 0.0F
-                        && dischargeProgress < 1.0F) {
-                    float t = clamp01(dischargeProgress);
-                    return 1.0F - smoothStep(t);
-                }
-            }
-
-            return 0.0F;
-        }
-
-        private boolean shouldRenderGlint(
-                double currentEnergy,
-                float ageInTicks
-        ) {
-            if (currentEnergy > 0.0D) {
-                return true;
-            }
-
-            if (dischargeStart == Float.NEGATIVE_INFINITY) {
-                return false;
-            }
-
-            float dischargeProgress =
-                    (ageInTicks - dischargeStart) / DISCHARGE_DURATION;
-
-            return dischargeProgress >= 0.0F
-                    && dischargeProgress < 0.45F;
-        }
-
-        private static float clamp01(float value) {
-            return Math.max(0.0F, Math.min(1.0F, value));
-        }
-
-        private static float smoothStep(float value) {
-            return value * value * (3.0F - 2.0F * value);
+        private float visualEnergy() {
+            return visualEnergy;
         }
     }
 }

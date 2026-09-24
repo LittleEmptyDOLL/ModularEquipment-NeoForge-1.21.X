@@ -9,6 +9,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import com.github.littleemptydoll.exoequipment.util.AttributeNameUtils;
+import com.github.littleemptydoll.exoequipment.util.NameUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -324,6 +326,24 @@ public final class CharacteristicsPanel {
         String translationKey = "gui.exoequipment.characteristic." + key.replace(':', '_');
         if (I18n.exists(translationKey)) {
             return I18n.get(translationKey);
+        }
+
+        String attributePrefix = "attribute.";
+        String conditionalPrefix = "conditional.attribute.";
+        if (key.startsWith(attributePrefix) || key.startsWith(conditionalPrefix)) {
+            String prefix = key.startsWith(attributePrefix) ? attributePrefix : conditionalPrefix;
+            String remainder = key.substring(prefix.length());
+            int operationSeparator = remainder.lastIndexOf('.');
+            if (operationSeparator > 0) {
+                String attributeId = remainder.substring(0, operationSeparator);
+                String operation = remainder.substring(operationSeparator + 1);
+                ResourceLocation id = ResourceLocation.tryParse(attributeId);
+                if (id != null) {
+                    return (prefix.equals(conditionalPrefix) ? "Conditional " : "")
+                            + AttributeNameUtils.getName(id).getString()
+                            + " (" + NameUtils.toDisplayName(operation) + ")";
+                }
+            }
         }
 
         String fallback = key.replace(':', ' ').replace('.', ' ').replace('_', ' ');

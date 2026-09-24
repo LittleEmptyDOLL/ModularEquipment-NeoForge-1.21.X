@@ -807,27 +807,6 @@ public class ModModules {
     public static final EquipmentEntry<
             ModuleDefinition,
             ModuleItem
-            > TEST_FALL_PROTECTION = REGISTRY.register(
-            "test_fall_protection",
-            new EquipmentProperties(
-                    EquipmentTier.BASIC,
-                    Rarity.EPIC
-            ),
-            (id, properties) ->
-                    ModuleDefinition.builder(
-                                    id,
-                                    properties,
-                                    ModuleCategory.SURVIVAL,
-                                    new ModuleSize(2, 2)
-                            )
-                            .energy(new EnergyProperties(5))
-                            .fallProtection(new FallProtectionProperties(0.50D))
-                            .build()
-    );
-
-    public static final EquipmentEntry<
-            ModuleDefinition,
-            ModuleItem
             > TEST_BODY_DAMAGE_PROTECTION = REGISTRY.register(
             "test_body_damage_protection",
             new EquipmentProperties(

@@ -5,7 +5,6 @@ import com.github.littleemptydoll.exoequipment.energy.EnergyOperations;
 import com.github.littleemptydoll.exoequipment.energy.EnergyTickResult;
 import com.github.littleemptydoll.exoequipment.energy.NeoForgeEnergyProvider;
 import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
-import com.github.littleemptydoll.exoequipment.module.SensorOperations;
 import com.github.littleemptydoll.exoequipment.module.EffectsOperations;
 import com.github.littleemptydoll.exoequipment.module.RevivalOperations;
 import com.github.littleemptydoll.exoequipment.module.StatusProtectionOperations;

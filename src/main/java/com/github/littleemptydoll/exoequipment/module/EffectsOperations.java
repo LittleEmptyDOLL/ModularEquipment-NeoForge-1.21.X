@@ -60,18 +60,24 @@ public final class EffectsOperations {
         return Map.copyOf(effects);
     }
 
-    public static void apply(
+    public static Map<ResourceLocation, Integer> apply(
             LivingEntity entity,
             ExoskeletonData data,
             Set<InstalledModuleReference> poweredModules
     ) {
+        Map<ResourceLocation, Integer> applied = new HashMap<>();
+
         collectEffects(data, poweredModules)
-                .forEach((effectId, amplifier) ->
-                        applyEffect(entity, effectId, amplifier)
-                );
+                .forEach((effectId, amplifier) -> {
+                    if (applyEffect(entity, effectId, amplifier)) {
+                        applied.put(effectId, amplifier);
+                    }
+                });
+
+        return Map.copyOf(applied);
     }
 
-    private static void applyEffect(
+    private static boolean applyEffect(
             LivingEntity entity,
             ResourceLocation effectId,
             int amplifier
@@ -79,18 +85,18 @@ public final class EffectsOperations {
         Holder<MobEffect> effect =
                 BuiltInRegistries.MOB_EFFECT.getHolder(effectId).orElse(null);
         if (effect == null) {
-            return;
+            return false;
         }
 
         MobEffectInstance existing = entity.getEffect(effect);
         if (existing != null) {
             if (existing.getAmplifier() > amplifier) {
-                return;
+                return false;
             }
 
             if (existing.getAmplifier() == amplifier
                     && existing.getDuration() == EFFECT_DURATION) {
-                return;
+                return true;
             }
         }
 
@@ -102,6 +108,8 @@ public final class EffectsOperations {
                 false,
                 false
         ));
+
+        return true;
     }
 
     private static boolean isPowered(

@@ -17,48 +17,6 @@ import java.util.Set;
 public final class SensorOperations {
     private SensorOperations() {}
 
-    public static boolean hasNightVision(
-            ExoskeletonData data,
-            Set<InstalledModuleReference> poweredModules
-    ) {
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
-            MatrixData matrix = data.matrices()
-                    .get(slot)
-                    .matrix()
-                    .orElse(null);
-
-            if (matrix == null) {
-                continue;
-            }
-
-            for (int moduleIndex = 0;
-                 moduleIndex < matrix.modules().size();
-                 moduleIndex++) {
-
-                InstalledModule module = matrix.modules().get(moduleIndex);
-
-                if (!FrameOperations.isModuleSupported(data, module)) {
-                    continue;
-                }
-
-                InstalledModuleReference reference =
-                        new InstalledModuleReference(slot, moduleIndex);
-
-                if (!isPowered(module.id(), reference, poweredModules)) {
-                    continue;
-                }
-
-                if (ModModules.getDefinition(module.id())
-                        .nightVision()
-                        .isPresent()) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
     public static List<DetectedEntity> detectEntities(
             Entity scanner,
             ExoskeletonData data,

@@ -15,19 +15,26 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.resources.PlayerSkin;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import top.theillusivec4.curios.api.CuriosApi;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.WeakHashMap;
 
 public final class ShieldRenderLayer
         extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 
     private static final int COLOR = 0x6638E8FF;
+    private static final int GLINT_COLOR = 0xCC38E8FF;
+
     private static final float DEFORMATION = 0.045F;
+
+    private static final float ACTIVATION_DURATION = 8.0F;
+    private static final float DISCHARGE_DURATION = 7.0F;
+
     private static final ResourceLocation WHITE_TEXTURE =
             ResourceLocation.fromNamespaceAndPath(
                     "minecraft",
@@ -35,6 +42,8 @@ public final class ShieldRenderLayer
             );
 
     private final PlayerModel<AbstractClientPlayer> shieldModel;
+    private final Map<AbstractClientPlayer, VisualState> visualStates =
+            new WeakHashMap<>();
 
     public ShieldRenderLayer(
             RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent,
@@ -77,7 +86,7 @@ public final class ShieldRenderLayer
             return;
         }
 
-        Optional<net.minecraft.world.item.ItemStack> exoskeletonStack =
+        Optional<ItemStack> exoskeletonStack =
                 CuriosApi.getCuriosInventory(player)
                         .flatMap(curios ->
                                 curios.findFirstCurio(
@@ -97,7 +106,19 @@ public final class ShieldRenderLayer
         ShieldOperations.ShieldStatus status =
                 ShieldOperations.getStatus(data);
 
-        if (status.currentEnergy() <= 0.0D) {
+        double currentEnergy = status.currentEnergy();
+
+        VisualState state =
+                visualStates.computeIfAbsent(
+                        player,
+                        ignored -> new VisualState(currentEnergy, ageInTicks)
+                );
+
+        state.update(currentEnergy, ageInTicks);
+
+        float alpha = state.getAlpha(ageInTicks);
+
+        if (alpha <= 0.0F) {
             return;
         }
 
@@ -107,18 +128,65 @@ public final class ShieldRenderLayer
         copyModelParts(sourceModel, shieldModel);
         copyVisibility(sourceModel, shieldModel);
 
+        renderShield(
+                poseStack,
+                bufferSource,
+                shieldModel,
+                alpha
+        );
+
+        if (state.shouldRenderGlint(ageInTicks)) {
+            renderGlint(
+                    poseStack,
+                    bufferSource,
+                    shieldModel
+            );
+        }
+    }
+
+    private static void renderShield(
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            PlayerModel<AbstractClientPlayer> model,
+            float alpha
+    ) {
         VertexConsumer buffer =
                 bufferSource.getBuffer(
                         RenderType.entityTranslucentEmissive(WHITE_TEXTURE)
                 );
 
-        shieldModel.renderToBuffer(
+        model.renderToBuffer(
                 poseStack,
                 buffer,
                 LightTexture.FULL_BRIGHT,
                 OverlayTexture.NO_OVERLAY,
-                COLOR
+                withAlpha(COLOR, alpha)
         );
+    }
+
+    private static void renderGlint(
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            PlayerModel<AbstractClientPlayer> model
+    ) {
+        VertexConsumer buffer =
+                bufferSource.getBuffer(RenderType.armorEntityGlint());
+
+        model.renderToBuffer(
+                poseStack,
+                buffer,
+                LightTexture.FULL_BRIGHT,
+                OverlayTexture.NO_OVERLAY,
+                GLINT_COLOR
+        );
+    }
+
+    private static int withAlpha(int color, float alpha) {
+        int clampedAlpha = Math.round(
+                ((color >>> 24) & 0xFF) * Math.max(0.0F, Math.min(1.0F, alpha))
+        );
+
+        return (color & 0x00FFFFFF) | (clampedAlpha << 24);
     }
 
     private static void copyModelParts(
@@ -173,5 +241,66 @@ public final class ShieldRenderLayer
         target.leftSleeve.visible = source.leftSleeve.visible;
         target.rightPants.visible = source.rightPants.visible;
         target.leftPants.visible = source.leftPants.visible;
+    }
+
+    private static final class VisualState {
+        private double previousEnergy;
+        private float activationStart;
+        private float dischargeStart = Float.NEGATIVE_INFINITY;
+
+        private VisualState(double initialEnergy, float ageInTicks) {
+            this.previousEnergy = initialEnergy;
+            this.activationStart =
+                    initialEnergy > 0.0D
+                            ? ageInTicks - ACTIVATION_DURATION
+                            : Float.NEGATIVE_INFINITY;
+        }
+
+        private void update(double currentEnergy, float ageInTicks) {
+            if (previousEnergy <= 0.0D && currentEnergy > 0.0D) {
+                activationStart = ageInTicks;
+                dischargeStart = Float.NEGATIVE_INFINITY;
+            } else if (previousEnergy > 0.0D && currentEnergy <= 0.0D) {
+                dischargeStart = ageInTicks;
+            }
+
+            previousEnergy = currentEnergy;
+        }
+
+        private float getAlpha(float ageInTicks) {
+            if (previousEnergy > 0.0D) {
+                float activationProgress =
+                        (ageInTicks - activationStart) / ACTIVATION_DURATION;
+
+                if (activationProgress < 1.0F) {
+                    float t = Math.max(0.0F, Math.min(1.0F, activationProgress));
+                    return t * t * (3.0F - 2.0F * t);
+                }
+
+                return 1.0F;
+            }
+
+            float dischargeProgress =
+                    (ageInTicks - dischargeStart) / DISCHARGE_DURATION;
+
+            if (dischargeProgress >= 0.0F && dischargeProgress < 1.0F) {
+                float t = Math.max(0.0F, Math.min(1.0F, dischargeProgress));
+                float smooth = t * t * (3.0F - 2.0F * t);
+                return 1.0F - smooth;
+            }
+
+            return 0.0F;
+        }
+
+        private boolean shouldRenderGlint(float ageInTicks) {
+            if (previousEnergy > 0.0D) {
+                return true;
+            }
+
+            float dischargeProgress =
+                    (ageInTicks - dischargeStart) / DISCHARGE_DURATION;
+
+            return dischargeProgress >= 0.0F && dischargeProgress < 0.45F;
+        }
     }
 }

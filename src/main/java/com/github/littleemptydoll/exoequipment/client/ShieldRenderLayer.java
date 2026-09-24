@@ -156,20 +156,21 @@ public final class ShieldRenderLayer
         prepareModel(sourceModel, shieldModel);
         prepareModel(sourceModel, glintModel);
 
-        float alpha = calculateAlpha(energy);
+        float shieldAlpha = calculateAlpha(energy);
+        float glintAlpha = calculateGlintAlpha(energy);
 
         renderShield(
                 poseStack,
                 bufferSource,
                 shieldModel,
-                alpha
+                shieldAlpha
         );
 
         renderGlint(
                 poseStack,
                 bufferSource,
                 glintModel,
-                alpha,
+                glintAlpha,
                 player.tickCount,
                 partialTick
         );
@@ -193,6 +194,16 @@ public final class ShieldRenderLayer
          * making a nearly empty shield fade naturally.
          */
         return 0.06F + 0.30F * smoothStep(energy);
+    }
+
+    private static float calculateGlintAlpha(float energy) {
+        /*
+         * The energy swirl texture contains transparent pixels of its own, so
+         * using the shield alpha directly makes the glint become visually
+         * unreadable too early. Give the glint a stronger, but still continuous,
+         * fade based on the same visual energy value.
+         */
+        return 0.10F + 0.50F * smoothStep(energy);
     }
 
     private static void prepareModel(
@@ -256,7 +267,7 @@ public final class ShieldRenderLayer
                 buffer,
                 LightTexture.FULL_BRIGHT,
                 OverlayTexture.NO_OVERLAY,
-                withAlpha(0xCCFFFFFF, alpha)
+                withAlpha(0xFFFFFFFF, alpha)
         );
     }
 

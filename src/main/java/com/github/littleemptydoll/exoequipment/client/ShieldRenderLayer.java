@@ -169,8 +169,7 @@ public final class ShieldRenderLayer
                 poseStack,
                 bufferSource,
                 glintModel,
-                alpha,
-                ageInTicks
+                alpha
         );
     }
 
@@ -227,23 +226,22 @@ public final class ShieldRenderLayer
             PoseStack poseStack,
             MultiBufferSource bufferSource,
             PlayerModel<AbstractClientPlayer> model,
-            float alpha,
-            float ageInTicks
+            float alpha
     ) {
         /*
          * armorEntityGlint() did not produce a visible result on this custom
-         * geometry. Use the vanilla energy_swirl pipeline instead: it is
-         * emissive, additive and explicitly scrolls texture coordinates.
+         * geometry. The energy_swirl pipeline already animates its texture
+         * using Minecraft's render-time shader animation. Supplying a
+         * changing per-frame offset here would restart/rephase that
+         * animation every render pass, which makes the glint appear to
+         * stutter or reset.
          */
-        float u = ageInTicks * 0.012F;
-        float v = ageInTicks * 0.009F;
-
         VertexConsumer buffer =
                 bufferSource.getBuffer(
                         RenderType.energySwirl(
                                 GLINT_TEXTURE,
-                                u,
-                                v
+                                0.0F,
+                                0.0F
                         )
                 );
 

@@ -29,8 +29,8 @@ public final class ShieldRenderLayer
 
     private static final int COLOR = 0x6638E8FF;
 
-    private static final float DEFORMATION = 0.045F;
-    private static final float GLINT_DEFORMATION = 0.065F;
+    private static final float DEFORMATION = 0.12F;
+    private static final float GLINT_DEFORMATION = 0.135F;
 
     /*
      * Shield data is synchronized through the Curios ItemStack and can arrive
@@ -192,7 +192,7 @@ public final class ShieldRenderLayer
          * Keep the shield readable even when partially depleted while still
          * making a nearly empty shield fade naturally.
          */
-        return 0.12F + 0.58F * smoothStep(energy);
+        return 0.06F + 0.30F * smoothStep(energy);
     }
 
     private static void prepareModel(

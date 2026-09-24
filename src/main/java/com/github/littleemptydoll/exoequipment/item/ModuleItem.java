@@ -182,7 +182,7 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
         definition.attributes().ifPresent(value ->
                 value.attributes().forEach((id, modifier) ->
                         tooltip.add(TooltipHelper.property(
-                                AttributeNameUtils.getName(id),
+                                AttributeNameUtils.getName(id).getString(),
                                 modifier.amount() * efficiency + " (" + NameUtils.toDisplayName(modifier.operation().name()) + ")"
                         ))
                 )

@@ -224,19 +224,6 @@ public final class CharacteristicsProvider {
             ));
         }
 
-        if (!context.isMatrixScope()) {
-            double fallReduction = 1.0D - com.github.littleemptydoll.exoequipment.module.FallProtectionOperations
-                    .calculateDamageMultiplier(context.data(), effectivePoweredModules(context));
-            if (fallReduction > 0.0D) {
-                result.add(new Characteristic(
-                        CharacteristicCategory.DEFENSE,
-                        "fall_damage_reduction",
-                        CharacteristicType.CURRENT,
-                        fallReduction
-                ));
-            }
-        }
-
         for (BodyPart bodyPart : BodyPart.values()) {
             double chance = context.isMatrixScope()
                     ? BodyDamageProtectionOperations.calculateChance(
@@ -491,66 +478,12 @@ public final class CharacteristicsProvider {
 
         double revivalRestore = 0.0D;
         int revivalCooldown = Integer.MAX_VALUE;
-        boolean painkiller = false;
-        double thirst = 0.0D;
-
-        for (int slot = context.isMatrixScope() ? context.matrixSlot() : 0;
-             slot < (context.isMatrixScope() ? context.matrixSlot() + 1 : context.data().matrices().size()); slot++) {
-            MatrixData matrix = context.data().matrices().get(slot).matrix().orElse(null);
-            if (matrix == null) continue;
-            for (InstalledModule module : matrix.modules()) {
-                if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
-                var definition = ModModules.getDefinition(module.id());
-                if (definition.revival().isPresent()) {
-                    RevivalProperties p = definition.revival().get();
-                    revivalRestore = Math.max(revivalRestore, scale(p.restoreHealth(), definition, context));
-                    revivalCooldown = Math.min(revivalCooldown, p.cooldown());
-                }
-                if (definition.thirst().isPresent()) thirst = Math.max(thirst, scale(definition.thirst().get().exhaustionReduction(), definition, context));
-                painkiller |= definition.painkiller().isPresent();
-            }
-        }
-
-        if (revivalRestore > 0.0D) {
-            result.add(new Characteristic(CharacteristicCategory.SURVIVAL, "revival.restore_health", CharacteristicType.STATIC, revivalRestore));
-            result.add(new Characteristic(CharacteristicCategory.SURVIVAL, "revival.cooldown", CharacteristicType.STATIC, revivalCooldown));
-        }
-        if (thirst > 0.0D) result.add(new Characteristic(CharacteristicCategory.SURVIVAL, "thirst.exhaustion_reduction", CharacteristicType.STATIC, thirst));
-        if (painkiller) result.add(new Characteristic(CharacteristicCategory.SURVIVAL, "painkiller", CharacteristicType.STATE, 1.0D));
     }
 
     private static void addSensors(
             List<Characteristic> result,
             CharacteristicsContext context
     ) {
-        boolean nightVision = false;
-        double entityRange = 0.0D;
-        boolean players = false;
-        boolean mobs = false;
-        boolean hostile = false;
-        double blockRange = 0.0D;
-
-        for (int slot = context.isMatrixScope() ? context.matrixSlot() : 0;
-             slot < (context.isMatrixScope() ? context.matrixSlot() + 1 : context.data().matrices().size()); slot++) {
-            MatrixData matrix = context.data().matrices().get(slot).matrix().orElse(null);
-            if (matrix == null) continue;
-            for (int index = 0; index < matrix.modules().size(); index++) {
-                InstalledModule module = matrix.modules().get(index);
-                if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
-                var definition = ModModules.getDefinition(module.id());
-                nightVision |= definition.nightVision().isPresent();
-                if (definition.entityDetection().isPresent()) {
-                    EntityDetectionProperties p = definition.entityDetection().get();
-                    entityRange = Math.max(entityRange, scale(p.range(), definition, context));
-                    players |= p.players(); mobs |= p.mobs(); hostile |= p.hostile();
-                }
-                if (definition.blockScanner().isPresent()) {
-                    blockRange = Math.max(blockRange, scale(definition.blockScanner().get().range(), definition, context));
-                }
-            }
-        }
-
-        if (nightVision) result.add(new Characteristic(CharacteristicCategory.SENSOR, "night_vision", CharacteristicType.STATE, 1.0D));
         if (entityRange > 0.0D) {
             result.add(new Characteristic(CharacteristicCategory.SENSOR, "entity_detection.range", CharacteristicType.STATIC, entityRange));
             result.add(new Characteristic(CharacteristicCategory.SENSOR, "entity_detection.players", CharacteristicType.STATIC, players ? 1.0D : 0.0D));

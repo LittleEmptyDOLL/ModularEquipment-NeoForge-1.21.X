@@ -322,7 +322,6 @@ public final class CharacteristicsProvider {
                         .ifPresent(properties ->
                                 result.addAll(properties.reductions().keySet())
                         )
-                        )
         );
     }
 

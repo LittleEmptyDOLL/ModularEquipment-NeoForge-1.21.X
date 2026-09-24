@@ -17,7 +17,6 @@ public record ModuleExtendedProperties(
         Optional<BodyDamageProtectionProperties> bodyDamageProtection,
         Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
         Optional<ThirstProperties> thirst,
-        Optional<PainkillerProperties> painkiller,
         Optional<BlockScannerProperties> blockScanner
 ) {
     public static final MapCodec<ModuleExtendedProperties> CODEC =
@@ -45,8 +44,6 @@ public record ModuleExtendedProperties(
                                     .forGetter(ModuleExtendedProperties::bodyDamageRegeneration),
                             ThirstProperties.CODEC.optionalFieldOf("thirst")
                                     .forGetter(ModuleExtendedProperties::thirst),
-                            PainkillerProperties.CODEC.optionalFieldOf("painkiller")
-                                    .forGetter(ModuleExtendedProperties::painkiller),
                             BlockScannerProperties.CODEC.optionalFieldOf("block_scanner")
                                     .forGetter(ModuleExtendedProperties::blockScanner)
                     ).apply(instance, ModuleExtendedProperties::new)

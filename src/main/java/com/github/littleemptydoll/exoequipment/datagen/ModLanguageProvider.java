@@ -106,7 +106,6 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.characteristic.current_energy", "Current energy");
         add("gui.exoequipment.characteristic.capacity", "Shield capacity");
         add("gui.exoequipment.characteristic.health_per_second", "Health regeneration");
-        add("gui.exoequipment.characteristic.fall_damage_reduction", "Fall damage reduction");
         add("gui.exoequipment.characteristic.flight", "Flight");
         add("gui.exoequipment.characteristic.jetpack.vertical_thrust", "Jetpack vertical thrust");
         add("gui.exoequipment.characteristic.jetpack.horizontal_speed", "Jetpack horizontal speed");
@@ -119,8 +118,6 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.characteristic.revival.restore_health", "Revival health");
         add("gui.exoequipment.characteristic.revival.cooldown", "Revival cooldown");
         add("gui.exoequipment.characteristic.thirst.exhaustion_reduction", "Thirst exhaustion reduction");
-        add("gui.exoequipment.characteristic.painkiller", "Painkiller");
-        add("gui.exoequipment.characteristic.night_vision", "Night vision");
         add("gui.exoequipment.characteristic.entity_detection.range", "Entity detection range");
         add("gui.exoequipment.characteristic.entity_detection.players", "Detect players");
         add("gui.exoequipment.characteristic.entity_detection.mobs", "Detect mobs");

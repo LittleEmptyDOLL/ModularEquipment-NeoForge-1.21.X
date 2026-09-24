@@ -19,13 +19,11 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Pose;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.core.Direction;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
-import org.joml.AxisAngle4f;
 import org.joml.Quaternionf;
 import top.theillusivec4.curios.api.CuriosApi;
 
@@ -180,6 +178,10 @@ public final class ShieldClientRenderer {
             );
         }
 
+        // PlayerRenderer scales the vanilla player model before rendering it.
+        // The shield model must use the same scale, otherwise its pivots
+        // (head, shoulders, hips) appear noticeably too high.
+        poseStack.scale(0.9375F, 0.9375F, 0.9375F);
         poseStack.scale(-1.0F, -1.0F, 1.0F);
         poseStack.translate(0.0D, -1.501D, 0.0D);
     }

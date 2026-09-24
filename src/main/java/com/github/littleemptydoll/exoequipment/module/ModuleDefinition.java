@@ -103,7 +103,6 @@ public record ModuleDefinition(
                 bodyDamageProtection,
                 bodyDamageRegeneration,
                 thirst,
-                painkiller,
                 blockScanner
         );
     }
@@ -136,12 +135,11 @@ public record ModuleDefinition(
                 extended.flight(),
                 extended.jetpack(),
                 optional.statusProtection(),
-                optional.nightVision(),
+                optional.effects(),
                 optional.entityDetection(),
                 optional.hunger(),
                 optional.revival(),
                 optional.regeneration(),
-                optional.fallProtection(),
                 extended.attributes(),
                 extended.conditionalAttributes(),
                 extended.pickupMagnet(),

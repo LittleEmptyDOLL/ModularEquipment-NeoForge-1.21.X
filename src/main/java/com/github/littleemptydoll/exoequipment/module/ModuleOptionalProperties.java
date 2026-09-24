@@ -16,7 +16,7 @@ public record ModuleOptionalProperties(
         Optional<EmergencyShieldProperties> emergencyShield,
         Optional<CloakingProperties> cloaking,
         Optional<StatusProtectionProperties> statusProtection,
-        Optional<NightVisionProperties> nightVision,
+        Optional<EffectsProperties> effects,
         Optional<EntityDetectionProperties> entityDetection,
         Optional<HungerProperties> hunger,
         Optional<RevivalProperties> revival,
@@ -56,9 +56,9 @@ public record ModuleOptionalProperties(
                             StatusProtectionProperties.CODEC
                                     .optionalFieldOf("status_protection")
                                     .forGetter(ModuleOptionalProperties::statusProtection),
-                            NightVisionProperties.CODEC
-                                    .optionalFieldOf("night_vision")
-                                    .forGetter(ModuleOptionalProperties::nightVision),
+                            EffectsProperties.CODEC
+                                    .optionalFieldOf("effects")
+                                    .forGetter(ModuleOptionalProperties::effects),
                             EntityDetectionProperties.CODEC
                                     .optionalFieldOf("entity_detection")
                                     .forGetter(ModuleOptionalProperties::entityDetection),

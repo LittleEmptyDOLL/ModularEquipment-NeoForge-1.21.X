@@ -7,6 +7,7 @@ import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.renderer.LightTexture;
@@ -112,6 +113,7 @@ public final class ShieldClientRenderer {
                         : WIDE_MODEL;
 
         sourceModel.copyPropertiesTo(shieldModel);
+        copyModelParts(sourceModel, shieldModel);
         copyVisibility(sourceModel, shieldModel);
 
         PoseStack poseStack = event.getPoseStack();
@@ -176,6 +178,21 @@ public final class ShieldClientRenderer {
                                     180.0F - bodyRotation
                             ))
             );
+
+            if (player.isVisuallySwimming()) {
+                float pitch = Mth.rotLerp(
+                        partialTick,
+                        player.xRotO,
+                        player.getXRot()
+                );
+
+                poseStack.mulPose(
+                        new Quaternionf()
+                                .rotateX((float) Math.toRadians(
+                                        90.0F + pitch
+                                ))
+                );
+            }
         }
 
         // PlayerRenderer scales the vanilla player model before rendering it.
@@ -194,6 +211,41 @@ public final class ShieldClientRenderer {
             case EAST -> 180.0F;
             default -> 0.0F;
         };
+    }
+
+    private static void copyModelParts(
+            PlayerModel<AbstractClientPlayer> source,
+            PlayerModel<AbstractClientPlayer> target
+    ) {
+        copyModelPart(source.head, target.head);
+        copyModelPart(source.hat, target.hat);
+        copyModelPart(source.body, target.body);
+        copyModelPart(source.rightArm, target.rightArm);
+        copyModelPart(source.leftArm, target.leftArm);
+        copyModelPart(source.rightLeg, target.rightLeg);
+        copyModelPart(source.leftLeg, target.leftLeg);
+
+        copyModelPart(source.jacket, target.jacket);
+        copyModelPart(source.rightSleeve, target.rightSleeve);
+        copyModelPart(source.leftSleeve, target.leftSleeve);
+        copyModelPart(source.rightPants, target.rightPants);
+        copyModelPart(source.leftPants, target.leftPants);
+    }
+
+    private static void copyModelPart(ModelPart source, ModelPart target) {
+        target.x = source.x;
+        target.y = source.y;
+        target.z = source.z;
+
+        target.xRot = source.xRot;
+        target.yRot = source.yRot;
+        target.zRot = source.zRot;
+
+        target.xScale = source.xScale;
+        target.yScale = source.yScale;
+        target.zScale = source.zScale;
+
+        target.skipDraw = source.skipDraw;
     }
 
     private static void copyVisibility(

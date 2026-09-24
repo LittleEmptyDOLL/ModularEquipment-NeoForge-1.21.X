@@ -186,12 +186,17 @@ public final class ShieldClientRenderer {
                         player.getXRot()
                 );
 
+                // Swimming rotates the player around the body instead of the
+                // feet/hitbox bottom. Move the model pivot to the body center,
+                // apply the swimming rotation, then restore the pivot.
+                poseStack.translate(0.0D, 0.75D, 0.0D);
                 poseStack.mulPose(
                         new Quaternionf()
                                 .rotateX((float) Math.toRadians(
                                         -90.0F - pitch
                                 ))
                 );
+                poseStack.translate(0.0D, -0.75D, 0.0D);
             }
         }
 

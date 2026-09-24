@@ -17,10 +17,16 @@ import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.Direction;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import org.joml.AxisAngle4f;
+import org.joml.Quaternionf;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.Optional;
@@ -115,6 +121,8 @@ public final class ShieldClientRenderer {
 
         poseStack.pushPose();
 
+        applyPlayerRenderTransform(player, event.getPartialTick(), poseStack);
+
         VertexConsumer buffer =
                 bufferSource.getBuffer(
                         RenderType.entityTranslucentEmissive(WHITE_TEXTURE)
@@ -129,6 +137,61 @@ public final class ShieldClientRenderer {
         );
 
         poseStack.popPose();
+    }
+
+    private static void applyPlayerRenderTransform(
+            AbstractClientPlayer player,
+            float partialTick,
+            PoseStack poseStack
+    ) {
+        float bodyRotation = Mth.rotLerp(
+                partialTick,
+                player.yBodyRotO,
+                player.yBodyRot
+        );
+
+        if (player.getPose() == Pose.SLEEPING) {
+            Direction direction = player.getBedOrientation();
+
+            if (direction != null) {
+                float eyeHeight = player.getEyeHeight(Pose.STANDING) - 0.1F;
+                poseStack.translate(
+                        -direction.getStepX() * eyeHeight,
+                        0.0D,
+                        -direction.getStepZ() * eyeHeight
+                );
+                poseStack.mulPose(
+                        new Quaternionf()
+                                .rotateY((float) Math.toRadians(
+                                        sleepDirectionToRotation(direction)
+                                ))
+                );
+                poseStack.mulPose(
+                        new Quaternionf()
+                                .rotateZ((float) Math.toRadians(90.0F))
+                );
+            }
+        } else {
+            poseStack.mulPose(
+                    new Quaternionf()
+                            .rotateY((float) Math.toRadians(
+                                    180.0F - bodyRotation
+                            ))
+            );
+        }
+
+        poseStack.scale(-1.0F, -1.0F, 1.0F);
+        poseStack.translate(0.0D, -1.501D, 0.0D);
+    }
+
+    private static float sleepDirectionToRotation(Direction direction) {
+        return switch (direction) {
+            case SOUTH -> 90.0F;
+            case WEST -> 0.0F;
+            case NORTH -> 270.0F;
+            case EAST -> 180.0F;
+            default -> 0.0F;
+        };
     }
 
     private static void copyVisibility(

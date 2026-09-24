@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
+import com.github.littleemptydoll.exoequipment.util.AttributeNameUtils;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -187,7 +188,7 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
         definition.attributes().ifPresent(value ->
                 value.attributes().forEach((id, modifier) ->
                         tooltip.add(TooltipHelper.property(
-                                "attribute " + id.getPath(),
+                                AttributeNameUtils.getName(id),
                                 modifier.amount() * efficiency + " (" + modifier.operation().name() + ")"
                         ))
                 )

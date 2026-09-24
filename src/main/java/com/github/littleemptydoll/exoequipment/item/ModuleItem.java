@@ -5,6 +5,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.util.AttributeNameUtils;
+import com.github.littleemptydoll.exoequipment.util.NameUtils;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -181,21 +182,21 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
         definition.attributes().ifPresent(value ->
                 value.attributes().forEach((id, modifier) ->
                         tooltip.add(TooltipHelper.property(
-                                id.getPath(),
-                                modifier.amount() * efficiency + " (" + modifier.operation().name() + ")"
+                                AttributeNameUtils.getName(id),
+                                modifier.amount() * efficiency + " (" + NameUtils.toDisplayName(modifier.operation().name()) + ")"
                         ))
                 )
         );
 
         definition.conditionalAttributes().ifPresent(value -> {
             tooltip.add(TooltipHelper.property("conditional attributes", value.conditions().stream()
-                    .map(condition -> condition.type().name().toLowerCase(java.util.Locale.ROOT)
-                            + condition.value().map(v -> "=" + v).orElse(""))
+                    .map(condition -> NameUtils.toDisplayName(condition.type().name())
+                            + condition.value().map(v -> " = " + String.format(java.util.Locale.ROOT, "%.0f%%", v * 100.0D)).orElse(""))
                     .collect(java.util.stream.Collectors.joining(", "))));
             value.attributes().attributes().forEach((id, modifier) ->
                     tooltip.add(TooltipHelper.property(
-                            "conditional attribute " + id.getPath(),
-                            modifier.amount() * efficiency + " (" + modifier.operation().name() + ")"
+                            "conditional attribute " + AttributeNameUtils.getName(id).getString(),
+                            modifier.amount() * efficiency + " (" + NameUtils.toDisplayName(modifier.operation().name()) + ")"
                     ))
             );
         });

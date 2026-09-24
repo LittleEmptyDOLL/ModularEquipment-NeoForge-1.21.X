@@ -189,7 +189,7 @@ public final class ShieldClientRenderer {
                 poseStack.mulPose(
                         new Quaternionf()
                                 .rotateX((float) Math.toRadians(
-                                        90.0F + pitch
+                                        -90.0F - pitch
                                 ))
                 );
             }

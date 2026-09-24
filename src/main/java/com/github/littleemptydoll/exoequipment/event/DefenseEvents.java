@@ -69,10 +69,6 @@ public final class DefenseEvents {
                         .map(key -> key.location())
                         .orElse(null);
 
-        if (damageType == null) {
-            return;
-        }
-
         ShieldOperations.ShieldDamageResult shieldResult =
                 ShieldOperations.absorbDamage(
                         event.getAmount(),

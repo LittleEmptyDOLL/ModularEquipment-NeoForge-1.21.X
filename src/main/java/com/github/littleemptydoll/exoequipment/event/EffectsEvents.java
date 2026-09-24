@@ -34,6 +34,9 @@ public final class EffectsEvents {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
+        if (player.level().isClientSide()) {
+            return;
+        }
 
         Map<ResourceLocation, Integer> desired = findEffects(player);
 

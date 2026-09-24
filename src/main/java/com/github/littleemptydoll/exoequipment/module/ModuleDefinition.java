@@ -33,7 +33,6 @@ public record ModuleDefinition(
         Optional<HungerProperties> hunger,
         Optional<RevivalProperties> revival,
         Optional<RegenerationProperties> regeneration,
-        Optional<FallProtectionProperties> fallProtection,
         Optional<AttributeProperties> attributes,
         Optional<ConditionalAttributeProperties> conditionalAttributes,
         Optional<PickupMagnetProperties> pickupMagnet,
@@ -88,8 +87,7 @@ public record ModuleDefinition(
                 entityDetection,
                 hunger,
                 revival,
-                regeneration,
-                fallProtection
+                regeneration
         );
     }
 
@@ -191,7 +189,6 @@ public record ModuleDefinition(
         private HungerProperties hunger;
         private RevivalProperties revival;
         private RegenerationProperties regeneration;
-        private FallProtectionProperties fallProtection;
         private AttributeProperties attributes;
         private ConditionalAttributeProperties conditionalAttributes;
         private PickupMagnetProperties pickupMagnet;
@@ -313,11 +310,6 @@ public record ModuleDefinition(
             return this;
         }
 
-        public Builder fallProtection(FallProtectionProperties fallProtection) {
-            this.fallProtection = fallProtection;
-            return this;
-        }
-
         public Builder attributes(AttributeProperties attributes) {
             this.attributes = attributes;
             return this;
@@ -384,7 +376,6 @@ public record ModuleDefinition(
                     Optional.ofNullable(hunger),
                     Optional.ofNullable(revival),
                     Optional.ofNullable(regeneration),
-                    Optional.ofNullable(fallProtection),
                     Optional.ofNullable(attributes),
                     Optional.ofNullable(conditionalAttributes),
                     Optional.ofNullable(pickupMagnet),

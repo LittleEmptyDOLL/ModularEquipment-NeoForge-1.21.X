@@ -417,6 +417,7 @@ public class ModModules {
                             )
                             .energy(new EnergyProperties(10, 1))
                             .damageReduction(new DamageReductionProperties(
+                                    0.10D,
                                     java.util.Map.of(
                                             ResourceLocation.fromNamespaceAndPath(
                                                     "minecraft",

@@ -2,7 +2,6 @@ package com.github.littleemptydoll.exoequipment.characteristics;
 
 import com.github.littleemptydoll.exoequipment.energy.EnergyState;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
-import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
 import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
@@ -13,7 +12,6 @@ import com.github.littleemptydoll.exoequipment.module.BodyPart;
 import com.github.littleemptydoll.exoequipment.module.DefenseOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
-import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import com.github.littleemptydoll.exoequipment.module.JetpackProperties;
 import com.github.littleemptydoll.exoequipment.module.ElytraBoostProperties;
 import com.github.littleemptydoll.exoequipment.module.RevivalProperties;
@@ -203,6 +201,32 @@ public final class CharacteristicsProvider {
                 ? collectDamageTypes(context.data(), context.matrixSlot())
                 : collectDamageTypes(context.data());
 
+        if (context.isMatrixScope()) {
+            double universalMultiplier = DefenseOperations.calculateDamageMultiplier(
+                    context.data(), context.matrixSlot(), null, effectivePoweredModules(context));
+            double universalReduction = 1.0D - universalMultiplier;
+            if (universalReduction > 0.0D) {
+                result.add(new Characteristic(
+                        CharacteristicCategory.DEFENSE,
+                        "damage_reduction.default",
+                        CharacteristicType.CURRENT,
+                        universalReduction
+                ));
+            }
+        } else {
+            double universalMultiplier = DefenseOperations.calculateDamageMultiplier(
+                    context.data(), null, effectivePoweredModules(context));
+            double universalReduction = 1.0D - universalMultiplier;
+            if (universalReduction > 0.0D) {
+                result.add(new Characteristic(
+                        CharacteristicCategory.DEFENSE,
+                        "damage_reduction.default",
+                        CharacteristicType.CURRENT,
+                        universalReduction
+                ));
+            }
+        }
+
         for (ResourceLocation damageType : damageTypes) {
             double multiplier = context.isMatrixScope()
                     ? DefenseOperations.calculateDamageMultiplier(
@@ -298,6 +322,7 @@ public final class CharacteristicsProvider {
                         .ifPresent(properties ->
                                 result.addAll(properties.reductions().keySet())
                         )
+                        )
         );
     }
 
@@ -374,30 +399,30 @@ public final class CharacteristicsProvider {
 
                 var definition = ModModules.getDefinition(module.id());
 
-                flight |= definition.flight().isPresent() && efficiency(definition, context) > 0.0D;
+                flight |= definition.flight().isPresent();
 
                 if (definition.jetpack().isPresent()) {
                     JetpackProperties jetpack = definition.jetpack().get();
-                    jetpackThrust = Math.max(jetpackThrust, scale(jetpack.verticalThrust(), definition, context));
-                    jetpackSpeed = Math.max(jetpackSpeed, scale(jetpack.horizontalSpeed(), definition, context));
+                    jetpackThrust = Math.max(jetpackThrust, jetpack.verticalThrust());
+                    jetpackSpeed = Math.max(jetpackSpeed, jetpack.horizontalSpeed());
 
                     if (jetpack.elytra().isPresent()) {
                         ElytraBoostProperties elytra = jetpack.elytra().get();
                         elytraAcceleration = Math.max(
                                 elytraAcceleration,
-                                scale(elytra.acceleration(), definition, context)
+                                elytra.acceleration()
                         );
                         elytraMaxSpeed = Math.max(
                                 elytraMaxSpeed,
-                                scale(elytra.maxSpeed(), definition, context)
+                                elytra.maxSpeed()
                         );
                     }
                 }
 
                 if (definition.blink().isPresent()) {
                     var blink = definition.blink().get();
-                    blinkDistance = Math.max(blinkDistance, scale(blink.distance(), definition, context));
-                    blinkEnergy = Math.max(blinkEnergy, (int) Math.round(scale(blink.activationEnergy(), definition, context)));
+                    blinkDistance = Math.max(blinkDistance, blink.distance());
+                    blinkEnergy = Math.max(blinkEnergy, blink.activationEnergy());
                     blinkCooldown = Math.min(blinkCooldown, blink.cooldown());
                 }
             }
@@ -478,12 +503,60 @@ public final class CharacteristicsProvider {
 
         double revivalRestore = 0.0D;
         int revivalCooldown = Integer.MAX_VALUE;
+        double thirst = 0.0D;
+
+        for (int slot = context.isMatrixScope() ? context.matrixSlot() : 0;
+             slot < (context.isMatrixScope() ? context.matrixSlot() + 1 : context.data().matrices().size()); slot++) {
+            MatrixData matrix = context.data().matrices().get(slot).matrix().orElse(null);
+            if (matrix == null) continue;
+            for (InstalledModule module : matrix.modules()) {
+                if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
+                var definition = ModModules.getDefinition(module.id());
+                if (definition.revival().isPresent()) {
+                    RevivalProperties p = definition.revival().get();
+                    revivalRestore = Math.max(revivalRestore, p.restoreHealth());
+                    revivalCooldown = Math.min(revivalCooldown, p.cooldown());
+                }
+                if (definition.thirst().isPresent()) thirst = Math.max(thirst, definition.thirst().get().exhaustionReduction());
+            }
+        }
+
+        if (revivalRestore > 0.0D) {
+            result.add(new Characteristic(CharacteristicCategory.SURVIVAL, "revival.restore_health", CharacteristicType.STATIC, revivalRestore));
+            result.add(new Characteristic(CharacteristicCategory.SURVIVAL, "revival.cooldown", CharacteristicType.STATIC, revivalCooldown));
+        }
+        if (thirst > 0.0D) result.add(new Characteristic(CharacteristicCategory.SURVIVAL, "thirst.exhaustion_reduction", CharacteristicType.STATIC, thirst));
     }
 
     private static void addSensors(
             List<Characteristic> result,
             CharacteristicsContext context
     ) {
+        double entityRange = 0.0D;
+        boolean players = false;
+        boolean mobs = false;
+        boolean hostile = false;
+        double blockRange = 0.0D;
+
+        for (int slot = context.isMatrixScope() ? context.matrixSlot() : 0;
+             slot < (context.isMatrixScope() ? context.matrixSlot() + 1 : context.data().matrices().size()); slot++) {
+            MatrixData matrix = context.data().matrices().get(slot).matrix().orElse(null);
+            if (matrix == null) continue;
+            for (int index = 0; index < matrix.modules().size(); index++) {
+                InstalledModule module = matrix.modules().get(index);
+                if (!FrameOperations.isModuleSupported(context.data(), module)) continue;
+                var definition = ModModules.getDefinition(module.id());
+                if (definition.entityDetection().isPresent()) {
+                    EntityDetectionProperties p = definition.entityDetection().get();
+                    entityRange = Math.max(entityRange, p.range());
+                    players |= p.players(); mobs |= p.mobs(); hostile |= p.hostile();
+                }
+                if (definition.blockScanner().isPresent()) {
+                    blockRange = Math.max(blockRange, definition.blockScanner().get().range());
+                }
+            }
+        }
+
         if (entityRange > 0.0D) {
             result.add(new Characteristic(CharacteristicCategory.SENSOR, "entity_detection.range", CharacteristicType.STATIC, entityRange));
             result.add(new Characteristic(CharacteristicCategory.SENSOR, "entity_detection.players", CharacteristicType.STATIC, players ? 1.0D : 0.0D));
@@ -520,12 +593,12 @@ public final class CharacteristicsProvider {
                 var definition = ModModules.getDefinition(module.id());
                 if (definition.cloaking().isPresent()) {
                     CloakingProperties p = definition.cloaking().get();
-                    cloakConsumption = Math.max(cloakConsumption, scale(p.activeConsumption(), definition, context));
+                    cloakConsumption = Math.max(cloakConsumption, p.activeConsumption());
                     cloaking |= module.active();
                 }
                 if (definition.emergencyShield().isPresent()) {
                     EmergencyShieldProperties p = definition.emergencyShield().get();
-                    emergencyRestore = Math.max(emergencyRestore, scale(p.restore(), definition, context));
+                    emergencyRestore = Math.max(emergencyRestore, p.restore());
                     emergencyCooldown = Math.min(emergencyCooldown, p.cooldown());
                 }
             }
@@ -583,14 +656,6 @@ public final class CharacteristicsProvider {
         };
     }
 
-
-    private static double efficiency(ModuleDefinition definition, CharacteristicsContext context) {
-        return TemperatureOperations.calculateModuleEfficiency(definition, context.data().temperature());
-    }
-
-    private static double scale(double value, ModuleDefinition definition, CharacteristicsContext context) {
-        return Math.max(0.0D, value * efficiency(definition, context));
-    }
 
     private static Set<InstalledModuleReference> effectivePoweredModules(
             CharacteristicsContext context

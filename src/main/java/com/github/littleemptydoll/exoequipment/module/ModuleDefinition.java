@@ -28,7 +28,7 @@ public record ModuleDefinition(
         Optional<FlightProperties> flight,
         Optional<JetpackProperties> jetpack,
         Optional<StatusProtectionProperties> statusProtection,
-        Optional<NightVisionProperties> nightVision,
+        Optional<EffectsProperties> effects,
         Optional<EntityDetectionProperties> entityDetection,
         Optional<HungerProperties> hunger,
         Optional<RevivalProperties> revival,
@@ -84,7 +84,7 @@ public record ModuleDefinition(
                 emergencyShield,
                 cloaking,
                 statusProtection,
-                nightVision,
+                effects,
                 entityDetection,
                 hunger,
                 revival,
@@ -186,7 +186,7 @@ public record ModuleDefinition(
         private FlightProperties flight;
         private JetpackProperties jetpack;
         private StatusProtectionProperties statusProtection;
-        private NightVisionProperties nightVision;
+        private EffectsProperties effects;
         private EntityDetectionProperties entityDetection;
         private HungerProperties hunger;
         private RevivalProperties revival;
@@ -288,8 +288,8 @@ public record ModuleDefinition(
             return this;
         }
 
-        public Builder nightVision(NightVisionProperties nightVision) {
-            this.nightVision = nightVision;
+        public Builder effects(EffectsProperties effects) {
+            this.effects = effects;
             return this;
         }
 
@@ -379,7 +379,7 @@ public record ModuleDefinition(
                     Optional.ofNullable(flight),
                     Optional.ofNullable(jetpack),
                     Optional.ofNullable(statusProtection),
-                    Optional.ofNullable(nightVision),
+                    Optional.ofNullable(effects),
                     Optional.ofNullable(entityDetection),
                     Optional.ofNullable(hunger),
                     Optional.ofNullable(revival),

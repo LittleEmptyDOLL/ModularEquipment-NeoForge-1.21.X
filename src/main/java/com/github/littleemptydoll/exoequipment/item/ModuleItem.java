@@ -178,6 +178,15 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
                 tooltip.add(TooltipHelper.property("health per second", value.healthPerSecond() * efficiency))
         );
 
+        definition.attributes().ifPresent(value ->
+                value.attributes().forEach((id, modifier) ->
+                        tooltip.add(TooltipHelper.property(
+                                id.getPath(),
+                                modifier.amount() * efficiency + " (" + modifier.operation().name() + ")"
+                        ))
+                )
+        );
+
         definition.conditionalAttributes().ifPresent(value -> {
             tooltip.add(TooltipHelper.property("conditional attributes", value.conditions().stream()
                     .map(condition -> condition.type().name().toLowerCase(java.util.Locale.ROOT)

@@ -39,7 +39,6 @@ public record ModuleDefinition(
         Optional<BodyDamageProtectionProperties> bodyDamageProtection,
         Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
         Optional<ThirstProperties> thirst,
-        Optional<PainkillerProperties> painkiller,
         Optional<BlockScannerProperties> blockScanner
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
@@ -149,7 +148,6 @@ public record ModuleDefinition(
                 extended.bodyDamageProtection(),
                 extended.bodyDamageRegeneration(),
                 extended.thirst(),
-                extended.painkiller(),
                 extended.blockScanner()
         );
     }
@@ -195,7 +193,6 @@ public record ModuleDefinition(
         private BodyDamageProtectionProperties bodyDamageProtection;
         private BodyDamageRegenerationProperties bodyDamageRegeneration;
         private ThirstProperties thirst;
-        private PainkillerProperties painkiller;
         private BlockScannerProperties blockScanner;
 
         private Builder(
@@ -340,11 +337,6 @@ public record ModuleDefinition(
             return this;
         }
 
-        public Builder painkiller(PainkillerProperties painkiller) {
-            this.painkiller = painkiller;
-            return this;
-        }
-
         public Builder blockScanner(BlockScannerProperties blockScanner) {
             this.blockScanner = blockScanner;
             return this;
@@ -382,7 +374,6 @@ public record ModuleDefinition(
                     Optional.ofNullable(bodyDamageProtection),
                     Optional.ofNullable(bodyDamageRegeneration),
                     Optional.ofNullable(thirst),
-                    Optional.ofNullable(painkiller),
                     Optional.ofNullable(blockScanner)
             );
         }

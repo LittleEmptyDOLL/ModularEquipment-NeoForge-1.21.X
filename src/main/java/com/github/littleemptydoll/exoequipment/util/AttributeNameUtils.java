@@ -50,16 +50,6 @@ public final class AttributeNameUtils {
     }
 
     public static Component getName(ResourceLocation id) {
-        Attribute attribute = BuiltInRegistries.ATTRIBUTE.get(id);
-        if (attribute == null) {
-            return Component.literal(NameUtils.toDisplayName(id.getPath()));
-        }
-
-        String translationKey = VANILLA_NAMES.get(id);
-        return Component.translatable(
-                translationKey != null
-                        ? translationKey
-                        : attribute.getDescriptionId()
-        );
+        return Component.literal(NameUtils.toDisplayName(id.getPath()));
     }
 }

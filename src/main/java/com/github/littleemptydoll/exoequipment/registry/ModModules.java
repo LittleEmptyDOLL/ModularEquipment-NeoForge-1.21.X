@@ -64,7 +64,10 @@ public class ModModules {
                                     new ModuleSize(1, 1)
                             )
                             .energy(new EnergyProperties(5))
-                            .nightVision(new NightVisionProperties())
+                            .effects(new EffectsProperties(java.util.Map.of(
+                    ResourceLocation.fromNamespaceAndPath("minecraft", "night_vision"),
+                    0
+            )))
                             .build()
     );
 
@@ -995,7 +998,13 @@ public class ModModules {
                                         new ModuleSize(2, 2)
                                 )
                                 .energy(new EnergyProperties(5))
-                                .painkiller(new PainkillerProperties())
+                                .effects(new EffectsProperties(java.util.Map.of(
+                    ResourceLocation.fromNamespaceAndPath(
+                            "legendarysurvivaloverhaul",
+                            "painkiller"
+                    ),
+                    0
+            )))
                                 .build()
         );
     }

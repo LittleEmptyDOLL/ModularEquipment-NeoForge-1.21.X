@@ -218,6 +218,34 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
         );
     }
 
+    private void drawBackButton(
+            GuiGraphics graphics
+    ) {
+        int sourceY = hoveredAction == -1
+                ? HOVER_Y
+                : NORMAL_Y;
+
+        drawButton(
+                graphics,
+                BACK_X,
+                ACTION_Y,
+                ACTION_WIDTH,
+                ACTION_HEIGHT,
+                139,
+                sourceY
+        );
+        drawText(
+                graphics,
+                Component.translatable(
+                        "gui.exoequipment.back"
+                ),
+                BACK_X + 5,
+                ACTION_Y + 5,
+                ACTION_WIDTH - 10,
+                TEXT_COLOR
+        );
+    }
+
     private void drawScrollbar(GuiGraphics graphics) {
         graphics.blit(TEXTURE, SCROLL_X, SCROLL_Y, 0, 186, SCROLL_WIDTH, SCROLL_HEIGHT, TEXTURE_SIZE, TEXTURE_SIZE);
         boolean scrollable = isScrollable();
@@ -241,7 +269,7 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
         for (int matrix = 0; matrix < 4; matrix++) drawMatrixButton(graphics, matrix);
         drawActionButton(graphics, ProfileActionPayload.Action.CREATE, CREATE_X, menu.getProfileCount() < menu.getMaxProfiles(), Component.translatable("gui.exoequipment.profile_create"));
         drawActionButton(graphics, ProfileActionPayload.Action.REMOVE, DELETE_X, menu.getProfileCount() > 1, Component.translatable("gui.exoequipment.profile_delete"));
-        drawActionButton(graphics, -1, BACK_X, true, Component.translatable("gui.exoequipment.back"));
+        drawBackButton(graphics);
         drawScrollbar(graphics);
     }
 

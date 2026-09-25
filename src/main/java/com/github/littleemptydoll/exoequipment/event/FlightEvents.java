@@ -1,19 +1,15 @@
 package com.github.littleemptydoll.exoequipment.event;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
-import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.module.FlightOperations;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import top.theillusivec4.curios.api.CuriosApi;
-
-import java.util.Optional;
 
 @EventBusSubscriber(modid = ExoEquipment.MODID)
 public final class FlightEvents {
@@ -58,13 +54,13 @@ public final class FlightEvents {
             return;
         }
 
-        Optional<ItemStack> exoskeleton = findExoskeleton(player);
-        if (exoskeleton.isEmpty()) {
+        var context = ExoskeletonAccess.findContext(player).orElse(null);
+        if (context == null) {
             markInactive(player);
             return;
         }
 
-        ExoskeletonData data = ExoskeletonItem.getData(exoskeleton.get());
+        ExoskeletonData data = context.data();
         if (!FlightOperations.hasActive(data)
                 || !ExoskeletonState.canActivate(data)) {
             markInactive(player);
@@ -80,13 +76,5 @@ public final class FlightEvents {
                 event.getEntity().getAbilities().mayfly = false;
             }
         }
-    }
-
-    private static Optional<ItemStack> findExoskeleton(Player player) {
-        return CuriosApi.getCuriosInventory(player)
-                .flatMap(curios -> curios.findFirstCurio(
-                        stack -> stack.getItem() instanceof ExoskeletonItem
-                ))
-                .map(result -> result.stack());
     }
 }

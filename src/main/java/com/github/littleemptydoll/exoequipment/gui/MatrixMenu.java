@@ -2,6 +2,7 @@ package com.github.littleemptydoll.exoequipment.gui;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.network.ExoskeletonSyncPayload;
+import com.github.littleemptydoll.exoequipment.network.MatrixActionPayload;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
 import com.github.littleemptydoll.exoequipment.item.ModuleItem;
@@ -29,10 +30,6 @@ public class MatrixMenu extends AbstractContainerMenu {
 
     public static final int SOURCE_HAND = 0;
     public static final int SOURCE_EXOSKELETON = 1;
-    public static final int ACTION_PLACE = 0;
-    public static final int ACTION_REMOVE = 1;
-    public static final int ACTION_ROTATE = 2;
-    public static final int ACTION_MOVE = 3;
     public static final int PLAYER_INVENTORY_START = 0;
     public static final int PLAYER_INVENTORY_END = 36;
     public static final int CELL_SIZE = 18;
@@ -301,16 +298,59 @@ public class MatrixMenu extends AbstractContainerMenu {
         return false;
     }
 
-    public boolean handleAction(ServerPlayer player, int action, int x, int y, int targetX, int targetY, int rotation) {
+    public boolean handleAction(
+            ServerPlayer player,
+            MatrixActionPayload.Action action,
+            int x,
+            int y,
+            int targetX,
+            int targetY,
+            int rotation
+    ) {
+        if (action == null) {
+            return false;
+        }
+
         try {
             MatrixData matrix = getServerMatrixData(player);
             MatrixDefinition definition = getMatrixDefinition();
+
             return switch (action) {
-                case ACTION_PLACE -> placeModule(player, matrix, definition, x, y, rotation);
-                case ACTION_REMOVE -> removeModule(player, matrix, x, y);
-                case ACTION_ROTATE -> rotateModule(player, matrix, definition, x, y);
-                case ACTION_MOVE -> moveModule(player, matrix, definition, x, y, targetX, targetY, rotation);
-                default -> false;
+                case PLACE ->
+                        placeModule(
+                                player,
+                                matrix,
+                                definition,
+                                x,
+                                y,
+                                rotation
+                        );
+                case REMOVE ->
+                        removeModule(
+                                player,
+                                matrix,
+                                x,
+                                y
+                        );
+                case ROTATE ->
+                        rotateModule(
+                                player,
+                                matrix,
+                                definition,
+                                x,
+                                y
+                        );
+                case MOVE ->
+                        moveModule(
+                                player,
+                                matrix,
+                                definition,
+                                x,
+                                y,
+                                targetX,
+                                targetY,
+                                rotation
+                        );
             };
         } catch (IllegalArgumentException | IllegalStateException exception) {
             return false;

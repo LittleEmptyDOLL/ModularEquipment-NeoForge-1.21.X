@@ -1,13 +1,12 @@
 package com.github.littleemptydoll.exoequipment.gui;
 
-import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.extensions.IPlayerExtension;
-import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.Optional;
 
@@ -38,18 +37,10 @@ public final class ExoskeletonMenuProvider {
         );
     }
 
-    public static Optional<ItemStack> findBodyExoskeleton(LivingEntity entity) {
-        return CuriosApi.getCuriosInventory(entity)
-                .flatMap(handler -> handler.getStacksHandler("body"))
-                .flatMap(stacks -> {
-                    for (int slot = 0; slot < stacks.getStacks().getSlots(); slot++) {
-                        ItemStack stack = stacks.getStacks().getStackInSlot(slot);
-                        if (stack.getItem() instanceof ExoskeletonItem) {
-                            return Optional.of(stack);
-                        }
-                    }
-                    return Optional.empty();
-                });
+    public static Optional<ItemStack> findBodyExoskeleton(
+            LivingEntity entity
+    ) {
+        return ExoskeletonAccess.findEquipped(entity);
     }
 
     private ExoskeletonMenuProvider() {}

@@ -74,6 +74,18 @@ public final class RevivalOperations {
         );
     }
 
+    public static int readyCount(ExoskeletonData data) {
+        int count = 0;
+
+        for (RevivalTarget target : collect(data)) {
+            if (getModule(data, target.reference()).revivalCooldown() <= 0) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
     private static List<RevivalTarget> collect(
             ExoskeletonData data
     ) {

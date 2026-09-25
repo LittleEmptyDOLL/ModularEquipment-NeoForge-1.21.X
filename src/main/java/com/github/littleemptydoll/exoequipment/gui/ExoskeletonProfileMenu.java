@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonProfileOperations;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonValidation;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
+import com.github.littleemptydoll.exoequipment.network.ProfileActionPayload;
 import com.github.littleemptydoll.exoequipment.network.ProfileSyncPayload;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
@@ -17,12 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExoskeletonProfileMenu extends AbstractContainerMenu {
-    private static final int SELECT = 0;
-    private static final int CREATE = 1;
-    private static final int REMOVE = 2;
-    private static final int TOGGLE_MATRIX = 3;
-    private static final int RENAME = 4;
-
     private final Player player;
     private final ItemStack exoskeleton;
 
@@ -70,8 +65,13 @@ public class ExoskeletonProfileMenu extends AbstractContainerMenu {
         return ProfileSyncPayload.fromData(ExoskeletonItem.getData(exoskeleton));
     }
 
-    public boolean handleAction(int action, int profile, int matrix, String name) {
-        if (player.level().isClientSide) {
+    public boolean handleAction(
+            ProfileActionPayload.Action action,
+            int profile,
+            int matrix,
+            String name
+    ) {
+        if (player.level().isClientSide || action == null) {
             return false;
         }
 
@@ -79,26 +79,49 @@ public class ExoskeletonProfileMenu extends AbstractContainerMenu {
 
         try {
             switch (action) {
-                case SELECT -> data = ExoskeletonProfileOperations.activateProfile(data, profile);
+                case SELECT ->
+                        data = ExoskeletonProfileOperations
+                                .activateProfile(
+                                        data,
+                                        profile
+                                );
                 case CREATE -> {
-                    data = ExoskeletonProfileOperations.createProfile(data);
-                    data = ExoskeletonProfileOperations.activateProfile(
-                            data,
-                            data.profiles().size() - 1
-                    );
+                    data = ExoskeletonProfileOperations
+                            .createProfile(data);
+                    data = ExoskeletonProfileOperations
+                            .activateProfile(
+                                    data,
+                                    data.profiles().size() - 1
+                            );
                 }
-                case REMOVE -> data = ExoskeletonProfileOperations.removeProfile(data, profile);
-                case TOGGLE_MATRIX -> data = toggleMatrix(data, profile, matrix);
-                case RENAME -> data = ExoskeletonProfileOperations.renameProfile(data, profile, name);
-                default -> {
-                    return false;
-                }
+                case REMOVE ->
+                        data = ExoskeletonProfileOperations
+                                .removeProfile(
+                                        data,
+                                        profile
+                                );
+                case TOGGLE_MATRIX ->
+                        data = toggleMatrix(
+                                data,
+                                profile,
+                                matrix
+                        );
+                case RENAME ->
+                        data = ExoskeletonProfileOperations
+                                .renameProfile(
+                                        data,
+                                        profile,
+                                        name
+                                );
             }
         } catch (IllegalArgumentException | IllegalStateException ignored) {
             return false;
         }
 
-        exoskeleton.set(ModDataComponents.EXOSKELETON_DATA.get(), data);
+        exoskeleton.set(
+                ModDataComponents.EXOSKELETON_DATA.get(),
+                data
+        );
         refreshFromData();
         return true;
     }

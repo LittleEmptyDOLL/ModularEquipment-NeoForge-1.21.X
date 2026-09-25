@@ -1,5 +1,4 @@
-# This is an example neoforge.mods.toml file. It contains the data relating to the loading mods.
-# It is expanded into the generated metadata during the build.
+# Expanded into generated metadata during the build.
 
 modLoader="javafml"
 loaderVersion="${loader_version_range}"
@@ -9,9 +8,8 @@ license="${mod_license}"
 modId="${mod_id}"
 version="${mod_version}"
 displayName="${mod_name}"
-description='''
-Example mod description.
-'''
+authors="${mod_authors}"
+description='''${mod_description}'''
 
 [[dependencies.${mod_id}]]
     modId="neoforge"

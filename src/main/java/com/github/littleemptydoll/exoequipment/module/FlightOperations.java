@@ -1,12 +1,8 @@
 package com.github.littleemptydoll.exoequipment.module;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
-import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
-import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -19,12 +15,17 @@ public final class FlightOperations {
             Set<InstalledModuleReference> poweredModules
     ) {
         for (Target target : collectTargets(data)) {
-            if (target.module().flightActive() || !isPowered(target, poweredModules)) {
+            if (target.module().flightActive()
+                    || !isPowered(target, poweredModules)) {
                 continue;
             }
 
             return new ActivationResult(
-                    replaceModule(data, target.reference(), target.module().withFlightActive(true)),
+                    ExoskeletonModules.update(
+                            data,
+                            target.reference(),
+                            target.module().withFlightActive(true)
+                    ),
                     true
             );
         }
@@ -39,13 +40,21 @@ public final class FlightOperations {
         ExoskeletonData updated = data;
 
         for (Target target : collectTargets(updated)) {
-            InstalledModule module = getModule(updated, target.reference());
+            InstalledModule module =
+                    ExoskeletonModules.get(
+                            updated,
+                            target.reference()
+                    ).orElse(null);
+
             if (module == null || !module.flightActive()) {
                 continue;
             }
 
-            if (!isPowered(target.withModule(module), poweredModules)) {
-                updated = replaceModule(
+            if (!isPowered(
+                    target.withModule(module),
+                    poweredModules
+            )) {
+                updated = ExoskeletonModules.update(
                         updated,
                         target.reference(),
                         module.withFlightActive(false)
@@ -60,12 +69,15 @@ public final class FlightOperations {
             ExoskeletonData data,
             InstalledModuleReference reference
     ) {
-        InstalledModule module = getModule(data, reference);
+        InstalledModule module =
+                ExoskeletonModules.get(data, reference)
+                        .orElse(null);
+
         if (module == null || !module.flightActive()) {
             return data;
         }
 
-        return replaceModule(
+        return ExoskeletonModules.update(
                 data,
                 reference,
                 module.withFlightActive(false)
@@ -73,101 +85,77 @@ public final class FlightOperations {
     }
 
     public static boolean hasActive(ExoskeletonData data) {
-        return collectTargets(data).stream().anyMatch(target -> target.module().flightActive());
+        return collectTargets(data).stream()
+                .anyMatch(target ->
+                        target.module().flightActive()
+                );
     }
 
     private static boolean isPowered(
             Target target,
             Set<InstalledModuleReference> poweredModules
     ) {
-        var definition = ModModules.getDefinition(target.module().id());
-
         if (!target.module().flightActive()) {
-            return definition.energy()
-                    .map(EnergyProperties::consumption)
-                    .map(consumption -> consumption <= 0 || poweredModules.contains(target.reference()))
-                    .orElse(true);
+            return ExoskeletonModules.isPowered(
+                    target.definition(),
+                    target.reference(),
+                    poweredModules
+            );
         }
 
-        int activeConsumption = target.properties().activeConsumption();
-        int passiveConsumption = definition.energy()
-                .map(EnergyProperties::consumption)
-                .orElse(0);
+        int activeConsumption =
+                target.properties().activeConsumption();
 
-        if (passiveConsumption <= 0 && activeConsumption <= 0) {
+        int passiveConsumption =
+                target.definition()
+                        .energy()
+                        .map(EnergyProperties::consumption)
+                        .orElse(0);
+
+        if (passiveConsumption <= 0
+                && activeConsumption <= 0) {
             return true;
         }
 
         return poweredModules.contains(target.reference());
     }
 
-    private static List<Target> collectTargets(ExoskeletonData data) {
-        List<Target> targets = new ArrayList<>();
-
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
-            MatrixData matrix = data.matrices().get(slot).matrix().orElse(null);
-            if (matrix == null) {
-                continue;
-            }
-
-            for (int index = 0; index < matrix.modules().size(); index++) {
-                InstalledModule module = matrix.modules().get(index);
-                if (!FrameOperations.isModuleSupported(data, module)) {
-                    continue;
-                }
-
-                FlightProperties properties = ModModules.getDefinition(module.id())
-                        .flight()
-                        .orElse(null);
-                if (properties == null) {
-                    continue;
-                }
-
-                targets.add(new Target(
-                        new InstalledModuleReference(slot, index),
-                        module,
-                        properties
-                ));
-            }
-        }
-
-        targets.sort(
-                Comparator.comparingInt((Target target) -> target.reference().matrixSlot())
-                        .thenComparingInt(target -> target.reference().moduleIndex())
-        );
-        return targets;
-    }
-
-    private static InstalledModule getModule(
-            ExoskeletonData data,
-            InstalledModuleReference reference
+    private static List<Target> collectTargets(
+            ExoskeletonData data
     ) {
-        if (reference.matrixSlot() < 0 || reference.matrixSlot() >= data.matrices().size()) {
-            return null;
-        }
+        List<Target> targets =
+                ExoskeletonModules.activeSupported(data)
+                        .stream()
+                        .filter(activeModule ->
+                                activeModule.definition()
+                                        .flight()
+                                        .isPresent()
+                        )
+                        .map(activeModule ->
+                                new Target(
+                                        activeModule.reference(),
+                                        activeModule.module(),
+                                        activeModule.definition(),
+                                        activeModule.definition()
+                                                .flight()
+                                                .orElseThrow()
+                                )
+                        )
+                        .sorted(
+                                Comparator.comparingInt(
+                                                (Target target) ->
+                                                        target.reference()
+                                                                .matrixSlot()
+                                        )
+                                        .thenComparingInt(
+                                                target ->
+                                                        target.reference()
+                                                                .moduleIndex()
+                                        )
+                        )
+                        .toList();
 
-        MatrixData matrix = data.matrices().get(reference.matrixSlot()).matrix().orElse(null);
-        if (matrix == null
-                || reference.moduleIndex() < 0
-                || reference.moduleIndex() >= matrix.modules().size()) {
-            return null;
-        }
-
-        return matrix.modules().get(reference.moduleIndex());
-    }
-
-    private static ExoskeletonData replaceModule(
-            ExoskeletonData data,
-            InstalledModuleReference reference,
-            InstalledModule module
-    ) {
-        MatrixData matrix = data.matrices().get(reference.matrixSlot()).matrix().orElseThrow();
-        List<InstalledModule> modules = new ArrayList<>(matrix.modules());
-        modules.set(reference.moduleIndex(), module);
-        return data.withMatrix(
-                reference.matrixSlot(),
-                new MatrixData(matrix.id(), modules)
-        );
+        return List.copyOf(targets);
     }
 
     public record ActivationResult(
@@ -178,10 +166,16 @@ public final class FlightOperations {
     private record Target(
             InstalledModuleReference reference,
             InstalledModule module,
+            ModuleDefinition definition,
             FlightProperties properties
     ) {
         private Target withModule(InstalledModule module) {
-            return new Target(reference, module, properties);
+            return new Target(
+                    reference,
+                    module,
+                    definition,
+                    properties
+            );
         }
     }
 }

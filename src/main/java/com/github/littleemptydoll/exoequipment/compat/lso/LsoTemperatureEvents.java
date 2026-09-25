@@ -1,20 +1,13 @@
 package com.github.littleemptydoll.exoequipment.compat.lso;
 
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonTemperatureState;
-import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
-import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
-import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import sfiomn.legendarysurvivaloverhaul.api.temperature.TemperatureUtil;
-import top.theillusivec4.curios.api.CuriosApi;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 public final class LsoTemperatureEvents {
@@ -36,16 +29,9 @@ public final class LsoTemperatureEvents {
             return;
         }
 
-        Optional<ItemStack> exoskeletonStack =
-                CuriosApi.getCuriosInventory(player)
-                        .flatMap(curios ->
-                                curios.findFirstCurio(
-                                        stack -> stack.getItem() instanceof ExoskeletonItem
-                                )
-                        )
-                        .map(result -> result.stack());
+        var context = ExoskeletonAccess.findContext(player).orElse(null);
 
-        if (exoskeletonStack.isEmpty()) {
+        if (context == null) {
             applyModifiers(player, 0.0D, 0.0D, 0.0D, 0.0D);
             TemperatureUtil.addTemperatureModifier(
                     player,
@@ -55,16 +41,8 @@ public final class LsoTemperatureEvents {
             return;
         }
 
-        ItemStack stack = exoskeletonStack.get();
-        var data = ExoskeletonItem.getData(stack);
-
-        ExoskeletonRuntimeState runtime =
-                stack.get(ModDataComponents.EXOSKELETON_RUNTIME.get());
-
-        Set<InstalledModuleReference> poweredModules =
-                runtime == null
-                        ? Set.of()
-                        : runtime.poweredModules();
+        var data = context.data();
+        var poweredModules = context.poweredModules();
 
         var modifiers = LsoTemperatureOperations.calculateModifiers(
                 data,

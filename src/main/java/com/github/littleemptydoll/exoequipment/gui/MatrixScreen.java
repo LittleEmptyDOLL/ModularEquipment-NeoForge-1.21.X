@@ -6,8 +6,10 @@ import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicsContext;
 import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicsProvider;
 import com.github.littleemptydoll.exoequipment.item.ModuleItem;
+import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
+import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import com.github.littleemptydoll.exoequipment.module.ModuleSize;
 import com.github.littleemptydoll.exoequipment.network.MatrixActionPayload;
@@ -23,6 +25,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
@@ -75,35 +78,60 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         super(menu, inventory, title);
         this.imageWidth = menu.getImageWidth();
         this.imageHeight = menu.getImageHeight();
-        this.characteristicsPanel = new CharacteristicsPanel(() -> {
-            var data = menu.getSourceExoskeletonData();
-            if (data == null) {
-                data = ExoskeletonData.empty()
-                        .withFrame(new Frame(
-                                ResourceLocation.fromNamespaceAndPath(
-                                        ExoEquipment.MODID,
-                                        "experimental"
+        this.characteristicsPanel = new CharacteristicsPanel(
+                () -> {
+                    var data = menu.getSourceExoskeletonData();
+
+                    if (data == null) {
+                        data = ExoskeletonData.empty()
+                                .withFrame(new Frame(
+                                        ResourceLocation.fromNamespaceAndPath(
+                                                ExoEquipment.MODID,
+                                                "experimental"
+                                        )
+                                ))
+                                .withMatrix(0, menu.getMatrixData());
+
+                        return CharacteristicsProvider.collect(
+                                CharacteristicsContext.matrix(
+                                        data,
+                                        minecraft == null
+                                                ? null
+                                                : minecraft.player,
+                                        Set.of(),
+                                        0
                                 )
-                        ))
-                        .withMatrix(0, menu.getMatrixData());
-                return CharacteristicsProvider.collect(
-                        CharacteristicsContext.matrix(
-                                data,
-                                minecraft == null ? null : minecraft.player,
-                                java.util.Set.of(),
-                                0
-                        )
-                );
-            }
-            return CharacteristicsProvider.collect(
-                    CharacteristicsContext.matrix(
-                            data,
-                            minecraft == null ? null : minecraft.player,
-                            menu.getPoweredModules(),
-                            menu.getSourceIndex()
-                    )
-            );
-        });
+                        );
+                    }
+
+                    return CharacteristicsProvider.collect(
+                            CharacteristicsContext.matrix(
+                                    data,
+                                    minecraft == null
+                                            ? null
+                                            : minecraft.player,
+                                    menu.getPoweredModules(),
+                                    menu.getSourceIndex()
+                            )
+                    );
+                },
+                () -> {
+                    ExoskeletonData sourceData =
+                            menu.getSourceExoskeletonData();
+
+                    return new CharacteristicsRevision(
+                            sourceData,
+                            sourceData == null
+                                    ? menu.getMatrixData()
+                                    : null,
+                            Set.copyOf(menu.getPoweredModules()),
+                            menu.getSourceIndex(),
+                            minecraft == null || minecraft.player == null
+                                    ? 0
+                                    : minecraft.player.tickCount / 5
+                    );
+                }
+        );
     }
 
     @Override
@@ -585,4 +613,13 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         renderTooltip(guiGraphics, mouseX, mouseY);
         characteristicsPanel.render(guiGraphics, font, mouseX, mouseY);
     }
+
+    private record CharacteristicsRevision(
+            ExoskeletonData exoskeletonData,
+            MatrixData matrixData,
+            Set<InstalledModuleReference> poweredModules,
+            int sourceIndex,
+            int playerTickBucket
+    ) {}
+
 }

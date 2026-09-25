@@ -217,7 +217,7 @@ public class MatrixMenu extends AbstractContainerMenu {
 
     private Slot createInventorySlot(Inventory inventory, int inventorySlot, int x, int y) {
         if (sourceType == SOURCE_HAND && inventorySlot == sourceIndex) {
-            return new MatrixSourceSlot(inventory, inventorySlot, x, y);
+            return new ReadOnlySlot(inventory, inventorySlot, x, y);
         }
         return new Slot(inventory, inventorySlot, x, y);
     }
@@ -592,7 +592,7 @@ public class MatrixMenu extends AbstractContainerMenu {
     public ItemStack quickMoveStack(Player player, int index) {
         if (index < PLAYER_INVENTORY_START || index >= PLAYER_INVENTORY_END) return ItemStack.EMPTY;
         Slot slot = slots.get(index);
-        if (slot instanceof MatrixSourceSlot || !slot.hasItem()) return ItemStack.EMPTY;
+        if (slot instanceof ReadOnlySlot || !slot.hasItem()) return ItemStack.EMPTY;
         ItemStack stack = slot.getItem();
         ItemStack original = stack.copy();
         if (!moveItemStackTo(stack, PLAYER_INVENTORY_START, PLAYER_INVENTORY_END, true)) return ItemStack.EMPTY;

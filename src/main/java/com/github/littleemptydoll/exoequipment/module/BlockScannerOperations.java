@@ -1,10 +1,7 @@
 package com.github.littleemptydoll.exoequipment.module;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
-import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
-import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -30,7 +27,10 @@ public final class BlockScannerOperations {
             ExoskeletonData data,
             Set<InstalledModuleReference> poweredModules
     ) {
-        List<ScanTarget> targets = collectTargets(data, poweredModules);
+        List<ScanTarget> targets = collectTargets(
+                data,
+                poweredModules
+        );
 
         if (targets.isEmpty()) {
             return List.of();
@@ -57,7 +57,10 @@ public final class BlockScannerOperations {
                     continue;
                 }
 
-                if (matches(level.getBlockState(pos), target.properties())) {
+                if (matches(
+                        level.getBlockState(pos),
+                        target.properties()
+                )) {
                     result.add(pos.immutable());
                     break;
                 }
@@ -65,7 +68,9 @@ public final class BlockScannerOperations {
         }
 
         return result.stream()
-                .sorted(Comparator.comparingDouble(pos -> pos.distSqr(center)))
+                .sorted(Comparator.comparingDouble(
+                        pos -> pos.distSqr(center)
+                ))
                 .toList();
     }
 
@@ -75,40 +80,23 @@ public final class BlockScannerOperations {
     ) {
         List<ScanTarget> targets = new ArrayList<>();
 
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
-            MatrixData matrix = data.matrices()
-                    .get(slot)
-                    .matrix()
-                    .orElse(null);
+        for (ExoskeletonModules.ActiveModule activeModule
+                : ExoskeletonModules.activeSupported(data)) {
 
-            if (matrix == null) {
+            if (!ExoskeletonModules.isPowered(
+                    activeModule,
+                    poweredModules
+            )) {
                 continue;
             }
 
-            for (int moduleIndex = 0; moduleIndex < matrix.modules().size(); moduleIndex++) {
-                InstalledModule module = matrix.modules().get(moduleIndex);
-
-                if (!FrameOperations.isModuleSupported(data, module)) {
-                    continue;
-                }
-
-                InstalledModuleReference reference =
-                        new InstalledModuleReference(slot, moduleIndex);
-
-                if (!isPowered(module.id(), reference, poweredModules)) {
-                    continue;
-                }
-
-                ModModules.getDefinition(module.id())
-                        .blockScanner()
-                        .ifPresent(properties ->
-                                targets.add(new ScanTarget(
-                                        reference,
-                                        module.id(),
-                                        properties
-                                ))
-                        );
-            }
+            activeModule.definition()
+                    .blockScanner()
+                    .ifPresent(properties ->
+                            targets.add(
+                                    new ScanTarget(properties)
+                            )
+                    );
         }
 
         return List.copyOf(targets);
@@ -135,21 +123,7 @@ public final class BlockScannerOperations {
         return false;
     }
 
-    private static boolean isPowered(
-            ResourceLocation moduleId,
-            InstalledModuleReference reference,
-            Set<InstalledModuleReference> poweredModules
-    ) {
-        var energy = ModModules.getDefinition(moduleId).energy();
-
-        return energy.isEmpty()
-                || energy.get().consumption() <= 0
-                || poweredModules.contains(reference);
-    }
-
     private record ScanTarget(
-            InstalledModuleReference reference,
-            ResourceLocation moduleId,
             BlockScannerProperties properties
     ) {}
 }

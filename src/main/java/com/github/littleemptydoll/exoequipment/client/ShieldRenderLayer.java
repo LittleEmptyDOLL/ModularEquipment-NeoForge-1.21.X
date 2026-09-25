@@ -1,7 +1,6 @@
 package com.github.littleemptydoll.exoequipment.client;
 
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -9,19 +8,16 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.WeakHashMap;
 
 public final class ShieldRenderLayer
@@ -106,25 +102,15 @@ public final class ShieldRenderLayer
             return;
         }
 
-        Optional<ItemStack> exoskeletonStack =
-                CuriosApi.getCuriosInventory(player)
-                        .flatMap(curios ->
-                                curios.findFirstCurio(
-                                        stack -> stack.getItem() instanceof ExoskeletonItem
-                                )
-                        )
-                        .map(result -> result.stack());
+        var context = ExoskeletonAccess.findContext(player).orElse(null);
 
-        if (exoskeletonStack.isEmpty()) {
+        if (context == null) {
             visualStates.remove(player);
             return;
         }
 
-        ExoskeletonData data =
-                ExoskeletonItem.getData(exoskeletonStack.get());
-
         ShieldOperations.ShieldStatus status =
-                ShieldOperations.getStatus(data);
+                ShieldOperations.getStatus(context.data());
 
         float targetEnergy = getEnergyRatio(status);
 

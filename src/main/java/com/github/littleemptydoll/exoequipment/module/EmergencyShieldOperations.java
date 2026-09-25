@@ -101,6 +101,18 @@ public final class EmergencyShieldOperations {
         return updatedData;
     }
 
+    public static int readyCount(ExoskeletonData data) {
+        int count = 0;
+
+        for (EmergencyShieldTarget target : collectEmergencyShields(data)) {
+            if (getModule(data, target.reference()).emergencyShieldCooldown() <= 0) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
     private static List<EmergencyShieldTarget> collectEmergencyShields(
             ExoskeletonData data
     ) {

@@ -1,14 +1,14 @@
 package com.github.littleemptydoll.exoequipment.module;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
-import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
+import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,7 +20,12 @@ public final class AttributeOperations {
             ExoskeletonData data,
             Set<InstalledModuleReference> poweredModules
     ) {
-        return calculate(player, data, null, poweredModules);
+        return calculate(
+                player,
+                data,
+                null,
+                poweredModules
+        );
     }
 
     public static Map<AttributeKey, Double> calculate(
@@ -31,37 +36,42 @@ public final class AttributeOperations {
     ) {
         Map<AttributeKey, Double> values = new HashMap<>();
 
-        Iterable<Integer> slots = matrixSlot == null
-                ? () -> ExoskeletonState.activeMatrixSlots(data).iterator()
-                : java.util.List.of(matrixSlot);
+        List<ExoskeletonModules.ActiveModule> modules =
+                matrixSlot == null
+                        ? ExoskeletonModules.activeSupported(data)
+                        : ExoskeletonModules.supportedInMatrix(
+                                data,
+                                matrixSlot
+                        );
 
-        for (int slot : slots) {
-            var matrix = data.matrices().get(slot).matrix().orElse(null);
-            if (matrix == null) continue;
-
-            for (int moduleIndex = 0; moduleIndex < matrix.modules().size(); moduleIndex++) {
-                InstalledModule module = matrix.modules().get(moduleIndex);
-
-                if (!FrameOperations.isModuleSupported(data, module)) continue;
-
-                var definition = ModModules.getDefinition(module.id());
-
-                if (poweredModules != null
-                        && definition.energy()
-                        .filter(energy -> energy.consumption() > 0)
-                        .isPresent()
-                        && !poweredModules.contains(new InstalledModuleReference(slot, moduleIndex))) {
-                    continue;
-                }
-
-                definition.attributes().ifPresent(attributes ->
-                        addAttributes(values, attributes, definition, data)
-                );
-
-                definition.conditionalAttributes().ifPresent(conditional ->
-                        addConditionalAttributes(player, values, conditional, definition, data)
-                );
+        for (ExoskeletonModules.ActiveModule activeModule : modules) {
+            if (!ExoskeletonModules.isPowered(
+                    activeModule,
+                    poweredModules
+            )) {
+                continue;
             }
+
+            ModuleDefinition definition = activeModule.definition();
+
+            definition.attributes().ifPresent(attributes ->
+                    addAttributes(
+                            values,
+                            attributes,
+                            definition,
+                            data
+                    )
+            );
+
+            definition.conditionalAttributes().ifPresent(conditional ->
+                    addConditionalAttributes(
+                            player,
+                            values,
+                            conditional,
+                            definition,
+                            data
+                    )
+            );
         }
 
         return values;
@@ -73,10 +83,23 @@ public final class AttributeOperations {
             ModuleDefinition definition,
             ExoskeletonData data
     ) {
+        double efficiency =
+                TemperatureOperations.calculateModuleEfficiency(
+                        definition,
+                        data.temperature()
+                );
+
         attributes.attributes().forEach((attributeId, modifier) -> {
-            AttributeKey key = new AttributeKey(attributeId, modifier.operation());
-            double efficiency = com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(definition, data.temperature());
-            values.merge(key, modifier.amount() * efficiency, Double::sum);
+            AttributeKey key = new AttributeKey(
+                    attributeId,
+                    modifier.operation()
+            );
+
+            values.merge(
+                    key,
+                    modifier.amount() * efficiency,
+                    Double::sum
+            );
         });
     }
 
@@ -88,9 +111,18 @@ public final class AttributeOperations {
             ExoskeletonData data
     ) {
         if (conditional.conditions().stream().allMatch(
-                condition -> AttributeConditionOperations.matches(player, condition)
+                condition ->
+                        AttributeConditionOperations.matches(
+                                player,
+                                condition
+                        )
         )) {
-            addAttributes(values, conditional.attributes(), definition, data);
+            addAttributes(
+                    values,
+                    conditional.attributes(),
+                    definition,
+                    data
+            );
         }
     }
 

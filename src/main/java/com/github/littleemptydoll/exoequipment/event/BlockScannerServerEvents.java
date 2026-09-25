@@ -3,6 +3,7 @@ package com.github.littleemptydoll.exoequipment.event;
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
 import com.github.littleemptydoll.exoequipment.module.BlockScannerOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.network.BlockScannerPayload;
@@ -23,6 +24,7 @@ import java.util.UUID;
 @EventBusSubscriber(modid = ExoEquipment.MODID)
 public final class BlockScannerServerEvents {
     private static final int INTERVAL = 5;
+    private static final int CACHE_REFRESH_INTERVAL = 20;
 
     private static final Map<UUID, ScanCache> CACHE =
             new HashMap<>();
@@ -47,14 +49,21 @@ public final class BlockScannerServerEvents {
             return;
         }
 
+        List<ScannerModuleKey> scannerModules =
+                scannerModules(
+                        context.data(),
+                        context.poweredModules()
+                );
+
         ScanKey key =
                 new ScanKey(
                         player.level()
                                 .dimension()
                                 .location(),
                         player.blockPosition(),
-                        context.data(),
-                        context.poweredModules()
+                        scannerModules,
+                        player.level().getGameTime()
+                                / CACHE_REFRESH_INTERVAL
                 );
 
         ScanCache cached =
@@ -66,12 +75,14 @@ public final class BlockScannerServerEvents {
         }
 
         List<BlockPos> positions =
-                BlockScannerOperations.scanBlocks(
-                        player.level(),
-                        player.blockPosition(),
-                        context.data(),
-                        context.poweredModules()
-                );
+                scannerModules.isEmpty()
+                        ? List.of()
+                        : BlockScannerOperations.scanBlocks(
+                                player.level(),
+                                player.blockPosition(),
+                                context.data(),
+                                context.poweredModules()
+                        );
 
         if (cached == null
                 || !cached.positions().equals(positions)) {
@@ -88,6 +99,32 @@ public final class BlockScannerServerEvents {
                         positions
                 )
         );
+    }
+
+    private static List<ScannerModuleKey> scannerModules(
+            ExoskeletonData data,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        return ExoskeletonModules.activeSupported(data)
+                .stream()
+                .filter(activeModule ->
+                        ExoskeletonModules.isPowered(
+                                activeModule,
+                                poweredModules
+                        )
+                )
+                .filter(activeModule ->
+                        activeModule.definition()
+                                .blockScanner()
+                                .isPresent()
+                )
+                .map(activeModule ->
+                        new ScannerModuleKey(
+                                activeModule.reference(),
+                                activeModule.module().id()
+                        )
+                )
+                .toList();
     }
 
     private static void clear(
@@ -107,16 +144,20 @@ public final class BlockScannerServerEvents {
         );
     }
 
+    private record ScannerModuleKey(
+            InstalledModuleReference reference,
+            ResourceLocation moduleId
+    ) {}
+
     private record ScanKey(
             ResourceLocation dimension,
             BlockPos position,
-            ExoskeletonData data,
-            Set<InstalledModuleReference> poweredModules
+            List<ScannerModuleKey> scannerModules,
+            long refreshBucket
     ) {
         private ScanKey {
             position = position.immutable();
-            poweredModules =
-                    Set.copyOf(poweredModules);
+            scannerModules = List.copyOf(scannerModules);
         }
     }
 

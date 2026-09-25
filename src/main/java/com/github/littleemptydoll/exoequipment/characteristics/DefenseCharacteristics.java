@@ -1,9 +1,12 @@
 package com.github.littleemptydoll.exoequipment.characteristics;
 
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
+import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.module.BodyDamageProtectionOperations;
 import com.github.littleemptydoll.exoequipment.module.BodyPart;
 import com.github.littleemptydoll.exoequipment.module.DefenseOperations;
 import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
+import com.github.littleemptydoll.exoequipment.registry.ModModules;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashSet;
@@ -116,22 +119,58 @@ final class DefenseCharacteristics {
         Set<ResourceLocation> result =
                 new HashSet<>();
 
-        for (var activeModule
-                : CharacteristicsSupport
-                .runtimeModules(context)) {
+        if (context.isMatrixScope()) {
+            collectDamageTypes(
+                    context,
+                    context.matrixSlot(),
+                    result
+            );
+            return result;
+        }
 
-            activeModule.definition()
-                    .damageReduction()
-                    .ifPresent(properties ->
-                            result.addAll(
-                                    properties
-                                            .reductions()
-                                            .keySet()
-                            )
-                    );
+        for (int slot
+                : ExoskeletonState
+                .activeMatrixSlots(
+                        context.data()
+                )) {
+            collectDamageTypes(
+                    context,
+                    slot,
+                    result
+            );
         }
 
         return result;
+    }
+
+    private static void collectDamageTypes(
+            CharacteristicsContext context,
+            int slot,
+            Set<ResourceLocation> result
+    ) {
+        MatrixData matrix =
+                context.data()
+                        .matrices()
+                        .get(slot)
+                        .matrix()
+                        .orElse(null);
+
+        if (matrix == null) {
+            return;
+        }
+
+        matrix.modules().forEach(module ->
+                ModModules.getDefinition(
+                        module.id()
+                ).damageReduction()
+                        .ifPresent(properties ->
+                                result.addAll(
+                                        properties
+                                                .reductions()
+                                                .keySet()
+                                )
+                        )
+        );
     }
 
     private static void addBodyProtection(

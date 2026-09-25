@@ -1,24 +1,20 @@
 package com.github.littleemptydoll.exoequipment.event;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
-import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import com.github.littleemptydoll.exoequipment.module.DefenseOperations;
-import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
 import com.github.littleemptydoll.exoequipment.module.EmergencyShieldOperations;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
+import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
+import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import com.github.littleemptydoll.exoequipment.registry.ModSounds;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
-import com.github.littleemptydoll.exoequipment.registry.ModSounds;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import top.theillusivec4.curios.api.CuriosApi;
-
-import java.util.Optional;
 
 @EventBusSubscriber(modid = ExoEquipment.MODID)
 public final class DefenseEvents {
@@ -34,32 +30,13 @@ public final class DefenseEvents {
             return;
         }
 
-        Optional<ItemStack> exoskeletonStack =
-                CuriosApi.getCuriosInventory(entity)
-                        .flatMap(curios ->
-                                curios.findFirstCurio(
-                                        stack ->
-                                                stack.getItem()
-                                                        instanceof ExoskeletonItem
-                                )
-                        )
-                        .map(result -> result.stack());
-
-        if (exoskeletonStack.isEmpty()) {
+        var context = ExoskeletonAccess.findContext(entity).orElse(null);
+        if (context == null) {
             return;
         }
 
-        ItemStack stack = exoskeletonStack.get();
-        var data = ExoskeletonItem.getData(stack);
-
-        ExoskeletonRuntimeState runtime = stack.get(
-                com.github.littleemptydoll.exoequipment.registry.ModDataComponents
-                        .EXOSKELETON_RUNTIME.get()
-        );
-
-        if (runtime == null) {
-            runtime = ExoskeletonRuntimeState.empty();
-        }
+        var stack = context.stack();
+        var data = context.data();
 
         DamageSource source = event.getSource();
 
@@ -73,7 +50,7 @@ public final class DefenseEvents {
                 ShieldOperations.absorbDamage(
                         event.getAmount(),
                         data,
-                        runtime.poweredModules()
+                        context.poweredModules()
                 );
 
         data = shieldResult.data();
@@ -82,7 +59,7 @@ public final class DefenseEvents {
             EmergencyShieldOperations.EmergencyShieldResult emergencyResult =
                     EmergencyShieldOperations.activate(
                             data,
-                            runtime.poweredModules()
+                            context.poweredModules()
                     );
 
             data = emergencyResult.data();
@@ -105,12 +82,11 @@ public final class DefenseEvents {
                 shieldResult.remainingDamage(),
                 data,
                 damageType,
-                runtime.poweredModules()
+                context.poweredModules()
         );
 
         stack.set(
-                com.github.littleemptydoll.exoequipment.registry.ModDataComponents
-                        .EXOSKELETON_DATA.get(),
+                ModDataComponents.EXOSKELETON_DATA.get(),
                 data
         );
 

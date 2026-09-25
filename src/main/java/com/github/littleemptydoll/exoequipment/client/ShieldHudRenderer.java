@@ -1,8 +1,8 @@
 package com.github.littleemptydoll.exoequipment.client;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.module.EmergencyShieldOperations;
 import com.github.littleemptydoll.exoequipment.module.RevivalOperations;
 import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
@@ -16,9 +16,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import top.theillusivec4.curios.api.CuriosApi;
-
-import java.util.Optional;
 
 @EventBusSubscriber(
         modid = ExoEquipment.MODID,
@@ -72,22 +69,14 @@ public final class ShieldHudRenderer {
             return;
         }
 
-        Optional<ItemStack> exoskeletonStack =
-                CuriosApi.getCuriosInventory(minecraft.player)
-                        .flatMap(curios ->
-                                curios.findFirstCurio(
-                                        stack ->
-                                                stack.getItem()
-                                                        instanceof ExoskeletonItem
-                                )
-                        )
-                        .map(result -> result.stack());
+        var context =
+                ExoskeletonAccess.findContext(minecraft.player).orElse(null);
 
-        if (exoskeletonStack.isEmpty()) {
+        if (context == null) {
             return;
         }
 
-        ExoskeletonData data = ExoskeletonItem.getData(exoskeletonStack.get());
+        ExoskeletonData data = context.data();
         ShieldOperations.ShieldStatus status = ShieldOperations.getStatus(data);
 
         if (!status.hasShields()) {

@@ -30,6 +30,9 @@ public record ExoskeletonData(
                             + " matrix slots"
             );
         }
+
+        matrices = List.copyOf(matrices);
+        profiles = List.copyOf(profiles);
     }
 
     public static final Codec<ExoskeletonData> CODEC =

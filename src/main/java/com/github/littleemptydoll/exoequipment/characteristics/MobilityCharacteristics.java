@@ -65,39 +65,27 @@ final class MobilityCharacteristics {
                 }
             }
 
-            definition.blink()
-                    .ifPresent(blink -> {
-                    });
-        }
-
-        for (var activeModule
-                : CharacteristicsSupport
-                .installedModules(context)) {
-
             var blink =
-                    activeModule.definition()
-                            .blink()
+                    definition.blink()
                             .orElse(null);
 
-            if (blink == null) {
-                continue;
+            if (blink != null) {
+                blinkDistance =
+                        Math.max(
+                                blinkDistance,
+                                blink.distance()
+                        );
+                blinkEnergy =
+                        Math.max(
+                                blinkEnergy,
+                                blink.activationEnergy()
+                        );
+                blinkCooldown =
+                        Math.min(
+                                blinkCooldown,
+                                blink.cooldown()
+                        );
             }
-
-            blinkDistance =
-                    Math.max(
-                            blinkDistance,
-                            blink.distance()
-                    );
-            blinkEnergy =
-                    Math.max(
-                            blinkEnergy,
-                            blink.activationEnergy()
-                    );
-            blinkCooldown =
-                    Math.min(
-                            blinkCooldown,
-                            blink.cooldown()
-                    );
         }
 
         if (flight) {

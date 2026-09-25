@@ -228,7 +228,7 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
     }
 
     private void addEquipmentSlots() {
-        addSlot(new ExoskeletonSourceSlot(
+        addSlot(new ReadOnlySlot(
                 new SingleStackContainer(exoskeleton),
                 0,
                 0,
@@ -301,7 +301,7 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
             return ItemStack.EMPTY;
         }
 
-        if (slot instanceof ExoskeletonSourceSlot) {
+        if (slot instanceof ReadOnlySlot) {
             return ItemStack.EMPTY;
         }
 
@@ -422,7 +422,7 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
             ClickType clickType,
             Player player
     ) {
-        if (slotId >= 0 && slots.get(slotId) instanceof ExoskeletonSourceSlot) {
+        if (slotId >= 0 && slots.get(slotId) instanceof ReadOnlySlot) {
             return;
         }
 

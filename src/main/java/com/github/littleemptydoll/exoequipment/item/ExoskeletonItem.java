@@ -26,8 +26,6 @@ import java.util.List;
 
 public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implements ICurioItem {
 
-    private static final int TEMPERATURE_UPDATE_INTERVAL = 1;
-
     public ExoskeletonItem(
             DeferredHolder<
                     ExoskeletonDefinition,
@@ -84,14 +82,13 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
             SlotContext slotContext,
             ItemStack stack
     ) {
-        if (slotContext.entity().level().isClientSide()) {
+        if (!(slotContext.entity() instanceof Player player)
+                || player.level().isClientSide()) {
             return;
         }
 
         NeoForgeEnergyProvider externalEnergy =
-                NeoForgeEnergyProvider.fromEntity(slotContext.entity());
-
-        Player player = (Player) slotContext.entity();
+                NeoForgeEnergyProvider.fromEntity(player);
 
         EnergyTickResult result = EnergyOperations.tick(
                 getData(stack),
@@ -130,38 +127,40 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
                 runtime.poweredModules()
         );
         StatusProtectionOperations.removeFullyProtectedEffects(
-                slotContext.entity(),
+                player,
                 updatedData,
                 runtime.poweredModules()
         );
         boolean cloakingIsActive = CloakingOperations.hasActive(updatedData);
         if (cloakingWasActive != cloakingIsActive
                 || com.github.littleemptydoll.exoequipment.event.CloakingEvents
-                .isCloakingActive((Player) slotContext.entity()) != cloakingIsActive) {
+                .isCloakingActive(player) != cloakingIsActive) {
             if (cloakingIsActive) {
                 com.github.littleemptydoll.exoequipment.event.CloakingEvents
-                        .markActive((Player) slotContext.entity());
+                        .markActive(player);
             } else {
                 com.github.littleemptydoll.exoequipment.event.CloakingEvents
-                        .markInactive((Player) slotContext.entity());
+                        .markInactive(player);
             }
         }
 
         boolean flightIsActive = FlightOperations.hasActive(updatedData);
         if (com.github.littleemptydoll.exoequipment.event.FlightEvents
-                .isActive((Player) slotContext.entity()) != flightIsActive) {
+                .isActive(player) != flightIsActive) {
             if (flightIsActive) {
                 com.github.littleemptydoll.exoequipment.event.FlightEvents
-                        .markActive((Player) slotContext.entity());
+                        .markActive(player);
             } else {
                 com.github.littleemptydoll.exoequipment.event.FlightEvents
-                        .markInactive((Player) slotContext.entity());
+                        .markInactive(player);
             }
         }
 
-        if (slotContext.entity().tickCount % TEMPERATURE_UPDATE_INTERVAL == 0) {
-            updatedData = ExoskeletonTemperatureState.tick(updatedData, result);
-        }
+        updatedData =
+                ExoskeletonTemperatureState.tick(
+                        updatedData,
+                        result
+                );
 
         if (!updatedData.equals(getData(stack))) {
             stack.set(

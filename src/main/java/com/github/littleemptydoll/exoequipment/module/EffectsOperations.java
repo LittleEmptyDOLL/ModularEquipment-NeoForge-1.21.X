@@ -1,9 +1,7 @@
 package com.github.littleemptydoll.exoequipment.module;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
-import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -16,7 +14,8 @@ import java.util.Map;
 import java.util.Set;
 
 public final class EffectsOperations {
-    private static final int EFFECT_DURATION = MobEffectInstance.INFINITE_DURATION;
+    private static final int EFFECT_DURATION =
+            MobEffectInstance.INFINITE_DURATION;
 
     private EffectsOperations() {}
 
@@ -26,35 +25,28 @@ public final class EffectsOperations {
     ) {
         Map<ResourceLocation, Integer> effects = new HashMap<>();
 
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
-            var matrix = data.matrices().get(slot).matrix().orElse(null);
-            if (matrix == null) {
+        for (ExoskeletonModules.ActiveModule activeModule
+                : ExoskeletonModules.activeSupported(data)) {
+
+            if (!ExoskeletonModules.isPowered(
+                    activeModule,
+                    poweredModules
+            )) {
                 continue;
             }
 
-            for (int moduleIndex = 0; moduleIndex < matrix.modules().size(); moduleIndex++) {
-                InstalledModule module = matrix.modules().get(moduleIndex);
-                if (!FrameOperations.isModuleSupported(data, module)) {
-                    continue;
-                }
-
-                InstalledModuleReference reference =
-                        new InstalledModuleReference(slot, moduleIndex);
-                if (!isPowered(module.id(), reference, poweredModules)) {
-                    continue;
-                }
-
-                ModModules.getDefinition(module.id())
-                        .effects()
-                        .ifPresent(properties -> properties.effects().forEach(
-                                (effectId, amplifier) ->
-                                        effects.merge(
-                                                effectId,
-                                                amplifier,
-                                                Math::max
-                                        )
-                        ));
-            }
+            activeModule.definition()
+                    .effects()
+                    .ifPresent(properties ->
+                            properties.effects().forEach(
+                                    (effectId, amplifier) ->
+                                            effects.merge(
+                                                    effectId,
+                                                    amplifier,
+                                                    Math::max
+                                            )
+                            )
+                    );
         }
 
         return Map.copyOf(effects);
@@ -69,7 +61,11 @@ public final class EffectsOperations {
 
         collectEffects(data, poweredModules)
                 .forEach((effectId, amplifier) -> {
-                    if (applyEffect(entity, effectId, amplifier)) {
+                    if (applyEffect(
+                            entity,
+                            effectId,
+                            amplifier
+                    )) {
                         applied.put(effectId, amplifier);
                     }
                 });
@@ -83,12 +79,16 @@ public final class EffectsOperations {
             int amplifier
     ) {
         Holder<MobEffect> effect =
-                BuiltInRegistries.MOB_EFFECT.getHolder(effectId).orElse(null);
+                BuiltInRegistries.MOB_EFFECT
+                        .getHolder(effectId)
+                        .orElse(null);
+
         if (effect == null) {
             return false;
         }
 
         MobEffectInstance existing = entity.getEffect(effect);
+
         if (existing != null) {
             if (existing.getAmplifier() > amplifier) {
                 return false;
@@ -110,17 +110,5 @@ public final class EffectsOperations {
         ));
 
         return true;
-    }
-
-    private static boolean isPowered(
-            ResourceLocation moduleId,
-            InstalledModuleReference reference,
-            Set<InstalledModuleReference> poweredModules
-    ) {
-        var energy = ModModules.getDefinition(moduleId).energy();
-
-        return energy.isEmpty()
-                || energy.get().consumption() <= 0
-                || poweredModules.contains(reference);
     }
 }

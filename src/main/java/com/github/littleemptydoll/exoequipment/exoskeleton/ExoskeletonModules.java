@@ -73,15 +73,27 @@ public final class ExoskeletonModules {
             ActiveModule module,
             Set<InstalledModuleReference> poweredModules
     ) {
+        return isPowered(
+                module.definition(),
+                module.reference(),
+                poweredModules
+        );
+    }
+
+    public static boolean isPowered(
+            ModuleDefinition definition,
+            InstalledModuleReference reference,
+            Set<InstalledModuleReference> poweredModules
+    ) {
         if (poweredModules == null) {
             return true;
         }
 
-        var energy = module.definition().energy();
+        var energy = definition.energy();
 
         return energy.isEmpty()
                 || energy.get().consumption() <= 0
-                || poweredModules.contains(module.reference());
+                || poweredModules.contains(reference);
     }
 
     public static Optional<InstalledModule> get(

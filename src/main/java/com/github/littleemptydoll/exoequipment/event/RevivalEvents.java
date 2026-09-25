@@ -1,21 +1,16 @@
 package com.github.littleemptydoll.exoequipment.event;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
-import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import com.github.littleemptydoll.exoequipment.module.RevivalOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.sounds.SoundEvents;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import top.theillusivec4.curios.api.CuriosApi;
-
-import java.util.Optional;
 
 @EventBusSubscriber(modid = ExoEquipment.MODID)
 public final class RevivalEvents {
@@ -29,36 +24,16 @@ public final class RevivalEvents {
             return;
         }
 
-        Optional<ItemStack> exoskeletonStack =
-                CuriosApi.getCuriosInventory(entity)
-                        .flatMap(curios ->
-                                curios.findFirstCurio(
-                                        stack ->
-                                                stack.getItem()
-                                                        instanceof ExoskeletonItem
-                                )
-                        )
-                        .map(result -> result.stack());
+        var context = ExoskeletonAccess.findContext(entity);
 
-        if (exoskeletonStack.isEmpty()) {
+        if (context.isEmpty()) {
             return;
-        }
-
-        ItemStack stack = exoskeletonStack.get();
-        var data = ExoskeletonItem.getData(stack);
-
-        ExoskeletonRuntimeState runtime = stack.get(
-                ModDataComponents.EXOSKELETON_RUNTIME.get()
-        );
-
-        if (runtime == null) {
-            runtime = ExoskeletonRuntimeState.empty();
         }
 
         RevivalOperations.RevivalResult result =
                 RevivalOperations.tryRevive(
-                        data,
-                        runtime.poweredModules()
+                        context.get().data(),
+                        context.get().poweredModules()
                 );
 
         if (!result.revived()) {
@@ -97,7 +72,7 @@ public final class RevivalEvents {
             );
         }
 
-        stack.set(
+        context.get().stack().set(
                 ModDataComponents.EXOSKELETON_DATA.get(),
                 result.data()
         );

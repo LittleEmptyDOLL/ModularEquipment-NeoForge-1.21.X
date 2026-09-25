@@ -1,20 +1,15 @@
 package com.github.littleemptydoll.exoequipment.compat.lso;
 
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
-import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
-import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import sfiomn.legendarysurvivaloverhaul.api.thirst.ThirstUtil;
 import sfiomn.legendarysurvivaloverhaul.common.attachments.thirst.ThirstAttachment;
 import sfiomn.legendarysurvivaloverhaul.util.AttachmentUtil;
-import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.WeakHashMap;
 
 public final class LsoThirstEvents {
@@ -37,28 +32,11 @@ public final class LsoThirstEvents {
             return;
         }
 
-        Optional<ItemStack> exoskeletonStack =
-                CuriosApi.getCuriosInventory(player)
-                        .flatMap(curios ->
-                                curios.findFirstCurio(
-                                        stack -> stack.getItem() instanceof ExoskeletonItem
-                                )
-                        )
-                        .map(result -> result.stack());
+        var context = ExoskeletonAccess.findContext(player).orElse(null);
 
-        if (exoskeletonStack.isEmpty()) {
+        if (context == null) {
             PREVIOUS_EXHAUSTION.remove(player);
             return;
-        }
-
-        ItemStack stack = exoskeletonStack.get();
-        var data = ExoskeletonItem.getData(stack);
-
-        ExoskeletonRuntimeState runtime =
-                stack.get(ModDataComponents.EXOSKELETON_RUNTIME.get());
-
-        if (runtime == null) {
-            runtime = ExoskeletonRuntimeState.empty();
         }
 
         ThirstAttachment thirst = AttachmentUtil.getThirstAttachment(player);
@@ -74,8 +52,8 @@ public final class LsoThirstEvents {
         float reducedExhaustion = LsoThirstOperations.applyExhaustionReduction(
                 previousExhaustion,
                 currentExhaustion,
-                data,
-                runtime.poweredModules()
+                context.data(),
+                context.poweredModules()
         );
 
         if (reducedExhaustion != currentExhaustion) {

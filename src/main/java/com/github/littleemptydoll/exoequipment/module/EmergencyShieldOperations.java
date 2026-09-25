@@ -1,10 +1,7 @@
 package com.github.littleemptydoll.exoequipment.module;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
-import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
-import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,22 +20,37 @@ public final class EmergencyShieldOperations {
 
         emergencyShields.sort(
                 Comparator
-                        .comparingDouble((EmergencyShieldTarget target) ->
-                                target.properties().restore())
+                        .comparingDouble(
+                                (EmergencyShieldTarget target) ->
+                                        target.properties().restore()
+                        )
                         .reversed()
-                        .thenComparingInt(target ->
-                                target.reference().matrixSlot())
-                        .thenComparingInt(target ->
-                                target.reference().moduleIndex())
+                        .thenComparingInt(
+                                target ->
+                                        target.reference()
+                                                .matrixSlot()
+                        )
+                        .thenComparingInt(
+                                target ->
+                                        target.reference()
+                                                .moduleIndex()
+                        )
         );
 
         EmergencyShieldTarget selected = null;
 
         for (EmergencyShieldTarget target : emergencyShields) {
-            InstalledModule module = getModule(data, target.reference());
+            InstalledModule module =
+                    getRequiredModule(
+                            data,
+                            target.reference()
+                    );
 
             if (module.emergencyShieldCooldown() > 0
-                    || !isPowered(target, poweredModules)) {
+                    || !isPowered(
+                            target,
+                            poweredModules
+                    )) {
                 continue;
             }
 
@@ -47,18 +59,29 @@ public final class EmergencyShieldOperations {
         }
 
         if (selected == null) {
-            return new EmergencyShieldResult(data, false);
+            return new EmergencyShieldResult(
+                    data,
+                    false
+            );
         }
 
-        double restore = selected.properties().restore();
+        double restore =
+                selected.properties().restore();
+
         ExoskeletonData updatedData = data;
 
         for (ShieldTarget target : collectShields(data)) {
-            InstalledModule module = getModule(updatedData, target.reference());
-            double restoredEnergy =
-                    target.properties().capacity() * restore;
+            InstalledModule module =
+                    getRequiredModule(
+                            updatedData,
+                            target.reference()
+                    );
 
-            updatedData = updateModule(
+            double restoredEnergy =
+                    target.properties().capacity()
+                            * restore;
+
+            updatedData = ExoskeletonModules.update(
                     updatedData,
                     target.reference(),
                     module.withShieldEnergy(restoredEnergy)
@@ -66,30 +89,45 @@ public final class EmergencyShieldOperations {
         }
 
         InstalledModule emergencyModule =
-                getModule(updatedData, selected.reference());
+                getRequiredModule(
+                        updatedData,
+                        selected.reference()
+                );
 
-        updatedData = updateModule(
+        updatedData = ExoskeletonModules.update(
                 updatedData,
                 selected.reference(),
-                emergencyModule.withEmergencyShieldCooldown(
-                        selected.properties().cooldown()
-                )
+                emergencyModule
+                        .withEmergencyShieldCooldown(
+                                selected.properties().cooldown()
+                        )
         );
 
-        return new EmergencyShieldResult(updatedData, true);
+        return new EmergencyShieldResult(
+                updatedData,
+                true
+        );
     }
 
-    public static ExoskeletonData tickCooldowns(ExoskeletonData data) {
+    public static ExoskeletonData tickCooldowns(
+            ExoskeletonData data
+    ) {
         ExoskeletonData updatedData = data;
 
-        for (EmergencyShieldTarget target : collectEmergencyShields(data)) {
-            InstalledModule module = getModule(updatedData, target.reference());
+        for (EmergencyShieldTarget target
+                : collectEmergencyShields(data)) {
+
+            InstalledModule module =
+                    getRequiredModule(
+                            updatedData,
+                            target.reference()
+                    );
 
             if (module.emergencyShieldCooldown() <= 0) {
                 continue;
             }
 
-            updatedData = updateModule(
+            updatedData = ExoskeletonModules.update(
                     updatedData,
                     target.reference(),
                     module.withEmergencyShieldCooldown(
@@ -104,8 +142,13 @@ public final class EmergencyShieldOperations {
     public static int readyCount(ExoskeletonData data) {
         int count = 0;
 
-        for (EmergencyShieldTarget target : collectEmergencyShields(data)) {
-            if (getModule(data, target.reference()).emergencyShieldCooldown() <= 0) {
+        for (EmergencyShieldTarget target
+                : collectEmergencyShields(data)) {
+
+            if (getRequiredModule(
+                    data,
+                    target.reference()
+            ).emergencyShieldCooldown() <= 0) {
                 count++;
             }
         }
@@ -113,47 +156,27 @@ public final class EmergencyShieldOperations {
         return count;
     }
 
-    private static List<EmergencyShieldTarget> collectEmergencyShields(
+    private static List<EmergencyShieldTarget>
+    collectEmergencyShields(
             ExoskeletonData data
     ) {
-        List<EmergencyShieldTarget> targets = new ArrayList<>();
+        List<EmergencyShieldTarget> targets =
+                new ArrayList<>();
 
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
-            MatrixData matrix = data.matrices()
-                    .get(slot)
-                    .matrix()
-                    .orElse(null);
+        for (ExoskeletonModules.ActiveModule activeModule
+                : ExoskeletonModules.activeSupported(data)) {
 
-            if (matrix == null) {
-                continue;
-            }
-
-            for (int moduleIndex = 0;
-                 moduleIndex < matrix.modules().size();
-                 moduleIndex++) {
-
-                InstalledModule module = matrix.modules().get(moduleIndex);
-
-                if (!FrameOperations.isModuleSupported(data, module)) {
-                    continue;
-                }
-
-                int finalModuleIndex = moduleIndex;
-                ModModules.getDefinition(module.id())
-                        .emergencyShield()
-                        .ifPresent(properties ->
-                                targets.add(
-                                        new EmergencyShieldTarget(
-                                                new InstalledModuleReference(
-                                                        slot,
-                                                        finalModuleIndex
-                                                ),
-                                                module.id(),
-                                                properties
-                                        )
-                                )
-                        );
-            }
+            activeModule.definition()
+                    .emergencyShield()
+                    .ifPresent(properties ->
+                            targets.add(
+                                    new EmergencyShieldTarget(
+                                            activeModule.reference(),
+                                            activeModule.definition(),
+                                            properties
+                                    )
+                            )
+                    );
         }
 
         return targets;
@@ -162,52 +185,35 @@ public final class EmergencyShieldOperations {
     private static List<ShieldTarget> collectShields(
             ExoskeletonData data
     ) {
-        List<ShieldTarget> targets = new ArrayList<>();
+        List<ShieldTarget> targets =
+                new ArrayList<>();
 
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
-            MatrixData matrix = data.matrices()
-                    .get(slot)
-                    .matrix()
-                    .orElse(null);
+        for (ExoskeletonModules.ActiveModule activeModule
+                : ExoskeletonModules.activeSupported(data)) {
 
-            if (matrix == null) {
-                continue;
-            }
-
-            for (int moduleIndex = 0;
-                 moduleIndex < matrix.modules().size();
-                 moduleIndex++) {
-
-                InstalledModule module = matrix.modules().get(moduleIndex);
-
-                if (!FrameOperations.isModuleSupported(data, module)) {
-                    continue;
-                }
-
-                int finalModuleIndex = moduleIndex;
-                ModModules.getDefinition(module.id())
-                        .shield()
-                        .ifPresent(properties ->
-                                targets.add(
-                                        new ShieldTarget(
-                                                new InstalledModuleReference(
-                                                        slot,
-                                                        finalModuleIndex
-                                                ),
-                                                module.id(),
-                                                properties
-                                        )
-                                )
-                        );
-            }
+            activeModule.definition()
+                    .shield()
+                    .ifPresent(properties ->
+                            targets.add(
+                                    new ShieldTarget(
+                                            activeModule.reference(),
+                                            properties
+                                    )
+                            )
+                    );
         }
 
         targets.sort(
-                Comparator
-                        .comparingInt((ShieldTarget target) ->
-                                target.reference().matrixSlot())
-                        .thenComparingInt(target ->
-                                target.reference().moduleIndex())
+                Comparator.comparingInt(
+                                (ShieldTarget target) ->
+                                        target.reference()
+                                                .matrixSlot()
+                        )
+                        .thenComparingInt(
+                                target ->
+                                        target.reference()
+                                                .moduleIndex()
+                        )
         );
 
         return targets;
@@ -217,56 +223,24 @@ public final class EmergencyShieldOperations {
             EmergencyShieldTarget target,
             Set<InstalledModuleReference> poweredModules
     ) {
-        var energy = ModModules.getDefinition(target.moduleId()).energy();
-
-        return energy.isEmpty()
-                || energy.get().consumption() <= 0
-                || poweredModules.contains(target.reference());
+        return ExoskeletonModules.isPowered(
+                target.definition(),
+                target.reference(),
+                poweredModules
+        );
     }
 
-    private static InstalledModule getModule(
+    private static InstalledModule getRequiredModule(
             ExoskeletonData data,
             InstalledModuleReference reference
     ) {
-        MatrixData matrix = data.matrices()
-                .get(reference.matrixSlot())
-                .matrix()
+        return ExoskeletonModules.get(data, reference)
                 .orElseThrow(() ->
                         new IllegalStateException(
-                                "Matrix is missing for " + reference
+                                "Module is missing for "
+                                        + reference
                         )
                 );
-
-        if (reference.moduleIndex() >= matrix.modules().size()) {
-            throw new IllegalStateException(
-                    "Module is missing for " + reference
-            );
-        }
-
-        return matrix.modules().get(reference.moduleIndex());
-    }
-
-    private static ExoskeletonData updateModule(
-            ExoskeletonData data,
-            InstalledModuleReference reference,
-            InstalledModule module
-    ) {
-        MatrixData matrix = data.matrices()
-                .get(reference.matrixSlot())
-                .matrix()
-                .orElseThrow(() ->
-                        new IllegalStateException(
-                                "Matrix is missing for " + reference
-                        )
-                );
-
-        List<InstalledModule> modules = new ArrayList<>(matrix.modules());
-        modules.set(reference.moduleIndex(), module);
-
-        return data.withMatrix(
-                reference.matrixSlot(),
-                new MatrixData(matrix.id(), modules)
-        );
     }
 
     public record EmergencyShieldResult(
@@ -276,13 +250,12 @@ public final class EmergencyShieldOperations {
 
     private record EmergencyShieldTarget(
             InstalledModuleReference reference,
-            net.minecraft.resources.ResourceLocation moduleId,
+            ModuleDefinition definition,
             EmergencyShieldProperties properties
     ) {}
 
     private record ShieldTarget(
             InstalledModuleReference reference,
-            net.minecraft.resources.ResourceLocation moduleId,
             ShieldProperties properties
     ) {}
 }

@@ -17,7 +17,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,28 +29,30 @@ public final class SensorServerEvents {
     private static final int INTERVAL = 5;
     private static final byte GLOW_BIT = 1 << 6;
 
-    private static final Map<UUID, Set<Integer>> HIGHLIGHTED =
+    private static final Map<UUID, SensorState> STATES =
             new HashMap<>();
 
     private SensorServerEvents() {}
 
     @SubscribeEvent
-    public static void onPlayerTick(PlayerTickEvent.Post event) {
+    public static void onPlayerTick(
+            PlayerTickEvent.Post event
+    ) {
         if (!(event.getEntity() instanceof ServerPlayer player)
                 || player.tickCount % INTERVAL != 0) {
             return;
         }
 
-        Set<Integer> previous =
-                HIGHLIGHTED.getOrDefault(
+        SensorState previous =
+                STATES.getOrDefault(
                         player.getUUID(),
-                        Set.of()
+                        SensorState.empty()
                 );
 
         Set<Integer> current = new HashSet<>();
-        List<Integer> hostile = new ArrayList<>();
-        List<Integer> mobs = new ArrayList<>();
-        List<Integer> players = new ArrayList<>();
+        Set<Integer> hostile = new HashSet<>();
+        Set<Integer> mobs = new HashSet<>();
+        Set<Integer> players = new HashSet<>();
 
         ExoskeletonAccess.findContext(player)
                 .ifPresent(context ->
@@ -61,25 +62,29 @@ public final class SensorServerEvents {
                                 context.poweredModules()
                         ).forEach(detected -> {
                             Entity entity = detected.entity();
+                            int entityId = entity.getId();
 
-                            current.add(entity.getId());
-                            sendGlow(
-                                    player,
-                                    entity,
-                                    true
-                            );
+                            current.add(entityId);
+
+                            if (!previous.contains(entityId)) {
+                                sendGlow(
+                                        player,
+                                        entity,
+                                        true
+                                );
+                            }
 
                             if (entity instanceof Player) {
-                                players.add(entity.getId());
+                                players.add(entityId);
                             } else if (entity instanceof Enemy) {
-                                hostile.add(entity.getId());
+                                hostile.add(entityId);
                             } else if (entity instanceof Mob) {
-                                mobs.add(entity.getId());
+                                mobs.add(entityId);
                             }
                         })
                 );
 
-        for (int entityId : previous) {
+        for (int entityId : previous.all()) {
             if (current.contains(entityId)) {
                 continue;
             }
@@ -96,21 +101,26 @@ public final class SensorServerEvents {
             }
         }
 
-        PacketDistributor.sendToPlayer(
-                player,
-                new SensorHighlightPayload(
+        SensorState currentState =
+                new SensorState(
                         hostile,
                         mobs,
                         players
-                )
-        );
+                );
 
-        if (current.isEmpty()) {
-            HIGHLIGHTED.remove(player.getUUID());
+        if (!currentState.equals(previous)) {
+            PacketDistributor.sendToPlayer(
+                    player,
+                    currentState.payload()
+            );
+        }
+
+        if (currentState.isEmpty()) {
+            STATES.remove(player.getUUID());
         } else {
-            HIGHLIGHTED.put(
+            STATES.put(
                     player.getUUID(),
-                    current
+                    currentState
             );
         }
     }
@@ -128,11 +138,12 @@ public final class SensorServerEvents {
             flags &= ~GLOW_BIT;
         }
 
-        var data = new SynchedEntityData.DataValue<>(
-                0,
-                EntityDataSerializers.BYTE,
-                flags
-        );
+        var data =
+                new SynchedEntityData.DataValue<>(
+                        0,
+                        EntityDataSerializers.BYTE,
+                        flags
+                );
 
         player.connection.send(
                 new ClientboundSetEntityDataPacket(
@@ -142,9 +153,12 @@ public final class SensorServerEvents {
         );
     }
 
-    private static byte getSharedFlags(Entity entity) {
+    private static byte getSharedFlags(
+            Entity entity
+    ) {
         List<SynchedEntityData.DataValue<?>> values =
-                entity.getEntityData().getNonDefaultValues();
+                entity.getEntityData()
+                        .getNonDefaultValues();
 
         if (values != null) {
             for (var value : values) {
@@ -155,5 +169,57 @@ public final class SensorServerEvents {
         }
 
         return 0;
+    }
+
+    private record SensorState(
+            Set<Integer> hostile,
+            Set<Integer> mobs,
+            Set<Integer> players
+    ) {
+        private SensorState {
+            hostile = Set.copyOf(hostile);
+            mobs = Set.copyOf(mobs);
+            players = Set.copyOf(players);
+        }
+
+        private static SensorState empty() {
+            return new SensorState(
+                    Set.of(),
+                    Set.of(),
+                    Set.of()
+            );
+        }
+
+        private boolean contains(int entityId) {
+            return hostile.contains(entityId)
+                    || mobs.contains(entityId)
+                    || players.contains(entityId);
+        }
+
+        private Set<Integer> all() {
+            if (isEmpty()) {
+                return Set.of();
+            }
+
+            Set<Integer> result = new HashSet<>();
+            result.addAll(hostile);
+            result.addAll(mobs);
+            result.addAll(players);
+            return result;
+        }
+
+        private boolean isEmpty() {
+            return hostile.isEmpty()
+                    && mobs.isEmpty()
+                    && players.isEmpty();
+        }
+
+        private SensorHighlightPayload payload() {
+            return new SensorHighlightPayload(
+                    List.copyOf(hostile),
+                    List.copyOf(mobs),
+                    List.copyOf(players)
+            );
+        }
     }
 }

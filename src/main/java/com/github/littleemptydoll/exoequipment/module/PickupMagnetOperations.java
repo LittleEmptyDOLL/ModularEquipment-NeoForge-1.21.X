@@ -1,11 +1,8 @@
 package com.github.littleemptydoll.exoequipment.module;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
-import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
-import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
-import net.minecraft.resources.ResourceLocation;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
+import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
@@ -26,40 +23,37 @@ public final class PickupMagnetOperations {
         boolean items = false;
         boolean experience = false;
 
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
-            MatrixData matrix = data.matrices().get(slot).matrix().orElse(null);
-            if (matrix == null) {
+        for (ExoskeletonModules.ActiveModule activeModule
+                : ExoskeletonModules.activeSupported(data)) {
+
+            if (!ExoskeletonModules.isPowered(
+                    activeModule,
+                    poweredModules
+            )) {
                 continue;
             }
 
-            for (int moduleIndex = 0; moduleIndex < matrix.modules().size(); moduleIndex++) {
-                InstalledModule module = matrix.modules().get(moduleIndex);
+            PickupMagnetProperties properties =
+                    activeModule.definition()
+                            .pickupMagnet()
+                            .orElse(null);
 
-                if (!FrameOperations.isModuleSupported(data, module)) {
-                    continue;
-                }
-
-                InstalledModuleReference reference =
-                        new InstalledModuleReference(slot, moduleIndex);
-
-                if (!isPowered(module.id(), reference, poweredModules)) {
-                    continue;
-                }
-
-                PickupMagnetProperties properties =
-                        ModModules.getDefinition(module.id())
-                                .pickupMagnet()
-                                .orElse(null);
-
-                if (properties == null) {
-                    continue;
-                }
-
-                double efficiency = com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(ModModules.getDefinition(module.id()), data.temperature());
-                radius = Math.max(radius, properties.radius() * efficiency);
-                items |= properties.mode().acceptsItems();
-                experience |= properties.mode().acceptsExperience();
+            if (properties == null) {
+                continue;
             }
+
+            double efficiency =
+                    TemperatureOperations.calculateModuleEfficiency(
+                            activeModule.definition(),
+                            data.temperature()
+                    );
+
+            radius = Math.max(
+                    radius,
+                    properties.radius() * efficiency
+            );
+            items |= properties.mode().acceptsItems();
+            experience |= properties.mode().acceptsExperience();
         }
 
         if (radius <= 0.0D || (!items && !experience)) {
@@ -73,15 +67,22 @@ public final class PickupMagnetOperations {
                                 ? PickupMagnetProperties.Mode.ITEMS
                                 : PickupMagnetProperties.Mode.EXPERIENCE;
 
-        return Optional.of(new PickupMagnetProperties(radius, mode));
+        return Optional.of(
+                new PickupMagnetProperties(radius, mode)
+        );
     }
 
-    public static void pull(Entity target, Player player, double radius) {
+    public static void pull(
+            Entity target,
+            Player player,
+            double radius
+    ) {
         var offset = player.position()
                 .add(0.0D, player.getBbHeight() * 0.5D, 0.0D)
                 .subtract(target.position());
 
         double distance = offset.length();
+
         if (distance <= 0.001D || distance > radius) {
             return;
         }
@@ -97,21 +98,9 @@ public final class PickupMagnetOperations {
         var desiredVelocity = direction.scale(acceleration);
 
         target.setDeltaMovement(
-                target.getDeltaMovement().lerp(desiredVelocity, 0.35D)
+                target.getDeltaMovement()
+                        .lerp(desiredVelocity, 0.35D)
         );
         target.hurtMarked = true;
-    }
-
-    private static boolean isPowered(
-            ResourceLocation moduleId,
-            InstalledModuleReference reference,
-            Set<InstalledModuleReference> poweredModules
-    ) {
-        EnergyProperties energy =
-                ModModules.getDefinition(moduleId).energy().orElse(null);
-
-        return energy == null
-                || energy.consumption() <= 0
-                || poweredModules.contains(reference);
     }
 }

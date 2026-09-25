@@ -1,10 +1,8 @@
 package com.github.littleemptydoll.exoequipment.module;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
-import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
-import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
+import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -27,58 +25,46 @@ public final class StatusProtectionOperations {
     ) {
         double remaining = 1.0D;
 
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
-            MatrixData matrix = data.matrices()
-                    .get(slot)
-                    .matrix()
-                    .orElse(null);
+        for (ExoskeletonModules.ActiveModule activeModule
+                : ExoskeletonModules.activeSupported(data)) {
 
-            if (matrix == null) {
+            if (!ExoskeletonModules.isPowered(
+                    activeModule,
+                    poweredModules
+            )) {
                 continue;
             }
 
-            for (int moduleIndex = 0;
-                 moduleIndex < matrix.modules().size();
-                 moduleIndex++) {
+            StatusProtectionProperties properties =
+                    activeModule.definition()
+                            .statusProtection()
+                            .orElse(null);
 
-                InstalledModule module = matrix.modules().get(moduleIndex);
+            if (properties == null) {
+                continue;
+            }
 
-                if (!FrameOperations.isModuleSupported(data, module)) {
-                    continue;
-                }
+            double efficiency =
+                    TemperatureOperations.calculateModuleEfficiency(
+                            activeModule.definition(),
+                            data.temperature()
+                    );
 
-                var definition = ModModules.getDefinition(module.id());
+            double protection =
+                    properties.protection(effectId) * efficiency;
 
-                if (poweredModules != null
-                        && definition.energy()
-                        .filter(energy -> energy.consumption() > 0)
-                        .isPresent()
-                        && !poweredModules.contains(
-                                new InstalledModuleReference(slot, moduleIndex)
-                        )) {
-                    continue;
-                }
+            remaining *= 1.0D - protection;
 
-                StatusProtectionProperties properties =
-                        definition.statusProtection().orElse(null);
-
-                if (properties == null) {
-                    continue;
-                }
-
-                double protection = properties.protection(effectId)
-                        * com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(definition, data.temperature());
-                remaining *= 1.0D - protection;
-
-                if (remaining <= 0.0D) {
-                    return 1.0D;
-                }
+            if (remaining <= 0.0D) {
+                return 1.0D;
             }
         }
 
-        return Math.max(0.0D, Math.min(1.0D, 1.0D - remaining));
+        return Math.max(
+                0.0D,
+                Math.min(1.0D, 1.0D - remaining)
+        );
     }
-
 
     public static void removeFullyProtectedEffects(
             LivingEntity entity,
@@ -126,7 +112,9 @@ public final class StatusProtectionOperations {
 
         return Math.max(
                 0,
-                (int) Math.floor(duration * (1.0D - protection))
+                (int) Math.floor(
+                        duration * (1.0D - protection)
+                )
         );
     }
 }

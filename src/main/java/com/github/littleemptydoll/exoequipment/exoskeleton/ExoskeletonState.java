@@ -1,9 +1,9 @@
 package com.github.littleemptydoll.exoequipment.exoskeleton;
 
+import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixState;
-import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 
 import java.util.ArrayList;
@@ -17,7 +17,9 @@ public final class ExoskeletonState {
                 && data.activeProfile() < data.profiles().size();
     }
 
-    public static ExoskeletonProfile activeProfile(ExoskeletonData data) {
+    public static ExoskeletonProfile activeProfile(
+            ExoskeletonData data
+    ) {
         if (!hasActiveProfile(data)) {
             throw new IllegalStateException(
                     "Exoskeleton does not have an active profile"
@@ -27,15 +29,21 @@ public final class ExoskeletonState {
         return data.profiles().get(data.activeProfile());
     }
 
-    public static List<Integer> activeMatrixSlots(ExoskeletonData data) {
+    public static List<Integer> activeMatrixSlots(
+            ExoskeletonData data
+    ) {
         if (!hasActiveProfile(data)) {
             return List.of();
         }
 
-        return List.copyOf(activeProfile(data).activeMatrices());
+        return List.copyOf(
+                activeProfile(data).activeMatrices()
+        );
     }
 
-    public static boolean canActivate(ExoskeletonData data) {
+    public static boolean canActivate(
+            ExoskeletonData data
+    ) {
         if (!hasActiveProfile(data)) {
             return false;
         }
@@ -46,7 +54,9 @@ public final class ExoskeletonState {
         );
     }
 
-    public static List<MatrixData> activeMatrices(ExoskeletonData data) {
+    public static List<MatrixData> activeMatrices(
+            ExoskeletonData data
+    ) {
         if (!canActivate(data)) {
             return List.of();
         }
@@ -63,11 +73,16 @@ public final class ExoskeletonState {
         return List.copyOf(result);
     }
 
-    public static int activeMatrixCount(ExoskeletonData data) {
+    public static int activeMatrixCount(
+            ExoskeletonData data
+    ) {
         return activeMatrices(data).size();
     }
 
-    public static boolean isMatrixActive(ExoskeletonData data, int slot) {
+    public static boolean isMatrixActive(
+            ExoskeletonData data,
+            int slot
+    ) {
         if (!canActivate(data)) {
             return false;
         }
@@ -79,7 +94,9 @@ public final class ExoskeletonState {
                 .isPresent();
     }
 
-    public static MatrixState calculateState(ExoskeletonData data) {
+    public static MatrixState calculateState(
+            ExoskeletonData data
+    ) {
         int energyConsumption = 0;
         int energyGeneration = 0;
         int energyStorageCapacity = 0;
@@ -89,18 +106,29 @@ public final class ExoskeletonState {
         int cooling = 0;
 
         for (MatrixData matrix : activeMatrices(data)) {
-            MatrixState state = MatrixOperations.calculateState(
-                    matrix,
-                    module -> FrameOperations.isModuleSupported(data, module),
-                    data.temperature()
-            );
+            MatrixState state =
+                    MatrixOperations.calculateState(
+                            matrix,
+                            module ->
+                                    FrameOperations.isModuleSupported(
+                                            data,
+                                            module
+                                    ),
+                            data.temperature()
+                    );
 
-            energyConsumption += state.energyConsumption();
-            energyGeneration += state.energyGeneration();
-            energyStorageCapacity += state.energyStorageCapacity();
-            energyStorageInput += state.energyStorageInput();
-            energyStorageOutput += state.energyStorageOutput();
-            heatGeneration += state.heatGeneration();
+            energyConsumption +=
+                    state.energyConsumption();
+            energyGeneration +=
+                    state.energyGeneration();
+            energyStorageCapacity +=
+                    state.energyStorageCapacity();
+            energyStorageInput +=
+                    state.energyStorageInput();
+            energyStorageOutput +=
+                    state.energyStorageOutput();
+            heatGeneration +=
+                    state.heatGeneration();
             cooling += state.cooling();
         }
 
@@ -115,15 +143,24 @@ public final class ExoskeletonState {
         );
     }
 
-    public static double calculateThermalBalance(ExoskeletonData data) {
-        return calculateThermalBalance(data, data.temperature());
+    public static double calculateThermalBalance(
+            ExoskeletonData data
+    ) {
+        return calculateThermalBalance(
+                data,
+                data.temperature()
+        );
     }
 
     public static double calculateThermalBalance(
             ExoskeletonData data,
             double temperature
     ) {
-        return calculateThermalBalance(data, temperature, null);
+        return calculateThermalBalance(
+                data,
+                temperature,
+                null
+        );
     }
 
     public static double calculateThermalBalance(
@@ -134,95 +171,126 @@ public final class ExoskeletonState {
         double heatGeneration = 0.0D;
         double cooling = 0.0D;
 
-        for (int slot : activeMatrixSlots(data)) {
-            MatrixData matrix = data.matrices().get(slot).matrix().orElse(null);
-            if (matrix == null) {
+        for (ExoskeletonModules.ActiveModule activeModule
+                : ExoskeletonModules.activeSupported(data)) {
+
+            if (!ExoskeletonModules.isPowered(
+                    activeModule,
+                    poweredModules
+            )) {
                 continue;
             }
 
-            for (int moduleIndex = 0; moduleIndex < matrix.modules().size(); moduleIndex++) {
-                var module = matrix.modules().get(moduleIndex);
+            MatrixData matrix = data.matrices()
+                    .get(
+                            activeModule.reference()
+                                    .matrixSlot()
+                    )
+                    .matrix()
+                    .orElseThrow();
 
-                if (!FrameOperations.isModuleSupported(data, module)) {
-                    continue;
-                }
+            MatrixData singleModule =
+                    new MatrixData(
+                            matrix.id(),
+                            List.of(activeModule.module())
+                    );
 
-                var energy = com.github.littleemptydoll.exoequipment.registry.ModModules
-                        .getDefinition(module.id())
-                        .energy();
+            heatGeneration +=
+                    MatrixOperations.calculateHeatGeneration(
+                            singleModule,
+                            ignored -> true,
+                            temperature
+                    );
 
-                boolean powered = energy.isEmpty()
-                        || energy.get().consumption() <= 0
-                        || poweredModules == null
-                        || poweredModules.contains(
-                        new InstalledModuleReference(slot, moduleIndex)
-                );
-
-                if (!powered) {
-                    continue;
-                }
-
-                MatrixData singleModule = new MatrixData(
-                        matrix.id(),
-                        List.of(module)
-                );
-
-                heatGeneration += MatrixOperations.calculateHeatGeneration(
-                        singleModule,
-                        ignored -> true,
-                        temperature
-                );
-
-                cooling += MatrixOperations.calculateCooling(
-                        singleModule,
-                        ignored -> true,
-                        temperature
-                );
-            }
+            cooling +=
+                    MatrixOperations.calculateCooling(
+                            singleModule,
+                            ignored -> true,
+                            temperature
+                    );
         }
 
         return heatGeneration - cooling;
     }
 
-    public static ExoskeletonData normalizeStoredEnergy(ExoskeletonData data) {
+    public static ExoskeletonData normalizeStoredEnergy(
+            ExoskeletonData data
+    ) {
         ExoskeletonData updated = data;
 
-        for (int slot = 0; slot < data.matrices().size(); slot++) {
-            MatrixData matrix = updated.matrices().get(slot).matrix().orElse(null);
+        for (int slot = 0;
+             slot < data.matrices().size();
+             slot++) {
+
+            MatrixData matrix =
+                    updated.matrices()
+                            .get(slot)
+                            .matrix()
+                            .orElse(null);
+
             if (matrix == null) {
                 continue;
             }
 
-            List<com.github.littleemptydoll.exoequipment.module.InstalledModule> modules =
+            List<com.github.littleemptydoll.exoequipment.module.InstalledModule>
+                    modules =
                     new ArrayList<>(matrix.modules());
+
             boolean changed = false;
 
-            for (int i = 0; i < modules.size(); i++) {
+            for (int i = 0;
+                 i < modules.size();
+                 i++) {
+
                 var module = modules.get(i);
-                var storage = com.github.littleemptydoll.exoequipment.registry.ModModules
-                        .getDefinition(module.id())
-                        .storage()
-                        .orElse(null);
+
+                var storage =
+                        com.github.littleemptydoll.exoequipment.registry.ModModules
+                                .getDefinition(module.id())
+                                .storage()
+                                .orElse(null);
 
                 if (storage == null) {
                     continue;
                 }
 
-                int effectiveCapacity = MatrixOperations.calculateEnergyStorageCapacity(
-                        new MatrixData(matrix.id(), List.of(module)),
-                        ignored -> true,
-                        data.temperature()
-                );
-                int clamped = Math.max(0, Math.min(module.storedEnergy(), effectiveCapacity));
+                int effectiveCapacity =
+                        MatrixOperations
+                                .calculateEnergyStorageCapacity(
+                                        new MatrixData(
+                                                matrix.id(),
+                                                List.of(module)
+                                        ),
+                                        ignored -> true,
+                                        data.temperature()
+                                );
+
+                int clamped =
+                        Math.max(
+                                0,
+                                Math.min(
+                                        module.storedEnergy(),
+                                        effectiveCapacity
+                                )
+                        );
 
                 if (clamped != module.storedEnergy()) {
-                    modules.set(i, module.withStoredEnergy(clamped));
+                    modules.set(
+                            i,
+                            module.withStoredEnergy(clamped)
+                    );
                     changed = true;
                 }
             }
 
             if (changed) {
-                updated = updated.withMatrix(slot, new MatrixData(matrix.id(), modules));
+                updated = updated.withMatrix(
+                        slot,
+                        new MatrixData(
+                                matrix.id(),
+                                modules
+                        )
+                );
             }
         }
 

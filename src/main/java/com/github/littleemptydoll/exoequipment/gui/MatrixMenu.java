@@ -28,8 +28,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 public class MatrixMenu extends AbstractContainerMenu {
 
-    public static final int SOURCE_HAND = 0;
-    public static final int SOURCE_EXOSKELETON = 1;
     public static final int PLAYER_INVENTORY_START = 0;
     public static final int PLAYER_INVENTORY_END = 36;
     public static final int CELL_SIZE = 18;
@@ -42,7 +40,7 @@ public class MatrixMenu extends AbstractContainerMenu {
 
     private ItemStack matrixStack;
     private final ItemStack sourceExoskeleton;
-    private final int sourceType;
+    private final Source sourceType;
     private final int sourceIndex;
     private final int width;
     private final int height;
@@ -53,25 +51,60 @@ public class MatrixMenu extends AbstractContainerMenu {
     private int syncedTemperature = 2000;
     private final Inventory playerInventory;
 
-    public MatrixMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buffer) {
-        this(containerId, playerInventory, ItemStack.STREAM_CODEC.decode(buffer),
-                buffer.readByte(), buffer.readByte(), null);
+    public MatrixMenu(
+            int containerId,
+            Inventory playerInventory,
+            RegistryFriendlyByteBuf buffer
+    ) {
+        this(
+                containerId,
+                playerInventory,
+                ItemStack.STREAM_CODEC.decode(buffer),
+                Source.fromId(buffer.readByte()),
+                buffer.readByte(),
+                null
+        );
     }
 
-    public MatrixMenu(int containerId, Inventory playerInventory, ItemStack matrixStack,
-                      int sourceType, int sourceIndex) {
-        this(containerId, playerInventory, matrixStack, sourceType, sourceIndex, null);
+    public MatrixMenu(
+            int containerId,
+            Inventory playerInventory,
+            ItemStack matrixStack,
+            Source sourceType,
+            int sourceIndex
+    ) {
+        this(
+                containerId,
+                playerInventory,
+                matrixStack,
+                sourceType,
+                sourceIndex,
+                null
+        );
     }
 
-    public MatrixMenu(int containerId, Inventory playerInventory, ItemStack matrixStack,
-                      int sourceType, int sourceIndex, ItemStack sourceExoskeleton) {
+    public MatrixMenu(
+            int containerId,
+            Inventory playerInventory,
+            ItemStack matrixStack,
+            Source sourceType,
+            int sourceIndex,
+            ItemStack sourceExoskeleton
+    ) {
         super(ModMenus.MATRIX.get(), containerId);
+
         if (!(matrixStack.getItem() instanceof MatrixItem matrixItem)) {
-            throw new IllegalArgumentException("Source stack does not contain a matrix");
+            throw new IllegalArgumentException(
+                    "Source stack does not contain a matrix"
+            );
         }
-        if (sourceType != SOURCE_HAND && sourceType != SOURCE_EXOSKELETON) {
-            throw new IllegalArgumentException("Unknown matrix source type: " + sourceType);
+
+        if (sourceType == null) {
+            throw new IllegalArgumentException(
+                    "Unknown matrix source type"
+            );
         }
+
         this.matrixStack = matrixStack;
         this.sourceExoskeleton = sourceExoskeleton;
         this.sourceType = sourceType;
@@ -140,7 +173,7 @@ public class MatrixMenu extends AbstractContainerMenu {
         if (getPlayer().level().isClientSide) return syncedModuleEnergy[y * width + x];
 
         MatrixData data;
-        if (sourceType == SOURCE_HAND) {
+        if (sourceType == Source.HAND) {
             if (sourceIndex < 0 || sourceIndex >= getPlayer().getInventory().getContainerSize()) return 0;
             ItemStack stack = getPlayer().getInventory().getItem(sourceIndex);
             data = stack.get(ModDataComponents.MATRIX_DATA.get());
@@ -176,7 +209,7 @@ public class MatrixMenu extends AbstractContainerMenu {
     }
 
     private int getServerTemperature() {
-        if (sourceType != SOURCE_EXOSKELETON) return 2000;
+        if (sourceType != Source.EXOSKELETON) return 2000;
 
         ItemStack exoskeleton = ExoskeletonMenuProvider.findBodyExoskeleton(getPlayer()).orElse(null);
         if (exoskeleton == null) return 2000;
@@ -186,7 +219,7 @@ public class MatrixMenu extends AbstractContainerMenu {
     }
 
     public double getTemperature() {
-        return sourceType == SOURCE_EXOSKELETON
+        return sourceType == Source.EXOSKELETON
                 ? syncedTemperature / 10.0D
                 : Double.NaN;
     }
@@ -213,7 +246,7 @@ public class MatrixMenu extends AbstractContainerMenu {
     }
 
     private Slot createInventorySlot(Inventory inventory, int inventorySlot, int x, int y) {
-        if (sourceType == SOURCE_HAND && inventorySlot == sourceIndex) {
+        if (sourceType == Source.HAND && inventorySlot == sourceIndex) {
             return new ReadOnlySlot(inventory, inventorySlot, x, y);
         }
         return new Slot(inventory, inventorySlot, x, y);
@@ -266,7 +299,7 @@ public class MatrixMenu extends AbstractContainerMenu {
         super.broadcastChanges();
 
         if (!playerInventory.player.level().isClientSide()
-                && sourceType == SOURCE_EXOSKELETON
+                && sourceType == Source.EXOSKELETON
                 && playerInventory.player.tickCount % 5 == 0) {
             PacketDistributor.sendToPlayer(
                     (ServerPlayer) playerInventory.player,
@@ -275,19 +308,19 @@ public class MatrixMenu extends AbstractContainerMenu {
         }
     }
 
-    public int getSourceType() { return sourceType; }
+    public Source getSourceType() { return sourceType; }
     public int getSourceIndex() { return sourceIndex; }
 
     @Override
     public boolean stillValid(Player player) {
         if (!player.isAlive()) return false;
-        if (sourceType == SOURCE_HAND) {
+        if (sourceType == Source.HAND) {
             if (sourceIndex < 0 || sourceIndex >= player.getInventory().getContainerSize()) return false;
             ItemStack stack = player.getInventory().getItem(sourceIndex);
             return stack.getItem() instanceof MatrixItem
                     && MatrixItem.get(stack).getDefinition().id().equals(getMatrixData().id());
         }
-        if (sourceType == SOURCE_EXOSKELETON) {
+        if (sourceType == Source.EXOSKELETON) {
             return ExoskeletonMenuProvider.findBodyExoskeleton(player).map(exoskeleton -> {
                 ExoskeletonData data = ExoskeletonItem.getData(exoskeleton);
                 if (sourceIndex < 0 || sourceIndex >= ExoskeletonData.MAX_MATRICES) return false;
@@ -588,7 +621,7 @@ public class MatrixMenu extends AbstractContainerMenu {
     }
 
     private ItemStack getServerMatrixStack(ServerPlayer player) {
-        if (sourceType == SOURCE_HAND) {
+        if (sourceType == Source.HAND) {
             if (sourceIndex < 0 || sourceIndex >= player.getInventory().getContainerSize())
                 throw new IllegalStateException("Invalid matrix inventory slot");
             ItemStack stack = player.getInventory().getItem(sourceIndex);
@@ -615,7 +648,7 @@ public class MatrixMenu extends AbstractContainerMenu {
     }
 
     private void applyMatrixData(ServerPlayer player, MatrixData data) {
-        if (sourceType == SOURCE_HAND) {
+        if (sourceType == Source.HAND) {
             ItemStack stack = getServerMatrixStack(player);
             stack.set(ModDataComponents.MATRIX_DATA.get(), data);
             this.matrixStack = stack;
@@ -639,4 +672,28 @@ public class MatrixMenu extends AbstractContainerMenu {
         slot.setChanged();
         return original;
     }
+
+    public enum Source {
+        HAND(0),
+        EXOSKELETON(1);
+
+        private final int id;
+
+        Source(int id) {
+            this.id = id;
+        }
+
+        public int id() {
+            return id;
+        }
+
+        public static Source fromId(int id) {
+            return switch (id) {
+                case 0 -> HAND;
+                case 1 -> EXOSKELETON;
+                default -> null;
+            };
+        }
+    }
+
 }

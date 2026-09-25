@@ -7,7 +7,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 
-// The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(ExoEquipment.MODID)
 public class ExoEquipment {
     public static final String MODID = "exoequipment";
@@ -22,6 +21,8 @@ public class ExoEquipment {
         ModMenus.register(eventBus);
         ModNetworking.register(eventBus);
         ModSounds.register(eventBus);
+        ModCreativeTabs.register(eventBus);
+
         if (ModList.get().isLoaded("legendarysurvivaloverhaul")) {
             LsoIntegration.register(eventBus);
         }

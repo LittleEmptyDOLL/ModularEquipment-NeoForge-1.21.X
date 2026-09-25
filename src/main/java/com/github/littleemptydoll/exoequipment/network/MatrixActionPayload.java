@@ -16,6 +16,28 @@ public record MatrixActionPayload(
         int rotation
 ) implements CustomPacketPayload {
 
+    public MatrixActionPayload(
+            Action action,
+            int x,
+            int y,
+            int targetX,
+            int targetY,
+            int rotation
+    ) {
+        this(
+                action.id(),
+                x,
+                y,
+                targetX,
+                targetY,
+                rotation
+        );
+    }
+
+    public Action actionType() {
+        return Action.fromId(action);
+    }
+
     public static final Type<MatrixActionPayload> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(
                     ExoEquipment.MODID,
@@ -42,5 +64,32 @@ public record MatrixActionPayload(
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
+    }
+
+    public enum Action {
+        PLACE(0),
+        REMOVE(1),
+        ROTATE(2),
+        MOVE(3);
+
+        private final int id;
+
+        Action(int id) {
+            this.id = id;
+        }
+
+        public int id() {
+            return id;
+        }
+
+        public static Action fromId(int id) {
+            return switch (id) {
+                case 0 -> PLACE;
+                case 1 -> REMOVE;
+                case 2 -> ROTATE;
+                case 3 -> MOVE;
+                default -> null;
+            };
+        }
     }
 }

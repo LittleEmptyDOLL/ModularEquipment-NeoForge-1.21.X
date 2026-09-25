@@ -1,15 +1,15 @@
 package com.github.littleemptydoll.exoequipment.event;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.module.CloakingOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
-import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.network.CloakingStatePayload;
+import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
@@ -17,14 +17,11 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @EventBusSubscriber(modid = ExoEquipment.MODID)
 public final class CloakingEvents {
@@ -77,14 +74,14 @@ public final class CloakingEvents {
     }
 
     public static void deactivate(Player player) {
-        findExoskeleton(player).ifPresent(stack -> {
-            ExoskeletonData data = ExoskeletonItem.getData(stack);
+        ExoskeletonAccess.findContext(player).ifPresent(context -> {
+            ExoskeletonData data = context.data();
 
             for (InstalledModuleReference reference : activeCloakingModules(data)) {
                 data = CloakingOperations.deactivate(data, reference);
             }
 
-            stack.set(
+            context.stack().set(
                     ModDataComponents.EXOSKELETON_DATA.get(),
                     data
             );
@@ -170,8 +167,7 @@ public final class CloakingEvents {
             return;
         }
 
-        Optional<ItemStack> exoskeleton = findExoskeleton(player);
-        if (exoskeleton.isEmpty()) {
+        if (ExoskeletonAccess.findEquipped(player).isEmpty()) {
             markInactive(player);
         }
     }
@@ -182,13 +178,5 @@ public final class CloakingEvents {
             event.getEntity().getPersistentData().remove(CLOAKING_MARKER);
             event.getEntity().setInvisible(false);
         }
-    }
-
-    private static Optional<ItemStack> findExoskeleton(Player player) {
-        return CuriosApi.getCuriosInventory(player)
-                .flatMap(curios -> curios.findFirstCurio(
-                        stack -> stack.getItem() instanceof ExoskeletonItem
-                ))
-                .map(result -> result.stack());
     }
 }

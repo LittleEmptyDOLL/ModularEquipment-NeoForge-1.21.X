@@ -48,15 +48,33 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
         clearRenameBox();
     }
 
-    private void sendAction(int action, int profile, int matrix) { sendAction(action, profile, matrix, ""); }
+    private void sendAction(
+            ProfileActionPayload.Action action,
+            int profile,
+            int matrix
+    ) {
+        sendAction(action, profile, matrix, "");
+    }
 
-    private void sendAction(int action, int profile, int matrix, String name) {
-        PacketDistributor.sendToServer(new ProfileActionPayload(action, profile, matrix, name));
+    private void sendAction(
+            ProfileActionPayload.Action action,
+            int profile,
+            int matrix,
+            String name
+    ) {
+        PacketDistributor.sendToServer(
+                new ProfileActionPayload(
+                        action,
+                        profile,
+                        matrix,
+                        name
+                )
+        );
     }
 
     private void selectProfile(int profile) {
         finishRename(true);
-        sendAction(ProfileActionPayload.SELECT, profile, -1);
+        sendAction(ProfileActionPayload.Action.SELECT, profile, -1);
     }
 
     private void enterRename(int profile) {
@@ -90,7 +108,7 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
         String name = renameBox.getValue().trim();
         int profile = renameProfile;
         clearRenameBox();
-        if (save && profile >= 0 && !name.isEmpty()) sendAction(ProfileActionPayload.RENAME, profile, -1, name);
+        if (save && profile >= 0 && !name.isEmpty()) sendAction(ProfileActionPayload.Action.RENAME, profile, -1, name);
     }
 
     private int getMaxScrollOffset() { return Math.max(0, menu.getProfileCount() - VISIBLE_PROFILES); }
@@ -166,10 +184,38 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
         drawText(graphics, Component.translatable("gui.exoequipment.matrix_slot", matrix + 1), x + 5, y + 5, MATRIX_WIDTH - 10, TEXT_COLOR);
     }
 
-    private void drawActionButton(GuiGraphics graphics, int action, int x, boolean enabled, Component text) {
-        int sourceY = !enabled ? DISABLED_Y : hoveredAction == action ? HOVER_Y : NORMAL_Y;
-        drawButton(graphics, x, ACTION_Y, ACTION_WIDTH, ACTION_HEIGHT, 139, sourceY);
-        drawText(graphics, text, x + 5, ACTION_Y + 5, ACTION_WIDTH - 10, enabled ? TEXT_COLOR : DISABLED_TEXT_COLOR);
+    private void drawActionButton(
+            GuiGraphics graphics,
+            ProfileActionPayload.Action action,
+            int x,
+            boolean enabled,
+            Component text
+    ) {
+        int sourceY = !enabled
+                ? DISABLED_Y
+                : hoveredAction == action.id()
+                        ? HOVER_Y
+                        : NORMAL_Y;
+
+        drawButton(
+                graphics,
+                x,
+                ACTION_Y,
+                ACTION_WIDTH,
+                ACTION_HEIGHT,
+                139,
+                sourceY
+        );
+        drawText(
+                graphics,
+                text,
+                x + 5,
+                ACTION_Y + 5,
+                ACTION_WIDTH - 10,
+                enabled
+                        ? TEXT_COLOR
+                        : DISABLED_TEXT_COLOR
+        );
     }
 
     private void drawScrollbar(GuiGraphics graphics) {
@@ -193,8 +239,8 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
         drawText(graphics, Component.translatable("gui.exoequipment.active_matrices_count", menu.getActiveMatrixCount(), menu.getMaxActiveMatrices()), 104, 9, 119, TEXT_COLOR);
         drawProfileButtons(graphics);
         for (int matrix = 0; matrix < 4; matrix++) drawMatrixButton(graphics, matrix);
-        drawActionButton(graphics, ProfileActionPayload.CREATE, CREATE_X, menu.getProfileCount() < menu.getMaxProfiles(), Component.translatable("gui.exoequipment.profile_create"));
-        drawActionButton(graphics, ProfileActionPayload.REMOVE, DELETE_X, menu.getProfileCount() > 1, Component.translatable("gui.exoequipment.profile_delete"));
+        drawActionButton(graphics, ProfileActionPayload.Action.CREATE, CREATE_X, menu.getProfileCount() < menu.getMaxProfiles(), Component.translatable("gui.exoequipment.profile_create"));
+        drawActionButton(graphics, ProfileActionPayload.Action.REMOVE, DELETE_X, menu.getProfileCount() > 1, Component.translatable("gui.exoequipment.profile_delete"));
         drawActionButton(graphics, -1, BACK_X, true, Component.translatable("gui.exoequipment.back"));
         drawScrollbar(graphics);
     }
@@ -221,8 +267,12 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
     private int actionAt(double mouseX, double mouseY) {
         int localX = (int) mouseX - leftPos, localY = (int) mouseY - topPos;
         if (localY < ACTION_Y || localY >= ACTION_Y + ACTION_HEIGHT) return -2;
-        if (localX >= CREATE_X && localX < CREATE_X + ACTION_WIDTH) return ProfileActionPayload.CREATE;
-        if (localX >= DELETE_X && localX < DELETE_X + ACTION_WIDTH) return ProfileActionPayload.REMOVE;
+        if (localX >= CREATE_X && localX < CREATE_X + ACTION_WIDTH) {
+            return ProfileActionPayload.Action.CREATE.id();
+        }
+        if (localX >= DELETE_X && localX < DELETE_X + ACTION_WIDTH) {
+            return ProfileActionPayload.Action.REMOVE.id();
+        }
         if (localX >= BACK_X && localX < BACK_X + ACTION_WIDTH) return -1;
         return -2;
     }
@@ -278,23 +328,31 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
         if (matrix >= 0) {
             if (menu.isMatrixInstalled(matrix) && menu.getActiveProfile() >= 0) {
                 finishRename(true);
-                sendAction(ProfileActionPayload.TOGGLE_MATRIX, menu.getActiveProfile(), matrix);
+                sendAction(ProfileActionPayload.Action.TOGGLE_MATRIX, menu.getActiveProfile(), matrix);
             }
             return true;
         }
 
         int action = actionAt(mouseX, mouseY);
-        if (action == ProfileActionPayload.CREATE) {
+        if (action == ProfileActionPayload.Action.CREATE.id()) {
             if (menu.getProfileCount() < menu.getMaxProfiles()) {
                 finishRename(true);
-                sendAction(action, -1, -1);
+                sendAction(
+                        ProfileActionPayload.Action.CREATE,
+                        -1,
+                        -1
+                );
             }
             return true;
         }
-        if (action == ProfileActionPayload.REMOVE) {
+        if (action == ProfileActionPayload.Action.REMOVE.id()) {
             if (menu.getProfileCount() > 1 && menu.getActiveProfile() >= 0) {
                 finishRename(true);
-                sendAction(action, menu.getActiveProfile(), -1);
+                sendAction(
+                        ProfileActionPayload.Action.REMOVE,
+                        menu.getActiveProfile(),
+                        -1
+                );
             }
             return true;
         }

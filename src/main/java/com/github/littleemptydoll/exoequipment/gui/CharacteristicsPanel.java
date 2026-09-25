@@ -15,6 +15,7 @@ import com.github.littleemptydoll.exoequipment.util.NameUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public final class CharacteristicsPanel {
@@ -45,6 +46,10 @@ public final class CharacteristicsPanel {
     private static final int PANEL_BACKGROUND_V = 0;
 
     private final Supplier<List<Characteristic>> characteristicsSupplier;
+    private final Supplier<?> revisionSupplier;
+    private Object cachedRevision;
+    private List<Row> cachedRows = List.of();
+    private boolean cacheInitialized;
     private boolean open;
     private int left;
     private int top;
@@ -53,8 +58,18 @@ public final class CharacteristicsPanel {
     private boolean draggingThumb;
     private int dragOffset;
 
-    public CharacteristicsPanel(Supplier<List<Characteristic>> characteristicsSupplier) {
+    public CharacteristicsPanel(
+            Supplier<List<Characteristic>> characteristicsSupplier
+    ) {
+        this(characteristicsSupplier, null);
+    }
+
+    public CharacteristicsPanel(
+            Supplier<List<Characteristic>> characteristicsSupplier,
+            Supplier<?> revisionSupplier
+    ) {
         this.characteristicsSupplier = characteristicsSupplier;
+        this.revisionSupplier = revisionSupplier;
     }
 
     public boolean isOpen() {
@@ -88,7 +103,7 @@ public final class CharacteristicsPanel {
             return;
         }
 
-        List<Row> rows = buildRows();
+        List<Row> rows = getRows();
         int contentHeight = rows.stream().mapToInt(Row::height).sum();
         maxScroll = Math.max(0, contentHeight - CONTENT_HEIGHT);
         scroll = Math.min(scroll, maxScroll);
@@ -299,6 +314,23 @@ public final class CharacteristicsPanel {
             return trackTop;
         }
         return trackTop + (int) Math.round((double) scroll / maxScroll * thumbRange);
+    }
+
+    private List<Row> getRows() {
+        if (revisionSupplier == null) {
+            return buildRows();
+        }
+
+        Object revision = revisionSupplier.get();
+
+        if (!cacheInitialized
+                || !Objects.equals(cachedRevision, revision)) {
+            cachedRevision = revision;
+            cachedRows = buildRows();
+            cacheInitialized = true;
+        }
+
+        return cachedRows;
     }
 
     private List<Row> buildRows() {

@@ -1,11 +1,9 @@
 package com.github.littleemptydoll.exoequipment.event;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
-import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import com.github.littleemptydoll.exoequipment.module.SensorOperations;
 import com.github.littleemptydoll.exoequipment.network.SensorHighlightPayload;
-import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -14,19 +12,16 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -35,66 +30,69 @@ public final class SensorServerEvents {
     private static final int INTERVAL = 5;
     private static final byte GLOW_BIT = 1 << 6;
 
-    private static final Map<UUID, Set<Integer>> HIGHLIGHTED = new HashMap<>();
+    private static final Map<UUID, Set<Integer>> HIGHLIGHTED =
+            new HashMap<>();
 
     private SensorServerEvents() {}
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) {
-            return;
-        }
-
-        if (player.tickCount % INTERVAL != 0) {
+        if (!(event.getEntity() instanceof ServerPlayer player)
+                || player.tickCount % INTERVAL != 0) {
             return;
         }
 
         Set<Integer> previous =
-                HIGHLIGHTED.getOrDefault(player.getUUID(), Set.of());
+                HIGHLIGHTED.getOrDefault(
+                        player.getUUID(),
+                        Set.of()
+                );
 
         Set<Integer> current = new HashSet<>();
         List<Integer> hostile = new ArrayList<>();
         List<Integer> mobs = new ArrayList<>();
         List<Integer> players = new ArrayList<>();
 
-        Optional<ItemStack> stack = findExoskeleton(player);
+        ExoskeletonAccess.findContext(player)
+                .ifPresent(context ->
+                        SensorOperations.detectEntities(
+                                player,
+                                context.data(),
+                                context.poweredModules()
+                        ).forEach(detected -> {
+                            Entity entity = detected.entity();
 
-        if (stack.isPresent()) {
-            ExoskeletonRuntimeState runtime =
-                    stack.get().get(ModDataComponents.EXOSKELETON_RUNTIME.get());
+                            current.add(entity.getId());
+                            sendGlow(
+                                    player,
+                                    entity,
+                                    true
+                            );
 
-            if (runtime == null) {
-                runtime = ExoskeletonRuntimeState.empty();
-            }
-
-            SensorOperations.detectEntities(
-                    player,
-                    ExoskeletonItem.getData(stack.get()),
-                    runtime.poweredModules()
-            ).forEach(detected -> {
-                Entity entity = detected.entity();
-                current.add(entity.getId());
-                sendGlow(player, entity, true);
-
-                if (entity instanceof Player) {
-                    players.add(entity.getId());
-                } else if (entity instanceof Enemy) {
-                    hostile.add(entity.getId());
-                } else if (entity instanceof Mob) {
-                    mobs.add(entity.getId());
-                }
-            });
-        }
+                            if (entity instanceof Player) {
+                                players.add(entity.getId());
+                            } else if (entity instanceof Enemy) {
+                                hostile.add(entity.getId());
+                            } else if (entity instanceof Mob) {
+                                mobs.add(entity.getId());
+                            }
+                        })
+                );
 
         for (int entityId : previous) {
             if (current.contains(entityId)) {
                 continue;
             }
 
-            Entity entity = player.level().getEntity(entityId);
+            Entity entity =
+                    player.level().getEntity(entityId);
 
             if (entity != null) {
-                sendGlow(player, entity, false);
+                sendGlow(
+                        player,
+                        entity,
+                        false
+                );
             }
         }
 
@@ -110,7 +108,10 @@ public final class SensorServerEvents {
         if (current.isEmpty()) {
             HIGHLIGHTED.remove(player.getUUID());
         } else {
-            HIGHLIGHTED.put(player.getUUID(), current);
+            HIGHLIGHTED.put(
+                    player.getUUID(),
+                    current
+            );
         }
     }
 
@@ -154,15 +155,5 @@ public final class SensorServerEvents {
         }
 
         return 0;
-    }
-
-    private static Optional<ItemStack> findExoskeleton(ServerPlayer player) {
-        return CuriosApi.getCuriosInventory(player)
-                .flatMap(curios ->
-                        curios.findFirstCurio(
-                                stack -> stack.getItem() instanceof ExoskeletonItem
-                        )
-                )
-                .map(result -> result.stack());
     }
 }

@@ -24,7 +24,7 @@ public final class MatrixMenuProvider {
         open(
                 player,
                 stack,
-                MatrixMenu.SOURCE_HAND,
+                MatrixMenu.Source.HAND,
                 inventorySlot,
                 null
         );
@@ -43,7 +43,7 @@ public final class MatrixMenuProvider {
         open(
                 player,
                 matrix,
-                MatrixMenu.SOURCE_EXOSKELETON,
+                MatrixMenu.Source.EXOSKELETON,
                 matrixSlot,
                 exoskeleton
         );
@@ -52,7 +52,7 @@ public final class MatrixMenuProvider {
     private static void open(
             ServerPlayer player,
             ItemStack matrix,
-            int sourceType,
+            MatrixMenu.Source sourceType,
             int sourceIndex,
             ItemStack exoskeleton
     ) {
@@ -71,7 +71,7 @@ public final class MatrixMenuProvider {
                 ),
                 buffer -> {
                     ItemStack.STREAM_CODEC.encode(buffer, matrix.copy());
-                    buffer.writeByte(sourceType);
+                    buffer.writeByte(sourceType.id());
                     buffer.writeByte(sourceIndex);
                 }
         );

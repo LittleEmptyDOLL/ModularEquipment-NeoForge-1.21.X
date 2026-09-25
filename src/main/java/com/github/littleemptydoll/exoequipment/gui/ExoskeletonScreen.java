@@ -5,6 +5,7 @@ import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicsCo
 import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicsProvider;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.SystemStatus;
+import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.network.OpenMatrixPayload;
 import com.github.littleemptydoll.exoequipment.network.OpenProfilePayload;
 import net.minecraft.ChatFormatting;
@@ -19,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> {
@@ -94,13 +96,20 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
         super(menu, inventory, title);
         this.imageWidth = IMAGE_WIDTH;
         this.imageHeight = IMAGE_HEIGHT;
-        this.characteristicsPanel = new CharacteristicsPanel(() ->
-                CharacteristicsProvider.collect(
+        this.characteristicsPanel = new CharacteristicsPanel(
+                () -> CharacteristicsProvider.collect(
                         CharacteristicsContext.exoskeleton(
                                 menu.getExoskeletonData(),
                                 minecraft == null ? null : minecraft.player,
                                 menu.getPoweredModules()
                         )
+                ),
+                () -> new CharacteristicsRevision(
+                        menu.getExoskeletonData(),
+                        Set.copyOf(menu.getPoweredModules()),
+                        minecraft == null || minecraft.player == null
+                                ? 0
+                                : minecraft.player.tickCount / 5
                 )
         );
     }
@@ -511,4 +520,10 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
                 && mouseY >= y
                 && mouseY < y + height;
     }
+
+    private record CharacteristicsRevision(
+            ExoskeletonData data,
+            Set<InstalledModuleReference> poweredModules,
+            int playerTickBucket
+    ) {}
 }

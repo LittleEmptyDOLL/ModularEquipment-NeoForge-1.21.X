@@ -7,6 +7,7 @@ import com.github.littleemptydoll.exoequipment.module.CloakingOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.network.CloakingStatePayload;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
@@ -25,7 +26,10 @@ import java.util.List;
 
 @EventBusSubscriber(modid = ExoEquipment.MODID)
 public final class CloakingEvents {
-    private static final String CLOAKING_MARKER = "exoequipment_cloaking";
+    private static final String CLOAKING_MARKER =
+            "exoequipment_cloaking";
+    private static final String PREVIOUS_INVISIBLE =
+            "exoequipment_cloaking_previous_invisible";
 
     private CloakingEvents() {}
 
@@ -115,7 +119,20 @@ public final class CloakingEvents {
     }
 
     public static void markActive(Player player) {
-        player.getPersistentData().putBoolean(CLOAKING_MARKER, true);
+        CompoundTag persistentData =
+                player.getPersistentData();
+
+        if (!persistentData.getBoolean(CLOAKING_MARKER)) {
+            persistentData.putBoolean(
+                    PREVIOUS_INVISIBLE,
+                    player.isInvisible()
+            );
+        }
+
+        persistentData.putBoolean(
+                CLOAKING_MARKER,
+                true
+        );
         player.setInvisible(true);
 
         for (Mob mob : player.level().getEntitiesOfClass(
@@ -129,7 +146,10 @@ public final class CloakingEvents {
 
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(
                 player,
-                new CloakingStatePayload(player.getId(), true)
+                new CloakingStatePayload(
+                        player.getId(),
+                        true
+                )
         );
     }
 
@@ -138,11 +158,27 @@ public final class CloakingEvents {
     }
 
     public static void markInactive(Player player) {
-        player.getPersistentData().remove(CLOAKING_MARKER);
-        player.setInvisible(false);
+        CompoundTag persistentData =
+                player.getPersistentData();
+
+        if (!persistentData.getBoolean(CLOAKING_MARKER)) {
+            return;
+        }
+
+        boolean previousInvisible =
+                persistentData.getBoolean(
+                        PREVIOUS_INVISIBLE
+                );
+
+        clearOwnership(persistentData);
+        player.setInvisible(previousInvisible);
+
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(
                 player,
-                new CloakingStatePayload(player.getId(), false)
+                new CloakingStatePayload(
+                        player.getId(),
+                        false
+                )
         );
     }
 
@@ -174,9 +210,28 @@ public final class CloakingEvents {
 
     @SubscribeEvent
     public static void onClone(PlayerEvent.Clone event) {
-        if (event.getOriginal().getPersistentData().getBoolean(CLOAKING_MARKER)) {
-            event.getEntity().getPersistentData().remove(CLOAKING_MARKER);
-            event.getEntity().setInvisible(false);
+        CompoundTag originalData =
+                event.getOriginal()
+                        .getPersistentData();
+
+        if (!originalData.getBoolean(CLOAKING_MARKER)) {
+            return;
         }
+
+        boolean previousInvisible =
+                originalData.getBoolean(
+                        PREVIOUS_INVISIBLE
+                );
+
+        Player player = event.getEntity();
+        clearOwnership(player.getPersistentData());
+        player.setInvisible(previousInvisible);
+    }
+
+    private static void clearOwnership(
+            CompoundTag persistentData
+    ) {
+        persistentData.remove(CLOAKING_MARKER);
+        persistentData.remove(PREVIOUS_INVISIBLE);
     }
 }

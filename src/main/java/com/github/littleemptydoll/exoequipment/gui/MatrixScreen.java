@@ -506,7 +506,7 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
             if (cell != null) {
                 InstalledModule module = MatrixOperations.getModuleAt(menu.getMatrixData(), cell[0], cell[1]);
                 if (module != null) {
-                    sendAction(MatrixMenu.ACTION_ROTATE, cell[0], cell[1], cell[0], cell[1], 0);
+                    sendAction(MatrixActionPayload.Action.ROTATE, cell[0], cell[1], cell[0], cell[1], 0);
                     return true;
                 }
             }
@@ -515,7 +515,7 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
             InstalledModule module = MatrixOperations.getModuleAt(menu.getMatrixData(), cell[0], cell[1]);
             if (menu.getCarried().getItem() instanceof ModuleItem) {
                 int[] target = getPreviewOrigin((int) mouseX, (int) mouseY);
-                if (target != null) sendAction(MatrixMenu.ACTION_PLACE, target[0], target[1], target[0], target[1], carriedModuleRotation);
+                if (target != null) sendAction(MatrixActionPayload.Action.PLACE, target[0], target[1], target[0], target[1], carriedModuleRotation);
                 return true;
             }
             if (module != null) {
@@ -570,13 +570,13 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
             if (remove) {
                 draggedModule = null;
                 hasLastDragPreview = false;
-                sendAction(MatrixMenu.ACTION_REMOVE, dragStartX, dragStartY, dragStartX, dragStartY, 0);
+                sendAction(MatrixActionPayload.Action.REMOVE, dragStartX, dragStartY, dragStartX, dragStartY, 0);
             } else if (target[0] != dragStartX || target[1] != dragStartY || rotationChanged) {
                 pendingMove = true;
                 pendingMoveX = target[0];
                 pendingMoveY = target[1];
                 pendingMoveRotation = draggedRotation;
-                sendAction(MatrixMenu.ACTION_MOVE, dragStartX, dragStartY, target[0], target[1], draggedRotation);
+                sendAction(MatrixActionPayload.Action.MOVE, dragStartX, dragStartY, target[0], target[1], draggedRotation);
             } else {
                 draggedModule = null;
                 hasLastDragPreview = false;
@@ -594,8 +594,24 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
-    private void sendAction(int action, int x, int y, int targetX, int targetY, int rotation) {
-        PacketDistributor.sendToServer(new MatrixActionPayload(action, x, y, targetX, targetY, rotation));
+    private void sendAction(
+            MatrixActionPayload.Action action,
+            int x,
+            int y,
+            int targetX,
+            int targetY,
+            int rotation
+    ) {
+        PacketDistributor.sendToServer(
+                new MatrixActionPayload(
+                        action,
+                        x,
+                        y,
+                        targetX,
+                        targetY,
+                        rotation
+                )
+        );
     }
 
     @Override

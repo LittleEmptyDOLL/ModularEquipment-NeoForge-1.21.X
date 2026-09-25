@@ -2,9 +2,7 @@ package com.github.littleemptydoll.exoequipment.module;
 
 import com.github.littleemptydoll.exoequipment.energy.EnergyOperations;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
-import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -14,7 +12,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -30,11 +27,17 @@ public final class BlinkOperations {
     ) {
         for (Target target : collectTargets(data)) {
             InstalledModule module = target.module();
+
             if (module.abilityCooldown() > 0) {
                 continue;
             }
 
-            Vec3 destination = findDestination(player, target.properties().distance());
+            Vec3 destination =
+                    findDestination(
+                            player,
+                            target.properties().distance()
+                    );
+
             if (destination == null) {
                 continue;
             }
@@ -49,13 +52,21 @@ public final class BlinkOperations {
                 continue;
             }
 
-            ExoskeletonData updated = replaceModule(
-                    energyResult.data(),
-                    target.reference(),
-                    module.withAbilityCooldown(target.properties().cooldown())
+            ExoskeletonData updated =
+                    ExoskeletonModules.update(
+                            energyResult.data(),
+                            target.reference(),
+                            module.withAbilityCooldown(
+                                    target.properties().cooldown()
+                            )
+                    );
+
+            player.teleportTo(
+                    destination.x,
+                    destination.y,
+                    destination.z
             );
 
-            player.teleportTo(destination.x, destination.y, destination.z);
             player.level().playSound(
                     null,
                     player.getX(),
@@ -66,6 +77,7 @@ public final class BlinkOperations {
                     0.8F,
                     1.0F
             );
+
             return new ActivationResult(updated, true);
         }
 
@@ -76,20 +88,30 @@ public final class BlinkOperations {
         ExoskeletonData updated = data;
 
         for (Target target : collectTargets(updated)) {
-            InstalledModule module = getModule(updated, target.reference());
+            InstalledModule module =
+                    ExoskeletonModules.get(
+                            updated,
+                            target.reference()
+                    ).orElse(null);
+
             if (module == null) {
                 continue;
             }
 
             // CloakingOperations already owns cooldown ticking for modules
             // that provide both abilities.
-            if (ModModules.getDefinition(module.id()).cloaking().isPresent()) {
+            if (target.definition().cloaking().isPresent()) {
                 continue;
             }
 
-            int cooldown = Math.max(0, module.abilityCooldown() - 1);
+            int cooldown =
+                    Math.max(
+                            0,
+                            module.abilityCooldown() - 1
+                    );
+
             if (cooldown != module.abilityCooldown()) {
-                updated = replaceModule(
+                updated = ExoskeletonModules.update(
                         updated,
                         target.reference(),
                         module.withAbilityCooldown(cooldown)
@@ -100,18 +122,25 @@ public final class BlinkOperations {
         return updated;
     }
 
-    private static Vec3 findDestination(ServerPlayer player, double distance) {
+    private static Vec3 findDestination(
+            ServerPlayer player,
+            double distance
+    ) {
         Vec3 start = player.getEyePosition();
-        Vec3 direction = player.getViewVector(1.0F).normalize();
-        Vec3 requested = start.add(direction.scale(distance));
+        Vec3 direction =
+                player.getViewVector(1.0F).normalize();
+        Vec3 requested =
+                start.add(direction.scale(distance));
 
-        BlockHitResult hit = player.level().clip(new ClipContext(
-                start,
-                requested,
-                ClipContext.Block.COLLIDER,
-                ClipContext.Fluid.NONE,
-                player
-        ));
+        BlockHitResult hit = player.level().clip(
+                new ClipContext(
+                        start,
+                        requested,
+                        ClipContext.Block.COLLIDER,
+                        ClipContext.Fluid.NONE,
+                        player
+                )
+        );
 
         // Blink follows the same basic rule as an Ender Pearl:
         // the ray starts at the player's eyes and, when it hits a block,
@@ -120,21 +149,31 @@ public final class BlinkOperations {
         // Do not convert the hit position to the player's feet position
         // and do not shift it downward. This is important when the ray
         // hits the ground or a nearby block.
-        Vec3 destination = hit.getType() == HitResult.Type.BLOCK
-                ? hit.getLocation()
-                : requested;
+        Vec3 destination =
+                hit.getType() == HitResult.Type.BLOCK
+                        ? hit.getLocation()
+                        : requested;
 
         double travelled = start.distanceTo(destination);
 
         // The exact hit position can intersect the player's bounding box.
         // If that happens, move the target back along the same ray until
         // the complete player bounding box fits.
-        for (double offset = 0.0D; offset <= travelled; offset += SEARCH_STEP) {
-            double actualOffset = Math.min(offset, travelled);
-            Vec3 candidate = destination.subtract(direction.scale(actualOffset));
+        for (double offset = 0.0D;
+             offset <= travelled;
+             offset += SEARCH_STEP) {
+
+            double actualOffset =
+                    Math.min(offset, travelled);
+
+            Vec3 candidate =
+                    destination.subtract(
+                            direction.scale(actualOffset)
+                    );
 
             if (isSafe(player, candidate)
-                    && candidate.distanceTo(player.position()) > COLLISION_EPSILON) {
+                    && candidate.distanceTo(player.position())
+                    > COLLISION_EPSILON) {
                 return candidate;
             }
 
@@ -147,87 +186,60 @@ public final class BlinkOperations {
         // Move the destination slightly back from the collision point so that
         // the player is not placed exactly on the block face.
         if (hit.getType() == HitResult.Type.BLOCK) {
-            return destination.subtract(direction.scale(COLLISION_EPSILON));
+            return destination.subtract(
+                    direction.scale(COLLISION_EPSILON)
+            );
         }
 
         return null;
     }
 
-    private static boolean isSafe(ServerPlayer player, Vec3 position) {
-        Vec3 delta = position.subtract(player.position());
-        AABB box = player.getBoundingBox().move(delta);
+    private static boolean isSafe(
+            ServerPlayer player,
+            Vec3 position
+    ) {
+        Vec3 delta =
+                position.subtract(player.position());
+
+        AABB box =
+                player.getBoundingBox().move(delta);
+
         return player.level().noCollision(player, box);
     }
 
-    private static List<Target> collectTargets(ExoskeletonData data) {
-        List<Target> targets = new ArrayList<>();
-
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
-            MatrixData matrix = data.matrices().get(slot).matrix().orElse(null);
-            if (matrix == null) {
-                continue;
-            }
-
-            for (int index = 0; index < matrix.modules().size(); index++) {
-                InstalledModule module = matrix.modules().get(index);
-                if (!com.github.littleemptydoll.exoequipment.frame.FrameOperations
-                        .isModuleSupported(data, module)) {
-                    continue;
-                }
-
-                BlinkProperties properties = ModModules.getDefinition(module.id())
-                        .blink()
-                        .orElse(null);
-                if (properties == null) {
-                    continue;
-                }
-
-                targets.add(new Target(
-                        new InstalledModuleReference(slot, index),
-                        module,
-                        properties
-                ));
-            }
-        }
-
-        targets.sort(
-                Comparator.comparingInt((Target target) -> target.reference().matrixSlot())
-                        .thenComparingInt(target -> target.reference().moduleIndex())
-        );
-        return targets;
-    }
-
-    private static InstalledModule getModule(
-            ExoskeletonData data,
-            InstalledModuleReference reference
+    private static List<Target> collectTargets(
+            ExoskeletonData data
     ) {
-        if (reference.matrixSlot() < 0
-                || reference.matrixSlot() >= data.matrices().size()) {
-            return null;
-        }
-
-        MatrixData matrix = data.matrices().get(reference.matrixSlot()).matrix().orElse(null);
-        if (matrix == null
-                || reference.moduleIndex() < 0
-                || reference.moduleIndex() >= matrix.modules().size()) {
-            return null;
-        }
-
-        return matrix.modules().get(reference.moduleIndex());
-    }
-
-    private static ExoskeletonData replaceModule(
-            ExoskeletonData data,
-            InstalledModuleReference reference,
-            InstalledModule module
-    ) {
-        MatrixData matrix = data.matrices().get(reference.matrixSlot()).matrix().orElseThrow();
-        List<InstalledModule> modules = new ArrayList<>(matrix.modules());
-        modules.set(reference.moduleIndex(), module);
-        return data.withMatrix(
-                reference.matrixSlot(),
-                new MatrixData(matrix.id(), modules)
-        );
+        return ExoskeletonModules.activeSupported(data)
+                .stream()
+                .filter(activeModule ->
+                        activeModule.definition()
+                                .blink()
+                                .isPresent()
+                )
+                .map(activeModule ->
+                        new Target(
+                                activeModule.reference(),
+                                activeModule.module(),
+                                activeModule.definition(),
+                                activeModule.definition()
+                                        .blink()
+                                        .orElseThrow()
+                        )
+                )
+                .sorted(
+                        Comparator.comparingInt(
+                                        (Target target) ->
+                                                target.reference()
+                                                        .matrixSlot()
+                                )
+                                .thenComparingInt(
+                                        target ->
+                                                target.reference()
+                                                        .moduleIndex()
+                                )
+                )
+                .toList();
     }
 
     public record ActivationResult(
@@ -238,6 +250,7 @@ public final class BlinkOperations {
     private record Target(
             InstalledModuleReference reference,
             InstalledModule module,
+            ModuleDefinition definition,
             BlinkProperties properties
     ) {}
 }

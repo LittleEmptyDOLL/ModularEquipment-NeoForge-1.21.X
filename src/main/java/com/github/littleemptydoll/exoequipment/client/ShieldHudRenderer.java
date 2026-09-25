@@ -3,13 +3,13 @@ package com.github.littleemptydoll.exoequipment.client;
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
+import com.github.littleemptydoll.exoequipment.module.EmergencyShieldOperations;
+import com.github.littleemptydoll.exoequipment.module.RevivalOperations;
 import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
@@ -31,11 +31,24 @@ public final class ShieldHudRenderer {
                     "shield_hud"
             );
 
-    private static final int BAR_WIDTH = 81;
-    private static final int BAR_HEIGHT = 4;
+    private static final ResourceLocation TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(
+                    ExoEquipment.MODID,
+                    "textures/gui/shield_hud.png"
+            );
 
-    private static final int VANILLA_INITIAL_LEFT_HEIGHT = 39;
-    private static final int SHIELD_OFFSET_ABOVE_ARMOR = 25;
+    private static final int TEXTURE_WIDTH = 128;
+    private static final int TEXTURE_HEIGHT = 128;
+
+    private static final int HUD_WIDTH = 128;
+    private static final int HUD_HEIGHT = 38;
+
+    private static final int BAR_BACKGROUND_WIDTH = 102;
+    private static final int BAR_BACKGROUND_HEIGHT = 7;
+    private static final int BAR_WIDTH = 100;
+    private static final int BAR_HEIGHT = 5;
+
+    private static final int SCREEN_MARGIN = 6;
 
     private ShieldHudRenderer() {}
 
@@ -74,99 +87,208 @@ public final class ShieldHudRenderer {
             return;
         }
 
-        ItemStack stack = exoskeletonStack.get();
-        ExoskeletonData data = ExoskeletonItem.getData(stack);
-        ShieldOperations.ShieldStatus status =
-                ShieldOperations.getStatus(data);
+        ExoskeletonData data = ExoskeletonItem.getData(exoskeletonStack.get());
+        ShieldOperations.ShieldStatus status = ShieldOperations.getStatus(data);
 
         if (!status.hasShields()) {
             return;
         }
 
-        int screenWidth = guiGraphics.guiWidth();
-        int screenHeight = guiGraphics.guiHeight();
-        int x = screenWidth / 2 - 91;
-        int armorY = getVanillaArmorY(minecraft, screenHeight);
-        int y = armorY - SHIELD_OFFSET_ABOVE_ARMOR;
+        int x = SCREEN_MARGIN;
+        int y = guiGraphics.guiHeight() - HUD_HEIGHT - SCREEN_MARGIN;
 
-        guiGraphics.renderItem(
-                new ItemStack(Items.SHIELD),
+        renderBackground(guiGraphics, x, y);
+        renderShieldIcon(guiGraphics, x, y);
+        renderShieldBar(guiGraphics, x, y, status);
+        renderShieldValue(guiGraphics, minecraft, x, y, status);
+        renderReserveCounters(guiGraphics, minecraft, data, x, y);
+    }
+
+    private static void renderBackground(
+            GuiGraphics graphics,
+            int x,
+            int y
+    ) {
+        graphics.blit(
+                TEXTURE,
                 x,
-                y - 6
+                y,
+                0,
+                0,
+                HUD_WIDTH,
+                HUD_HEIGHT,
+                TEXTURE_WIDTH,
+                TEXTURE_HEIGHT
+        );
+    }
+
+    private static void renderShieldIcon(
+            GuiGraphics graphics,
+            int x,
+            int y
+    ) {
+        graphics.pose().pushPose();
+        graphics.pose().translate(x + 6, y + 11, 0.0F);
+        graphics.pose().scale(0.5F, 0.5F, 1.0F);
+        graphics.blit(
+                TEXTURE,
+                0,
+                0,
+                0,
+                62,
+                18,
+                22,
+                TEXTURE_WIDTH,
+                TEXTURE_HEIGHT
+        );
+        graphics.pose().popPose();
+    }
+
+    private static void renderShieldBar(
+            GuiGraphics graphics,
+            int x,
+            int y,
+            ShieldOperations.ShieldStatus status
+    ) {
+        graphics.blit(
+                TEXTURE,
+                x + 17,
+                y + 13,
+                0,
+                50,
+                BAR_BACKGROUND_WIDTH,
+                BAR_BACKGROUND_HEIGHT,
+                TEXTURE_WIDTH,
+                TEXTURE_HEIGHT
         );
 
+        if (status.capacity() <= 0) {
+            return;
+        }
+
+        double fraction = Math.max(
+                0.0D,
+                Math.min(1.0D, status.currentEnergy() / status.capacity())
+        );
+        int filledWidth = (int) Math.round(BAR_WIDTH * fraction);
+
+        if (filledWidth <= 0) {
+            return;
+        }
+
+        graphics.blit(
+                TEXTURE,
+                x + 18,
+                y + 14,
+                0,
+                57,
+                filledWidth,
+                BAR_HEIGHT,
+                TEXTURE_WIDTH,
+                TEXTURE_HEIGHT
+        );
+    }
+
+    private static void renderShieldValue(
+            GuiGraphics graphics,
+            Minecraft minecraft,
+            int x,
+            int y,
+            ShieldOperations.ShieldStatus status
+    ) {
         Component value = Component.literal(
                 Math.round(status.currentEnergy())
-                        + " / "
+                        + "/"
                         + status.capacity()
         );
 
-        guiGraphics.drawString(
+        graphics.drawString(
                 minecraft.font,
                 value,
-                x + 18,
-                y - 1,
+                x + 19,
+                y + 5,
                 0xFFFFFF,
-                true
+                false
         );
+    }
 
-        int barX = x + 18;
-        int barY = y + 10;
+    private static void renderReserveCounters(
+            GuiGraphics graphics,
+            Minecraft minecraft,
+            ExoskeletonData data,
+            int x,
+            int y
+    ) {
+        int emergencyCount = EmergencyShieldOperations.readyCount(data);
+        int revivalCount = RevivalOperations.readyCount(data);
+        int cursorX = x + 17;
+        int iconY = y + 22;
 
-        guiGraphics.fill(
-                barX,
-                barY,
-                barX + BAR_WIDTH,
-                barY + BAR_HEIGHT,
-                0x80000000
-        );
+        if (emergencyCount > 0) {
+            renderEmergencyShieldIcon(graphics, cursorX, iconY);
 
-        int filledWidth = (int) Math.round(
-                BAR_WIDTH
-                        * Math.min(
-                                1.0D,
-                                status.currentEnergy()
-                                        / status.capacity()
-                        )
-        );
+            String count = "x" + emergencyCount;
+            int textX = cursorX + 11;
+            graphics.drawString(
+                    minecraft.font,
+                    count,
+                    textX,
+                    iconY + 2,
+                    0xFFFFFF,
+                    false
+            );
 
-        if (filledWidth > 0) {
-            guiGraphics.fill(
-                    barX,
-                    barY,
-                    barX + filledWidth,
-                    barY + BAR_HEIGHT,
-                    0xFF55FFFF
+            cursorX = textX + minecraft.font.width(count) + 4;
+        }
+
+        if (revivalCount > 0) {
+            renderRevivalIcon(graphics, cursorX, iconY);
+
+            String count = "x" + revivalCount;
+            graphics.drawString(
+                    minecraft.font,
+                    count,
+                    cursorX + 13,
+                    iconY + 2,
+                    0xFFFFFF,
+                    false
             );
         }
     }
 
-    private static int getVanillaArmorY(
-            Minecraft minecraft,
-            int screenHeight
+    private static void renderEmergencyShieldIcon(
+            GuiGraphics graphics,
+            int x,
+            int y
     ) {
-        var player = minecraft.player;
-
-        int leftHeight = VANILLA_INITIAL_LEFT_HEIGHT;
-
-        float maxHealth = Math.max(
-                (float) player.getAttributeValue(Attributes.MAX_HEALTH),
-                player.getHealth()
+        graphics.pose().pushPose();
+        graphics.pose().translate(x, y, 0.0F);
+        graphics.pose().scale(0.5F, 0.5F, 1.0F);
+        graphics.blit(
+                TEXTURE,
+                0,
+                0,
+                18,
+                62,
+                18,
+                22,
+                TEXTURE_WIDTH,
+                TEXTURE_HEIGHT
         );
+        graphics.pose().popPose();
+    }
 
-        int absorption = Mth.ceil(player.getAbsorptionAmount());
+    private static void renderRevivalIcon(
+            GuiGraphics graphics,
+            int x,
+            int y
+    ) {
+        float scale = 11.0F / 16.0F;
 
-        int healthRows = Mth.ceil(
-                (maxHealth + absorption) / 2.0F / 10.0F
-        );
-
-        int rowHeight = Math.max(
-                10 - (healthRows - 2),
-                3
-        );
-
-        leftHeight += (healthRows - 1) * rowHeight + 10;
-
-        return screenHeight - leftHeight + 10;
+        graphics.pose().pushPose();
+        graphics.pose().translate(x, y, 0.0F);
+        graphics.pose().scale(scale, scale, 1.0F);
+        graphics.renderItem(new ItemStack(Items.TOTEM_OF_UNDYING), 0, 0);
+        graphics.pose().popPose();
     }
 }

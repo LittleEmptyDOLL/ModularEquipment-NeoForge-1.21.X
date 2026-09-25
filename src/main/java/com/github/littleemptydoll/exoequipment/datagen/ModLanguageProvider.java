@@ -16,6 +16,8 @@ public class ModLanguageProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
+        add("itemGroup.exoequipment", "Modular Equipment");
+
         for (DeferredHolder<Item, ? extends Item> holder : ModItems.ITEMS.getEntries()) {
             ResourceLocation id = holder.getId();
             add("item." + id.getNamespace() + "." + id.getPath(),

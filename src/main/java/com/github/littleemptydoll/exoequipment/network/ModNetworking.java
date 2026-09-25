@@ -222,7 +222,7 @@ public final class ModNetworking {
                     }
 
                     if (menu.handleAction(
-                            payload.action(),
+                            payload.actionType(),
                             payload.profile(),
                             payload.matrix(),
                             payload.name()

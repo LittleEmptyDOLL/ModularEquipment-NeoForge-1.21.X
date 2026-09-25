@@ -1,9 +1,9 @@
 package com.github.littleemptydoll.exoequipment.energy;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
-import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
-import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
+import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
 import com.github.littleemptydoll.exoequipment.module.*;
 import com.github.littleemptydoll.exoequipment.registry.ModEnergySystems;
 import com.github.littleemptydoll.exoequipment.registry.ModModules;
@@ -42,7 +42,9 @@ public final class EnergyOperations {
     /**
      * Simulates a tick without an external energy source.
      */
-    public static EnergyTickResult tick(ExoskeletonData data) {
+    public static EnergyTickResult tick(
+            ExoskeletonData data
+    ) {
         return tick(data, 0);
     }
 
@@ -57,7 +59,11 @@ public final class EnergyOperations {
             ExoskeletonData data,
             ExternalEnergyProvider externalProvider
     ) {
-        return tick(data, externalProvider, null);
+        return tick(
+                data,
+                externalProvider,
+                null
+        );
     }
 
     public static EnergyTickResult tick(
@@ -66,18 +72,31 @@ public final class EnergyOperations {
             Player player
     ) {
         if (externalProvider == null) {
-            return tick(data, 0, amount -> amount, player);
+            return tick(
+                    data,
+                    0,
+                    amount -> amount,
+                    player
+            );
         }
 
-        int externalAvailable = externalProvider.availableEnergy();
+        int externalAvailable =
+                externalProvider.availableEnergy();
+
         if (externalAvailable < 0) {
-            throw new IllegalArgumentException("External available energy cannot be negative");
+            throw new IllegalArgumentException(
+                    "External available energy cannot be negative"
+            );
         }
 
         return tick(
                 data,
                 externalAvailable,
-                amount -> externalProvider.extractEnergy(amount, false),
+                amount ->
+                        externalProvider.extractEnergy(
+                                amount,
+                                false
+                        ),
                 player
         );
     }
@@ -90,12 +109,22 @@ public final class EnergyOperations {
      * amount rather than an external storage object. No external storage is
      * mutated by this overload.</p>
      */
-    public static EnergyTickResult tick(ExoskeletonData data, int externalAvailable) {
+    public static EnergyTickResult tick(
+            ExoskeletonData data,
+            int externalAvailable
+    ) {
         if (externalAvailable < 0) {
-            throw new IllegalArgumentException("External available energy cannot be negative");
+            throw new IllegalArgumentException(
+                    "External available energy cannot be negative"
+            );
         }
 
-        return tick(data, externalAvailable, amount -> amount, null);
+        return tick(
+                data,
+                externalAvailable,
+                amount -> amount,
+                null
+        );
     }
 
     private static EnergyTickResult tick(
@@ -103,7 +132,12 @@ public final class EnergyOperations {
             int externalAvailable,
             ExternalEnergyExtractor externalExtractor
     ) {
-        return tick(data, externalAvailable, externalExtractor, null);
+        return tick(
+                data,
+                externalAvailable,
+                externalExtractor,
+                null
+        );
     }
 
     private static EnergyTickResult tick(
@@ -114,19 +148,49 @@ public final class EnergyOperations {
     ) {
         if (data.energySystem().isEmpty()) {
             return new EnergyTickResult(
-                    data, 0, 0, 0, 0, 0, 0, 0, Set.of()
+                    data,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    Set.of()
             );
         }
 
-        ResourceLocation energySystemId = data.energySystem().get().definitionId();
-        var energySystem = ModEnergySystems.getDefinition(energySystemId);
-        var state = ExoskeletonState.calculateState(data);
+        ResourceLocation energySystemId =
+                data.energySystem()
+                        .get()
+                        .definitionId();
 
-        int remainingInput = energySystem.maxInput();
-        int remainingOutput = energySystem.maxOutput();
+        var energySystem =
+                ModEnergySystems.getDefinition(
+                        energySystemId
+                );
 
-        int generated = state.energyGeneration();
-        int generatedAvailable = Math.min(generated, remainingInput);
+        var state =
+                ExoskeletonState.calculateState(data);
+
+        StorageLayout storageLayout =
+                StorageLayout.create(data);
+
+        int remainingInput =
+                energySystem.maxInput();
+
+        int remainingOutput =
+                energySystem.maxOutput();
+
+        int generated =
+                state.energyGeneration();
+
+        int generatedAvailable =
+                Math.min(
+                        generated,
+                        remainingInput
+                );
+
         remainingInput -= generatedAvailable;
 
         int externalInput = 0;
@@ -135,61 +199,102 @@ public final class EnergyOperations {
         int charged = 0;
         int generatedCharged = 0;
 
-        ExoskeletonData updatedData = data;
-        Set<InstalledModuleReference> poweredModules = new LinkedHashSet<>();
+        Set<InstalledModuleReference> poweredModules =
+                new LinkedHashSet<>();
 
-        List<EnergyConsumer> consumers = collectConsumers(data, player);
-        consumers.sort(Comparator.comparingInt(EnergyConsumer::priority).reversed());
+        List<EnergyConsumer> consumers =
+                collectConsumers(data, player);
+
+        consumers.sort(
+                Comparator.comparingInt(
+                                EnergyConsumer::priority
+                        )
+                        .reversed()
+        );
 
         for (EnergyConsumer consumer : consumers) {
-            int required = consumer.consumption();
+            int required =
+                    consumer.consumption();
 
             if (required > remainingOutput
-                    || required > remainingInput + generatedAvailable) {
+                    || required
+                    > remainingInput + generatedAvailable) {
                 continue;
             }
 
-            int availableExternal = Math.min(
-                    externalAvailable,
-                    remainingInput
-            );
-            int availableBattery = Math.min(
-                    remainingInput,
+            int availableExternal =
                     Math.min(
-                            remainingOutput,
-                            calculateAvailableStorageOutput(updatedData)
-                    )
-            );
+                            externalAvailable,
+                            remainingInput
+                    );
 
-            if (generatedAvailable + availableExternal + availableBattery < required) {
+            int availableBattery =
+                    Math.min(
+                            remainingInput,
+                            Math.min(
+                                    remainingOutput,
+                                    storageLayout.availableOutput()
+                            )
+                    );
+
+            if (generatedAvailable
+                    + availableExternal
+                    + availableBattery
+                    < required) {
                 continue;
             }
 
-            int fromGenerated = Math.min(required, generatedAvailable);
-            int remaining = required - fromGenerated;
+            int fromGenerated =
+                    Math.min(
+                            required,
+                            generatedAvailable
+                    );
 
-            int fromExternal = Math.min(remaining, availableExternal);
+            int remaining =
+                    required - fromGenerated;
+
+            int fromExternal =
+                    Math.min(
+                            remaining,
+                            availableExternal
+                    );
+
             remaining -= fromExternal;
 
             int fromBattery = remaining;
 
             if (fromExternal > 0) {
-                int extracted = externalExtractor.extract(fromExternal);
-                fromExternal = Math.min(extracted, fromExternal);
+                int extracted =
+                        externalExtractor.extract(
+                                fromExternal
+                        );
+
+                fromExternal =
+                        Math.min(
+                                extracted,
+                                fromExternal
+                        );
+
                 externalInput += fromExternal;
                 externalAvailable -= fromExternal;
                 remainingInput -= fromExternal;
             }
 
             if (fromBattery > 0) {
-                StorageTransferResult result = discharge(updatedData, fromBattery);
-                updatedData = result.data();
-                fromBattery = result.amount();
+                fromBattery =
+                        storageLayout.discharge(
+                                fromBattery
+                        );
+
                 discharged += fromBattery;
                 remainingInput -= fromBattery;
             }
 
-            int supplied = fromGenerated + fromExternal + fromBattery;
+            int supplied =
+                    fromGenerated
+                            + fromExternal
+                            + fromBattery;
+
             if (supplied != required) {
                 continue;
             }
@@ -197,57 +302,96 @@ public final class EnergyOperations {
             generatedAvailable -= fromGenerated;
             consumed += supplied;
             remainingOutput -= supplied;
-            poweredModules.add(consumer.reference());
-        }
 
-        if (generatedAvailable > 0 && remainingOutput > 0) {
-            int charge = Math.min(
-                    generatedAvailable,
-                    Math.min(
-                            remainingOutput,
-                            calculateAvailableStorageInput(updatedData)
-                    )
+            poweredModules.add(
+                    consumer.reference()
             );
-
-            if (charge > 0) {
-                StorageTransferResult result = charge(updatedData, charge);
-                updatedData = result.data();
-                charged += result.amount();
-                generatedCharged = result.amount();
-                generatedAvailable -= result.amount();
-                remainingOutput -= result.amount();
-            }
         }
 
-        if (externalAvailable > 0 && remainingInput > 0 && remainingOutput > 0) {
-            int chargeRequested = Math.min(
-                    externalAvailable,
+        if (generatedAvailable > 0
+                && remainingOutput > 0) {
+
+            int charge =
                     Math.min(
-                            remainingInput,
+                            generatedAvailable,
                             Math.min(
                                     remainingOutput,
-                                    calculateAvailableStorageInput(updatedData)
+                                    storageLayout.availableInput()
                             )
-                    )
-            );
+                    );
 
-            int externalCharge = externalExtractor.extract(chargeRequested);
-            externalCharge = Math.min(externalCharge, chargeRequested);
+            if (charge > 0) {
+                int transferred =
+                        storageLayout.charge(charge);
 
-            if (externalCharge > 0) {
-                StorageTransferResult result = charge(updatedData, externalCharge);
-                updatedData = result.data();
-                charged += result.amount();
-                externalInput += result.amount();
-                externalAvailable -= result.amount();
-                remainingInput -= result.amount();
-                remainingOutput -= result.amount();
+                charged += transferred;
+                generatedCharged = transferred;
+                generatedAvailable -= transferred;
+                remainingOutput -= transferred;
             }
         }
 
-        int deficit = Math.max(0, state.energyConsumption() - consumed);
-        int generatedUsed = generated - generatedAvailable - generatedCharged;
-        int wasted = Math.max(0, generated - generatedUsed);
+        if (externalAvailable > 0
+                && remainingInput > 0
+                && remainingOutput > 0) {
+
+            int chargeRequested =
+                    Math.min(
+                            externalAvailable,
+                            Math.min(
+                                    remainingInput,
+                                    Math.min(
+                                            remainingOutput,
+                                            storageLayout.availableInput()
+                                    )
+                            )
+                    );
+
+            int externalCharge =
+                    externalExtractor.extract(
+                            chargeRequested
+                    );
+
+            externalCharge =
+                    Math.min(
+                            externalCharge,
+                            chargeRequested
+                    );
+
+            if (externalCharge > 0) {
+                int transferred =
+                        storageLayout.charge(
+                                externalCharge
+                        );
+
+                charged += transferred;
+                externalInput += transferred;
+                externalAvailable -= transferred;
+                remainingInput -= transferred;
+                remainingOutput -= transferred;
+            }
+        }
+
+        ExoskeletonData updatedData =
+                storageLayout.apply(data);
+
+        int deficit =
+                Math.max(
+                        0,
+                        state.energyConsumption()
+                                - consumed
+                );
+
+        int generatedUsed =
+                generated
+                        - generatedAvailable
+                        - generatedCharged;
+
+        int wasted =
+                Math.max(
+                        0,
+                        generated - generatedUsed
+                );
 
         return new EnergyTickResult(
                 updatedData,
@@ -265,12 +409,19 @@ public final class EnergyOperations {
     public static int calculateCurrentConsumption(
             ExoskeletonData data,
             Player player,
-            java.util.Set<InstalledModuleReference> poweredModules
+            Set<InstalledModuleReference> poweredModules
     ) {
-        return collectConsumers(data, player).stream()
-                .filter(consumer -> poweredModules == null
-                        || poweredModules.contains(consumer.reference()))
-                .mapToInt(EnergyConsumer::consumption)
+        return collectConsumers(data, player)
+                .stream()
+                .filter(consumer ->
+                        poweredModules == null
+                                || poweredModules.contains(
+                                        consumer.reference()
+                                )
+                )
+                .mapToInt(
+                        EnergyConsumer::consumption
+                )
                 .sum();
     }
 
@@ -279,162 +430,153 @@ public final class EnergyOperations {
             int amount
     ) {
         if (amount < 0) {
-            throw new IllegalArgumentException("Energy amount cannot be negative");
+            throw new IllegalArgumentException(
+                    "Energy amount cannot be negative"
+            );
         }
+
         if (amount == 0) {
-            return new EnergyConsumptionResult(data, true, 0);
+            return new EnergyConsumptionResult(
+                    data,
+                    true,
+                    0
+            );
         }
+
         if (data.energySystem().isEmpty()) {
-            return new EnergyConsumptionResult(data, false, 0);
+            return new EnergyConsumptionResult(
+                    data,
+                    false,
+                    0
+            );
         }
 
-        var energySystem = ModEnergySystems.getDefinition(
-                data.energySystem().get().definitionId()
-        );
-        int requested = Math.min(amount, energySystem.maxOutput());
+        var energySystem =
+                ModEnergySystems.getDefinition(
+                        data.energySystem()
+                                .get()
+                                .definitionId()
+                );
+
+        int requested =
+                Math.min(
+                        amount,
+                        energySystem.maxOutput()
+                );
+
         if (requested < amount) {
-            return new EnergyConsumptionResult(data, false, 0);
+            return new EnergyConsumptionResult(
+                    data,
+                    false,
+                    0
+            );
         }
 
-        StorageTransferResult result = discharge(data, amount);
+        StorageLayout storageLayout =
+                StorageLayout.create(data);
+
+        int transferred =
+                storageLayout.discharge(amount);
+
         return new EnergyConsumptionResult(
-                result.data(),
-                result.amount() == amount,
-                result.amount()
+                storageLayout.apply(data),
+                transferred == amount,
+                transferred
         );
     }
 
-    private static List<EnergyConsumer> collectConsumers(ExoskeletonData data, Player player) {
-        List<EnergyConsumer> consumers = new ArrayList<>();
+    private static List<EnergyConsumer> collectConsumers(
+            ExoskeletonData data,
+            Player player
+    ) {
+        List<EnergyConsumer> consumers =
+                new ArrayList<>();
 
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
-            MatrixData matrix = data.matrices().get(slot).matrix().orElse(null);
-            if (matrix == null) {
+        for (ExoskeletonModules.ActiveModule activeModule
+                : ExoskeletonModules.activeSupported(data)) {
+
+            InstalledModule module =
+                    activeModule.module();
+
+            ModuleDefinition definition =
+                    activeModule.definition();
+
+            var energy =
+                    definition.energy();
+
+            int consumption =
+                    energy.map(
+                            EnergyProperties::consumption
+                    ).orElse(0);
+
+            if (consumption > 0) {
+                double efficiency =
+                        TemperatureOperations
+                                .calculateModuleEfficiency(
+                                        definition,
+                                        data.temperature()
+                                );
+
+                consumption =
+                        Math.max(
+                                0,
+                                (int) Math.round(
+                                        consumption * efficiency
+                                )
+                        );
+            }
+
+            if (module.active()) {
+                consumption +=
+                        definition.cloaking()
+                                .map(
+                                        CloakingProperties::activeConsumption
+                                )
+                                .orElse(0);
+            }
+
+            if (module.flightActive()) {
+                consumption +=
+                        definition.flight()
+                                .map(
+                                        FlightProperties::activeConsumption
+                                )
+                                .orElse(0);
+            }
+
+            boolean jetpackActive =
+                    player != null
+                            && JetpackInputState
+                            .isEnergyActive(player)
+                            && definition.jetpack()
+                            .isPresent();
+
+            if (jetpackActive) {
+                consumption +=
+                        definition.jetpack()
+                                .map(
+                                        JetpackProperties::energyConsumption
+                                )
+                                .orElse(0);
+            }
+
+            if (consumption <= 0
+                    && !jetpackActive) {
                 continue;
             }
 
-            for (int moduleIndex = 0; moduleIndex < matrix.modules().size(); moduleIndex++) {
-                InstalledModule module = matrix.modules().get(moduleIndex);
-
-                if (!com.github.littleemptydoll.exoequipment.frame.FrameOperations
-                        .isModuleSupported(data, module)) {
-                    continue;
-                }
-
-                var definition = ModModules.getDefinition(module.id());
-                var energy = definition.energy();
-                int consumption = energy
-                        .map(EnergyProperties::consumption)
-                        .orElse(0);
-
-                if (consumption > 0) {
-                    consumption = MatrixOperations.calculateEnergyConsumption(
-                            new MatrixData(matrix.id(), List.of(module)),
-                            ignored -> true,
-                            data.temperature()
-                    );
-                }
-
-                if (module.active()) {
-                    consumption += ModModules.getDefinition(module.id())
-                            .cloaking()
-                            .map(CloakingProperties::activeConsumption)
-                            .orElse(0);
-                }
-
-                if (module.flightActive()) {
-                    consumption += ModModules.getDefinition(module.id())
-                            .flight()
-                            .map(FlightProperties::activeConsumption)
-                            .orElse(0);
-                }
-
-                boolean jetpackActive = player != null
-                        && JetpackInputState.isEnergyActive(player)
-                        && definition.jetpack().isPresent();
-
-                if (jetpackActive) {
-                    consumption += definition.jetpack()
-                            .map(JetpackProperties::energyConsumption)
-                            .orElse(0);
-                }
-
-                if (consumption <= 0 && !jetpackActive) {
-                    continue;
-                }
-
-                consumers.add(
-                        new EnergyConsumer(
-                                new InstalledModuleReference(slot, moduleIndex),
-                                consumption,
-                                energy.map(EnergyProperties::priority).orElse(0)
-                        )
-                );
-            }
+            consumers.add(
+                    new EnergyConsumer(
+                            activeModule.reference(),
+                            consumption,
+                            energy.map(
+                                    EnergyProperties::priority
+                            ).orElse(0)
+                    )
+            );
         }
 
         return consumers;
-    }
-
-    private static int calculateAvailableStorageOutput(ExoskeletonData data) {
-        int available = 0;
-
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
-            MatrixData matrix = data.matrices().get(slot).matrix().orElse(null);
-            if (matrix == null) {
-                continue;
-            }
-
-            for (InstalledModule module : matrix.modules()) {
-                var storage = ModModules.getDefinition(module.id()).storage().orElse(null);
-                if (storage == null) {
-                    continue;
-                }
-
-                int capacity = MatrixOperations.calculateEnergyStorageCapacity(
-                        new MatrixData(matrix.id(), List.of(module)),
-                        ignored -> true,
-                        data.temperature()
-                );
-
-                int stored = Math.min(module.storedEnergy(), capacity);
-                available += Math.min(storage.maxOutput(), stored);
-            }
-        }
-
-        return available;
-    }
-
-    private static int calculateAvailableStorageInput(ExoskeletonData data) {
-        int available = 0;
-
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
-            MatrixData matrix = data.matrices().get(slot).matrix().orElse(null);
-            if (matrix == null) {
-                continue;
-            }
-
-            for (InstalledModule module : matrix.modules()) {
-                var storage = ModModules.getDefinition(module.id()).storage().orElse(null);
-                if (storage == null) {
-                    continue;
-                }
-
-                int capacity = MatrixOperations.calculateEnergyStorageCapacity(
-                        new MatrixData(matrix.id(), List.of(module)),
-                        ignored -> true,
-                        data.temperature()
-                );
-
-                int stored = Math.min(module.storedEnergy(), capacity);
-                available += Math.min(
-                        storage.maxInput(),
-                        Math.max(0, capacity - stored)
-                );
-            }
-        }
-
-        return available;
     }
 
     public record EnergyConsumptionResult(
@@ -449,128 +591,248 @@ public final class EnergyOperations {
             int priority
     ) {}
 
-    private static StorageTransferResult charge(ExoskeletonData data, int amount) {
-        int remaining = amount;
-        int transferred = 0;
-        ExoskeletonData updated = data;
+    private static final class StorageLayout {
+        private final List<StorageEntry> entries;
 
-        for (int slot : ExoskeletonState.activeMatrixSlots(updated)) {
-            MatrixData matrix = updated.matrices().get(slot).matrix().orElse(null);
-            if (matrix == null) {
-                continue;
-            }
-
-            List<InstalledModule> modules = new ArrayList<>(matrix.modules());
-            boolean changed = false;
-
-            for (int i = 0; i < modules.size() && remaining > 0; i++) {
-                InstalledModule module = modules.get(i);
-                StorageProperties storage = ModModules.getDefinition(module.id())
-                        .storage()
-                        .orElse(null);
-                if (storage == null) {
-                    continue;
-                }
-
-                int effectiveCapacity = MatrixOperations.calculateEnergyStorageCapacity(
-                        new MatrixData(matrix.id(), List.of(module)),
-                        ignored -> true,
-                        updated.temperature()
-                );
-                int current = Math.min(module.storedEnergy(), effectiveCapacity);
-                int accepted = Math.min(
-                        remaining,
-                        Math.min(
-                                storage.maxInput(),
-                                Math.max(0, effectiveCapacity - current)
-                        )
-                );
-                if (accepted <= 0) {
-                    if (current != module.storedEnergy()) {
-                        modules.set(i, module.withStoredEnergy(current));
-                        changed = true;
-                    }
-                    continue;
-                }
-
-                modules.set(i, module.withStoredEnergy(current + accepted));
-                remaining -= accepted;
-                transferred += accepted;
-                changed = true;
-            }
-
-            if (changed) {
-                updated = updated.withMatrix(
-                        slot,
-                        new MatrixData(matrix.id(), modules)
-                );
-            }
+        private StorageLayout(
+                List<StorageEntry> entries
+        ) {
+            this.entries = entries;
         }
 
-        return new StorageTransferResult(updated, transferred);
-    }
+        private static StorageLayout create(
+                ExoskeletonData data
+        ) {
+            List<StorageEntry> entries =
+                    new ArrayList<>();
 
-    private static StorageTransferResult discharge(ExoskeletonData data, int amount) {
-        int remaining = amount;
-        int transferred = 0;
-        ExoskeletonData updated = data;
+            for (int slot
+                    : ExoskeletonState.activeMatrixSlots(data)) {
 
-        for (int slot : ExoskeletonState.activeMatrixSlots(updated)) {
-            MatrixData matrix = updated.matrices().get(slot).matrix().orElse(null);
-            if (matrix == null) {
-                continue;
-            }
+                var matrix =
+                        data.matrices()
+                                .get(slot)
+                                .matrix()
+                                .orElse(null);
 
-            List<InstalledModule> modules = new ArrayList<>(matrix.modules());
-            boolean changed = false;
-
-            for (int i = 0; i < modules.size() && remaining > 0; i++) {
-                InstalledModule module = modules.get(i);
-                StorageProperties storage = ModModules.getDefinition(module.id())
-                        .storage()
-                        .orElse(null);
-                if (storage == null) {
+                if (matrix == null) {
                     continue;
                 }
 
-                int effectiveCapacity = MatrixOperations.calculateEnergyStorageCapacity(
-                        new MatrixData(matrix.id(), List.of(module)),
-                        ignored -> true,
-                        updated.temperature()
-                );
-                int current = Math.min(module.storedEnergy(), effectiveCapacity);
-                int extracted = Math.min(
-                        remaining,
-                        Math.min(storage.maxOutput(), current)
-                );
+                for (int moduleIndex = 0;
+                     moduleIndex < matrix.modules().size();
+                     moduleIndex++) {
 
-                if (current != module.storedEnergy()) {
-                    modules.set(i, module.withStoredEnergy(current - extracted));
-                    changed = true;
-                } else if (extracted > 0) {
-                    modules.set(i, module.withStoredEnergy(current - extracted));
-                    changed = true;
+                    InstalledModule module =
+                            matrix.modules()
+                                    .get(moduleIndex);
+
+                    ModuleDefinition definition =
+                            ModModules.getDefinition(
+                                    module.id()
+                            );
+
+                    StorageProperties storage =
+                            definition.storage()
+                                    .orElse(null);
+
+                    if (storage == null) {
+                        continue;
+                    }
+
+                    double efficiency =
+                            TemperatureOperations
+                                    .calculateModuleEfficiency(
+                                            definition,
+                                            data.temperature()
+                                    );
+
+                    int effectiveCapacity =
+                            Math.max(
+                                    0,
+                                    (int) Math.round(
+                                            storage.capacity()
+                                                    * efficiency
+                                    )
+                            );
+
+                    entries.add(
+                            new StorageEntry(
+                                    new InstalledModuleReference(
+                                            slot,
+                                            moduleIndex
+                                    ),
+                                    storage,
+                                    effectiveCapacity,
+                                    module.storedEnergy()
+                            )
+                    );
+                }
+            }
+
+            return new StorageLayout(entries);
+        }
+
+        private int availableOutput() {
+            int available = 0;
+
+            for (StorageEntry entry : entries) {
+                available +=
+                        Math.min(
+                                entry.storage.maxOutput(),
+                                entry.stored
+                        );
+            }
+
+            return available;
+        }
+
+        private int availableInput() {
+            int available = 0;
+
+            for (StorageEntry entry : entries) {
+                available +=
+                        Math.min(
+                                entry.storage.maxInput(),
+                                Math.max(
+                                        0,
+                                        entry.capacity
+                                                - entry.stored
+                                )
+                        );
+            }
+
+            return available;
+        }
+
+        private int discharge(int amount) {
+            int remaining = amount;
+            int transferred = 0;
+
+            for (StorageEntry entry : entries) {
+                if (remaining <= 0) {
+                    break;
+                }
+
+                entry.markClampedIfNeeded();
+
+                int extracted =
+                        Math.min(
+                                remaining,
+                                Math.min(
+                                        entry.storage.maxOutput(),
+                                        entry.stored
+                                )
+                        );
+
+                if (extracted > 0) {
+                    entry.stored -= extracted;
+                    entry.dirty = true;
                 }
 
                 remaining -= extracted;
                 transferred += extracted;
             }
 
-            if (changed) {
-                updated = updated.withMatrix(
-                        slot,
-                        new MatrixData(matrix.id(), modules)
-                );
-            }
+            return transferred;
         }
 
-        return new StorageTransferResult(updated, transferred);
+        private int charge(int amount) {
+            int remaining = amount;
+            int transferred = 0;
+
+            for (StorageEntry entry : entries) {
+                if (remaining <= 0) {
+                    break;
+                }
+
+                entry.markClampedIfNeeded();
+
+                int accepted =
+                        Math.min(
+                                remaining,
+                                Math.min(
+                                        entry.storage.maxInput(),
+                                        Math.max(
+                                                0,
+                                                entry.capacity
+                                                        - entry.stored
+                                        )
+                                )
+                        );
+
+                if (accepted > 0) {
+                    entry.stored += accepted;
+                    entry.dirty = true;
+                }
+
+                remaining -= accepted;
+                transferred += accepted;
+            }
+
+            return transferred;
+        }
+
+        private ExoskeletonData apply(
+                ExoskeletonData data
+        ) {
+            ExoskeletonData updated = data;
+
+            for (StorageEntry entry : entries) {
+                if (!entry.dirty) {
+                    continue;
+                }
+
+                int stored = entry.stored;
+
+                updated = ExoskeletonModules.update(
+                        updated,
+                        entry.reference,
+                        module ->
+                                module.withStoredEnergy(
+                                        stored
+                                )
+                );
+            }
+
+            return updated;
+        }
+    }
+
+    private static final class StorageEntry {
+        private final InstalledModuleReference reference;
+        private final StorageProperties storage;
+        private final int capacity;
+        private final int originalStored;
+        private int stored;
+        private boolean dirty;
+
+        private StorageEntry(
+                InstalledModuleReference reference,
+                StorageProperties storage,
+                int capacity,
+                int stored
+        ) {
+            this.reference = reference;
+            this.storage = storage;
+            this.capacity = capacity;
+            this.originalStored = stored;
+            this.stored =
+                    Math.min(
+                            stored,
+                            capacity
+                    );
+        }
+
+        private void markClampedIfNeeded() {
+            if (stored != originalStored) {
+                dirty = true;
+            }
+        }
     }
 
     @FunctionalInterface
     private interface ExternalEnergyExtractor {
         int extract(int amount);
     }
-
-    private record StorageTransferResult(ExoskeletonData data, int amount) {}
 }

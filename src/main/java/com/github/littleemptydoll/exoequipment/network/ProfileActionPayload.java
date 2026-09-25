@@ -13,31 +13,85 @@ public record ProfileActionPayload(
         int matrix,
         String name
 ) implements CustomPacketPayload {
-    public static final int SELECT = 0;
-    public static final int CREATE = 1;
-    public static final int REMOVE = 2;
-    public static final int TOGGLE_MATRIX = 3;
-    public static final int RENAME = 4;
 
-    public ProfileActionPayload(int action, int profile, int matrix) {
+    public ProfileActionPayload(
+            Action action,
+            int profile,
+            int matrix
+    ) {
         this(action, profile, matrix, "");
     }
 
-    public static final Type<ProfileActionPayload> TYPE = new Type<>(
-            ResourceLocation.fromNamespaceAndPath(ExoEquipment.MODID, "profile_action")
-    );
+    public ProfileActionPayload(
+            Action action,
+            int profile,
+            int matrix,
+            String name
+    ) {
+        this(
+                action.id(),
+                profile,
+                matrix,
+                name
+        );
+    }
+
+    public Action actionType() {
+        return Action.fromId(action);
+    }
+
+    public static final Type<ProfileActionPayload> TYPE =
+            new Type<>(
+                    ResourceLocation.fromNamespaceAndPath(
+                            ExoEquipment.MODID,
+                            "profile_action"
+                    )
+            );
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ProfileActionPayload> STREAM_CODEC =
             StreamCodec.composite(
-                    ByteBufCodecs.VAR_INT, ProfileActionPayload::action,
-                    ByteBufCodecs.VAR_INT, ProfileActionPayload::profile,
-                    ByteBufCodecs.VAR_INT, ProfileActionPayload::matrix,
-                    ByteBufCodecs.stringUtf8(32), ProfileActionPayload::name,
+                    ByteBufCodecs.VAR_INT,
+                    ProfileActionPayload::action,
+                    ByteBufCodecs.VAR_INT,
+                    ProfileActionPayload::profile,
+                    ByteBufCodecs.VAR_INT,
+                    ProfileActionPayload::matrix,
+                    ByteBufCodecs.stringUtf8(32),
+                    ProfileActionPayload::name,
                     ProfileActionPayload::new
             );
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
+    }
+
+    public enum Action {
+        SELECT(0),
+        CREATE(1),
+        REMOVE(2),
+        TOGGLE_MATRIX(3),
+        RENAME(4);
+
+        private final int id;
+
+        Action(int id) {
+            this.id = id;
+        }
+
+        public int id() {
+            return id;
+        }
+
+        public static Action fromId(int id) {
+            return switch (id) {
+                case 0 -> SELECT;
+                case 1 -> CREATE;
+                case 2 -> REMOVE;
+                case 3 -> TOGGLE_MATRIX;
+                case 4 -> RENAME;
+                default -> null;
+            };
+        }
     }
 }

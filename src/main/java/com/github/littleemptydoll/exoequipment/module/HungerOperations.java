@@ -1,10 +1,8 @@
 package com.github.littleemptydoll.exoequipment.module;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
-import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
-import net.minecraft.world.entity.player.Player;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
+import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
 
 import java.util.Set;
 
@@ -17,50 +15,38 @@ public final class HungerOperations {
     ) {
         double multiplier = 1.0D;
 
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
-            var matrix = data.matrices()
-                    .get(slot)
-                    .matrix()
-                    .orElse(null);
+        for (ExoskeletonModules.ActiveModule activeModule
+                : ExoskeletonModules.activeSupported(data)) {
 
-            if (matrix == null) {
+            if (!ExoskeletonModules.isPowered(
+                    activeModule,
+                    poweredModules
+            )) {
                 continue;
             }
 
-            for (int moduleIndex = 0;
-                 moduleIndex < matrix.modules().size();
-                 moduleIndex++) {
+            HungerProperties properties =
+                    activeModule.definition()
+                            .hunger()
+                            .orElse(null);
 
-                InstalledModule module = matrix.modules().get(moduleIndex);
+            if (properties == null) {
+                continue;
+            }
 
-                if (!FrameOperations.isModuleSupported(data, module)) {
-                    continue;
-                }
+            double efficiency =
+                    TemperatureOperations.calculateModuleEfficiency(
+                            activeModule.definition(),
+                            data.temperature()
+                    );
 
-                InstalledModuleReference reference =
-                        new InstalledModuleReference(slot, moduleIndex);
+            double reduction =
+                    properties.exhaustionReduction() * efficiency;
 
-                if (!isPowered(module.id(), reference, poweredModules)) {
-                    continue;
-                }
+            multiplier *= 1.0D - reduction;
 
-                HungerProperties properties =
-                        ModModules.getDefinition(module.id())
-                                .hunger()
-                                .orElse(null);
-
-                if (properties == null) {
-                    continue;
-                }
-
-                double efficiency = com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations.calculateModuleEfficiency(ModModules.getDefinition(module.id()), data.temperature());
-                double reduction = properties.exhaustionReduction() * efficiency;
-
-                multiplier *= 1.0D - reduction;
-
-                if (multiplier <= 0.0D) {
-                    return 0.0D;
-                }
+            if (multiplier <= 0.0D) {
+                return 0.0D;
             }
         }
 
@@ -90,18 +76,9 @@ public final class HungerOperations {
         double reduced = previousExhaustion
                 + increase * (1.0D - reduction);
 
-        return (float) Math.max(0.0D, Math.min(4.0D, reduced));
-    }
-
-    private static boolean isPowered(
-            net.minecraft.resources.ResourceLocation moduleId,
-            InstalledModuleReference reference,
-            Set<InstalledModuleReference> poweredModules
-    ) {
-        var energy = ModModules.getDefinition(moduleId).energy();
-
-        return energy.isEmpty()
-                || energy.get().consumption() <= 0
-                || poweredModules.contains(reference);
+        return (float) Math.max(
+                0.0D,
+                Math.min(4.0D, reduced)
+        );
     }
 }

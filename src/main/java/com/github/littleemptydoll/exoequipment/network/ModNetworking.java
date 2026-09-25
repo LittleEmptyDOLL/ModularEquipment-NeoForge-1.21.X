@@ -323,7 +323,7 @@ public final class ModNetworking {
 
                     boolean changed = menu.handleAction(
                             serverPlayer,
-                            payload.action(),
+                            payload.actionType(),
                             payload.x(),
                             payload.y(),
                             payload.targetX(),

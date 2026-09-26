@@ -11,7 +11,10 @@ import java.util.Map;
 import java.util.Optional;
 
 final class ModMobilityModules {
-    private static final ModuleSize ASSIST_SIZE = new ModuleSize(2, 2);
+    private static final ModuleSize SPEED_SIZE = new ModuleSize(1, 2);
+    private static final ModuleSize JUMP_SIZE = new ModuleSize(1, 2);
+    private static final ModuleSize SWIM_SIZE = new ModuleSize(1, 2);
+    private static final ModuleSize STEP_SIZE = new ModuleSize(1, 1);
     private static final ModuleSize JETPACK_SIZE = new ModuleSize(2, 3);
     private static final ModuleSize BLINK_SIZE = new ModuleSize(2, 2);
     private static final ModuleSize FLIGHT_SIZE = new ModuleSize(3, 3);
@@ -34,58 +37,192 @@ final class ModMobilityModules {
     static void register(
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry
     ) {
-        registerMobilityAssist(registry);
+        registerMovementSpeedModules(registry);
+        registerJumpModules(registry);
+        registerSwimModules(registry);
+        registerStepHeightModules(registry);
         registerJetpacks(registry);
         registerBlinkModules(registry);
         registerFlightModule(registry);
     }
 
-    private static void registerMobilityAssist(
+    private static void registerMovementSpeedModules(
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry
     ) {
-        registerAssist(
+        registerAttributeModule(
                 registry,
-                "civilian_mobility_assist",
+                "civilian_movement_speed",
                 EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON,
-                8,
-                0.10D,
-                0.15D,
-                0.10D,
-                0.25D
+                SPEED_SIZE,
+                5,
+                MOVEMENT_SPEED,
+                multipliedBase(0.10D)
         );
-        registerAssist(
+        registerAttributeModule(
                 registry,
-                "engineering_mobility_assist",
+                "engineering_movement_speed",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
-                12,
-                0.15D,
-                0.30D,
-                0.15D,
-                0.50D
+                SPEED_SIZE,
+                8,
+                MOVEMENT_SPEED,
+                multipliedBase(0.15D)
         );
-        registerAssist(
+        registerAttributeModule(
                 registry,
-                "military_mobility_assist",
+                "military_movement_speed",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
-                18,
-                0.20D,
-                0.35D,
-                0.20D,
-                0.75D
+                SPEED_SIZE,
+                12,
+                MOVEMENT_SPEED,
+                multipliedBase(0.20D)
         );
-        registerAssist(
+        registerAttributeModule(
                 registry,
-                "experimental_mobility_assist",
+                "experimental_movement_speed",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
-                25,
-                0.30D,
-                0.60D,
-                0.30D,
-                1.00D
+                SPEED_SIZE,
+                18,
+                MOVEMENT_SPEED,
+                multipliedBase(0.30D)
+        );
+    }
+
+    private static void registerJumpModules(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
+    ) {
+        registerAttributeModule(
+                registry,
+                "civilian_jump_assist",
+                EquipmentTier.CIVILIAN,
+                Rarity.UNCOMMON,
+                JUMP_SIZE,
+                4,
+                JUMP_STRENGTH,
+                multipliedBase(0.10D)
+        );
+        registerAttributeModule(
+                registry,
+                "engineering_jump_assist",
+                EquipmentTier.ENGINEERING,
+                Rarity.RARE,
+                JUMP_SIZE,
+                7,
+                JUMP_STRENGTH,
+                multipliedBase(0.15D)
+        );
+        registerAttributeModule(
+                registry,
+                "military_jump_assist",
+                EquipmentTier.MILITARY,
+                Rarity.RARE,
+                JUMP_SIZE,
+                10,
+                JUMP_STRENGTH,
+                multipliedBase(0.20D)
+        );
+        registerAttributeModule(
+                registry,
+                "experimental_jump_assist",
+                EquipmentTier.EXPERIMENTAL,
+                Rarity.EPIC,
+                JUMP_SIZE,
+                15,
+                JUMP_STRENGTH,
+                multipliedBase(0.30D)
+        );
+    }
+
+    private static void registerSwimModules(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
+    ) {
+        registerAttributeModule(
+                registry,
+                "civilian_swim_assist",
+                EquipmentTier.CIVILIAN,
+                Rarity.UNCOMMON,
+                SWIM_SIZE,
+                4,
+                WATER_MOVEMENT_EFFICIENCY,
+                addValue(0.15D)
+        );
+        registerAttributeModule(
+                registry,
+                "engineering_swim_assist",
+                EquipmentTier.ENGINEERING,
+                Rarity.RARE,
+                SWIM_SIZE,
+                7,
+                WATER_MOVEMENT_EFFICIENCY,
+                addValue(0.30D)
+        );
+        registerAttributeModule(
+                registry,
+                "military_swim_assist",
+                EquipmentTier.MILITARY,
+                Rarity.RARE,
+                SWIM_SIZE,
+                10,
+                WATER_MOVEMENT_EFFICIENCY,
+                addValue(0.45D)
+        );
+        registerAttributeModule(
+                registry,
+                "experimental_swim_assist",
+                EquipmentTier.EXPERIMENTAL,
+                Rarity.EPIC,
+                SWIM_SIZE,
+                15,
+                WATER_MOVEMENT_EFFICIENCY,
+                addValue(0.60D)
+        );
+    }
+
+    private static void registerStepHeightModules(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
+    ) {
+        registerAttributeModule(
+                registry,
+                "civilian_step_assist",
+                EquipmentTier.CIVILIAN,
+                Rarity.UNCOMMON,
+                STEP_SIZE,
+                3,
+                STEP_HEIGHT,
+                addValue(0.25D)
+        );
+        registerAttributeModule(
+                registry,
+                "engineering_step_assist",
+                EquipmentTier.ENGINEERING,
+                Rarity.RARE,
+                STEP_SIZE,
+                5,
+                STEP_HEIGHT,
+                addValue(0.50D)
+        );
+        registerAttributeModule(
+                registry,
+                "military_step_assist",
+                EquipmentTier.MILITARY,
+                Rarity.RARE,
+                STEP_SIZE,
+                8,
+                STEP_HEIGHT,
+                addValue(0.75D)
+        );
+        registerAttributeModule(
+                registry,
+                "experimental_step_assist",
+                EquipmentTier.EXPERIMENTAL,
+                Rarity.EPIC,
+                STEP_SIZE,
+                12,
+                STEP_HEIGHT,
+                addValue(1.00D)
         );
     }
 
@@ -191,9 +328,9 @@ final class ModMobilityModules {
     private static void registerFlightModule(
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry
     ) {
-        // FlightOperations currently represents unrestricted creative-style
-        // flight. Keep it as an experimental endgame module rather than
-        // duplicating the same ability across every equipment tier.
+        // FlightOperations represents unrestricted creative-style flight, so
+        // it remains an experimental endgame ability rather than a normal
+        // attribute upgrade available at every tier.
         registry.register(
                 "experimental_flight",
                 new EquipmentProperties(
@@ -216,16 +353,15 @@ final class ModMobilityModules {
         );
     }
 
-    private static void registerAssist(
+    private static void registerAttributeModule(
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
             String id,
             EquipmentTier tier,
             Rarity rarity,
+            ModuleSize size,
             int energyConsumption,
-            double movementSpeed,
-            double waterMovementEfficiency,
-            double jumpStrength,
-            double stepHeight
+            ResourceLocation attribute,
+            AttributeModifierProperties modifier
     ) {
         registry.register(
                 id,
@@ -235,23 +371,14 @@ final class ModMobilityModules {
                                         resourceLocation,
                                         properties,
                                         ModuleCategory.MOBILITY,
-                                        ASSIST_SIZE
+                                        size
                                 )
                                 .energy(new EnergyProperties(
                                         energyConsumption,
                                         MOBILITY_PRIORITY
                                 ))
                                 .attributes(new AttributeProperties(
-                                        Map.of(
-                                                MOVEMENT_SPEED,
-                                                multipliedBase(movementSpeed),
-                                                WATER_MOVEMENT_EFFICIENCY,
-                                                addValue(waterMovementEfficiency),
-                                                JUMP_STRENGTH,
-                                                multipliedBase(jumpStrength),
-                                                STEP_HEIGHT,
-                                                addValue(stepHeight)
-                                        )
+                                        Map.of(attribute, modifier)
                                 ))
                                 .build()
         );

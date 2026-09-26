@@ -93,6 +93,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.characteristic.category.effects", "Effects");
         add("gui.exoequipment.characteristic.category.regeneration", "Regeneration");
         add("gui.exoequipment.characteristic.category.mobility", "Mobility");
+        add("gui.exoequipment.characteristic.category.active_abilities", "Active abilities");
         add("gui.exoequipment.characteristic.category.survival", "Survival");
         add("gui.exoequipment.characteristic.category.sensor", "Sensors");
         add("gui.exoequipment.characteristic.category.utility", "Utility");
@@ -100,8 +101,6 @@ public class ModLanguageProvider extends LanguageProvider {
 
         add("gui.exoequipment.characteristic.conditional_prefix", "Conditional: ");
         add("gui.exoequipment.characteristic.unknown_effect", "Unknown effect");
-        add("gui.exoequipment.characteristic.attribute.base", "base");
-        add("gui.exoequipment.characteristic.attribute.total", "total");
         add("gui.exoequipment.characteristic.time.seconds", "%s s");
         add("gui.exoequipment.characteristic.time.minutes", "%s min");
         add("gui.exoequipment.characteristic.time.minutes_seconds", "%s min %s s");

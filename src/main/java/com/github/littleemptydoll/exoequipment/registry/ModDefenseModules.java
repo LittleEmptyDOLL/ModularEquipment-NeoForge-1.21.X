@@ -1,14 +1,7 @@
 package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.item.ModuleItem;
-import com.github.littleemptydoll.exoequipment.module.DamageReductionProperties;
-import com.github.littleemptydoll.exoequipment.module.EmergencyShieldProperties;
-import com.github.littleemptydoll.exoequipment.module.EnergyProperties;
-import com.github.littleemptydoll.exoequipment.module.ModuleCategory;
-import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
-import com.github.littleemptydoll.exoequipment.module.ModuleSize;
-import com.github.littleemptydoll.exoequipment.module.RevivalProperties;
-import com.github.littleemptydoll.exoequipment.module.ShieldProperties;
+import com.github.littleemptydoll.exoequipment.module.*;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
@@ -23,10 +16,12 @@ final class ModDefenseModules {
     private static final ModuleSize SPECIALIZED_PROTECTION_SIZE = new ModuleSize(2, 2);
     private static final ModuleSize GENERAL_PROTECTION_SIZE = new ModuleSize(2, 3);
     private static final ModuleSize IMMUNITY_SIZE = new ModuleSize(2, 3);
+    private static final ModuleSize SHIELD_PROTECTION_SIZE = new ModuleSize(1, 2);
 
     private static final int PROTECTION_PRIORITY = 8;
     private static final int IMMUNITY_PRIORITY = 9;
     private static final int TICKS_PER_MINUTE = 20 * 60;
+    private static final int SHIELD_PROTECTION_PRIORITY = 8;
 
     private static final ResourceLocation IS_PROJECTILE = minecraftTag("is_projectile");
     private static final ResourceLocation IS_EXPLOSION = minecraftTag("is_explosion");
@@ -229,6 +224,40 @@ final class ModDefenseModules {
                 Rarity.EPIC,
                 6.0D,
                 5 * TICKS_PER_MINUTE,
+                50
+        );
+
+        // Позволяет модулям защиты влиять на урон по щиту
+        registerShieldProtection(
+                registry,
+                "civilian_shield_protection",
+                EquipmentTier.CIVILIAN,
+                Rarity.UNCOMMON,
+                0.25D,
+                10
+        );
+        registerShieldProtection(
+                registry,
+                "engineering_shield_protection",
+                EquipmentTier.ENGINEERING,
+                Rarity.RARE,
+                0.50D,
+                20
+        );
+        registerShieldProtection(
+                registry,
+                "military_shield_protection",
+                EquipmentTier.MILITARY,
+                Rarity.RARE,
+                0.75D,
+                35
+        );
+        registerShieldProtection(
+                registry,
+                "experimental_shield_protection",
+                EquipmentTier.EXPERIMENTAL,
+                Rarity.EPIC,
+                1.0D,
                 50
         );
     }
@@ -475,6 +504,37 @@ final class ModDefenseModules {
                                         cooldown,
                                         40
                                 ))
+                                .build()
+        );
+    }
+
+    private static void registerShieldProtection(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
+            String id,
+            EquipmentTier tier,
+            Rarity rarity,
+            double transfer,
+            int energyConsumption
+    ) {
+        registry.register(
+                id,
+                new EquipmentProperties(tier, rarity),
+                (resourceLocation, properties) ->
+                        ModuleDefinition.builder(
+                                        resourceLocation,
+                                        properties,
+                                        ModuleCategory.DEFENSE,
+                                        SHIELD_PROTECTION_SIZE
+                                )
+                                .energy(new EnergyProperties(
+                                        energyConsumption,
+                                        SHIELD_PROTECTION_PRIORITY
+                                ))
+                                .shieldProtection(
+                                        new ShieldProtectionProperties(
+                                                transfer
+                                        )
+                                )
                                 .build()
         );
     }

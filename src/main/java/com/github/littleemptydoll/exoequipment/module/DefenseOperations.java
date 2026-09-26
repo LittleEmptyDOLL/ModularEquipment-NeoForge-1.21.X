@@ -5,6 +5,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
 import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.List;
 import java.util.Set;
 
 public final class DefenseOperations {
@@ -14,7 +15,11 @@ public final class DefenseOperations {
             ExoskeletonData data,
             ResourceLocation damageType
     ) {
-        return calculateDamageMultiplier(data, damageType, null);
+        return calculateDamageMultiplier(
+                data,
+                damageType,
+                null
+        );
     }
 
     public static double calculateDamageMultiplier(
@@ -22,42 +27,12 @@ public final class DefenseOperations {
             ResourceLocation damageType,
             Set<InstalledModuleReference> poweredModules
     ) {
-        double multiplier = 1.0D;
-
-        for (ExoskeletonModules.ActiveModule activeModule
-                : ExoskeletonModules.activeSupported(data)) {
-
-            if (!ExoskeletonModules.isPowered(
-                    activeModule,
-                    poweredModules
-            )) {
-                continue;
-            }
-
-            DamageReductionProperties properties =
-                    activeModule.definition()
-                            .damageReduction()
-                            .orElse(null);
-
-            if (properties == null) {
-                continue;
-            }
-
-            double efficiency =
-                    TemperatureOperations.calculateModuleEfficiency(
-                            activeModule.definition(),
-                            data.temperature()
-                    );
-
-            multiplier *= 1.0D
-                    - properties.reduction(damageType) * efficiency;
-
-            if (multiplier <= 0.0D) {
-                return 0.0D;
-            }
-        }
-
-        return Math.max(0.0D, multiplier);
+        return calculateDamageMultiplier(
+                data,
+                ExoskeletonModules.activeSupported(data),
+                damageType,
+                poweredModules
+        );
     }
 
     public static double calculateDamageMultiplier(
@@ -66,45 +41,15 @@ public final class DefenseOperations {
             ResourceLocation damageType,
             Set<InstalledModuleReference> poweredModules
     ) {
-        double multiplier = 1.0D;
-
-        for (ExoskeletonModules.ActiveModule activeModule
-                : ExoskeletonModules.supportedInMatrix(
+        return calculateDamageMultiplier(
+                data,
+                ExoskeletonModules.supportedInMatrix(
                         data,
                         matrixSlot
-                )) {
-
-            if (!ExoskeletonModules.isPowered(
-                    activeModule,
-                    poweredModules
-            )) {
-                continue;
-            }
-
-            DamageReductionProperties properties =
-                    activeModule.definition()
-                            .damageReduction()
-                            .orElse(null);
-
-            if (properties == null) {
-                continue;
-            }
-
-            double efficiency =
-                    TemperatureOperations.calculateModuleEfficiency(
-                            activeModule.definition(),
-                            data.temperature()
-                    );
-
-            multiplier *= 1.0D
-                    - properties.reduction(damageType) * efficiency;
-
-            if (multiplier <= 0.0D) {
-                return 0.0D;
-            }
-        }
-
-        return Math.max(0.0D, multiplier);
+                ),
+                damageType,
+                poweredModules
+        );
     }
 
     public static double applyDamageReduction(
@@ -135,5 +80,55 @@ public final class DefenseOperations {
                 damageType,
                 poweredModules
         );
+    }
+
+    private static double calculateDamageMultiplier(
+            ExoskeletonData data,
+            List<ExoskeletonModules.ActiveModule> modules,
+            ResourceLocation damageType,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        double multiplier = 1.0D;
+
+        for (ExoskeletonModules.ActiveModule activeModule : modules) {
+            if (!ExoskeletonModules.isPowered(
+                    activeModule,
+                    poweredModules
+            )) {
+                continue;
+            }
+
+            DamageReductionProperties properties =
+                    activeModule.definition()
+                            .damageReduction()
+                            .orElse(null);
+
+            if (properties == null) {
+                continue;
+            }
+
+            double efficiency =
+                    TemperatureOperations.calculateModuleEfficiency(
+                            activeModule.definition(),
+                            data.temperature()
+                    );
+
+            double reduction = Math.min(
+                    1.0D,
+                    Math.max(
+                            0.0D,
+                            properties.reduction(damageType)
+                                    * efficiency
+                    )
+            );
+
+            multiplier *= 1.0D - reduction;
+
+            if (multiplier <= 0.0D) {
+                return 0.0D;
+            }
+        }
+
+        return Math.max(0.0D, multiplier);
     }
 }

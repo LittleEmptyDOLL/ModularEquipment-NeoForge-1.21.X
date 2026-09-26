@@ -10,6 +10,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -24,11 +25,32 @@ public final class EffectsOperations {
             ExoskeletonData data,
             Set<InstalledModuleReference> poweredModules
     ) {
+        return collectEffects(data, null, poweredModules);
+    }
+
+    public static Map<ResourceLocation, Integer> collectEffects(
+            ExoskeletonData data,
+            int matrixSlot,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        return collectEffects(data, Integer.valueOf(matrixSlot), poweredModules);
+    }
+
+    private static Map<ResourceLocation, Integer> collectEffects(
+            ExoskeletonData data,
+            Integer matrixSlot,
+            Set<InstalledModuleReference> poweredModules
+    ) {
         Map<ResourceLocation, Integer> effects = new HashMap<>();
+        List<ExoskeletonModules.ActiveModule> modules =
+                matrixSlot == null
+                        ? ExoskeletonModules.activeSupported(data)
+                        : ExoskeletonModules.supportedInMatrix(
+                                data,
+                                matrixSlot
+                        );
 
-        for (ExoskeletonModules.ActiveModule activeModule
-                : ExoskeletonModules.activeSupported(data)) {
-
+        for (ExoskeletonModules.ActiveModule activeModule : modules) {
             if (!ExoskeletonModules.isPowered(
                     activeModule,
                     poweredModules

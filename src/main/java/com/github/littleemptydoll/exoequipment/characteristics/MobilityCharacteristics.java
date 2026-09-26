@@ -93,7 +93,7 @@ final class MobilityCharacteristics {
                     new Characteristic(
                             CharacteristicCategory.MOBILITY,
                             "flight",
-                            CharacteristicType.STATIC,
+                            CharacteristicType.STATE,
                             1.0D
                     )
             );

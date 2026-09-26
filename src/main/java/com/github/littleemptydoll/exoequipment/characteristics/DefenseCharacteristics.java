@@ -31,6 +31,8 @@ final class DefenseCharacteristics {
     ) {
         Set<ResourceLocation> damageTypes =
                 collectDamageTypes(context);
+        Set<ResourceLocation> damageTags =
+                collectDamageTags(context);
 
         double universalMultiplier =
                 context.isMatrixScope()
@@ -110,6 +112,49 @@ final class DefenseCharacteristics {
                     )
             );
         }
+
+        for (ResourceLocation damageTag
+                : damageTags) {
+
+            double multiplier =
+                    context.isMatrixScope()
+                            ? DefenseOperations
+                            .calculateDamageTagMultiplier(
+                                    context.data(),
+                                    context.matrixSlot(),
+                                    damageTag,
+                                    CharacteristicsSupport
+                                            .poweredModules(
+                                                    context
+                                            )
+                            )
+                            : DefenseOperations
+                            .calculateDamageTagMultiplier(
+                                    context.data(),
+                                    damageTag,
+                                    CharacteristicsSupport
+                                            .poweredModules(
+                                                    context
+                                            )
+                            );
+
+            double reduction =
+                    1.0D - multiplier;
+
+            if (reduction <= 0.0D) {
+                continue;
+            }
+
+            result.add(
+                    new Characteristic(
+                            CharacteristicCategory.DEFENSE,
+                            "damage_reduction.tag."
+                                    + damageTag,
+                            CharacteristicType.CURRENT,
+                            reduction
+                    )
+            );
+        }
     }
 
     private static Set<ResourceLocation>
@@ -119,13 +164,44 @@ final class DefenseCharacteristics {
         Set<ResourceLocation> result =
                 new HashSet<>();
 
+        collectDamageSelectors(
+                context,
+                result,
+                null
+        );
+
+        return result;
+    }
+
+    private static Set<ResourceLocation>
+    collectDamageTags(
+            CharacteristicsContext context
+    ) {
+        Set<ResourceLocation> result =
+                new HashSet<>();
+
+        collectDamageSelectors(
+                context,
+                null,
+                result
+        );
+
+        return result;
+    }
+
+    private static void collectDamageSelectors(
+            CharacteristicsContext context,
+            Set<ResourceLocation> damageTypes,
+            Set<ResourceLocation> damageTags
+    ) {
         if (context.isMatrixScope()) {
-            collectDamageTypes(
+            collectDamageSelectors(
                     context,
                     context.matrixSlot(),
-                    result
+                    damageTypes,
+                    damageTags
             );
-            return result;
+            return;
         }
 
         for (int slot
@@ -133,20 +209,20 @@ final class DefenseCharacteristics {
                 .activeMatrixSlots(
                         context.data()
                 )) {
-            collectDamageTypes(
+            collectDamageSelectors(
                     context,
                     slot,
-                    result
+                    damageTypes,
+                    damageTags
             );
         }
-
-        return result;
     }
 
-    private static void collectDamageTypes(
+    private static void collectDamageSelectors(
             CharacteristicsContext context,
             int slot,
-            Set<ResourceLocation> result
+            Set<ResourceLocation> damageTypes,
+            Set<ResourceLocation> damageTags
     ) {
         MatrixData matrix =
                 context.data()
@@ -163,13 +239,23 @@ final class DefenseCharacteristics {
                 ModModules.getDefinition(
                         module.id()
                 ).damageReduction()
-                        .ifPresent(properties ->
-                                result.addAll(
+                        .ifPresent(properties -> {
+                            if (damageTypes != null) {
+                                damageTypes.addAll(
                                         properties
                                                 .reductions()
                                                 .keySet()
-                                )
-                        )
+                                );
+                            }
+
+                            if (damageTags != null) {
+                                damageTags.addAll(
+                                        properties
+                                                .tagReductions()
+                                                .keySet()
+                                );
+                            }
+                        })
         );
     }
 

@@ -493,7 +493,8 @@ public final class CharacteristicsPanel {
             case "consumption", "generation", "storage_input", "storage_output",
                     "max_input", "max_output", "cloaking.active_consumption" ->
                     formatNumber(value) + " FE/t";
-            case "storage_capacity", "stored_energy", "blink.activation_energy" ->
+            case "storage_capacity", "stored_energy", "blink.activation_energy",
+                    "cloaking.activation_energy" ->
                     formatNumber(value) + " FE";
             case "heat_generation", "cooling" ->
                     formatNumber(value) + " °C";
@@ -605,7 +606,18 @@ public final class CharacteristicsPanel {
         if (Math.rint(value) == value) {
             return Long.toString((long) value);
         }
-        return String.format(Locale.ROOT, "%.2f", value);
+
+        String formatted = String.format(Locale.ROOT, "%.2f", value);
+        int end = formatted.length();
+
+        while (end > 0 && formatted.charAt(end - 1) == '0') {
+            end--;
+        }
+        if (end > 0 && formatted.charAt(end - 1) == '.') {
+            end--;
+        }
+
+        return formatted.substring(0, end);
     }
 
     private AttributeKey parseAttributeKey(String key) {

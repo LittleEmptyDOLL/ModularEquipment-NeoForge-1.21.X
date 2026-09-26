@@ -22,13 +22,26 @@ public record EffectsProperties(
             );
 
     public EffectsProperties {
-        effects = Map.copyOf(effects);
+        if (effects == null) {
+            throw new IllegalArgumentException(
+                    "Effect definitions must not be null"
+            );
+        }
+
         for (Map.Entry<ResourceLocation, Integer> entry : effects.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) {
+                throw new IllegalArgumentException(
+                        "Effect definitions must not contain null entries"
+                );
+            }
+
             if (entry.getValue() < 0) {
                 throw new IllegalArgumentException(
                         "Effect amplifier must be non-negative: " + entry.getKey()
                 );
             }
         }
+
+        effects = Map.copyOf(effects);
     }
 }

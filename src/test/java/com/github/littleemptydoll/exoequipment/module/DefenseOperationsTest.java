@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -40,6 +41,18 @@ class DefenseOperationsTest {
                     "explosion"
             );
 
+    private static final ResourceLocation PROJECTILE_TAG =
+            ResourceLocation.fromNamespaceAndPath(
+                    "minecraft",
+                    "is_projectile"
+            );
+
+    private static final ResourceLocation BYPASSES_ARMOR_TAG =
+            ResourceLocation.fromNamespaceAndPath(
+                    "minecraft",
+                    "bypasses_armor"
+            );
+
     @Test
     void nullDamageTypeUsesDefaultReduction() {
         DamageReductionProperties properties =
@@ -61,6 +74,44 @@ class DefenseOperationsTest {
         assertEquals(
                 1.0D,
                 properties.reduction(EXPLOSION),
+                EPSILON
+        );
+    }
+
+    @Test
+    void damageTagsUseStrongestMatchAndExactTypeOverridesThem() {
+        DamageReductionProperties properties =
+                new DamageReductionProperties(
+                        0.10D,
+                        Map.of(ARROW, 0.25D),
+                        Map.of(
+                                PROJECTILE_TAG, 0.40D,
+                                BYPASSES_ARMOR_TAG, 0.60D
+                        )
+                );
+
+        assertEquals(
+                0.40D,
+                properties.reduction(
+                        null,
+                        PROJECTILE_TAG::equals
+                ),
+                EPSILON
+        );
+        assertEquals(
+                0.60D,
+                properties.reduction(
+                        null,
+                        tag -> true
+                ),
+                EPSILON
+        );
+        assertEquals(
+                0.25D,
+                properties.reduction(
+                        ARROW,
+                        tag -> true
+                ),
                 EPSILON
         );
     }

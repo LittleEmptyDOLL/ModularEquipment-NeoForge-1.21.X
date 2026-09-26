@@ -59,29 +59,21 @@ final class SensorCharacteristics {
                             entityRange
                     )
             );
-            result.add(
-                    new Characteristic(
-                            CharacteristicCategory.SENSOR,
-                            "entity_detection.players",
-                            CharacteristicType.STATIC,
-                            players ? 1.0D : 0.0D
-                    )
+
+            addEnabledFlag(
+                    result,
+                    "entity_detection.players",
+                    players
             );
-            result.add(
-                    new Characteristic(
-                            CharacteristicCategory.SENSOR,
-                            "entity_detection.mobs",
-                            CharacteristicType.STATIC,
-                            mobs ? 1.0D : 0.0D
-                    )
+            addEnabledFlag(
+                    result,
+                    "entity_detection.mobs",
+                    mobs
             );
-            result.add(
-                    new Characteristic(
-                            CharacteristicCategory.SENSOR,
-                            "entity_detection.hostile",
-                            CharacteristicType.STATIC,
-                            hostile ? 1.0D : 0.0D
-                    )
+            addEnabledFlag(
+                    result,
+                    "entity_detection.hostile",
+                    hostile
             );
         }
 
@@ -95,5 +87,24 @@ final class SensorCharacteristics {
                     )
             );
         }
+    }
+
+    private static void addEnabledFlag(
+            List<Characteristic> result,
+            String key,
+            boolean enabled
+    ) {
+        if (!enabled) {
+            return;
+        }
+
+        result.add(
+                new Characteristic(
+                        CharacteristicCategory.SENSOR,
+                        key,
+                        CharacteristicType.STATE,
+                        1.0D
+                )
+        );
     }
 }

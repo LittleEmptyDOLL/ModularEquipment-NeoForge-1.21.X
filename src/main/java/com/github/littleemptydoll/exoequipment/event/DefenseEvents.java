@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import com.github.littleemptydoll.exoequipment.module.DefenseOperations;
 import com.github.littleemptydoll.exoequipment.module.EmergencyShieldOperations;
+import com.github.littleemptydoll.exoequipment.module.ShieldInvulnerabilityOperations;
 import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
 import com.github.littleemptydoll.exoequipment.module.ShieldProtectionOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
@@ -61,9 +62,24 @@ public final class DefenseEvents {
                         protectionTransfer
                 );
 
+        double shieldDamage =
+                incomingDamage * shieldDamageMultiplier;
+
+        if (ShieldInvulnerabilityOperations.hasAvailableShield(
+                data,
+                poweredModules
+        )) {
+            shieldDamage =
+                    ShieldInvulnerabilityOperations.filterDamage(
+                            entity,
+                            source,
+                            shieldDamage
+                    );
+        }
+
         ShieldOperations.ShieldDamageResult shieldResult =
                 ShieldOperations.absorbDamage(
-                        incomingDamage * shieldDamageMultiplier,
+                        shieldDamage,
                         data,
                         poweredModules
                 );

@@ -8,7 +8,7 @@ import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.registry.ModControllers;
 import com.github.littleemptydoll.exoequipment.registry.ModFrames;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import com.github.littleemptydoll.exoequipment.registry.TestModules;
 import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 
@@ -115,7 +115,7 @@ class ShieldRevivalOperationsTest {
         ExoskeletonData data = data(
                 shield(0.0D, 0),
                 new InstalledModule(
-                        ModModules.TEST_EMERGENCY_SHIELD_HIGH
+                        TestModules.TEST_EMERGENCY_SHIELD_HIGH
                                 .getDefinition()
                                 .id(),
                         0,
@@ -123,7 +123,7 @@ class ShieldRevivalOperationsTest {
                         0
                 ),
                 new InstalledModule(
-                        ModModules.TEST_EMERGENCY_SHIELD_LOW
+                        TestModules.TEST_EMERGENCY_SHIELD_LOW
                                 .getDefinition()
                                 .id(),
                         0,
@@ -171,7 +171,7 @@ class ShieldRevivalOperationsTest {
                 new InstalledModuleReference(0, 0);
         ExoskeletonData data = data(
                 new InstalledModule(
-                        ModModules.TEST_REVIVAL
+                        TestModules.TEST_REVIVAL
                                 .getDefinition()
                                 .id(),
                         0,
@@ -231,7 +231,7 @@ class ShieldRevivalOperationsTest {
             int rechargeCooldown
     ) {
         return new InstalledModule(
-                ModModules.TEST_SHIELD
+                TestModules.TEST_SHIELD
                         .getDefinition()
                         .id(),
                 0,

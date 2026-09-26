@@ -172,7 +172,7 @@ public final class StatusProtectionOperations {
                 data,
                 matrixSlot,
                 poweredModules,
-                properties -> properties.protection(effect)
+                properties -> properties.protectionFor(effect)
         );
     }
 

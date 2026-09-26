@@ -8,7 +8,7 @@ import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.registry.ModControllers;
 import com.github.littleemptydoll.exoequipment.registry.ModFrames;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import com.github.littleemptydoll.exoequipment.registry.TestModules;
 import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +43,7 @@ class DefenseOperationsTest {
     @Test
     void nullDamageTypeUsesDefaultReduction() {
         DamageReductionProperties properties =
-                ModModules.TEST_DAMAGE_REDUCTION
+                TestModules.TEST_DAMAGE_REDUCTION
                         .getDefinition()
                         .damageReduction()
                         .orElseThrow();
@@ -248,7 +248,7 @@ class DefenseOperationsTest {
 
     private static InstalledModule damageReduction() {
         return new InstalledModule(
-                ModModules.TEST_DAMAGE_REDUCTION
+                TestModules.TEST_DAMAGE_REDUCTION
                         .getDefinition()
                         .id(),
                 0,
@@ -259,7 +259,7 @@ class DefenseOperationsTest {
 
     private static InstalledModule bodyProtection() {
         return new InstalledModule(
-                ModModules.TEST_BODY_DAMAGE_PROTECTION
+                TestModules.TEST_BODY_DAMAGE_PROTECTION
                         .getDefinition()
                         .id(),
                 0,

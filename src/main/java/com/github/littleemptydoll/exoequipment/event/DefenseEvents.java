@@ -7,7 +7,6 @@ import com.github.littleemptydoll.exoequipment.module.EmergencyShieldOperations;
 import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.ModSounds;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
@@ -39,12 +38,6 @@ public final class DefenseEvents {
         var data = context.data();
 
         DamageSource source = event.getSource();
-
-        ResourceLocation damageType =
-                source.typeHolder()
-                        .unwrapKey()
-                        .map(key -> key.location())
-                        .orElse(null);
 
         ShieldOperations.ShieldDamageResult shieldResult =
                 ShieldOperations.absorbDamage(
@@ -81,7 +74,7 @@ public final class DefenseEvents {
         double remainingDamage = DefenseOperations.applyDamageReduction(
                 shieldResult.remainingDamage(),
                 data,
-                damageType,
+                source,
                 context.poweredModules()
         );
 

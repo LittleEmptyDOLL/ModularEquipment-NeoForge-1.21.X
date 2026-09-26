@@ -96,24 +96,43 @@ public final class StatusProtectionOperations {
             ResourceLocation effectId,
             Set<InstalledModuleReference> poweredModules
     ) {
+        return applyProtection(
+                duration,
+                calculateProtection(
+                        data,
+                        effectId,
+                        poweredModules
+                )
+        );
+    }
+
+    public static int applyProtection(
+            int duration,
+            double protection
+    ) {
         if (duration <= 0) {
             return 0;
         }
 
-        double protection = calculateProtection(
-                data,
-                effectId,
-                poweredModules
+        if (!Double.isFinite(protection)) {
+            throw new IllegalArgumentException(
+                    "Status protection must be finite"
+            );
+        }
+
+        double clampedProtection = Math.max(
+                0.0D,
+                Math.min(1.0D, protection)
         );
 
-        if (protection >= 1.0D) {
+        if (clampedProtection >= 1.0D) {
             return 0;
         }
 
         return Math.max(
                 0,
                 (int) Math.floor(
-                        duration * (1.0D - protection)
+                        duration * (1.0D - clampedProtection)
                 )
         );
     }

@@ -51,16 +51,24 @@ public record DamageReductionProperties(
         }
     }
 
+    /**
+     * Returns the reduction for a concrete damage type. A {@code null}
+     * damage type represents the universal/default reduction and is used by
+     * the characteristics UI when it calculates the generic defense value.
+     */
     public double reduction(ResourceLocation damageType) {
+        double reduction = defaultReduction.orElse(0.0D);
+
+        if (damageType != null) {
+            reduction = reductions.getOrDefault(
+                    damageType,
+                    reduction
+            );
+        }
+
         return Math.min(
                 1.0D,
-                Math.max(
-                        0.0D,
-                        reductions.getOrDefault(
-                                damageType,
-                                defaultReduction.orElse(0.0D)
-                        )
-                )
+                Math.max(0.0D, reduction)
         );
     }
 }

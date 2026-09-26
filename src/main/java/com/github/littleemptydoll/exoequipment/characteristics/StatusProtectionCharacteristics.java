@@ -61,7 +61,9 @@ final class StatusProtectionCharacteristics {
             result.add(
                     new Characteristic(
                             CharacteristicCategory.STATUS_PROTECTION,
-                            "status_protection." + effectId,
+                            "status_protection."
+                                    + effectId
+                                    + ".reduction",
                             CharacteristicType.CURRENT,
                             protection
                     )

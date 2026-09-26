@@ -277,7 +277,7 @@ final class DefenseCharacteristics {
         result.add(
                 new Characteristic(
                         CharacteristicCategory.SHIELD,
-                        "current_energy",
+                        "current_strength",
                         CharacteristicType.CURRENT,
                         status.currentEnergy()
                 )

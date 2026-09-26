@@ -271,13 +271,18 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
         );
 
         definition.bodyDamageProtection().ifPresent(value -> {
-            tooltip.add(TooltipHelper.property("body damage chance",
+            tooltip.add(TooltipHelper.property("body damage block chance",
                     String.format(java.util.Locale.ROOT, "%.1f%%", Math.min(1.0D, value.chance() * efficiency) * 100.0D)));
             tooltip.add(TooltipHelper.property("body damage reduction",
                     String.format(java.util.Locale.ROOT, "%.1f%%", Math.min(1.0D, value.damageReduction() * efficiency) * 100.0D)));
-            tooltip.add(TooltipHelper.property("body parts",
-                    value.bodyParts().stream().map(part -> part.name().toLowerCase(java.util.Locale.ROOT))
-                            .collect(java.util.stream.Collectors.joining(", "))));
+            tooltip.add(TooltipHelper.property(
+                    "body parts",
+                    value.bodyParts().isEmpty()
+                            ? "all"
+                            : value.bodyParts().stream()
+                            .map(part -> NameUtils.toDisplayName(part.name()))
+                            .collect(java.util.stream.Collectors.joining(", "))
+            ));
         });
 
         definition.bodyDamageRegeneration().ifPresent(value -> {

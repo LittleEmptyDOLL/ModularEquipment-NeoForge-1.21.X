@@ -48,13 +48,13 @@ final class ModLsoModules {
         registerTemperature(registry, "experimental_cold_resistance", EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC, 10, 0.0D, 2.5D);
 
-        registerModifier(registry, "civilian_heater", EquipmentTier.CIVILIAN,
+        registerModifier(registry, "civilian_personal_heater", EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON, 3, 0.5D, 0.0D);
-        registerModifier(registry, "engineering_heater", EquipmentTier.ENGINEERING,
+        registerModifier(registry, "engineering_personal_heater", EquipmentTier.ENGINEERING,
                 Rarity.RARE, 5, 1.0D, 0.0D);
-        registerModifier(registry, "military_heater", EquipmentTier.MILITARY,
+        registerModifier(registry, "military_personal_heater", EquipmentTier.MILITARY,
                 Rarity.RARE, 7, 1.5D, 0.0D);
-        registerModifier(registry, "experimental_heater", EquipmentTier.EXPERIMENTAL,
+        registerModifier(registry, "experimental_personal_heater", EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC, 10, 2.0D, 0.0D);
         registerModifier(registry, "civilian_personal_cooler", EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON, 3, -0.5D, 0.0D);

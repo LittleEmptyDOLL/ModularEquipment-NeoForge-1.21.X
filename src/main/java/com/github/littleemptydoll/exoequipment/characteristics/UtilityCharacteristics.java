@@ -25,14 +25,18 @@ final class UtilityCharacteristics {
     ) {
         Optional<PickupMagnetProperties> magnet =
                 context.isMatrixScope()
-                        ? Optional.empty()
+                        ? PickupMagnetOperations
+                        .findProperties(
+                                context.data(),
+                                context.matrixSlot(),
+                                CharacteristicsSupport
+                                        .poweredModules(context)
+                        )
                         : PickupMagnetOperations
                         .findProperties(
                                 context.data(),
                                 CharacteristicsSupport
-                                        .poweredModules(
-                                                context
-                                        )
+                                        .poweredModules(context)
                         );
 
         magnet.ifPresent(properties -> {

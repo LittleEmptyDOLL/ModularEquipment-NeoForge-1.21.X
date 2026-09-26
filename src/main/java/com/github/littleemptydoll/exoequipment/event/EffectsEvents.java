@@ -39,24 +39,20 @@ public final class EffectsEvents {
             previousSnapshot = Map.copyOf(previous);
         }
 
-        Map<ResourceLocation, Integer> appliedNow =
-                ExoskeletonAccess.findContext(player)
-                        .map(context ->
-                                EffectsOperations.reconcile(
-                                        player,
-                                        context.data(),
-                                        context.poweredModules(),
-                                        previousSnapshot
-                                )
-                        )
-                        .orElseGet(() ->
-                                EffectsOperations.reconcile(
-                                        player,
-                                        com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData.empty(),
-                                        java.util.Set.of(),
-                                        previousSnapshot
-                                )
-                        );
+        var context = ExoskeletonAccess.findContext(player).orElse(null);
+        Map<ResourceLocation, Integer> appliedNow;
+
+        if (context == null) {
+            EffectsOperations.clear(player, previousSnapshot);
+            appliedNow = Map.of();
+        } else {
+            appliedNow = EffectsOperations.reconcile(
+                    player,
+                    context.data(),
+                    context.poweredModules(),
+                    previousSnapshot
+            );
+        }
 
         synchronized (previous) {
             previous.clear();

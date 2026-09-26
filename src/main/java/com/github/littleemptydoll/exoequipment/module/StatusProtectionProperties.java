@@ -95,7 +95,7 @@ public record StatusProtectionProperties(
         return protection(effectId, harmful, tagId -> false);
     }
 
-    public double protection(Holder<MobEffect> effect) {
+    public double protectionFor(Holder<MobEffect> effect) {
         if (effect == null) {
             return 0.0D;
         }

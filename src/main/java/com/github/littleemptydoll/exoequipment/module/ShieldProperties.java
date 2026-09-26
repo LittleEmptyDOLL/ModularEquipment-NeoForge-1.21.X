@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public record ShieldProperties(
         int capacity,
-        int rechargeRate,
+        double rechargeRate,
         int rechargeDelay
 ) {
     public static final Codec<ShieldProperties> CODEC =
@@ -14,7 +14,7 @@ public record ShieldProperties(
                             Codec.INT
                                     .fieldOf("capacity")
                                     .forGetter(ShieldProperties::capacity),
-                            Codec.INT
+                            Codec.DOUBLE
                                     .fieldOf("recharge_rate")
                                     .forGetter(ShieldProperties::rechargeRate),
                             Codec.INT
@@ -33,9 +33,9 @@ public record ShieldProperties(
             );
         }
 
-        if (rechargeRate < 0) {
+        if (!Double.isFinite(rechargeRate) || rechargeRate < 0.0D) {
             throw new IllegalArgumentException(
-                    "Shield recharge rate cannot be negative"
+                    "Shield recharge rate must be finite and non-negative"
             );
         }
 

@@ -6,6 +6,9 @@ import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public final class ModModules {
     private ModModules() {}
 
@@ -25,17 +28,27 @@ public final class ModModules {
             ModuleItem::new
     );
 
+    private static final Map<ResourceLocation, ModuleDefinition>
+            TRANSIENT_DEFINITIONS = new HashMap<>();
+
     static {
         ModEnergyModules.register(REGISTRY);
     }
 
-    static EquipmentRegistry<ModuleDefinition, ModuleItem> registry() {
-        return REGISTRY;
+    static void registerTransientDefinition(ModuleDefinition definition) {
+        TRANSIENT_DEFINITIONS.put(definition.id(), definition);
     }
 
     public static ModuleDefinition getDefinition(
             ResourceLocation id
     ) {
+        ModuleDefinition transientDefinition =
+                TRANSIENT_DEFINITIONS.get(id);
+
+        if (transientDefinition != null) {
+            return transientDefinition;
+        }
+
         return REGISTRY.getDefinition(id);
     }
 

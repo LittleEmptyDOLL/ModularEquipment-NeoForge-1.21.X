@@ -72,21 +72,15 @@ final class EnergyCharacteristics {
                 state.storedEnergy()
         );
 
-        result.add(
-                new Characteristic(
-                        CharacteristicCategory.ENERGY,
-                        "max_input",
-                        CharacteristicType.STATIC,
-                        state.maxInput()
-                )
+        addCurrent(
+                result,
+                "max_input",
+                state.maxInput()
         );
-        result.add(
-                new Characteristic(
-                        CharacteristicCategory.ENERGY,
-                        "max_output",
-                        CharacteristicType.STATIC,
-                        state.maxOutput()
-                )
+        addCurrent(
+                result,
+                "max_output",
+                state.maxOutput()
         );
     }
 
@@ -136,6 +130,10 @@ final class EnergyCharacteristics {
             String key,
             double value
     ) {
+        if (value == 0.0D) {
+            return;
+        }
+
         result.add(
                 new Characteristic(
                         CharacteristicCategory.ENERGY,

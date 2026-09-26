@@ -17,12 +17,10 @@ final class ModDefenseModules {
     private static final ModuleSize GENERAL_PROTECTION_SIZE = new ModuleSize(2, 3);
     private static final ModuleSize IMMUNITY_SIZE = new ModuleSize(2, 3);
     private static final ModuleSize SHIELD_PROTECTION_SIZE = new ModuleSize(1, 2);
-    private static final ModuleSize STATUS_PROTECTION_SIZE = new ModuleSize(2, 2);
 
     private static final int PROTECTION_PRIORITY = 8;
     private static final int IMMUNITY_PRIORITY = 9;
     private static final int SHIELD_PROTECTION_PRIORITY = 8;
-    private static final int STATUS_PROTECTION_PRIORITY = 8;
     private static final int TICKS_PER_MINUTE = 20 * 60;
 
     private static final ResourceLocation IS_PROJECTILE = minecraftTag("is_projectile");
@@ -48,7 +46,6 @@ final class ModDefenseModules {
         registerEmergencyShields(registry);
         registerRevivals(registry);
         registerShieldProtection(registry);
-        registerStatusProtection(registry);
     }
 
     private static void registerShields(
@@ -280,47 +277,6 @@ final class ModDefenseModules {
                 Rarity.EPIC,
                 1.0D,
                 50
-        );
-    }
-
-    private static void registerStatusProtection(
-            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
-    ) {
-        // This is broad protection against harmful status effects, including
-        // effects added by other mods. It reduces effect duration rather than
-        // damage and intentionally stops below complete immunity. Absolute
-        // immunity can remain the role of future specialized modules.
-        registerStatusProtection(
-                registry,
-                "civilian_status_protection",
-                EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON,
-                0.20D,
-                20
-        );
-        registerStatusProtection(
-                registry,
-                "engineering_status_protection",
-                EquipmentTier.ENGINEERING,
-                Rarity.RARE,
-                0.40D,
-                40
-        );
-        registerStatusProtection(
-                registry,
-                "military_status_protection",
-                EquipmentTier.MILITARY,
-                Rarity.RARE,
-                0.60D,
-                70
-        );
-        registerStatusProtection(
-                registry,
-                "experimental_status_protection",
-                EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC,
-                0.80D,
-                110
         );
     }
 
@@ -595,38 +551,6 @@ final class ModDefenseModules {
                                 .shieldProtection(
                                         new ShieldProtectionProperties(
                                                 transfer
-                                        )
-                                )
-                                .build()
-        );
-    }
-
-    private static void registerStatusProtection(
-            EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
-            String id,
-            EquipmentTier tier,
-            Rarity rarity,
-            double harmfulProtection,
-            int energyConsumption
-    ) {
-        registry.register(
-                id,
-                new EquipmentProperties(tier, rarity),
-                (resourceLocation, properties) ->
-                        ModuleDefinition.builder(
-                                        resourceLocation,
-                                        properties,
-                                        ModuleCategory.DEFENSE,
-                                        STATUS_PROTECTION_SIZE
-                                )
-                                .energy(new EnergyProperties(
-                                        energyConsumption,
-                                        STATUS_PROTECTION_PRIORITY
-                                ))
-                                .statusProtection(
-                                        new StatusProtectionProperties(
-                                                harmfulProtection,
-                                                Map.of()
                                         )
                                 )
                                 .build()

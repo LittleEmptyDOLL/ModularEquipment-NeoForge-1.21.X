@@ -15,7 +15,9 @@ final class SensorCharacteristics {
         boolean players = false;
         boolean mobs = false;
         boolean hostile = false;
+        boolean entityActive = false;
         double blockRange = 0.0D;
+        boolean blockActive = false;
 
         for (var activeModule
                 : CharacteristicsSupport
@@ -37,9 +39,11 @@ final class SensorCharacteristics {
                 players |= detection.players();
                 mobs |= detection.mobs();
                 hostile |= detection.hostile();
+                entityActive |= activeModule.module().active();
             }
 
             if (definition.blockScanner().isPresent()) {
+                blockActive |= activeModule.module().active();
                 blockRange =
                         Math.max(
                                 blockRange,
@@ -51,6 +55,7 @@ final class SensorCharacteristics {
         }
 
         if (entityRange > 0.0D) {
+            addState(result, "entity_detection.active", entityActive);
             result.add(
                     new Characteristic(
                             CharacteristicCategory.SENSOR,
@@ -78,6 +83,7 @@ final class SensorCharacteristics {
         }
 
         if (blockRange > 0.0D) {
+            addState(result, "block_scanner.active", blockActive);
             result.add(
                     new Characteristic(
                             CharacteristicCategory.SENSOR,
@@ -106,5 +112,11 @@ final class SensorCharacteristics {
                         1.0D
                 )
         );
+    }
+
+    private static void addState(List<Characteristic> result, String key, boolean active) {
+        result.add(new Characteristic(
+                CharacteristicCategory.SENSOR, key,
+                CharacteristicType.STATE, active ? 1.0D : 0.0D));
     }
 }

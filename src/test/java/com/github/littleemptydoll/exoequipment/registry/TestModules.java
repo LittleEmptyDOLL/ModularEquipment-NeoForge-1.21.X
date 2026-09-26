@@ -8,6 +8,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Rarity;
 
 import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -40,6 +41,27 @@ public final class TestModules {
                             ResourceLocation.fromNamespaceAndPath("minecraft", "night_vision"),
                             0
                     )))
+                    .build()
+    );
+
+    public static final TestEntry TEST_ENTITY_SENSOR = register(
+            "test_entity_detection",
+            properties(),
+            (id, properties) -> ModuleDefinition.builder(
+                            id, properties, ModuleCategory.SENSOR, new ModuleSize(2, 2))
+                    .energy(new EnergyProperties(5))
+                    .entityDetection(new EntityDetectionProperties(8.0D, false, true, false))
+                    .build()
+    );
+
+    public static final TestEntry TEST_BLOCK_SCANNER = register(
+            "test_block_scanner",
+            properties(),
+            (id, properties) -> ModuleDefinition.builder(
+                            id, properties, ModuleCategory.SENSOR, new ModuleSize(2, 2))
+                    .energy(new EnergyProperties(5))
+                    .blockScanner(new BlockScannerProperties(
+                            8.0D, List.of(ResourceLocation.parse("minecraft:diamond_ore")), List.of()))
                     .build()
     );
 

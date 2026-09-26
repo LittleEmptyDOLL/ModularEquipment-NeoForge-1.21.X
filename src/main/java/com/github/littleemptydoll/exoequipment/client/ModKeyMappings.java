@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.network.FlightPayload;
 import com.github.littleemptydoll.exoequipment.network.JetpackInputPayload;
 import com.github.littleemptydoll.exoequipment.network.CloakingPayload;
 import com.github.littleemptydoll.exoequipment.network.OpenExoskeletonPayload;
+import com.github.littleemptydoll.exoequipment.network.SensorTogglePayload;
 import com.github.littleemptydoll.exoequipment.module.JetpackInputState;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
@@ -49,12 +50,28 @@ public final class ModKeyMappings {
             "key.categories.exoequipment"
     );
 
+    public static final KeyMapping TOGGLE_ENTITY_SENSOR = new KeyMapping(
+            "key.exoequipment.toggle_entity_sensor",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_N,
+            "key.categories.exoequipment"
+    );
+
+    public static final KeyMapping TOGGLE_BLOCK_SCANNER = new KeyMapping(
+            "key.exoequipment.toggle_block_scanner",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_M,
+            "key.categories.exoequipment"
+    );
+
     @SubscribeEvent
     public static void register(RegisterKeyMappingsEvent event) {
         event.register(OPEN_EXOSKELETON);
         event.register(ACTIVATE_FLIGHT);
         event.register(ACTIVATE_CLOAKING);
         event.register(ACTIVATE_BLINK);
+        event.register(TOGGLE_ENTITY_SENSOR);
+        event.register(TOGGLE_BLOCK_SCANNER);
     }
 
     private ModKeyMappings() {}
@@ -96,6 +113,14 @@ final class ModKeyMappingHandler {
 
         while (ModKeyMappings.ACTIVATE_BLINK.consumeClick()) {
             PacketDistributor.sendToServer(new BlinkPayload());
+        }
+
+        while (ModKeyMappings.TOGGLE_ENTITY_SENSOR.consumeClick()) {
+            PacketDistributor.sendToServer(new SensorTogglePayload(SensorTogglePayload.ENTITY));
+        }
+
+        while (ModKeyMappings.TOGGLE_BLOCK_SCANNER.consumeClick()) {
+            PacketDistributor.sendToServer(new SensorTogglePayload(SensorTogglePayload.BLOCK));
         }
     }
 

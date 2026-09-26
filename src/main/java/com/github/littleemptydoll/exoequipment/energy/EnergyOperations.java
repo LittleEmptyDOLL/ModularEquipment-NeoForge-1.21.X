@@ -434,6 +434,11 @@ public final class EnergyOperations {
             ExoskeletonData data, InstalledModule module,
             ModuleDefinition definition, Player player
     ) {
+        if (!module.active() && (definition.entityDetection().isPresent()
+                || definition.blockScanner().isPresent())) {
+            return 0;
+        }
+
         int consumption = definition.energy()
                 .map(EnergyProperties::consumption).orElse(0);
 

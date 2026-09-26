@@ -91,6 +91,16 @@ public final class ModNetworking {
         );
 
         registrar.playToServer(
+                SensorTogglePayload.TYPE,
+                SensorTogglePayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        ServerPayloadHandlers.handleSensorToggle(player, payload);
+                    }
+                })
+        );
+
+        registrar.playToServer(
                 OpenExoskeletonPayload.TYPE,
                 OpenExoskeletonPayload.STREAM_CODEC,
                 (payload, context) ->

@@ -33,7 +33,9 @@ public class ModItemModelProvider extends ItemModelProvider {
                     mcLoc("item/generated")
             ).texture(
                     "layer0",
-                    modLoc("item/" + id.getPath())
+                    modLoc(id.getPath().endsWith("_module")
+                            ? "item/module/" + id.getPath()
+                            : "item/" + id.getPath())
             );
         }
     }

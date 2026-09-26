@@ -12,6 +12,7 @@ import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
+import com.github.littleemptydoll.exoequipment.module.SensorToggleOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModControllers;
 import com.github.littleemptydoll.exoequipment.registry.ModEnergySystems;
 import com.github.littleemptydoll.exoequipment.registry.ModFrames;
@@ -276,6 +277,34 @@ class EnergyOperationsTest {
         assertEquals(5, EnergyState.calculate(inactive).consumption());
         assertEquals(20, EnergyState.calculate(active).consumption());
         assertEquals(20, EnergyOperations.calculateMatrixConsumption(active, 0, null));
+    }
+
+    @Test
+    void sensorsAreOffUntilEnabledAndToggleIndependently() {
+        ExoskeletonData off = data(
+                ModFrames.CIVILIAN.getDefinition().id(),
+                new InstalledModule(TestModules.TEST_ENTITY_SENSOR.getDefinition().id(), 0, 0, 0),
+                new InstalledModule(TestModules.TEST_BLOCK_SCANNER.getDefinition().id(), 0, 0, 0));
+
+        assertEquals(0, EnergyState.calculate(off).consumption());
+        assertEquals(0, EnergyOperations.tick(off, 10).consumed());
+
+        ExoskeletonData entityOn = SensorToggleOperations.toggle(
+                off, SensorToggleOperations.Kind.ENTITY);
+        assertTrue(module(entityOn, 0).active());
+        assertFalse(module(entityOn, 1).active());
+        assertEquals(5, EnergyState.calculate(entityOn).consumption());
+
+        ExoskeletonData bothOn = SensorToggleOperations.toggle(
+                entityOn, SensorToggleOperations.Kind.BLOCK);
+        assertEquals(10, EnergyState.calculate(bothOn).consumption());
+        assertEquals(10, EnergyOperations.tick(bothOn, 10).consumed());
+
+        ExoskeletonData entityOff = SensorToggleOperations.toggle(
+                bothOn, SensorToggleOperations.Kind.ENTITY);
+        assertFalse(module(entityOff, 0).active());
+        assertTrue(module(entityOff, 1).active());
+        assertEquals(5, EnergyState.calculate(entityOff).consumption());
     }
 
     private static ExoskeletonData data(

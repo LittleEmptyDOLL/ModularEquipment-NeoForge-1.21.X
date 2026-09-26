@@ -83,7 +83,7 @@ public final class BlockScannerOperations {
         for (ExoskeletonModules.ActiveModule activeModule
                 : ExoskeletonModules.activeSupported(data)) {
 
-            if (!ExoskeletonModules.isPowered(
+            if (!activeModule.module().active() || !ExoskeletonModules.isPowered(
                     activeModule,
                     poweredModules
             )) {

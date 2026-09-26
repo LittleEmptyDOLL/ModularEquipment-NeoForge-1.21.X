@@ -16,6 +16,7 @@ import com.github.littleemptydoll.exoequipment.module.CloakingOperations;
 import com.github.littleemptydoll.exoequipment.module.FlightOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.module.JetpackInputState;
+import com.github.littleemptydoll.exoequipment.module.SensorToggleOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -77,6 +78,26 @@ final class ServerPayloadHandlers {
                 player,
                 payload.input()
         );
+    }
+
+    static void handleSensorToggle(ServerPlayer player, SensorTogglePayload payload) {
+        SensorToggleOperations.Kind kind = switch (payload.kind()) {
+            case SensorTogglePayload.ENTITY -> SensorToggleOperations.Kind.ENTITY;
+            case SensorTogglePayload.BLOCK -> SensorToggleOperations.Kind.BLOCK;
+            default -> null;
+        };
+        if (kind == null) {
+            return;
+        }
+
+        ExoskeletonMenuProvider.findBodyExoskeleton(player)
+                .ifPresent(exoskeleton -> {
+                    var data = ExoskeletonItem.getData(exoskeleton);
+                    var updated = SensorToggleOperations.toggle(data, kind);
+                    if (updated != data) {
+                        exoskeleton.set(ModDataComponents.EXOSKELETON_DATA.get(), updated);
+                    }
+                });
     }
 
     static void handleFlight(

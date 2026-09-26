@@ -37,8 +37,9 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
                     "textures/gui/controls.png"
             );
 
-    private static final int IMAGE_WIDTH = 256;
-    private static final int IMAGE_HEIGHT = 256;
+    private static final int IMAGE_WIDTH = 244;
+    private static final int IMAGE_HEIGHT = 214;
+    private static final int CONTROLS_TEXTURE_SIZE = 256;
 
     private static final int STATUS_VALUE_X = 170;
     private static final int ENERGY_Y = 23;
@@ -133,6 +134,8 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
                 0,
                 0,
                 IMAGE_WIDTH,
+                IMAGE_HEIGHT,
+                IMAGE_WIDTH,
                 IMAGE_HEIGHT
         );
 
@@ -192,8 +195,8 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
                     0,
                     ENERGY_STATUS_INDICATOR_WIDTH,
                     ENERGY_STATUS_INDICATOR_HEIGHT,
-                    IMAGE_WIDTH,
-                    IMAGE_HEIGHT
+                    CONTROLS_TEXTURE_SIZE,
+                    CONTROLS_TEXTURE_SIZE
             );
             currentX += ENERGY_STATUS_INDICATOR_GAP;
         }
@@ -210,8 +213,8 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
                 0,
                 EXPANDED_BUTTON_WIDTH,
                 EXPANDED_BUTTON_HEIGHT,
-                IMAGE_WIDTH,
-                IMAGE_HEIGHT
+                CONTROLS_TEXTURE_SIZE,
+                CONTROLS_TEXTURE_SIZE
         );
     }
 
@@ -228,8 +231,8 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
                 11,
                 PROFILE_HOVER_WIDTH,
                 PROFILE_HOVER_HEIGHT,
-                IMAGE_WIDTH,
-                IMAGE_HEIGHT
+                CONTROLS_TEXTURE_SIZE,
+                CONTROLS_TEXTURE_SIZE
         );
     }
 
@@ -256,8 +259,8 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
                     MATRIX_INDICATOR_TEXTURE_Y,
                     MATRIX_INDICATOR_SIZE,
                     MATRIX_INDICATOR_SIZE,
-                    IMAGE_WIDTH,
-                    IMAGE_HEIGHT
+                    CONTROLS_TEXTURE_SIZE,
+                    CONTROLS_TEXTURE_SIZE
             );
         }
     }

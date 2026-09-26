@@ -107,6 +107,7 @@ public final class BlockScannerServerEvents {
     ) {
         return ExoskeletonModules.activeSupported(data)
                 .stream()
+                .filter(activeModule -> activeModule.module().active())
                 .filter(activeModule ->
                         ExoskeletonModules.isPowered(
                                 activeModule,

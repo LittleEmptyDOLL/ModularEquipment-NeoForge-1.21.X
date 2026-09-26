@@ -356,10 +356,12 @@
   "gui.exoequipment.characteristic.blink.cooldown": "Перезарядка",
 
   "gui.exoequipment.characteristic.entity_detection.range": "Радиус обнаружения сущностей",
+  "gui.exoequipment.characteristic.entity_detection.active": "Детектор сущностей включён",
   "gui.exoequipment.characteristic.entity_detection.players": "Обнаружение игроков",
   "gui.exoequipment.characteristic.entity_detection.mobs": "Обнаружение мобов",
   "gui.exoequipment.characteristic.entity_detection.hostile": "Обнаружение враждебных мобов",
   "gui.exoequipment.characteristic.block_scanner.range": "Радиус сканера блоков",
+  "gui.exoequipment.characteristic.block_scanner.active": "Сканер блоков включён",
 
   "gui.exoequipment.characteristic.pickup_magnet.radius": "Радиус",
   "gui.exoequipment.characteristic.pickup_magnet.items": "Притягивание предметов",
@@ -377,5 +379,7 @@
   "key.exoequipment.activate_cloaking": "Активировать маскировку",
   "key.exoequipment.activate_blink": "Активировать рывок",
   "key.exoequipment.activate_flight": "Активировать полёт",
+  "key.exoequipment.toggle_entity_sensor": "Включить/выключить детектор сущностей",
+  "key.exoequipment.toggle_block_scanner": "Включить/выключить сканер блоков",
   "key.categories.exoequipment": "ExoEquipment"
 }

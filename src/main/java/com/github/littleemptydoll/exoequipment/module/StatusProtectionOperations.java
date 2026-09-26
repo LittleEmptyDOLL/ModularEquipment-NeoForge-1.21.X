@@ -3,9 +3,10 @@ package com.github.littleemptydoll.exoequipment.module;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
 import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
@@ -44,6 +45,33 @@ public final class StatusProtectionOperations {
         );
     }
 
+    public static double calculateProtection(
+            ExoskeletonData data,
+            Holder<MobEffect> effect,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        return calculateProtection(
+                data,
+                null,
+                effect,
+                poweredModules
+        );
+    }
+
+    public static double calculateProtection(
+            ExoskeletonData data,
+            int matrixSlot,
+            Holder<MobEffect> effect,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        return calculateProtection(
+                data,
+                Integer.valueOf(matrixSlot),
+                effect,
+                poweredModules
+        );
+    }
+
     public static double calculateHarmfulProtection(
             ExoskeletonData data,
             Set<InstalledModuleReference> poweredModules
@@ -69,6 +97,33 @@ public final class StatusProtectionOperations {
         );
     }
 
+    public static double calculateTagProtection(
+            ExoskeletonData data,
+            ResourceLocation tagId,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        return calculate(
+                data,
+                null,
+                poweredModules,
+                properties -> properties.tagProtection(tagId)
+        );
+    }
+
+    public static double calculateTagProtection(
+            ExoskeletonData data,
+            int matrixSlot,
+            ResourceLocation tagId,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        return calculate(
+                data,
+                Integer.valueOf(matrixSlot),
+                poweredModules,
+                properties -> properties.tagProtection(tagId)
+        );
+    }
+
     private static double calculateProtection(
             ExoskeletonData data,
             Integer matrixSlot,
@@ -79,7 +134,18 @@ public final class StatusProtectionOperations {
             return 0.0D;
         }
 
-        boolean harmful = isHarmful(effectId);
+        Holder<MobEffect> effect = BuiltInRegistries.MOB_EFFECT
+                .getHolder(effectId)
+                .orElse(null);
+
+        if (effect != null) {
+            return calculateProtection(
+                    data,
+                    matrixSlot,
+                    effect,
+                    poweredModules
+            );
+        }
 
         return calculate(
                 data,
@@ -87,8 +153,26 @@ public final class StatusProtectionOperations {
                 poweredModules,
                 properties -> properties.protection(
                         effectId,
-                        harmful
+                        false
                 )
+        );
+    }
+
+    private static double calculateProtection(
+            ExoskeletonData data,
+            Integer matrixSlot,
+            Holder<MobEffect> effect,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        if (effect == null) {
+            return 0.0D;
+        }
+
+        return calculate(
+                data,
+                matrixSlot,
+                poweredModules,
+                properties -> properties.protection(effect)
         );
     }
 
@@ -152,35 +236,19 @@ public final class StatusProtectionOperations {
         );
     }
 
-    private static boolean isHarmful(ResourceLocation effectId) {
-        return BuiltInRegistries.MOB_EFFECT
-                .getHolder(effectId)
-                .map(holder ->
-                        holder.value().getCategory()
-                                == MobEffectCategory.HARMFUL
-                )
-                .orElse(false);
-    }
-
     public static void removeFullyProtectedEffects(
             LivingEntity entity,
             ExoskeletonData data,
             Set<InstalledModuleReference> poweredModules
     ) {
         entity.getActiveEffects().stream()
-                .filter(effect -> {
-                    ResourceLocation effectId = effect.getEffect()
-                            .unwrapKey()
-                            .map(key -> key.location())
-                            .orElse(null);
-
-                    return effectId != null
-                            && calculateProtection(
-                            data,
-                            effectId,
-                            poweredModules
-                    ) >= 1.0D;
-                })
+                .filter(effect ->
+                        calculateProtection(
+                                data,
+                                effect.getEffect(),
+                                poweredModules
+                        ) >= 1.0D
+                )
                 .map(effect -> effect.getEffect())
                 .toList()
                 .forEach(entity::removeEffect);

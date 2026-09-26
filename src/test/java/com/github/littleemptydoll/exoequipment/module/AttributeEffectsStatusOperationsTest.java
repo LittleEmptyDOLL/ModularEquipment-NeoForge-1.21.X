@@ -8,7 +8,7 @@ import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.registry.ModControllers;
 import com.github.littleemptydoll.exoequipment.registry.ModFrames;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import com.github.littleemptydoll.exoequipment.registry.TestModules;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.junit.jupiter.api.Test;
@@ -211,15 +211,15 @@ class AttributeEffectsStatusOperationsTest {
     }
 
     private static InstalledModule mobility() {
-        return module(ModModules.TEST_MOBILITY.getDefinition().id());
+        return module(TestModules.TEST_MOBILITY.getDefinition().id());
     }
 
     private static InstalledModule nightVision() {
-        return module(ModModules.TEST_NIGHT_VISION.getDefinition().id());
+        return module(TestModules.TEST_NIGHT_VISION.getDefinition().id());
     }
 
     private static InstalledModule statusProtection() {
-        return module(ModModules.TEST_STATUS_PROTECTION.getDefinition().id());
+        return module(TestModules.TEST_STATUS_PROTECTION.getDefinition().id());
     }
 
     private static InstalledModule module(ResourceLocation id) {

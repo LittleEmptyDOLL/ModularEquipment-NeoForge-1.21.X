@@ -29,6 +29,10 @@ public final class ModModules {
         ModEnergyModules.register(REGISTRY);
     }
 
+    static EquipmentRegistry<ModuleDefinition, ModuleItem> registry() {
+        return REGISTRY;
+    }
+
     public static ModuleDefinition getDefinition(
             ResourceLocation id
     ) {

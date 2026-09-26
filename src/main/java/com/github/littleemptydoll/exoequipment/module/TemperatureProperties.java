@@ -35,6 +35,13 @@ public record TemperatureProperties(
             );
 
     public TemperatureProperties {
+        if (!Double.isFinite(minTemperature)
+                || !Double.isFinite(maxTemperature)) {
+            throw new IllegalArgumentException(
+                    "Module operating temperatures must be finite"
+            );
+        }
+
         if (minTemperature > maxTemperature) {
             throw new IllegalArgumentException(
                     "Minimum operating temperature cannot exceed maximum"
@@ -42,9 +49,9 @@ public record TemperatureProperties(
         }
 
         efficiencyFalloff.ifPresent(value -> {
-            if (value < 0) {
+            if (!Double.isFinite(value) || value < 0.0D) {
                 throw new IllegalArgumentException(
-                        "Temperature efficiency falloff cannot be negative"
+                        "Temperature efficiency falloff must be finite and non-negative"
                 );
             }
         });

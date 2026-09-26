@@ -11,6 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public final class EffectsOperations {
@@ -64,7 +65,8 @@ public final class EffectsOperations {
                     if (applyEffect(
                             entity,
                             effectId,
-                            amplifier
+                            amplifier,
+                            true
                     )) {
                         applied.put(effectId, amplifier);
                     }
@@ -73,15 +75,59 @@ public final class EffectsOperations {
         return Map.copyOf(applied);
     }
 
+    public static Map<ResourceLocation, Integer> reconcile(
+            LivingEntity entity,
+            ExoskeletonData data,
+            Set<InstalledModuleReference> poweredModules,
+            Map<ResourceLocation, Integer> previouslyApplied
+    ) {
+        Map<ResourceLocation, Integer> desired =
+                collectEffects(data, poweredModules);
+
+        for (Map.Entry<ResourceLocation, Integer> previous
+                : previouslyApplied.entrySet()) {
+            Integer desiredAmplifier = desired.get(previous.getKey());
+
+            if (!Objects.equals(
+                    desiredAmplifier,
+                    previous.getValue()
+            )) {
+                removeEffect(
+                        entity,
+                        previous.getKey(),
+                        previous.getValue()
+                );
+            }
+        }
+
+        Map<ResourceLocation, Integer> applied = new HashMap<>();
+
+        desired.forEach((effectId, amplifier) -> {
+            boolean previouslyOwned = Objects.equals(
+                    previouslyApplied.get(effectId),
+                    amplifier
+            );
+
+            if (applyEffect(
+                    entity,
+                    effectId,
+                    amplifier,
+                    previouslyOwned
+            )) {
+                applied.put(effectId, amplifier);
+            }
+        });
+
+        return Map.copyOf(applied);
+    }
+
     private static boolean applyEffect(
             LivingEntity entity,
             ResourceLocation effectId,
-            int amplifier
+            int amplifier,
+            boolean ownExistingInfiniteEffect
     ) {
-        Holder<MobEffect> effect =
-                BuiltInRegistries.MOB_EFFECT
-                        .getHolder(effectId)
-                        .orElse(null);
+        Holder<MobEffect> effect = resolve(effectId);
 
         if (effect == null) {
             return false;
@@ -96,7 +142,7 @@ public final class EffectsOperations {
 
             if (existing.getAmplifier() == amplifier
                     && existing.getDuration() == EFFECT_DURATION) {
-                return true;
+                return ownExistingInfiniteEffect;
             }
         }
 
@@ -110,5 +156,31 @@ public final class EffectsOperations {
         ));
 
         return true;
+    }
+
+    private static void removeEffect(
+            LivingEntity entity,
+            ResourceLocation effectId,
+            int amplifier
+    ) {
+        Holder<MobEffect> effect = resolve(effectId);
+
+        if (effect == null) {
+            return;
+        }
+
+        MobEffectInstance current = entity.getEffect(effect);
+
+        if (current != null
+                && current.getAmplifier() == amplifier
+                && current.getDuration() == EFFECT_DURATION) {
+            entity.removeEffect(effect);
+        }
+    }
+
+    private static Holder<MobEffect> resolve(ResourceLocation effectId) {
+        return BuiltInRegistries.MOB_EFFECT
+                .getHolder(effectId)
+                .orElse(null);
     }
 }

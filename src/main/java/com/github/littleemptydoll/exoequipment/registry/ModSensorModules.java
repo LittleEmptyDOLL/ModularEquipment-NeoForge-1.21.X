@@ -41,7 +41,7 @@ final class ModSensorModules {
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry
     ) {
         registry.register(
-                "civilian_night_vision",
+                "night_vision",
                 new EquipmentProperties(
                         EquipmentTier.CIVILIAN,
                         Rarity.UNCOMMON
@@ -116,14 +116,6 @@ final class ModSensorModules {
     private static void registerBlockScanners(
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry
     ) {
-        registerBlockScanner(
-                registry,
-                "civilian_ore_scanner",
-                EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON,
-                5,
-                8.0D
-        );
         registerBlockScanner(
                 registry,
                 "engineering_ore_scanner",

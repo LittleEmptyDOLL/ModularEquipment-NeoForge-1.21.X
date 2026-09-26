@@ -37,7 +37,7 @@ public final class DefenseOperations {
         );
     }
 
-    public static double calculateDamageMultiplier(
+    public static double calculateDamageSourceMultiplier(
             ExoskeletonData data,
             DamageSource source,
             Set<InstalledModuleReference> poweredModules
@@ -143,7 +143,7 @@ public final class DefenseOperations {
             return 0.0D;
         }
 
-        return damage * calculateDamageMultiplier(
+        return damage * calculateDamageSourceMultiplier(
                 data,
                 source,
                 poweredModules

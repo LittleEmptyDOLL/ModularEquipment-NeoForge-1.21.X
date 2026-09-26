@@ -170,14 +170,28 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
             });
         });
 
-        definition.statusProtection().ifPresent(value ->
-                value.protections().forEach((id, protection) ->
-                        tooltip.add(TooltipHelper.property(
-                                "status " + id.getPath(),
-                                String.format(java.util.Locale.ROOT, "%.1f%%", Math.min(1.0D, protection * efficiency) * 100.0D)
-                        ))
-                )
-        );
+        definition.statusProtection().ifPresent(value -> {
+            if (value.harmfulProtection() > 0.0D) {
+                tooltip.add(TooltipHelper.property(
+                        "harmful status protection",
+                        String.format(
+                                java.util.Locale.ROOT,
+                                "%.1f%%",
+                                Math.min(
+                                        1.0D,
+                                        value.harmfulProtection() * efficiency
+                                ) * 100.0D
+                        )
+                ));
+            }
+
+            value.protections().forEach((id, protection) ->
+                    tooltip.add(TooltipHelper.property(
+                            "status " + id.getPath(),
+                            String.format(java.util.Locale.ROOT, "%.1f%%", Math.min(1.0D, protection * efficiency) * 100.0D)
+                    ))
+            );
+        });
 
         definition.entityDetection().ifPresent(value -> {
             tooltip.add(TooltipHelper.property("detection range", value.range() * efficiency));

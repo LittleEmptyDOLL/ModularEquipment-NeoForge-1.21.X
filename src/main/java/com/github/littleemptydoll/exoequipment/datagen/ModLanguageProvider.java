@@ -87,7 +87,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.characteristic.category.thermal", "Thermal");
         add("gui.exoequipment.characteristic.category.defense", "Defense");
         add("gui.exoequipment.characteristic.category.shield", "Shield");
+        add("gui.exoequipment.characteristic.category.status_protection", "Status protection");
         add("gui.exoequipment.characteristic.category.attributes", "Attributes");
+        add("gui.exoequipment.characteristic.category.effects", "Effects");
         add("gui.exoequipment.characteristic.category.regeneration", "Regeneration");
         add("gui.exoequipment.characteristic.category.mobility", "Mobility");
         add("gui.exoequipment.characteristic.category.survival", "Survival");
@@ -132,7 +134,6 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.characteristic.cloaking.active", "Cloaking active");
         add("gui.exoequipment.characteristic.emergency_shield.restore", "Emergency shield restore");
         add("gui.exoequipment.characteristic.emergency_shield.cooldown", "Emergency shield cooldown");
-
 
         add("menu.exoequipment.matrix", "Matrix");
         add("menu.exoequipment.profiles", "Profiles");

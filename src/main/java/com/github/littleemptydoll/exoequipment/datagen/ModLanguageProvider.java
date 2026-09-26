@@ -105,6 +105,7 @@ public class ModLanguageProvider extends LanguageProvider {
 
         add("gui.exoequipment.characteristic.conditional_prefix", "Conditional: ");
         add("gui.exoequipment.characteristic.unknown_effect", "Unknown effect");
+        add("gui.exoequipment.characteristic.status_protection.harmful.reduction", "Harmful effect duration reduction");
         add("gui.exoequipment.characteristic.time.seconds", "%s s");
         add("gui.exoequipment.characteristic.time.minutes", "%s min");
         add("gui.exoequipment.characteristic.time.minutes_seconds", "%s min %s s");

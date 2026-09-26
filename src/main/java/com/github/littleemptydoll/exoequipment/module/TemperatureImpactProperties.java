@@ -7,9 +7,11 @@ public record TemperatureImpactProperties(
         double resistance
 ) {
     public TemperatureImpactProperties {
-        if (resistance < 0.0D || resistance > 1.0D) {
+        if (!Double.isFinite(resistance)
+                || resistance < 0.0D
+                || resistance > 1.0D) {
             throw new IllegalArgumentException(
-                    "Temperature impact resistance must be between 0 and 1"
+                    "Temperature impact resistance must be finite and between 0 and 1"
             );
         }
     }

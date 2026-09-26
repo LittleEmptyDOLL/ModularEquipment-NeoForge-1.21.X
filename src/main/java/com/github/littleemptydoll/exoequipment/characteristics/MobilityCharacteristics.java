@@ -91,7 +91,7 @@ final class MobilityCharacteristics {
         if (flight) {
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.MOBILITY,
+                            CharacteristicCategory.ACTIVE_ABILITIES,
                             "flight",
                             CharacteristicType.STATE,
                             1.0D
@@ -140,7 +140,7 @@ final class MobilityCharacteristics {
         if (blinkDistance > 0.0D) {
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.MOBILITY,
+                            CharacteristicCategory.ACTIVE_ABILITIES,
                             "blink.distance",
                             CharacteristicType.STATIC,
                             blinkDistance
@@ -148,7 +148,7 @@ final class MobilityCharacteristics {
             );
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.MOBILITY,
+                            CharacteristicCategory.ACTIVE_ABILITIES,
                             "blink.activation_energy",
                             CharacteristicType.STATIC,
                             blinkEnergy
@@ -156,7 +156,7 @@ final class MobilityCharacteristics {
             );
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.MOBILITY,
+                            CharacteristicCategory.ACTIVE_ABILITIES,
                             "blink.cooldown",
                             CharacteristicType.STATIC,
                             blinkCooldown

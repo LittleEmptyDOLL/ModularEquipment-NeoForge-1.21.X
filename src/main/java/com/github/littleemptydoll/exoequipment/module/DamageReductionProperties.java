@@ -97,10 +97,10 @@ public record DamageReductionProperties(
     /**
      * Resolves reduction for a real incoming damage source.
      *
-     * <p>A concrete damage-type entry is an explicit override. If there is
-     * no exact entry, matching tag reductions are considered and the
-     * strongest matching tag wins. The default reduction is the fallback
-     * and also acts as the minimum reduction for tag matches.</p>
+     * <p>A concrete damage-type entry has the highest precedence. If there
+     * is no exact entry, matching tag reductions are considered and the
+     * strongest matching tag wins. The default reduction is used only when
+     * neither an exact type nor any configured tag matches.</p>
      */
     public double reductionForSource(DamageSource source) {
         if (source == null) {
@@ -149,20 +149,28 @@ public record DamageReductionProperties(
             }
         }
 
-        double reduction = defaultReduction.orElse(0.0D);
+        Double matchedTagReduction = null;
 
         if (tagMatcher != null) {
             for (Map.Entry<ResourceLocation, Double> entry : tagReductions.entrySet()) {
-                if (tagMatcher.test(entry.getKey())) {
-                    reduction = Math.max(
-                            reduction,
-                            entry.getValue()
-                    );
+                if (!tagMatcher.test(entry.getKey())) {
+                    continue;
                 }
+
+                matchedTagReduction = matchedTagReduction == null
+                        ? entry.getValue()
+                        : Math.max(
+                                matchedTagReduction,
+                                entry.getValue()
+                        );
             }
         }
 
-        return clamp(reduction);
+        return clamp(
+                matchedTagReduction != null
+                        ? matchedTagReduction
+                        : defaultReduction.orElse(0.0D)
+        );
     }
 
     private static double clamp(double reduction) {

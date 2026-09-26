@@ -277,4 +277,8 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
     private static int applyEfficiency(int value, double efficiency) {
         return Math.max(0, (int) Math.round(value * efficiency));
     }
+
+    private static double applyEfficiency(double value, double efficiency) {
+        return Math.max(0.0D, value * efficiency);
+    }
 }

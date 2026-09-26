@@ -30,8 +30,8 @@ final class ModDefenseModules {
                 Rarity.UNCOMMON,
                 4,
                 0.025D,
-                100,
-                4
+                200,
+                20
         );
         registerShield(
                 registry,
@@ -40,8 +40,8 @@ final class ModDefenseModules {
                 Rarity.RARE,
                 6,
                 0.05D,
-                80,
-                8
+                120,
+                30
         );
         registerShield(
                 registry,
@@ -50,8 +50,8 @@ final class ModDefenseModules {
                 Rarity.RARE,
                 8,
                 0.04D,
-                60,
-                10
+                100,
+                35
         );
         registerShield(
                 registry,
@@ -60,8 +60,8 @@ final class ModDefenseModules {
                 Rarity.EPIC,
                 12,
                 0.10D,
-                40,
-                16
+                80,
+                50
         );
 
         // An emergency shield represents an additional shield charge rather
@@ -72,24 +72,27 @@ final class ModDefenseModules {
                 "engineering_emergency_shield",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
+                0.5D,
                 4 * TICKS_PER_MINUTE,
-                6
+                10
         );
         registerEmergencyShield(
                 registry,
                 "military_emergency_shield",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
+                0.75D,
                 3 * TICKS_PER_MINUTE,
-                8
+                15
         );
         registerEmergencyShield(
                 registry,
                 "experimental_emergency_shield",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
+                1.0D,
                 2 * TICKS_PER_MINUTE,
-                12
+                20
         );
 
         // Revival is intentionally unavailable at the civilian tier. Even
@@ -101,7 +104,7 @@ final class ModDefenseModules {
                 Rarity.RARE,
                 4.0D,
                 15 * TICKS_PER_MINUTE,
-                8
+                25
         );
         registerRevival(
                 registry,
@@ -110,7 +113,7 @@ final class ModDefenseModules {
                 Rarity.RARE,
                 4.0D,
                 10 * TICKS_PER_MINUTE,
-                12
+                35
         );
         registerRevival(
                 registry,
@@ -119,7 +122,7 @@ final class ModDefenseModules {
                 Rarity.EPIC,
                 6.0D,
                 5 * TICKS_PER_MINUTE,
-                20
+                50
         );
     }
 
@@ -161,6 +164,7 @@ final class ModDefenseModules {
             String id,
             EquipmentTier tier,
             Rarity rarity,
+            double restore,
             int cooldown,
             int energyConsumption
     ) {
@@ -180,7 +184,7 @@ final class ModDefenseModules {
                                 ))
                                 .emergencyShield(
                                         new EmergencyShieldProperties(
-                                                1.0D,
+                                                restore,
                                                 cooldown
                                         )
                                 )

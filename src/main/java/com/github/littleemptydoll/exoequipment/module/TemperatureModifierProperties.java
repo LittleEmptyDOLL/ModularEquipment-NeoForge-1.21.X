@@ -10,6 +10,15 @@ public record TemperatureModifierProperties(
         double thermalResistance
 ) {
     public TemperatureModifierProperties {
+        if (!Double.isFinite(temperature)
+                || !Double.isFinite(heatResistance)
+                || !Double.isFinite(coldResistance)
+                || !Double.isFinite(thermalResistance)) {
+            throw new IllegalArgumentException(
+                    "Temperature modifier values must be finite"
+            );
+        }
+
         if (heatResistance < 0.0D) {
             throw new IllegalArgumentException("Heat resistance cannot be negative");
         }

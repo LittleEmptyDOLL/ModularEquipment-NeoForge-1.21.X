@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
+import java.util.List;
 import java.util.Set;
 
 public final class StatusProtectionOperations {
@@ -15,7 +16,7 @@ public final class StatusProtectionOperations {
             ExoskeletonData data,
             ResourceLocation effectId
     ) {
-        return calculateProtection(data, effectId, null);
+        return calculateProtection(data, null, effectId, null);
     }
 
     public static double calculateProtection(
@@ -23,11 +24,39 @@ public final class StatusProtectionOperations {
             ResourceLocation effectId,
             Set<InstalledModuleReference> poweredModules
     ) {
+        return calculateProtection(data, null, effectId, poweredModules);
+    }
+
+    public static double calculateProtection(
+            ExoskeletonData data,
+            int matrixSlot,
+            ResourceLocation effectId,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        return calculateProtection(
+                data,
+                Integer.valueOf(matrixSlot),
+                effectId,
+                poweredModules
+        );
+    }
+
+    private static double calculateProtection(
+            ExoskeletonData data,
+            Integer matrixSlot,
+            ResourceLocation effectId,
+            Set<InstalledModuleReference> poweredModules
+    ) {
         double remaining = 1.0D;
+        List<ExoskeletonModules.ActiveModule> modules =
+                matrixSlot == null
+                        ? ExoskeletonModules.activeSupported(data)
+                        : ExoskeletonModules.supportedInMatrix(
+                                data,
+                                matrixSlot
+                        );
 
-        for (ExoskeletonModules.ActiveModule activeModule
-                : ExoskeletonModules.activeSupported(data)) {
-
+        for (ExoskeletonModules.ActiveModule activeModule : modules) {
             if (!ExoskeletonModules.isPowered(
                     activeModule,
                     poweredModules

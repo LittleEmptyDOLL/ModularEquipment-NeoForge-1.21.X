@@ -17,6 +17,8 @@ class StatusProtectionPropertiesTest {
             ResourceLocation.parse("minecraft:weakness");
     private static final ResourceLocation SPEED =
             ResourceLocation.parse("minecraft:speed");
+    private static final ResourceLocation BIOLOGICAL =
+            ResourceLocation.parse("exoequipment:status_protection/biological");
 
     @Test
     void generalProtectionAppliesOnlyWhenEffectIsHarmful() {
@@ -39,16 +41,41 @@ class StatusProtectionPropertiesTest {
     }
 
     @Test
-    void explicitProtectionOverridesGeneralProtection() {
+    void tagProtectionOverridesGeneralProtection() {
         StatusProtectionProperties properties =
                 new StatusProtectionProperties(
                         0.40D,
-                        Map.of(POISON, 0.75D)
+                        Map.of(),
+                        Map.of(BIOLOGICAL, 0.65D)
+                );
+
+        assertEquals(
+                0.65D,
+                properties.protection(
+                        POISON,
+                        true,
+                        BIOLOGICAL::equals
+                ),
+                EPSILON
+        );
+    }
+
+    @Test
+    void explicitProtectionOverridesTagAndGeneralProtection() {
+        StatusProtectionProperties properties =
+                new StatusProtectionProperties(
+                        0.40D,
+                        Map.of(POISON, 0.75D),
+                        Map.of(BIOLOGICAL, 0.65D)
                 );
 
         assertEquals(
                 0.75D,
-                properties.protection(POISON, true),
+                properties.protection(
+                        POISON,
+                        true,
+                        BIOLOGICAL::equals
+                ),
                 EPSILON
         );
     }

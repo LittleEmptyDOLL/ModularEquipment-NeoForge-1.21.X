@@ -64,12 +64,16 @@ class CharacteristicsProviderTest {
         );
         assertEquals(
                 0.75D,
-                byKey.get("status_protection.minecraft:poison").value(),
+                byKey.get(
+                        "status_protection.minecraft:poison.reduction"
+                ).value(),
                 EPSILON
         );
         assertEquals(
                 1.0D,
-                byKey.get("status_protection.minecraft:wither").value(),
+                byKey.get(
+                        "status_protection.minecraft:wither.reduction"
+                ).value(),
                 EPSILON
         );
         assertEquals(

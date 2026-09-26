@@ -47,6 +47,32 @@ import java.util.Set;
 public final class EnergyOperations {
     private EnergyOperations() {}
 
+    /** Accepts energy pushed into the item by a charger. Only active batteries
+     * can store it; the energy system and battery input limits both apply. */
+    public static EnergyReceiveResult receiveExternalEnergy(
+            ExoskeletonData data, int maxReceive, boolean simulate
+    ) {
+        if (maxReceive <= 0 || data.energySystem().isEmpty()) {
+            return new EnergyReceiveResult(data, 0);
+        }
+
+        int maxInput = ModEnergySystems.getDefinition(
+                data.energySystem().orElseThrow().definitionId()
+        ).maxInput();
+        EnergyStorageLayout storage = EnergyStorageLayout.create(data);
+        int accepted = Math.min(maxReceive,
+                Math.min(maxInput, storage.availableInput()));
+
+        if (simulate || accepted == 0) {
+            return new EnergyReceiveResult(data, accepted);
+        }
+
+        int received = storage.charge(accepted);
+        return new EnergyReceiveResult(storage.apply(data), received);
+    }
+
+    public record EnergyReceiveResult(ExoskeletonData data, int received) {}
+
     public static EnergyTickResult tick(ExoskeletonData data) {
         return tick(data, 0);
     }

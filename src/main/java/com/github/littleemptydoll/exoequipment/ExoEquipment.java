@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment;
 
 import com.github.littleemptydoll.exoequipment.compat.lso.LsoIntegration;
+import com.github.littleemptydoll.exoequipment.energy.ExoskeletonEnergyStorage;
 import com.github.littleemptydoll.exoequipment.network.ModNetworking;
 import com.github.littleemptydoll.exoequipment.registry.*;
 import net.neoforged.bus.api.IEventBus;
@@ -22,6 +23,7 @@ public class ExoEquipment {
         ModNetworking.register(eventBus);
         ModSounds.register(eventBus);
         ModCreativeTabs.register(eventBus);
+        eventBus.addListener(ExoskeletonEnergyStorage::register);
 
         if (ModList.get().isLoaded("legendarysurvivaloverhaul")) {
             LsoIntegration.register(eventBus);

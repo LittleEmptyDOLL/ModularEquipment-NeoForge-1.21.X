@@ -8,16 +8,22 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonProfile;
 import com.github.littleemptydoll.exoequipment.exoskeleton.MatrixSlot;
 import com.github.littleemptydoll.exoequipment.exoskeleton.SystemStatus;
 import com.github.littleemptydoll.exoequipment.frame.Frame;
+import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.module.SensorToggleOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModControllers;
+import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.ModEnergySystems;
+import com.github.littleemptydoll.exoequipment.registry.ModExoskeletons;
 import com.github.littleemptydoll.exoequipment.registry.ModFrames;
 import com.github.littleemptydoll.exoequipment.registry.TestModules;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -45,6 +51,47 @@ class EnergyOperationsTest {
                         -1
                 )
         );
+    }
+
+    @Test
+    void itemCapabilityReceivesEnergyIntoActiveBattery() {
+        ExoskeletonData data = data(
+                ModFrames.EXPERIMENTAL.getDefinition().id(),
+                new InstalledModule(TestModules.TEST_BATTERY.getDefinition().id(),
+                        0, 0, 0, 9_950)
+        );
+        ItemStack stack = new ItemStack(ModExoskeletons.BASIC.getItem());
+        stack.set(ModDataComponents.EXOSKELETON_DATA.get(), data);
+
+        IEnergyStorage energy = stack.getCapability(Capabilities.EnergyStorage.ITEM);
+        assertTrue(energy != null && energy.canReceive());
+        assertFalse(energy.canExtract());
+        assertEquals(10_000, energy.getMaxEnergyStored());
+        assertEquals(9_950, energy.getEnergyStored());
+        assertEquals(50, energy.receiveEnergy(200, true));
+        assertEquals(9_950, energy.getEnergyStored());
+        assertEquals(50, energy.receiveEnergy(200, false));
+        assertEquals(10_000, energy.getEnergyStored());
+        assertEquals(10_000, module(ExoskeletonItem.getData(stack), 0).storedEnergy());
+        assertEquals(0, energy.receiveEnergy(200, false));
+    }
+
+    @Test
+    void itemChargingRespectsStorageInputAndMissingEnergySystem() {
+        ExoskeletonData data = data(
+                ModFrames.EXPERIMENTAL.getDefinition().id(),
+                new InstalledModule(TestModules.TEST_BATTERY.getDefinition().id(),
+                        0, 0, 0)
+        );
+        var simulation = EnergyOperations.receiveExternalEnergy(data, 200, true);
+        assertEquals(100, simulation.received());
+        assertEquals(0, module(simulation.data(), 0).storedEnergy());
+
+        var actual = EnergyOperations.receiveExternalEnergy(data, 200, false);
+        assertEquals(100, actual.received());
+        assertEquals(100, module(actual.data(), 0).storedEnergy());
+        assertEquals(0, EnergyOperations.receiveExternalEnergy(
+                ExoskeletonData.empty(), 200, false).received());
     }
 
     @Test

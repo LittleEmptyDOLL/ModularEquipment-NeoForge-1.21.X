@@ -97,6 +97,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.characteristic.category.blink", "Blink");
         add("gui.exoequipment.characteristic.category.cloaking", "Cloaking");
         add("gui.exoequipment.characteristic.category.flight", "Flight");
+        add("gui.exoequipment.characteristic.category.pickup_magnet", "Pickup magnet");
         add("gui.exoequipment.characteristic.category.survival", "Survival");
         add("gui.exoequipment.characteristic.category.sensor", "Sensors");
         add("gui.exoequipment.characteristic.category.utility", "Utility");
@@ -163,15 +164,15 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.characteristic.entity_detection.hostile", "Detect hostile mobs");
         add("gui.exoequipment.characteristic.block_scanner.range", "Block scanner range");
 
-        add("gui.exoequipment.characteristic.pickup_magnet.radius", "Pickup magnet radius");
+        add("gui.exoequipment.characteristic.pickup_magnet.radius", "Radius");
         add("gui.exoequipment.characteristic.pickup_magnet.items", "Pickup items");
         add("gui.exoequipment.characteristic.pickup_magnet.experience", "Pickup experience");
         add("gui.exoequipment.characteristic.cloaking.active", "Active");
         add("gui.exoequipment.characteristic.cloaking.activation_energy", "Activation energy");
         add("gui.exoequipment.characteristic.cloaking.active_consumption", "Active consumption");
         add("gui.exoequipment.characteristic.cloaking.cooldown", "Cooldown");
-        add("gui.exoequipment.characteristic.emergency_shield.restore", "Emergency shield restore");
-        add("gui.exoequipment.characteristic.emergency_shield.cooldown", "Emergency shield cooldown");
+        add("gui.exoequipment.characteristic.emergency_shield.restore", "Emergency restore");
+        add("gui.exoequipment.characteristic.emergency_shield.cooldown", "Emergency cooldown");
 
         add("menu.exoequipment.matrix", "Matrix");
         add("menu.exoequipment.profiles", "Profiles");

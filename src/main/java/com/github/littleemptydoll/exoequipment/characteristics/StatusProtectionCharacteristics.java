@@ -95,8 +95,8 @@ final class StatusProtectionCharacteristics {
             result.add(
                     new Characteristic(
                             CharacteristicCategory.STATUS_PROTECTION,
-                            "status_protection.tag."
-                                    + tagId
+                            "status_protection."
+                                    + tagName(tagId)
                                     + ".reduction",
                             CharacteristicType.CURRENT,
                             protection
@@ -136,5 +136,14 @@ final class StatusProtectionCharacteristics {
                     )
             );
         }
+    }
+
+    private static String tagName(ResourceLocation tagId) {
+        String path = tagId.getPath();
+        int separator = path.lastIndexOf('/');
+
+        return separator >= 0 && separator + 1 < path.length()
+                ? path.substring(separator + 1)
+                : path;
     }
 }

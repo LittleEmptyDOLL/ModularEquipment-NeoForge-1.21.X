@@ -4,9 +4,9 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
 import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.ToDoubleFunction;
 
 public final class BodyDamageProtectionOperations {
     private BodyDamageProtectionOperations() {}
@@ -16,33 +16,12 @@ public final class BodyDamageProtectionOperations {
             BodyPart bodyPart,
             Set<InstalledModuleReference> poweredModules
     ) {
-        double remainingChance = 1.0D;
-
-        for (ModuleProtection protection
-                : protections(
-                        data,
-                        ExoskeletonModules.activeSupported(data),
-                        bodyPart,
-                        poweredModules
-                )) {
-
-            double efficiency =
-                    TemperatureOperations.calculateModuleEfficiency(
-                            protection.definition(),
-                            data.temperature()
-                    );
-
-            remainingChance *= 1.0D
-                    - protection.properties().chance() * efficiency;
-
-            if (remainingChance <= 0.0D) {
-                return 1.0D;
-            }
-        }
-
-        return Math.max(
-                0.0D,
-                Math.min(1.0D, 1.0D - remainingChance)
+        return 1.0D - calculateRemainingFactor(
+                data,
+                ExoskeletonModules.activeSupported(data),
+                bodyPart,
+                poweredModules,
+                BodyDamageProtectionProperties::chance
         );
     }
 
@@ -51,32 +30,13 @@ public final class BodyDamageProtectionOperations {
             BodyPart bodyPart,
             Set<InstalledModuleReference> poweredModules
     ) {
-        double multiplier = 1.0D;
-
-        for (ModuleProtection protection
-                : protections(
-                        data,
-                        ExoskeletonModules.activeSupported(data),
-                        bodyPart,
-                        poweredModules
-                )) {
-
-            double efficiency =
-                    TemperatureOperations.calculateModuleEfficiency(
-                            protection.definition(),
-                            data.temperature()
-                    );
-
-            multiplier *= 1.0D
-                    - protection.properties().damageReduction()
-                    * efficiency;
-
-            if (multiplier <= 0.0D) {
-                return 0.0D;
-            }
-        }
-
-        return Math.max(0.0D, multiplier);
+        return calculateRemainingFactor(
+                data,
+                ExoskeletonModules.activeSupported(data),
+                bodyPart,
+                poweredModules,
+                BodyDamageProtectionProperties::damageReduction
+        );
     }
 
     public static double calculateChance(
@@ -85,36 +45,15 @@ public final class BodyDamageProtectionOperations {
             BodyPart bodyPart,
             Set<InstalledModuleReference> poweredModules
     ) {
-        double remainingChance = 1.0D;
-
-        for (ModuleProtection protection
-                : protections(
+        return 1.0D - calculateRemainingFactor(
+                data,
+                ExoskeletonModules.supportedInMatrix(
                         data,
-                        ExoskeletonModules.supportedInMatrix(
-                                data,
-                                matrixSlot
-                        ),
-                        bodyPart,
-                        poweredModules
-                )) {
-
-            double efficiency =
-                    TemperatureOperations.calculateModuleEfficiency(
-                            protection.definition(),
-                            data.temperature()
-                    );
-
-            remainingChance *= 1.0D
-                    - protection.properties().chance() * efficiency;
-
-            if (remainingChance <= 0.0D) {
-                return 1.0D;
-            }
-        }
-
-        return Math.max(
-                0.0D,
-                Math.min(1.0D, 1.0D - remainingChance)
+                        matrixSlot
+                ),
+                bodyPart,
+                poweredModules,
+                BodyDamageProtectionProperties::chance
         );
     }
 
@@ -124,44 +63,26 @@ public final class BodyDamageProtectionOperations {
             BodyPart bodyPart,
             Set<InstalledModuleReference> poweredModules
     ) {
-        double multiplier = 1.0D;
-
-        for (ModuleProtection protection
-                : protections(
+        return calculateRemainingFactor(
+                data,
+                ExoskeletonModules.supportedInMatrix(
                         data,
-                        ExoskeletonModules.supportedInMatrix(
-                                data,
-                                matrixSlot
-                        ),
-                        bodyPart,
-                        poweredModules
-                )) {
-
-            double efficiency =
-                    TemperatureOperations.calculateModuleEfficiency(
-                            protection.definition(),
-                            data.temperature()
-                    );
-
-            multiplier *= 1.0D
-                    - protection.properties().damageReduction()
-                    * efficiency;
-
-            if (multiplier <= 0.0D) {
-                return 0.0D;
-            }
-        }
-
-        return Math.max(0.0D, multiplier);
+                        matrixSlot
+                ),
+                bodyPart,
+                poweredModules,
+                BodyDamageProtectionProperties::damageReduction
+        );
     }
 
-    private static List<ModuleProtection> protections(
+    private static double calculateRemainingFactor(
             ExoskeletonData data,
             List<ExoskeletonModules.ActiveModule> modules,
             BodyPart bodyPart,
-            Set<InstalledModuleReference> poweredModules
+            Set<InstalledModuleReference> poweredModules,
+            ToDoubleFunction<BodyDamageProtectionProperties> valueProvider
     ) {
-        List<ModuleProtection> result = new ArrayList<>();
+        double remainingFactor = 1.0D;
 
         for (ExoskeletonModules.ActiveModule activeModule : modules) {
             if (!ExoskeletonModules.isPowered(
@@ -184,17 +105,31 @@ public final class BodyDamageProtectionOperations {
                 continue;
             }
 
-            result.add(new ModuleProtection(
-                    activeModule.definition(),
-                    properties
-            ));
+            double efficiency =
+                    TemperatureOperations.calculateModuleEfficiency(
+                            activeModule.definition(),
+                            data.temperature()
+                    );
+
+            double effectiveValue = Math.min(
+                    1.0D,
+                    Math.max(
+                            0.0D,
+                            valueProvider.applyAsDouble(properties)
+                                    * efficiency
+                    )
+            );
+
+            remainingFactor *= 1.0D - effectiveValue;
+
+            if (remainingFactor <= 0.0D) {
+                return 0.0D;
+            }
         }
 
-        return List.copyOf(result);
+        return Math.max(
+                0.0D,
+                Math.min(1.0D, remainingFactor)
+        );
     }
-
-    private record ModuleProtection(
-            ModuleDefinition definition,
-            BodyDamageProtectionProperties properties
-    ) {}
 }

@@ -43,7 +43,7 @@ public final class DefenseEvents {
         double incomingDamage = event.getAmount();
 
         double playerDamageMultiplier =
-                DefenseOperations.calculateDamageMultiplier(
+                DefenseOperations.calculateDamageSourceMultiplier(
                         data,
                         source,
                         poweredModules

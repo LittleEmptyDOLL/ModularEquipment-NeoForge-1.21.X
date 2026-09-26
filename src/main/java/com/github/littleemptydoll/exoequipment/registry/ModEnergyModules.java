@@ -88,6 +88,14 @@ final class ModEnergyModules {
                 25,
                 10
         );
+        registerGenerator(
+                registry,
+                "creative_generator",
+                EquipmentTier.EXPERIMENTAL,
+                Rarity.EPIC,
+                100000,
+                10
+        );
     }
 
     private static void registerBattery(

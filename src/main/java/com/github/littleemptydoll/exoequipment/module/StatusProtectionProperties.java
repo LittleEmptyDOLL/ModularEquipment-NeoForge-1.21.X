@@ -22,9 +22,19 @@ public record StatusProtectionProperties(
             );
 
     public StatusProtectionProperties {
-        protections = Map.copyOf(protections);
+        if (protections == null) {
+            throw new IllegalArgumentException(
+                    "Status protections must not be null"
+            );
+        }
 
         for (Map.Entry<ResourceLocation, Double> entry : protections.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) {
+                throw new IllegalArgumentException(
+                        "Status protections must not contain null entries"
+                );
+            }
+
             double protection = entry.getValue();
 
             if (!Double.isFinite(protection)
@@ -35,15 +45,15 @@ public record StatusProtectionProperties(
                 );
             }
         }
+
+        protections = Map.copyOf(protections);
     }
 
     public double protection(ResourceLocation effectId) {
-        return Math.min(
-                1.0D,
-                Math.max(
-                        0.0D,
-                        protections.getOrDefault(effectId, 0.0D)
-                )
-        );
+        if (effectId == null) {
+            return 0.0D;
+        }
+
+        return protections.getOrDefault(effectId, 0.0D);
     }
 }

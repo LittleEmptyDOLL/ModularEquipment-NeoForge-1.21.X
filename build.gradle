@@ -105,8 +105,11 @@ configurations {
 }
 
 dependencies {
-    compileOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
-    localRuntime "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
+    def curios = "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
+
+    compileOnly curios
+    localRuntime curios
+    testRuntimeOnly curios
 
     compileOnly "maven.modrinth:TQr3t8Sb:AZzEduN3"
     localRuntime "maven.modrinth:TQr3t8Sb:AZzEduN3"

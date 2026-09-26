@@ -5,6 +5,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import com.github.littleemptydoll.exoequipment.module.DefenseOperations;
 import com.github.littleemptydoll.exoequipment.module.EmergencyShieldOperations;
 import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
+import com.github.littleemptydoll.exoequipment.module.ShieldProtectionOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.ModSounds;
 import net.minecraft.sounds.SoundEvents;
@@ -36,14 +37,35 @@ public final class DefenseEvents {
 
         var stack = context.stack();
         var data = context.data();
+        var poweredModules = context.poweredModules();
 
         DamageSource source = event.getSource();
+        double incomingDamage = event.getAmount();
+
+        double playerDamageMultiplier =
+                DefenseOperations.calculateDamageMultiplier(
+                        data,
+                        source,
+                        poweredModules
+                );
+
+        double protectionTransfer =
+                ShieldProtectionOperations.calculateTransfer(
+                        data,
+                        poweredModules
+                );
+
+        double shieldDamageMultiplier =
+                ShieldProtectionOperations.calculateShieldDamageMultiplier(
+                        playerDamageMultiplier,
+                        protectionTransfer
+                );
 
         ShieldOperations.ShieldDamageResult shieldResult =
                 ShieldOperations.absorbDamage(
-                        event.getAmount(),
+                        incomingDamage * shieldDamageMultiplier,
                         data,
-                        context.poweredModules()
+                        poweredModules
                 );
 
         data = shieldResult.data();
@@ -52,7 +74,7 @@ public final class DefenseEvents {
             EmergencyShieldOperations.EmergencyShieldResult emergencyResult =
                     EmergencyShieldOperations.activate(
                             data,
-                            context.poweredModules()
+                            poweredModules
                     );
 
             data = emergencyResult.data();
@@ -71,12 +93,17 @@ public final class DefenseEvents {
             }
         }
 
-        double remainingDamage = DefenseOperations.applyDamageReduction(
-                shieldResult.remainingDamage(),
-                data,
-                source,
-                context.poweredModules()
-        );
+        double remainingRawDamage =
+                shieldDamageMultiplier <= 0.0D
+                        ? incomingDamage
+                        : Math.min(
+                                incomingDamage,
+                                shieldResult.remainingDamage()
+                                        / shieldDamageMultiplier
+                        );
+
+        double remainingDamage =
+                remainingRawDamage * playerDamageMultiplier;
 
         stack.set(
                 ModDataComponents.EXOSKELETON_DATA.get(),

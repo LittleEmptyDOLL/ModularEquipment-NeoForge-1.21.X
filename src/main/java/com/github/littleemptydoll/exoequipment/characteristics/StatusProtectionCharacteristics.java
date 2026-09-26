@@ -16,6 +16,7 @@ final class StatusProtectionCharacteristics {
             CharacteristicsContext context
     ) {
         Set<ResourceLocation> effectIds = new HashSet<>();
+        Set<ResourceLocation> tagIds = new HashSet<>();
         var poweredModules =
                 CharacteristicsSupport.poweredModules(context);
         boolean hasHarmfulProtection = false;
@@ -38,6 +39,7 @@ final class StatusProtectionCharacteristics {
             }
 
             effectIds.addAll(properties.protections().keySet());
+            tagIds.addAll(properties.tagProtections().keySet());
             hasHarmfulProtection |=
                     properties.harmfulProtection() > 0.0D;
         }
@@ -67,6 +69,39 @@ final class StatusProtectionCharacteristics {
                         )
                 );
             }
+        }
+
+        for (ResourceLocation tagId : tagIds) {
+            double protection =
+                    context.isMatrixScope()
+                            ? StatusProtectionOperations
+                            .calculateTagProtection(
+                                    context.data(),
+                                    context.matrixSlot(),
+                                    tagId,
+                                    poweredModules
+                            )
+                            : StatusProtectionOperations
+                            .calculateTagProtection(
+                                    context.data(),
+                                    tagId,
+                                    poweredModules
+                            );
+
+            if (protection <= 0.0D) {
+                continue;
+            }
+
+            result.add(
+                    new Characteristic(
+                            CharacteristicCategory.STATUS_PROTECTION,
+                            "status_protection.tag."
+                                    + tagId
+                                    + ".reduction",
+                            CharacteristicType.CURRENT,
+                            protection
+                    )
+            );
         }
 
         for (ResourceLocation effectId : effectIds) {

@@ -16,7 +16,7 @@ import com.github.littleemptydoll.exoequipment.module.TemperatureProperties;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentProperties;
 import com.github.littleemptydoll.exoequipment.registry.ModControllers;
 import com.github.littleemptydoll.exoequipment.registry.ModFrames;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import com.github.littleemptydoll.exoequipment.registry.TestModules;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
@@ -42,7 +42,7 @@ class TemperatureOperationsTest {
     @Test
     void efficiencyUsesOperatingRangeFalloffAndBonus() {
         ModuleDefinition consumer =
-                ModModules.TEST_CONSUMER.getDefinition();
+                TestModules.TEST_CONSUMER.getDefinition();
 
         assertEquals(
                 1.0D,
@@ -83,7 +83,7 @@ class TemperatureOperationsTest {
         assertEquals(
                 2.0D,
                 TemperatureOperations.calculateModuleEfficiency(
-                        ModModules.TEST_GENERATOR.getDefinition(),
+                        TestModules.TEST_GENERATOR.getDefinition(),
                         70.0D
                 ),
                 EPSILON
@@ -178,7 +178,7 @@ class TemperatureOperationsTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> TemperatureOperations.calculateModuleEfficiency(
-                        ModModules.TEST.getDefinition(),
+                        TestModules.TEST.getDefinition(),
                         Double.POSITIVE_INFINITY
                 )
         );
@@ -189,7 +189,7 @@ class TemperatureOperationsTest {
         assertEquals(
                 1.0D,
                 TemperatureOperations.calculateModuleEfficiency(
-                        ModModules.TEST_CONSUMER.getDefinition(),
+                        TestModules.TEST_CONSUMER.getDefinition(),
                         Double.NaN
                 ),
                 EPSILON
@@ -199,7 +199,7 @@ class TemperatureOperationsTest {
     @Test
     void thermalStateOnlyUsesPoweredHeatSources() {
         InstalledModule heater = new InstalledModule(
-                ModModules.TEST_HEATER
+                TestModules.TEST_HEATER
                         .getDefinition()
                         .id(),
                 0,

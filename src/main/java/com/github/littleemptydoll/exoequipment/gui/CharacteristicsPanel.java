@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
 
 public final class CharacteristicsPanel {
@@ -28,7 +29,6 @@ public final class CharacteristicsPanel {
     public static final int WIDTH = 156;
     public static final int HEIGHT = 166;
     private static final int HEADER_HEIGHT = 30;
-    private static final int FOOTER_HEIGHT = 9;
     private static final int CONTENT_HEIGHT = 127;
     private static final int CONTENT_X = 9;
     private static final int CONTENT_Y = 30;
@@ -50,6 +50,28 @@ public final class CharacteristicsPanel {
     private static final String EFFECT_PREFIX = "effect.";
     private static final String STATUS_PROTECTION_PREFIX = "status_protection.";
     private static final String STATUS_PROTECTION_SUFFIX = ".reduction";
+
+    private static final Set<String> PERCENT_ADD_VALUE_ATTRIBUTES = Set.of(
+            "minecraft:generic.knockback_resistance",
+            "minecraft:generic.explosion_knockback_resistance",
+            "minecraft:generic.water_movement_efficiency",
+            "minecraft:generic.movement_efficiency",
+            "minecraft:generic.fall_damage_multiplier",
+            "apothic_attributes:crit_chance",
+            "apothic_attributes:crit_damage",
+            "apothic_attributes:armor_shred",
+            "apothic_attributes:prot_shred",
+            "apothic_attributes:current_hp_damage",
+            "apothic_attributes:life_steal",
+            "apothic_attributes:overheal",
+            "apothic_attributes:projectile_damage",
+            "apothic_attributes:arrow_damage",
+            "apothic_attributes:arrow_velocity",
+            "apothic_attributes:draw_speed",
+            "apothic_attributes:experience_gained",
+            "apothic_attributes:healing_received",
+            "apothic_attributes:dodge_chance"
+    );
 
     private final Supplier<List<Characteristic>> characteristicsSupplier;
     private final Supplier<?> revisionSupplier;
@@ -208,10 +230,10 @@ public final class CharacteristicsPanel {
         boolean downHovered = isInside(mouseX, mouseY, left + SCROLLBAR_X, top + 154, 3, 4);
 
         graphics.blit(TEXTURE, left + SCROLLBAR_X, top + 29,
-                upHovered ? 159 : 159, upHovered ? 0 : 4,
+                159, upHovered ? 0 : 4,
                 3, 4, 256, 256);
         graphics.blit(TEXTURE, left + SCROLLBAR_X, top + 154,
-                downHovered ? 162 : 162, downHovered ? 0 : 4,
+                162, downHovered ? 0 : 4,
                 3, 4, 256, 256);
 
         int thumbHeight = 24;
@@ -393,8 +415,9 @@ public final class CharacteristicsPanel {
         if (attributeKey != null) {
             ResourceLocation id = ResourceLocation.tryParse(attributeKey.attributeId());
             if (id != null) {
-                return (attributeKey.conditional() ?
-                        I18n.get("gui.exoequipment.characteristic.conditional_prefix") : "")
+                return (attributeKey.conditional()
+                        ? I18n.get("gui.exoequipment.characteristic.conditional_prefix")
+                        : "")
                         + AttributeNameUtils.getName(id).getString();
             }
         }
@@ -450,48 +473,57 @@ public final class CharacteristicsPanel {
 
         AttributeKey attributeKey = parseAttributeKey(key);
         if (attributeKey != null) {
-            return formatAttributeValue(attributeKey.operation(), value);
+            return formatAttributeValue(attributeKey, value);
         }
 
         if (key.startsWith(EFFECT_PREFIX)) {
             return formatEffectLevel(value);
         }
 
+        if (characteristic.type() == CharacteristicType.STATE) {
+            return value != 0.0D
+                    ? I18n.get("gui.exoequipment.yes")
+                    : I18n.get("gui.exoequipment.no");
+        }
+
+        return switch (key) {
+            case "consumption", "generation", "storage_input", "storage_output",
+                    "max_input", "max_output", "cloaking.active_consumption" ->
+                    formatNumber(value) + " FE/t";
+            case "storage_capacity", "stored_energy", "blink.activation_energy" ->
+                    formatNumber(value) + " FE";
+            case "heat_generation", "cooling" ->
+                    formatNumber(value) + " °C";
+            case "thermal_balance" ->
+                    formatSignedNumber(value) + " °C";
+            case "health_per_second" ->
+                    formatNumber(value) + " HP/s";
+            case "revival.restore_health" ->
+                    formatNumber(value) + " HP";
+            case "emergency_shield.restore" ->
+                    formatPercent(value);
+            default -> formatGenericValue(key, value);
+        };
+    }
+
+    private String formatGenericValue(String key, double value) {
+        if (key.endsWith("cooldown")) {
+            return formatTicks(value);
+        }
         if (key.endsWith("reduction") || key.endsWith("chance")) {
             return formatPercent(value);
         }
-        if (key.contains("consumption") || key.contains("generation")
-                || key.endsWith("max_input") || key.endsWith("max_output")
-                || key.contains("energy")) {
-            if (key.contains("temperature")) {
-                return formatNumber(value) + " °C";
-            }
-            return formatNumber(value) + " FE";
-        }
-        if (key.contains("health_per_second")) {
-            return formatNumber(value) + " HP/s";
-        }
-        if (key.contains("temperature") || key.contains("heat") || key.contains("cooling")) {
+        if (key.contains("temperature")) {
             return formatNumber(value) + " °C";
-        }
-        if (key.contains("distance") || key.contains("range") || key.contains("speed")
-                || key.contains("thrust") || key.contains("acceleration")) {
-            return formatNumber(value);
-        }
-        if (key.endsWith("cooldown")) {
-            return formatNumber(value) + " t";
-        }
-        if (characteristic.type() == CharacteristicType.STATE) {
-            return value != 0.0D
-                    ? Component.translatable("gui.exoequipment.yes").getString()
-                    : Component.translatable("gui.exoequipment.no").getString();
         }
         return formatNumber(value);
     }
 
-    private String formatAttributeValue(String operation, double value) {
-        return switch (operation) {
-            case "add_value" -> formatSignedNumber(value);
+    private String formatAttributeValue(AttributeKey key, double value) {
+        return switch (key.operation()) {
+            case "add_value" -> PERCENT_ADD_VALUE_ATTRIBUTES.contains(key.attributeId())
+                    ? formatSignedPercent(value)
+                    : formatSignedNumber(value);
             case "add_multiplied_base" ->
                     formatSignedPercent(value)
                             + " "
@@ -520,6 +552,33 @@ public final class CharacteristicsPanel {
             case 10 -> "X";
             default -> Integer.toString(level);
         };
+    }
+
+    private String formatTicks(double ticks) {
+        double totalSeconds = Math.max(0.0D, ticks) / 20.0D;
+
+        if (totalSeconds < 60.0D) {
+            return I18n.get(
+                    "gui.exoequipment.characteristic.time.seconds",
+                    formatNumber(totalSeconds)
+            );
+        }
+
+        long minutes = (long) (totalSeconds / 60.0D);
+        double seconds = totalSeconds - minutes * 60.0D;
+
+        if (Math.abs(seconds) < 0.005D) {
+            return I18n.get(
+                    "gui.exoequipment.characteristic.time.minutes",
+                    minutes
+            );
+        }
+
+        return I18n.get(
+                "gui.exoequipment.characteristic.time.minutes_seconds",
+                minutes,
+                formatNumber(seconds)
+        );
     }
 
     private String formatPercent(double value) {

@@ -12,7 +12,7 @@ import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.registry.ModControllers;
 import com.github.littleemptydoll.exoequipment.registry.ModEnergySystems;
 import com.github.littleemptydoll.exoequipment.registry.ModFrames;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import com.github.littleemptydoll.exoequipment.registry.TestModules;
 import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 
@@ -47,7 +47,7 @@ class EnergyOperationsTest {
         ExoskeletonData data = data(
                 ModFrames.CIVILIAN.getDefinition().id(),
                 new InstalledModule(
-                        ModModules.TEST_NIGHT_VISION
+                        TestModules.TEST_NIGHT_VISION
                                 .getDefinition()
                                 .id(),
                         0,
@@ -55,7 +55,7 @@ class EnergyOperationsTest {
                         0
                 ),
                 new InstalledModule(
-                        ModModules.TEST_JETPACK
+                        TestModules.TEST_JETPACK
                                 .getDefinition()
                                 .id(),
                         0,
@@ -85,7 +85,7 @@ class EnergyOperationsTest {
         ExoskeletonData data = data(
                 ModFrames.EXPERIMENTAL.getDefinition().id(),
                 new InstalledModule(
-                        ModModules.TEST_GENERATOR
+                        TestModules.TEST_GENERATOR
                                 .getDefinition()
                                 .id(),
                         0,
@@ -93,7 +93,7 @@ class EnergyOperationsTest {
                         0
                 ),
                 new InstalledModule(
-                        ModModules.TEST_BATTERY
+                        TestModules.TEST_BATTERY
                                 .getDefinition()
                                 .id(),
                         0,
@@ -119,7 +119,7 @@ class EnergyOperationsTest {
         ExoskeletonData data = data(
                 ModFrames.CIVILIAN.getDefinition().id(),
                 new InstalledModule(
-                        ModModules.TEST_BATTERY
+                        TestModules.TEST_BATTERY
                                 .getDefinition()
                                 .id(),
                         0,
@@ -145,7 +145,7 @@ class EnergyOperationsTest {
         ExoskeletonData data = data(
                 ModFrames.EXPERIMENTAL.getDefinition().id(),
                 new InstalledModule(
-                        ModModules.TEST_BATTERY
+                        TestModules.TEST_BATTERY
                                 .getDefinition()
                                 .id(),
                         0,
@@ -183,7 +183,7 @@ class EnergyOperationsTest {
         ExoskeletonData data = data(
                 ModFrames.CIVILIAN.getDefinition().id(),
                 new InstalledModule(
-                        ModModules.TEST_NIGHT_VISION
+                        TestModules.TEST_NIGHT_VISION
                                 .getDefinition()
                                 .id(),
                         0,
@@ -211,7 +211,7 @@ class EnergyOperationsTest {
     void deficitIncludesActiveAbilityConsumption() {
         InstalledModule cloaking =
                 new InstalledModule(
-                        ModModules.TEST_CLOAKING
+                        TestModules.TEST_CLOAKING
                                 .getDefinition()
                                 .id(),
                         0,

@@ -72,6 +72,7 @@ final class ModSensorModules {
                 "civilian_entity_sensor",
                 EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON,
+                2,
                 4,
                 12.0D,
                 false,
@@ -83,6 +84,7 @@ final class ModSensorModules {
                 "engineering_entity_sensor",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
+                4,
                 6,
                 16.0D,
                 false,
@@ -94,6 +96,7 @@ final class ModSensorModules {
                 "military_entity_sensor",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
+                7,
                 9,
                 24.0D,
                 true,
@@ -105,6 +108,7 @@ final class ModSensorModules {
                 "experimental_entity_sensor",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
+                10,
                 14,
                 32.0D,
                 true,
@@ -121,6 +125,7 @@ final class ModSensorModules {
                 "engineering_ore_scanner",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
+                6,
                 8,
                 12.0D
         );
@@ -129,6 +134,7 @@ final class ModSensorModules {
                 "military_ore_scanner",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
+                8,
                 12,
                 16.0D
         );
@@ -137,6 +143,7 @@ final class ModSensorModules {
                 "experimental_ore_scanner",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
+                10,
                 18,
                 24.0D
         );
@@ -147,6 +154,7 @@ final class ModSensorModules {
             String id,
             EquipmentTier tier,
             Rarity rarity,
+            int energyConsumption,
             int activeConsumption,
             double range,
             boolean players,
@@ -164,7 +172,7 @@ final class ModSensorModules {
                                         ENTITY_SENSOR_SIZE
                                 )
                                 .energy(new EnergyProperties(
-                                        0,
+                                        energyConsumption,
                                         SENSOR_PRIORITY
                                 ))
                                 .entityDetection(new EntityDetectionProperties(
@@ -183,6 +191,7 @@ final class ModSensorModules {
             String id,
             EquipmentTier tier,
             Rarity rarity,
+            int energyConsumption,
             int activeConsumption,
             double range
     ) {
@@ -197,7 +206,7 @@ final class ModSensorModules {
                                         BLOCK_SCANNER_SIZE
                                 )
                                 .energy(new EnergyProperties(
-                                        0,
+                                        energyConsumption,
                                         SENSOR_PRIORITY
                                 ))
                                 .blockScanner(new BlockScannerProperties(

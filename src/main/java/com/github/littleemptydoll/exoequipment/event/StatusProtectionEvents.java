@@ -3,7 +3,6 @@ package com.github.littleemptydoll.exoequipment.event;
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import com.github.littleemptydoll.exoequipment.module.StatusProtectionOperations;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -32,18 +31,14 @@ public final class StatusProtectionEvents {
 
         MobEffectInstance incoming = event.getEffectInstance();
 
-        if (incoming.isInfiniteDuration()) {
-            return;
-        }
-
-        ResourceLocation effectId = getEffectId(incoming);
-        if (effectId == null) {
+        if (incoming.isInfiniteDuration()
+                || incoming.getEffect().value().isInstantenous()) {
             return;
         }
 
         double protection = StatusProtectionOperations.calculateProtection(
                 context.data(),
-                effectId,
+                incoming.getEffect(),
                 context.poweredModules()
         );
 
@@ -79,12 +74,5 @@ public final class StatusProtectionEvents {
         } finally {
             REAPPLYING.set(false);
         }
-    }
-
-    private static ResourceLocation getEffectId(MobEffectInstance effect) {
-        return effect.getEffect()
-                .unwrapKey()
-                .map(key -> key.location())
-                .orElse(null);
     }
 }

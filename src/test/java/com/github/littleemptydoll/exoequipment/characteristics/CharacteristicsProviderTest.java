@@ -6,7 +6,7 @@ import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.registry.ModFrames;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import com.github.littleemptydoll.exoequipment.registry.TestModules;
 import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 
@@ -29,14 +29,14 @@ class CharacteristicsProviderTest {
         ExoskeletonData data = data(
                 matrix(
                         "matrix_a",
-                        module(ModModules.TEST_NIGHT_VISION.getDefinition().id()),
-                        module(ModModules.TEST_STATUS_PROTECTION.getDefinition().id()),
-                        module(ModModules.TEST_HUNGER.getDefinition().id()),
-                        module(ModModules.TEST_PICKUP_MAGNET.getDefinition().id())
+                        module(TestModules.TEST_NIGHT_VISION.getDefinition().id()),
+                        module(TestModules.TEST_STATUS_PROTECTION.getDefinition().id()),
+                        module(TestModules.TEST_HUNGER.getDefinition().id()),
+                        module(TestModules.TEST_PICKUP_MAGNET.getDefinition().id())
                 ),
                 matrix(
                         "matrix_b",
-                        module(ModModules.TEST_REGENERATION.getDefinition().id())
+                        module(TestModules.TEST_REGENERATION.getDefinition().id())
                 )
         );
 
@@ -96,7 +96,7 @@ class CharacteristicsProviderTest {
         ExoskeletonData data = data(
                 matrix(
                         "matrix_a",
-                        module(ModModules.TEST_HUNGER.getDefinition().id())
+                        module(TestModules.TEST_HUNGER.getDefinition().id())
                 ),
                 null
         );

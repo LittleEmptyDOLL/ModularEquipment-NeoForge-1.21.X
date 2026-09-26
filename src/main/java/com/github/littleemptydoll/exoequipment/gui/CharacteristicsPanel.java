@@ -4,13 +4,13 @@ import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.characteristics.Characteristic;
 import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicCategory;
 import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicType;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import com.github.littleemptydoll.exoequipment.util.AttributeNameUtils;
 import com.github.littleemptydoll.exoequipment.util.NameUtils;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +44,12 @@ public final class CharacteristicsPanel {
     private static final int VALUE_COLOR = 0xFFEAF7FF;
     private static final int PANEL_BACKGROUND_U = 0;
     private static final int PANEL_BACKGROUND_V = 0;
+
+    private static final String ATTRIBUTE_PREFIX = "attribute.";
+    private static final String CONDITIONAL_ATTRIBUTE_PREFIX = "conditional.attribute.";
+    private static final String EFFECT_PREFIX = "effect.";
+    private static final String STATUS_PROTECTION_PREFIX = "status_protection.";
+    private static final String STATUS_PROTECTION_SUFFIX = ".reduction";
 
     private final Supplier<List<Characteristic>> characteristicsSupplier;
     private final Supplier<?> revisionSupplier;
@@ -341,17 +347,24 @@ public final class CharacteristicsPanel {
         for (Characteristic characteristic : characteristics) {
             if (characteristic.category() != previous) {
                 previous = characteristic.category();
-                rows.add(Row.category(
-                        Component.translatable(
-                                "gui.exoequipment.characteristic.category." +
-                                        characteristic.category().name().toLowerCase(Locale.ROOT)
-                        )
-                ));
+                rows.add(Row.category(getCategoryLabel(characteristic.category())));
             }
             rows.add(Row.characteristic(characteristic));
         }
 
         return rows;
+    }
+
+    private Component getCategoryLabel(CharacteristicCategory category) {
+        String translationKey =
+                "gui.exoequipment.characteristic.category."
+                        + category.name().toLowerCase(Locale.ROOT);
+
+        if (I18n.exists(translationKey)) {
+            return Component.translatable(translationKey);
+        }
+
+        return Component.literal(NameUtils.toDisplayName(category.name()));
     }
 
     private String getLabel(String key) {
@@ -360,34 +373,89 @@ public final class CharacteristicsPanel {
             return I18n.get(translationKey);
         }
 
-        String attributePrefix = "attribute.";
-        String conditionalPrefix = "conditional.attribute.";
-        if (key.startsWith(attributePrefix) || key.startsWith(conditionalPrefix)) {
-            String prefix = key.startsWith(attributePrefix) ? attributePrefix : conditionalPrefix;
-            String remainder = key.substring(prefix.length());
-            int operationSeparator = remainder.lastIndexOf('.');
-            if (operationSeparator > 0) {
-                String attributeId = remainder.substring(0, operationSeparator);
-                String operation = remainder.substring(operationSeparator + 1);
-                ResourceLocation id = ResourceLocation.tryParse(attributeId);
+        if (key.startsWith(EFFECT_PREFIX)) {
+            ResourceLocation effectId = ResourceLocation.tryParse(
+                    key.substring(EFFECT_PREFIX.length())
+            );
+            return getEffectName(effectId);
+        }
+
+        if (key.startsWith(STATUS_PROTECTION_PREFIX)
+                && key.endsWith(STATUS_PROTECTION_SUFFIX)) {
+            String id = key.substring(
+                    STATUS_PROTECTION_PREFIX.length(),
+                    key.length() - STATUS_PROTECTION_SUFFIX.length()
+            );
+            return getEffectName(ResourceLocation.tryParse(id));
+        }
+
+        AttributeKey attributeKey = parseAttributeKey(key);
+        if (attributeKey != null) {
+            ResourceLocation id = ResourceLocation.tryParse(attributeKey.attributeId());
+            if (id != null) {
+                return (attributeKey.conditional() ?
+                        I18n.get("gui.exoequipment.characteristic.conditional_prefix") : "")
+                        + AttributeNameUtils.getName(id).getString();
+            }
+        }
+
+        if (key.startsWith("damage_reduction.")) {
+            String damageType = key.substring("damage_reduction.".length());
+            if (!"default".equals(damageType)) {
+                ResourceLocation id = ResourceLocation.tryParse(damageType);
                 if (id != null) {
-                    return (prefix.equals(conditionalPrefix) ? "Conditional " : "")
-                            + AttributeNameUtils.getName(id).getString()
-                            + " (" + NameUtils.toDisplayName(operation) + ")";
+                    return NameUtils.toDisplayName(id.getPath());
                 }
             }
         }
 
-        String fallback = key.replace(':', ' ').replace('.', ' ').replace('_', ' ');
+        return fallbackLabel(key);
+    }
+
+    private String getEffectName(ResourceLocation effectId) {
+        if (effectId != null) {
+            var holder = BuiltInRegistries.MOB_EFFECT
+                    .getHolder(effectId)
+                    .orElse(null);
+
+            if (holder != null) {
+                return Component.translatable(
+                        holder.value().getDescriptionId()
+                ).getString();
+            }
+
+            return NameUtils.toDisplayName(effectId.getPath());
+        }
+
+        return I18n.get("gui.exoequipment.characteristic.unknown_effect");
+    }
+
+    private String fallbackLabel(String key) {
+        String fallback = key
+                .replace(':', ' ')
+                .replace('.', ' ')
+                .replace('_', ' ');
+
         if (fallback.isEmpty()) {
             return key;
         }
-        return Character.toUpperCase(fallback.charAt(0)) + fallback.substring(1);
+
+        return Character.toUpperCase(fallback.charAt(0))
+                + fallback.substring(1);
     }
 
     private String formatValue(Characteristic characteristic) {
         String key = characteristic.key();
         double value = characteristic.value();
+
+        AttributeKey attributeKey = parseAttributeKey(key);
+        if (attributeKey != null) {
+            return formatAttributeValue(attributeKey.operation(), value);
+        }
+
+        if (key.startsWith(EFFECT_PREFIX)) {
+            return formatEffectLevel(value);
+        }
 
         if (key.endsWith("reduction") || key.endsWith("chance")) {
             return formatPercent(value);
@@ -421,8 +489,50 @@ public final class CharacteristicsPanel {
         return formatNumber(value);
     }
 
+    private String formatAttributeValue(String operation, double value) {
+        return switch (operation) {
+            case "add_value" -> formatSignedNumber(value);
+            case "add_multiplied_base" ->
+                    formatSignedPercent(value)
+                            + " "
+                            + I18n.get("gui.exoequipment.characteristic.attribute.base");
+            case "add_multiplied_total" ->
+                    formatSignedPercent(value)
+                            + " "
+                            + I18n.get("gui.exoequipment.characteristic.attribute.total");
+            default -> formatNumber(value);
+        };
+    }
+
+    private String formatEffectLevel(double value) {
+        int level = Math.max(1, (int) Math.round(value));
+
+        return switch (level) {
+            case 1 -> "I";
+            case 2 -> "II";
+            case 3 -> "III";
+            case 4 -> "IV";
+            case 5 -> "V";
+            case 6 -> "VI";
+            case 7 -> "VII";
+            case 8 -> "VIII";
+            case 9 -> "IX";
+            case 10 -> "X";
+            default -> Integer.toString(level);
+        };
+    }
+
     private String formatPercent(double value) {
         return formatNumber(value * 100.0D) + "%";
+    }
+
+    private String formatSignedPercent(double value) {
+        return formatSignedNumber(value * 100.0D) + "%";
+    }
+
+    private String formatSignedNumber(double value) {
+        String formatted = formatNumber(value);
+        return value > 0.0D ? "+" + formatted : formatted;
     }
 
     private String formatNumber(double value) {
@@ -430,6 +540,33 @@ public final class CharacteristicsPanel {
             return Long.toString((long) value);
         }
         return String.format(Locale.ROOT, "%.2f", value);
+    }
+
+    private AttributeKey parseAttributeKey(String key) {
+        boolean conditional;
+        String remainder;
+
+        if (key.startsWith(ATTRIBUTE_PREFIX)) {
+            conditional = false;
+            remainder = key.substring(ATTRIBUTE_PREFIX.length());
+        } else if (key.startsWith(CONDITIONAL_ATTRIBUTE_PREFIX)) {
+            conditional = true;
+            remainder = key.substring(CONDITIONAL_ATTRIBUTE_PREFIX.length());
+        } else {
+            return null;
+        }
+
+        int operationSeparator = remainder.lastIndexOf('.');
+        if (operationSeparator <= 0
+                || operationSeparator >= remainder.length() - 1) {
+            return null;
+        }
+
+        return new AttributeKey(
+                remainder.substring(0, operationSeparator),
+                remainder.substring(operationSeparator + 1),
+                conditional
+        );
     }
 
     private String truncate(net.minecraft.client.gui.Font font, String text, int maxWidth) {
@@ -449,6 +586,12 @@ public final class CharacteristicsPanel {
     private static boolean isInside(double mouseX, double mouseY, int x, int y, int width, int height) {
         return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
     }
+
+    private record AttributeKey(
+            String attributeId,
+            String operation,
+            boolean conditional
+    ) {}
 
     private record Row(boolean category, Component text, Characteristic characteristic, int height) {
         static Row category(Component text) {

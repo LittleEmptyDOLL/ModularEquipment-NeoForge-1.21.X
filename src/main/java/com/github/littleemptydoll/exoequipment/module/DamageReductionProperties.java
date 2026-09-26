@@ -102,7 +102,7 @@ public record DamageReductionProperties(
      * strongest matching tag wins. The default reduction is the fallback
      * and also acts as the minimum reduction for tag matches.</p>
      */
-    public double reduction(DamageSource source) {
+    public double reductionForSource(DamageSource source) {
         if (source == null) {
             return reduction((ResourceLocation) null);
         }

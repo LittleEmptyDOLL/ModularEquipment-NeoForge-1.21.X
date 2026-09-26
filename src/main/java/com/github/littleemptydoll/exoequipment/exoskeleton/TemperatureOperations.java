@@ -12,6 +12,12 @@ public final class TemperatureOperations {
             ModuleDefinition definition,
             double temperature
     ) {
+        if (!Double.isFinite(temperature)) {
+            throw new IllegalArgumentException(
+                    "Module temperature must be finite"
+            );
+        }
+
         if (definition.temperature().isEmpty()) {
             return 1.0D;
         }
@@ -76,19 +82,22 @@ public final class TemperatureOperations {
         double max = bonus.maxTemperature();
         double range = max - min;
 
-        if (range <= 0.0D) {
-            return 1.0D + bonus.maximumBonus();
+        if (range == 0.0D) {
+            return Double.compare(temperature, min) == 0
+                    ? 1.0D + bonus.maximumBonus()
+                    : 1.0D;
         }
-
-        double midpoint = (min + max) / 2.0D;
 
         if (temperature <= min || temperature >= max) {
             return 1.0D;
         }
 
+        double midpoint = (min + max) / 2.0D;
         double distance = Math.abs(temperature - midpoint);
         double progress = 1.0D - (distance / (range / 2.0D));
 
-        return 1.0D + bonus.maximumBonus() * Math.max(0.0D, progress);
+        return 1.0D
+                + bonus.maximumBonus()
+                * Math.max(0.0D, progress);
     }
 }

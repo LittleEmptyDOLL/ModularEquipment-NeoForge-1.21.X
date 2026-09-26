@@ -109,6 +109,7 @@ dependencies {
 
     compileOnly curios
     localRuntime curios
+    testCompileOnly curios
     testRuntimeOnly curios
 
     compileOnly "maven.modrinth:TQr3t8Sb:AZzEduN3"

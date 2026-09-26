@@ -134,7 +134,7 @@ public final class DefenseOperations {
                 data,
                 ExoskeletonModules.activeSupported(data),
                 poweredModules,
-                properties -> properties.reduction(source)
+                properties -> properties.reductionForSource(source)
         );
     }
 

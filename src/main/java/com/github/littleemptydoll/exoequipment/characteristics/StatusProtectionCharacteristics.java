@@ -18,6 +18,7 @@ final class StatusProtectionCharacteristics {
         Set<ResourceLocation> effectIds = new HashSet<>();
         var poweredModules =
                 CharacteristicsSupport.poweredModules(context);
+        boolean hasHarmfulProtection = false;
 
         for (var activeModule
                 : CharacteristicsSupport.runtimeModules(context)) {
@@ -28,13 +29,44 @@ final class StatusProtectionCharacteristics {
                 continue;
             }
 
-            activeModule.definition()
+            var properties = activeModule.definition()
                     .statusProtection()
-                    .ifPresent(properties ->
-                            effectIds.addAll(
-                                    properties.protections().keySet()
+                    .orElse(null);
+
+            if (properties == null) {
+                continue;
+            }
+
+            effectIds.addAll(properties.protections().keySet());
+            hasHarmfulProtection |=
+                    properties.harmfulProtection() > 0.0D;
+        }
+
+        if (hasHarmfulProtection) {
+            double protection =
+                    context.isMatrixScope()
+                            ? StatusProtectionOperations
+                            .calculateHarmfulProtection(
+                                    context.data(),
+                                    context.matrixSlot(),
+                                    poweredModules
                             )
-                    );
+                            : StatusProtectionOperations
+                            .calculateHarmfulProtection(
+                                    context.data(),
+                                    poweredModules
+                            );
+
+            if (protection > 0.0D) {
+                result.add(
+                        new Characteristic(
+                                CharacteristicCategory.STATUS_PROTECTION,
+                                "status_protection.harmful.reduction",
+                                CharacteristicType.CURRENT,
+                                protection
+                        )
+                );
+            }
         }
 
         for (ResourceLocation effectId : effectIds) {

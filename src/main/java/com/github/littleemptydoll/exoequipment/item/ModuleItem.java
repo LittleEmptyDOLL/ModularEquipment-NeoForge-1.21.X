@@ -4,10 +4,11 @@ import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
 import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
+import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.util.AttributeNameUtils;
 import com.github.littleemptydoll.exoequipment.util.NameUtils;
-import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -92,24 +93,30 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
         }
 
         definition.damageReduction().ifPresent(value -> {
-            value.defaultReduction().ifPresent(reduction ->
+            value.defaultReduction().ifPresent(reduction -> {
+                if (reduction > 0.0D) {
                     tooltip.add(TooltipHelper.property(
-                            "damage all",
+                            "all damage reduction",
                             String.format(java.util.Locale.ROOT, "%.1f%%", reduction * efficiency * 100.0D)
-                    ))
-            );
-            value.reductions().forEach((id, reduction) ->
+                    ));
+                }
+            });
+            value.reductions().forEach((id, reduction) -> {
+                if (reduction > 0.0D) {
                     tooltip.add(TooltipHelper.property(
-                            "damage " + id.getPath(),
+                            NameUtils.toDisplayName(id.getPath()) + " damage reduction",
                             String.format(java.util.Locale.ROOT, "%.1f%%", reduction * efficiency * 100.0D)
-                    ))
-            );
-            value.tagReductions().forEach((id, reduction) ->
+                    ));
+                }
+            });
+            value.tagReductions().forEach((id, reduction) -> {
+                if (reduction > 0.0D) {
                     tooltip.add(TooltipHelper.property(
-                            "damage #" + id,
+                            damageTagLabel(id) + " damage reduction",
                             String.format(java.util.Locale.ROOT, "%.1f%%", reduction * efficiency * 100.0D)
-                    ))
-            );
+                    ));
+                }
+            });
         });
 
         definition.shield().ifPresent(value -> {
@@ -117,6 +124,17 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
             tooltip.add(TooltipHelper.property("shield recharge rate", applyEfficiency(value.rechargeRate(), efficiency)));
             tooltip.add(TooltipHelper.property("shield recharge delay", value.rechargeDelay()));
         });
+
+        definition.shieldProtection().ifPresent(value ->
+                tooltip.add(TooltipHelper.property(
+                        "shield protection transfer",
+                        String.format(
+                                java.util.Locale.ROOT,
+                                "%.1f%%",
+                                Math.min(1.0D, value.transfer() * efficiency) * 100.0D
+                        )
+                ))
+        );
 
         definition.emergencyShield().ifPresent(value -> {
             tooltip.add(TooltipHelper.property(
@@ -278,6 +296,14 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
                     ))
             );
         }
+    }
+
+    private static String damageTagLabel(ResourceLocation id) {
+        String path = id.getPath();
+        if (path.startsWith("is_") && path.length() > 3) {
+            path = path.substring(3);
+        }
+        return NameUtils.toDisplayName(path);
     }
 
     private static int applyEfficiency(int value, double efficiency) {

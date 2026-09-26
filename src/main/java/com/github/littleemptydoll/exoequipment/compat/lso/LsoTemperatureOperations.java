@@ -1,13 +1,10 @@
 package com.github.littleemptydoll.exoequipment.compat.lso;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
-import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
-import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
-import com.github.littleemptydoll.exoequipment.module.InstalledModule;
+import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.module.TemperatureImpactProperties;
 import com.github.littleemptydoll.exoequipment.module.TemperatureModifierProperties;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
 
 import java.util.Set;
 
@@ -24,49 +21,29 @@ public final class LsoTemperatureOperations {
         double coldResistance = 0.0D;
         double thermalResistance = 0.0D;
 
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
-            var matrix = data.matrices()
-                    .get(slot)
-                    .matrix()
-                    .orElse(null);
+        for (ExoskeletonModules.ActiveModule activeModule
+                : ExoskeletonModules.activeSupported(data)) {
 
-            if (matrix == null) {
+            if (!ExoskeletonModules.isPowered(
+                    activeModule,
+                    poweredModules
+            )) {
                 continue;
             }
 
-            for (int moduleIndex = 0;
-                 moduleIndex < matrix.modules().size();
-                 moduleIndex++) {
+            TemperatureModifierProperties properties =
+                    activeModule.definition()
+                            .temperatureModifier()
+                            .orElse(null);
 
-                InstalledModule module = matrix.modules().get(moduleIndex);
-
-                if (!FrameOperations.isModuleSupported(data, module)) {
-                    continue;
-                }
-
-                var definition = ModModules.getDefinition(module.id());
-                var energy = definition.energy();
-                InstalledModuleReference reference =
-                        new InstalledModuleReference(slot, moduleIndex);
-
-                if (energy.isPresent()
-                        && energy.get().consumption() > 0
-                        && !poweredModules.contains(reference)) {
-                    continue;
-                }
-
-                TemperatureModifierProperties properties =
-                        definition.temperatureModifier().orElse(null);
-
-                if (properties == null) {
-                    continue;
-                }
-
-                temperature += properties.temperature();
-                heatResistance += properties.heatResistance();
-                coldResistance += properties.coldResistance();
-                thermalResistance += properties.thermalResistance();
+            if (properties == null) {
+                continue;
             }
+
+            temperature += properties.temperature();
+            heatResistance += properties.heatResistance();
+            coldResistance += properties.coldResistance();
+            thermalResistance += properties.thermalResistance();
         }
 
         return new TemperatureModifierProperties(
@@ -81,55 +58,37 @@ public final class LsoTemperatureOperations {
             ExoskeletonData data,
             Set<InstalledModuleReference> poweredModules
     ) {
-        double resistance = 1.0D;
+        double remainingImpact = 1.0D;
 
-        for (int slot : ExoskeletonState.activeMatrixSlots(data)) {
-            var matrix = data.matrices()
-                    .get(slot)
-                    .matrix()
-                    .orElse(null);
+        for (ExoskeletonModules.ActiveModule activeModule
+                : ExoskeletonModules.activeSupported(data)) {
 
-            if (matrix == null) {
+            if (!ExoskeletonModules.isPowered(
+                    activeModule,
+                    poweredModules
+            )) {
                 continue;
             }
 
-            for (int moduleIndex = 0;
-                 moduleIndex < matrix.modules().size();
-                 moduleIndex++) {
+            TemperatureImpactProperties properties =
+                    activeModule.definition()
+                            .temperatureImpact()
+                            .orElse(null);
 
-                InstalledModule module = matrix.modules().get(moduleIndex);
+            if (properties == null) {
+                continue;
+            }
 
-                if (!FrameOperations.isModuleSupported(data, module)) {
-                    continue;
-                }
+            remainingImpact *= 1.0D - properties.resistance();
 
-                var definition = ModModules.getDefinition(module.id());
-                var energy = definition.energy();
-                InstalledModuleReference reference =
-                        new InstalledModuleReference(slot, moduleIndex);
-
-                if (energy.isPresent()
-                        && energy.get().consumption() > 0
-                        && !poweredModules.contains(reference)) {
-                    continue;
-                }
-
-                TemperatureImpactProperties properties =
-                        definition.temperatureImpact().orElse(null);
-
-                if (properties == null) {
-                    continue;
-                }
-
-                resistance *= 1.0D - properties.resistance();
-
-                if (resistance <= 0.0D) {
-                    return 1.0D;
-                }
+            if (remainingImpact <= 0.0D) {
+                return 1.0D;
             }
         }
 
-        return Math.max(0.0D, Math.min(1.0D, 1.0D - resistance));
+        return Math.max(
+                0.0D,
+                Math.min(1.0D, 1.0D - remainingImpact)
+        );
     }
 }
-

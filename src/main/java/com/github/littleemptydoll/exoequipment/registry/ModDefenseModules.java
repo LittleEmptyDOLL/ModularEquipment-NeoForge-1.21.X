@@ -17,11 +17,13 @@ final class ModDefenseModules {
     private static final ModuleSize GENERAL_PROTECTION_SIZE = new ModuleSize(2, 3);
     private static final ModuleSize IMMUNITY_SIZE = new ModuleSize(2, 3);
     private static final ModuleSize SHIELD_PROTECTION_SIZE = new ModuleSize(1, 2);
+    private static final ModuleSize STATUS_PROTECTION_SIZE = new ModuleSize(2, 2);
 
     private static final int PROTECTION_PRIORITY = 8;
     private static final int IMMUNITY_PRIORITY = 9;
-    private static final int TICKS_PER_MINUTE = 20 * 60;
     private static final int SHIELD_PROTECTION_PRIORITY = 8;
+    private static final int STATUS_PROTECTION_PRIORITY = 8;
+    private static final int TICKS_PER_MINUTE = 20 * 60;
 
     private static final ResourceLocation IS_PROJECTILE = minecraftTag("is_projectile");
     private static final ResourceLocation IS_EXPLOSION = minecraftTag("is_explosion");
@@ -38,6 +40,18 @@ final class ModDefenseModules {
     private ModDefenseModules() {}
 
     static void register(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
+    ) {
+        registerShields(registry);
+        registerDamageProtection(registry);
+        registerImmunities(registry);
+        registerEmergencyShields(registry);
+        registerRevivals(registry);
+        registerShieldProtection(registry);
+        registerStatusProtection(registry);
+    }
+
+    private static void registerShields(
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry
     ) {
         registerShield(
@@ -80,11 +94,13 @@ final class ModDefenseModules {
                 80,
                 50
         );
+    }
 
-        // General protection follows the same role as the vanilla Protection
-        // enchantment: weaker than a specialized defense, but useful against
-        // almost every ordinary damage source. Damage that explicitly bypasses
-        // enchantment-like protection is intentionally excluded.
+    private static void registerDamageProtection(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
+    ) {
+        // General protection is weaker than specialized protection but applies
+        // to almost every ordinary damage source.
         registerGeneralProtection(
                 registry,
                 "civilian_protection",
@@ -118,9 +134,6 @@ final class ModDefenseModules {
                 150
         );
 
-        // Specialized protection is deliberately about twice as effective as
-        // general protection of the same tier, mirroring the trade-off used by
-        // the vanilla protection enchantments.
         registerProtectionSeries(
                 registry,
                 "projectile_protection",
@@ -136,11 +149,13 @@ final class ModDefenseModules {
                 "fire_protection",
                 IS_FIRE
         );
+    }
 
-        // Experimental immunity modules are narrow but absolute defenses.
-        // Their high constant power draw and larger footprint make them a
-        // deliberate build choice rather than a direct upgrade to general
-        // protection.
+    private static void registerImmunities(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
+    ) {
+        // Absolute defenses remain narrow and expensive instead of turning the
+        // general protection module into universal immunity.
         registerImmunity(
                 registry,
                 "experimental_fall_immunity",
@@ -165,10 +180,11 @@ final class ModDefenseModules {
                 IS_LIGHTNING,
                 200
         );
+    }
 
-        // An emergency shield represents an additional shield charge rather
-        // than a larger primary shield. It starts at the mid tiers and the
-        // main progression axis is recharge time.
+    private static void registerEmergencyShields(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
+    ) {
         registerEmergencyShield(
                 registry,
                 "engineering_emergency_shield",
@@ -196,9 +212,11 @@ final class ModDefenseModules {
                 2 * TICKS_PER_MINUTE,
                 20
         );
+    }
 
-        // Revival is intentionally unavailable at the civilian tier. Even
-        // the experimental version keeps a five-minute minimum cooldown.
+    private static void registerRevivals(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
+    ) {
         registerRevival(
                 registry,
                 "engineering_revival",
@@ -226,8 +244,11 @@ final class ModDefenseModules {
                 5 * TICKS_PER_MINUTE,
                 50
         );
+    }
 
-        // Позволяет модулям защиты влиять на урон по щиту
+    private static void registerShieldProtection(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
+    ) {
         registerShieldProtection(
                 registry,
                 "civilian_shield_protection",
@@ -259,6 +280,47 @@ final class ModDefenseModules {
                 Rarity.EPIC,
                 1.0D,
                 50
+        );
+    }
+
+    private static void registerStatusProtection(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
+    ) {
+        // This is broad protection against harmful status effects, including
+        // effects added by other mods. It reduces effect duration rather than
+        // damage and intentionally stops below complete immunity. Absolute
+        // immunity can remain the role of future specialized modules.
+        registerStatusProtection(
+                registry,
+                "civilian_status_protection",
+                EquipmentTier.CIVILIAN,
+                Rarity.UNCOMMON,
+                0.20D,
+                20
+        );
+        registerStatusProtection(
+                registry,
+                "engineering_status_protection",
+                EquipmentTier.ENGINEERING,
+                Rarity.RARE,
+                0.40D,
+                40
+        );
+        registerStatusProtection(
+                registry,
+                "military_status_protection",
+                EquipmentTier.MILITARY,
+                Rarity.RARE,
+                0.60D,
+                70
+        );
+        registerStatusProtection(
+                registry,
+                "experimental_status_protection",
+                EquipmentTier.EXPERIMENTAL,
+                Rarity.EPIC,
+                0.80D,
+                110
         );
     }
 
@@ -533,6 +595,38 @@ final class ModDefenseModules {
                                 .shieldProtection(
                                         new ShieldProtectionProperties(
                                                 transfer
+                                        )
+                                )
+                                .build()
+        );
+    }
+
+    private static void registerStatusProtection(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
+            String id,
+            EquipmentTier tier,
+            Rarity rarity,
+            double harmfulProtection,
+            int energyConsumption
+    ) {
+        registry.register(
+                id,
+                new EquipmentProperties(tier, rarity),
+                (resourceLocation, properties) ->
+                        ModuleDefinition.builder(
+                                        resourceLocation,
+                                        properties,
+                                        ModuleCategory.DEFENSE,
+                                        STATUS_PROTECTION_SIZE
+                                )
+                                .energy(new EnergyProperties(
+                                        energyConsumption,
+                                        STATUS_PROTECTION_PRIORITY
+                                ))
+                                .statusProtection(
+                                        new StatusProtectionProperties(
+                                                harmfulProtection,
+                                                Map.of()
                                         )
                                 )
                                 .build()

@@ -179,8 +179,20 @@ class TemperatureOperationsTest {
                 IllegalArgumentException.class,
                 () -> TemperatureOperations.calculateModuleEfficiency(
                         ModModules.TEST.getDefinition(),
-                        Double.NaN
+                        Double.POSITIVE_INFINITY
                 )
+        );
+    }
+
+    @Test
+    void nanTemperatureDisablesEfficiencyScaling() {
+        assertEquals(
+                1.0D,
+                TemperatureOperations.calculateModuleEfficiency(
+                        ModModules.TEST_CONSUMER.getDefinition(),
+                        Double.NaN
+                ),
+                EPSILON
         );
     }
 

@@ -36,17 +36,11 @@ final class EnergyStorageLayout {
                             data.temperature()
                     );
 
-            int effectiveCapacity = Math.max(
-                    0,
-                    (int) Math.round(
-                            storage.capacity() * efficiency
-                    )
-            );
-
             entries.add(new Entry(
                     activeModule.reference(),
-                    storage,
-                    effectiveCapacity,
+                    scaled(storage.capacity(), efficiency),
+                    scaled(storage.maxInput(), efficiency),
+                    scaled(storage.maxOutput(), efficiency),
                     activeModule.module().storedEnergy()
             ));
         }
@@ -54,12 +48,22 @@ final class EnergyStorageLayout {
         return new EnergyStorageLayout(entries);
     }
 
+    private static int scaled(
+            int value,
+            double efficiency
+    ) {
+        return Math.max(
+                0,
+                (int) Math.round(value * efficiency)
+        );
+    }
+
     int availableOutput() {
         int available = 0;
 
         for (Entry entry : entries) {
             available += Math.min(
-                    entry.storage.maxOutput(),
+                    entry.maxOutput,
                     entry.stored
             );
         }
@@ -72,7 +76,7 @@ final class EnergyStorageLayout {
 
         for (Entry entry : entries) {
             available += Math.min(
-                    entry.storage.maxInput(),
+                    entry.maxInput,
                     Math.max(0, entry.capacity - entry.stored)
             );
         }
@@ -94,7 +98,7 @@ final class EnergyStorageLayout {
             int extracted = Math.min(
                     remaining,
                     Math.min(
-                            entry.storage.maxOutput(),
+                            entry.maxOutput,
                             entry.stored
                     )
             );
@@ -125,7 +129,7 @@ final class EnergyStorageLayout {
             int accepted = Math.min(
                     remaining,
                     Math.min(
-                            entry.storage.maxInput(),
+                            entry.maxInput,
                             Math.max(0, entry.capacity - entry.stored)
                     )
             );
@@ -163,21 +167,24 @@ final class EnergyStorageLayout {
 
     private static final class Entry {
         private final InstalledModuleReference reference;
-        private final StorageProperties storage;
         private final int capacity;
+        private final int maxInput;
+        private final int maxOutput;
         private final int originalStored;
         private int stored;
         private boolean dirty;
 
         private Entry(
                 InstalledModuleReference reference,
-                StorageProperties storage,
                 int capacity,
+                int maxInput,
+                int maxOutput,
                 int stored
         ) {
             this.reference = reference;
-            this.storage = storage;
             this.capacity = capacity;
+            this.maxInput = maxInput;
+            this.maxOutput = maxOutput;
             this.originalStored = stored;
             this.stored = Math.min(stored, capacity);
         }

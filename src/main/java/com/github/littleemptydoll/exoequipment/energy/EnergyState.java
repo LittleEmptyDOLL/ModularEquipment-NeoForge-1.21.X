@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModEnergySystems;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * Runtime snapshot of the energy network of an exoskeleton.
@@ -55,6 +56,10 @@ public record EnergyState(
     }
 
     public static EnergyState calculate(ExoskeletonData data) {
+        return calculate(data, null);
+    }
+
+    public static EnergyState calculate(ExoskeletonData data, Player player) {
         if (data.energySystem().isEmpty()) {
             return new EnergyState(0, 0, 0, 0, 0, 0, 0, 0);
         }
@@ -86,7 +91,7 @@ public record EnergyState(
                 state.energyStorageInput(),
                 state.energyStorageOutput(),
                 state.energyGeneration(),
-                state.energyConsumption()
+                EnergyOperations.calculateCurrentConsumption(data, player, null)
         );
     }
 

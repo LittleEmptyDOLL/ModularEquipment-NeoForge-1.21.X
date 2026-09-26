@@ -1,9 +1,12 @@
 package com.github.littleemptydoll.exoequipment.energy;
 
 import com.github.littleemptydoll.exoequipment.controller.Controller;
+import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicsContext;
+import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicsProvider;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonProfile;
 import com.github.littleemptydoll.exoequipment.exoskeleton.MatrixSlot;
+import com.github.littleemptydoll.exoequipment.exoskeleton.SystemStatus;
 import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
@@ -18,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -231,6 +235,47 @@ class EnergyOperationsTest {
 
         assertEquals(0, result.consumed());
         assertEquals(50, result.deficit());
+    }
+
+    @Test
+    void activeCloakingChangesCharacteristicsAndStatusDemand() {
+        InstalledModule generator = new InstalledModule(
+                TestModules.TEST_GENERATOR.getDefinition().id(), 0, 0, 0);
+        InstalledModule cloak = new InstalledModule(
+                TestModules.TEST_CLOAKING.getDefinition().id(), 0, 0, 0);
+        ExoskeletonData inactive = data(
+                ModFrames.EXPERIMENTAL.getDefinition().id(), generator, cloak);
+        ExoskeletonData active = data(
+                ModFrames.EXPERIMENTAL.getDefinition().id(),
+                generator, cloak.withActive(true));
+
+        assertEquals(20, EnergyState.calculate(inactive).consumption());
+        assertEquals(50, EnergyState.calculate(active).consumption());
+        assertEquals(SystemStatus.GREEN, SystemStatus.calculate(inactive).severity());
+        assertEquals(SystemStatus.YELLOW, SystemStatus.calculate(active).severity());
+
+        assertEquals(50.0D, CharacteristicsProvider.collect(
+                CharacteristicsContext.exoskeleton(active, null, Set.of()))
+                .stream().filter(value -> value.key().equals("consumption"))
+                .findFirst().orElseThrow().value());
+        assertEquals(50.0D, CharacteristicsProvider.collect(
+                CharacteristicsContext.matrix(active, null, Set.of(), 0))
+                .stream().filter(value -> value.key().equals("consumption"))
+                .findFirst().orElseThrow().value());
+    }
+
+    @Test
+    void activeFlightAddsItsRunningCostToTheEnergySnapshot() {
+        InstalledModule flight = new InstalledModule(
+                TestModules.TEST_FLIGHT.getDefinition().id(), 0, 0, 0);
+        ExoskeletonData inactive = data(
+                ModFrames.CIVILIAN.getDefinition().id(), flight);
+        ExoskeletonData active = data(
+                ModFrames.CIVILIAN.getDefinition().id(), flight.withFlightActive(true));
+
+        assertEquals(5, EnergyState.calculate(inactive).consumption());
+        assertEquals(20, EnergyState.calculate(active).consumption());
+        assertEquals(20, EnergyOperations.calculateMatrixConsumption(active, 0, null));
     }
 
     private static ExoskeletonData data(

@@ -5,6 +5,7 @@ import com.github.littleemptydoll.exoequipment.item.ModuleItem;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.fml.ModList;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +43,10 @@ public final class ModModules {
         ModThermalModules.register(REGISTRY);
         ModCombatModules.register(REGISTRY);
         ModUtilityModules.register(REGISTRY);
+        if (ModList.get() != null && ModList.get().isLoaded("legendarysurvivaloverhaul")) {
+            ModLsoModules.register(REGISTRY);
+        }
+        ModAttributeModules.register(REGISTRY);
     }
 
     static void registerTransientDefinition(ModuleDefinition definition) {

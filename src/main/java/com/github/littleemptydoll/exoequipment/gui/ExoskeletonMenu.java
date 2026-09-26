@@ -115,8 +115,8 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
 
     private int getServerDataValue(int index) {
         ExoskeletonData data = ExoskeletonItem.getData(exoskeleton);
-        EnergyState energy = EnergyState.calculate(data);
-        SystemStatus status = SystemStatus.calculate(data);
+        EnergyState energy = EnergyState.calculate(data, player);
+        SystemStatus status = SystemStatus.calculate(data, player);
 
         return switch (index) {
             case DATA_ENERGY_STORED -> energy.storedEnergy();

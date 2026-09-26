@@ -403,64 +403,60 @@ public final class EnergyOperations {
                 : ExoskeletonModules.activeSupported(data)) {
             InstalledModule module = activeModule.module();
             ModuleDefinition definition = activeModule.definition();
-            var energy = definition.energy();
+            int consumption = moduleConsumption(data, module, definition, player);
 
-            int consumption = energy.map(
-                    EnergyProperties::consumption
-            ).orElse(0);
-
-            if (consumption > 0) {
-                double efficiency =
-                        TemperatureOperations
-                                .calculateModuleEfficiency(
-                                        definition,
-                                        data.temperature()
-                                );
-
-                consumption = Math.max(
-                        0,
-                        (int) Math.round(
-                                consumption * efficiency
-                        )
-                );
-            }
-
-            if (module.active()) {
-                consumption += definition.cloaking()
-                        .map(CloakingProperties::activeConsumption)
-                        .orElse(0);
-            }
-
-            if (module.flightActive()) {
-                consumption += definition.flight()
-                        .map(FlightProperties::activeConsumption)
-                        .orElse(0);
-            }
-
-            boolean jetpackActive =
-                    player != null
-                            && JetpackInputState.isEnergyActive(player)
-                            && definition.jetpack().isPresent();
-
-            if (jetpackActive) {
-                consumption += definition.jetpack()
-                        .map(JetpackProperties::energyConsumption)
-                        .orElse(0);
-            }
-
-            if (consumption <= 0 && !jetpackActive) {
+            if (consumption <= 0) {
                 continue;
             }
 
             consumers.add(new EnergyConsumer(
                     activeModule.reference(),
                     consumption,
-                    energy.map(EnergyProperties::priority)
+                    definition.energy().map(EnergyProperties::priority)
                             .orElse(0)
             ));
         }
 
         return consumers;
+    }
+
+    public static int calculateMatrixConsumption(
+            ExoskeletonData data, int matrixSlot, Player player
+    ) {
+        return ExoskeletonModules.supportedInMatrix(data, matrixSlot).stream()
+                .mapToInt(activeModule -> moduleConsumption(
+                        data, activeModule.module(), activeModule.definition(), player
+                ))
+                .sum();
+    }
+
+    private static int moduleConsumption(
+            ExoskeletonData data, InstalledModule module,
+            ModuleDefinition definition, Player player
+    ) {
+        int consumption = definition.energy()
+                .map(EnergyProperties::consumption).orElse(0);
+
+        if (consumption > 0) {
+            double efficiency = TemperatureOperations.calculateModuleEfficiency(
+                    definition, data.temperature());
+            consumption = Math.max(0, (int) Math.round(consumption * efficiency));
+        }
+
+        if (module.active()) {
+            consumption += definition.cloaking()
+                    .map(CloakingProperties::activeConsumption).orElse(0);
+        }
+        if (module.flightActive()) {
+            consumption += definition.flight()
+                    .map(FlightProperties::activeConsumption).orElse(0);
+        }
+        if (player != null && JetpackInputState.isEnergyActive(player)) {
+            consumption += definition.jetpack()
+                    .map(JetpackProperties::energyConsumption).orElse(0);
+        }
+
+        return consumption;
     }
 
     private static int extractExternal(

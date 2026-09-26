@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.characteristics;
 
 import com.github.littleemptydoll.exoequipment.energy.EnergyState;
+import com.github.littleemptydoll.exoequipment.energy.EnergyOperations;
 import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
@@ -47,7 +48,8 @@ final class EnergyCharacteristics {
 
             addValues(
                     result,
-                    state.energyConsumption(),
+                    EnergyOperations.calculateMatrixConsumption(
+                            context.data(), context.matrixSlot(), context.player()),
                     state.energyGeneration(),
                     state.energyStorageCapacity(),
                     state.energyStorageInput(),
@@ -59,7 +61,7 @@ final class EnergyCharacteristics {
 
         EnergyState state =
                 EnergyState.calculate(
-                        context.data()
+                        context.data(), context.player()
                 );
 
         addValues(

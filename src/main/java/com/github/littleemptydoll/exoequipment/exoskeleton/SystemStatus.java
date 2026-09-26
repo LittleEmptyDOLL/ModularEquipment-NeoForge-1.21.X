@@ -2,6 +2,7 @@ package com.github.littleemptydoll.exoequipment.exoskeleton;
 
 import com.github.littleemptydoll.exoequipment.energy.EnergyState;
 import com.github.littleemptydoll.exoequipment.frame.FrameOperations;
+import net.minecraft.world.entity.player.Player;
 
 public record SystemStatus(int severity, int flags) {
     public static final int GREEN = 0;
@@ -17,7 +18,11 @@ public record SystemStatus(int severity, int flags) {
     public static final int FLAG_ENERGY_THROUGHPUT = 1 << 5;
 
     public static SystemStatus calculate(ExoskeletonData data) {
-        EnergyState energy = EnergyState.calculate(data);
+        return calculate(data, null);
+    }
+
+    public static SystemStatus calculate(ExoskeletonData data, Player player) {
+        EnergyState energy = EnergyState.calculate(data, player);
 
         int flags = 0;
         int severity = GREEN;

@@ -83,6 +83,16 @@ public final class TestModules {
                     .build()
     );
 
+    public static final TestEntry TEST_FLIGHT = register(
+            "test_flight",
+            properties(),
+            (id, properties) -> ModuleDefinition.builder(
+                            id, properties, ModuleCategory.MOBILITY, new ModuleSize(2, 2))
+                    .energy(new EnergyProperties(5))
+                    .flight(new FlightProperties(15))
+                    .build()
+    );
+
     public static final TestEntry TEST_CONSUMER = register(
             "test_consumer",
             properties(),

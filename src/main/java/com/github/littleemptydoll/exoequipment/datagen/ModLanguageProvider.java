@@ -92,8 +92,11 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.characteristic.category.attributes", "Attributes");
         add("gui.exoequipment.characteristic.category.effects", "Effects");
         add("gui.exoequipment.characteristic.category.regeneration", "Regeneration");
-        add("gui.exoequipment.characteristic.category.mobility", "Mobility");
-        add("gui.exoequipment.characteristic.category.active_abilities", "Active abilities");
+        add("gui.exoequipment.characteristic.category.jetpack", "Jetpack");
+        add("gui.exoequipment.characteristic.category.elytra_boost", "Elytra boost");
+        add("gui.exoequipment.characteristic.category.blink", "Blink");
+        add("gui.exoequipment.characteristic.category.cloaking", "Cloaking");
+        add("gui.exoequipment.characteristic.category.flight", "Flight");
         add("gui.exoequipment.characteristic.category.survival", "Survival");
         add("gui.exoequipment.characteristic.category.sensor", "Sensors");
         add("gui.exoequipment.characteristic.category.utility", "Utility");
@@ -145,14 +148,14 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.characteristic.revival.cooldown", "Revival cooldown");
         add("gui.exoequipment.characteristic.thirst.exhaustion_reduction", "Thirst exhaustion reduction");
 
-        add("gui.exoequipment.characteristic.flight", "Flight");
-        add("gui.exoequipment.characteristic.jetpack.vertical_thrust", "Jetpack vertical thrust");
-        add("gui.exoequipment.characteristic.jetpack.horizontal_speed", "Jetpack horizontal speed");
-        add("gui.exoequipment.characteristic.elytra.acceleration", "Elytra acceleration");
-        add("gui.exoequipment.characteristic.elytra.max_speed", "Elytra maximum speed");
-        add("gui.exoequipment.characteristic.blink.distance", "Blink distance");
-        add("gui.exoequipment.characteristic.blink.activation_energy", "Blink activation energy");
-        add("gui.exoequipment.characteristic.blink.cooldown", "Blink cooldown");
+        add("gui.exoequipment.characteristic.flight", "Flight available");
+        add("gui.exoequipment.characteristic.jetpack.vertical_thrust", "Vertical thrust");
+        add("gui.exoequipment.characteristic.jetpack.horizontal_speed", "Horizontal speed");
+        add("gui.exoequipment.characteristic.elytra.acceleration", "Acceleration");
+        add("gui.exoequipment.characteristic.elytra.max_speed", "Maximum speed");
+        add("gui.exoequipment.characteristic.blink.distance", "Distance");
+        add("gui.exoequipment.characteristic.blink.activation_energy", "Activation energy");
+        add("gui.exoequipment.characteristic.blink.cooldown", "Cooldown");
 
         add("gui.exoequipment.characteristic.entity_detection.range", "Entity detection range");
         add("gui.exoequipment.characteristic.entity_detection.players", "Detect players");
@@ -163,8 +166,10 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.characteristic.pickup_magnet.radius", "Pickup magnet radius");
         add("gui.exoequipment.characteristic.pickup_magnet.items", "Pickup items");
         add("gui.exoequipment.characteristic.pickup_magnet.experience", "Pickup experience");
-        add("gui.exoequipment.characteristic.cloaking.active_consumption", "Cloaking consumption");
-        add("gui.exoequipment.characteristic.cloaking.active", "Cloaking active");
+        add("gui.exoequipment.characteristic.cloaking.active", "Active");
+        add("gui.exoequipment.characteristic.cloaking.activation_energy", "Activation energy");
+        add("gui.exoequipment.characteristic.cloaking.active_consumption", "Active consumption");
+        add("gui.exoequipment.characteristic.cloaking.cooldown", "Cooldown");
         add("gui.exoequipment.characteristic.emergency_shield.restore", "Emergency shield restore");
         add("gui.exoequipment.characteristic.emergency_shield.cooldown", "Emergency shield cooldown");
 

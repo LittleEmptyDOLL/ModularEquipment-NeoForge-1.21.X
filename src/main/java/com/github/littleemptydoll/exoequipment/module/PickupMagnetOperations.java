@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -19,13 +20,38 @@ public final class PickupMagnetOperations {
             ExoskeletonData data,
             Set<InstalledModuleReference> poweredModules
     ) {
+        return findProperties(data, null, poweredModules);
+    }
+
+    public static Optional<PickupMagnetProperties> findProperties(
+            ExoskeletonData data,
+            int matrixSlot,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        return findProperties(
+                data,
+                Integer.valueOf(matrixSlot),
+                poweredModules
+        );
+    }
+
+    private static Optional<PickupMagnetProperties> findProperties(
+            ExoskeletonData data,
+            Integer matrixSlot,
+            Set<InstalledModuleReference> poweredModules
+    ) {
         double radius = 0.0D;
         boolean items = false;
         boolean experience = false;
+        List<ExoskeletonModules.ActiveModule> modules =
+                matrixSlot == null
+                        ? ExoskeletonModules.activeSupported(data)
+                        : ExoskeletonModules.supportedInMatrix(
+                                data,
+                                matrixSlot
+                        );
 
-        for (ExoskeletonModules.ActiveModule activeModule
-                : ExoskeletonModules.activeSupported(data)) {
-
+        for (ExoskeletonModules.ActiveModule activeModule : modules) {
             if (!ExoskeletonModules.isPowered(
                     activeModule,
                     poweredModules

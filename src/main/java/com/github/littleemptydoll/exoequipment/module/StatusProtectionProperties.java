@@ -7,21 +7,46 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Map;
 
 public record StatusProtectionProperties(
+        double harmfulProtection,
         Map<ResourceLocation, Double> protections
 ) {
     public static final Codec<StatusProtectionProperties> CODEC =
             RecordCodecBuilder.create(instance ->
                     instance.group(
+                            Codec.DOUBLE
+                                    .optionalFieldOf(
+                                            "harmful_protection",
+                                            0.0D
+                                    )
+                                    .forGetter(
+                                            StatusProtectionProperties::harmfulProtection
+                                    ),
                             Codec.unboundedMap(
-                                    ResourceLocation.CODEC,
-                                    Codec.DOUBLE
-                            )
-                            .fieldOf("protections")
-                            .forGetter(StatusProtectionProperties::protections)
+                                            ResourceLocation.CODEC,
+                                            Codec.DOUBLE
+                                    )
+                                    .fieldOf("protections")
+                                    .forGetter(
+                                            StatusProtectionProperties::protections
+                                    )
                     ).apply(instance, StatusProtectionProperties::new)
             );
 
+    public StatusProtectionProperties(
+            Map<ResourceLocation, Double> protections
+    ) {
+        this(0.0D, protections);
+    }
+
     public StatusProtectionProperties {
+        if (!Double.isFinite(harmfulProtection)
+                || harmfulProtection < 0.0D
+                || harmfulProtection > 1.0D) {
+            throw new IllegalArgumentException(
+                    "Harmful status protection must be between 0 and 1"
+            );
+        }
+
         if (protections == null) {
             throw new IllegalArgumentException(
                     "Status protections must not be null"
@@ -55,5 +80,21 @@ public record StatusProtectionProperties(
         }
 
         return protections.getOrDefault(effectId, 0.0D);
+    }
+
+    public double protection(
+            ResourceLocation effectId,
+            boolean harmful
+    ) {
+        if (effectId == null) {
+            return 0.0D;
+        }
+
+        Double explicit = protections.get(effectId);
+        if (explicit != null) {
+            return explicit;
+        }
+
+        return harmful ? harmfulProtection : 0.0D;
     }
 }

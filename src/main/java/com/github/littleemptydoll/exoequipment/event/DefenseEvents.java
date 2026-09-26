@@ -90,22 +90,21 @@ public final class DefenseEvents {
                 data
         );
 
+        if (shieldResult.absorbedDamage() > 0.0D) {
+            entity.level().playSound(
+                    null,
+                    entity.getX(),
+                    entity.getY(),
+                    entity.getZ(),
+                    ModSounds.SHIELD_HIT.get(),
+                    SoundSource.PLAYERS,
+                    1.0F,
+                    1.0F
+            );
+        }
+
         if (remainingDamage <= 0.0D) {
             event.setCanceled(true);
-
-            if (shieldResult.absorbedDamage() > 0.0D) {
-                entity.level().playSound(
-                        null,
-                        entity.getX(),
-                        entity.getY(),
-                        entity.getZ(),
-                        ModSounds.SHIELD_HIT.get(),
-                        SoundSource.PLAYERS,
-                        1.0F,
-                        1.0F
-                );
-            }
-
             return;
         }
 

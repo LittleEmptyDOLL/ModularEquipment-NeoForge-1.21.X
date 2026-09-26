@@ -4,9 +4,11 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
 import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageSource;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.ToDoubleFunction;
 
 public final class DefenseOperations {
     private DefenseOperations() {}
@@ -30,8 +32,8 @@ public final class DefenseOperations {
         return calculateDamageMultiplier(
                 data,
                 ExoskeletonModules.activeSupported(data),
-                damageType,
-                poweredModules
+                poweredModules,
+                properties -> properties.reduction(damageType)
         );
     }
 
@@ -47,8 +49,44 @@ public final class DefenseOperations {
                         data,
                         matrixSlot
                 ),
-                damageType,
-                poweredModules
+                poweredModules,
+                properties -> properties.reduction(damageType)
+        );
+    }
+
+    public static double calculateDamageTagMultiplier(
+            ExoskeletonData data,
+            ResourceLocation damageTag,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        return calculateDamageMultiplier(
+                data,
+                ExoskeletonModules.activeSupported(data),
+                poweredModules,
+                properties -> properties.reduction(
+                        null,
+                        tag -> tag.equals(damageTag)
+                )
+        );
+    }
+
+    public static double calculateDamageTagMultiplier(
+            ExoskeletonData data,
+            int matrixSlot,
+            ResourceLocation damageTag,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        return calculateDamageMultiplier(
+                data,
+                ExoskeletonModules.supportedInMatrix(
+                        data,
+                        matrixSlot
+                ),
+                poweredModules,
+                properties -> properties.reduction(
+                        null,
+                        tag -> tag.equals(damageTag)
+                )
         );
     }
 
@@ -82,11 +120,29 @@ public final class DefenseOperations {
         );
     }
 
+    public static double applyDamageReduction(
+            double damage,
+            ExoskeletonData data,
+            DamageSource source,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        if (damage <= 0.0D) {
+            return 0.0D;
+        }
+
+        return damage * calculateDamageMultiplier(
+                data,
+                ExoskeletonModules.activeSupported(data),
+                poweredModules,
+                properties -> properties.reduction(source)
+        );
+    }
+
     private static double calculateDamageMultiplier(
             ExoskeletonData data,
             List<ExoskeletonModules.ActiveModule> modules,
-            ResourceLocation damageType,
-            Set<InstalledModuleReference> poweredModules
+            Set<InstalledModuleReference> poweredModules,
+            ToDoubleFunction<DamageReductionProperties> reductionResolver
     ) {
         double multiplier = 1.0D;
 
@@ -117,7 +173,7 @@ public final class DefenseOperations {
                     1.0D,
                     Math.max(
                             0.0D,
-                            properties.reduction(damageType)
+                            reductionResolver.applyAsDouble(properties)
                                     * efficiency
                     )
             );

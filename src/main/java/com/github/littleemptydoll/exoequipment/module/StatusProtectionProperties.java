@@ -168,7 +168,9 @@ public record StatusProtectionProperties(
             String name
     ) {
         if (values == null) {
-            return Map.of();
+            throw new IllegalArgumentException(
+                    name + " must not be null"
+            );
         }
 
         for (Map.Entry<ResourceLocation, Double> entry : values.entrySet()) {

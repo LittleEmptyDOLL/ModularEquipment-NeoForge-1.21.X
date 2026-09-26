@@ -31,6 +31,10 @@ public final class AttributeEvents {
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
 
+        if (player.level().isClientSide()) {
+            return;
+        }
+
         Map<AttributeOperations.AttributeKey, Double> desired =
                 findAttributes(player);
 

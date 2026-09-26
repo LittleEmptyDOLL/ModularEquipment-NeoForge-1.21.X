@@ -10,6 +10,7 @@ public enum CharacteristicCategory {
     EFFECTS,
     REGENERATION,
     MOBILITY,
+    ACTIVE_ABILITIES,
     SURVIVAL,
     SENSOR,
     UTILITY,

@@ -3,7 +3,7 @@ package com.github.littleemptydoll.exoequipment.matrix;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.module.ModuleSize;
 import com.github.littleemptydoll.exoequipment.registry.ModMatrices;
-import com.github.littleemptydoll.exoequipment.registry.ModModules;
+import com.github.littleemptydoll.exoequipment.registry.TestModules;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -42,7 +42,7 @@ class MatrixOperationsTest {
         MatrixDefinition definition =
                 ModMatrices.CIVILIAN.getDefinition();
         InstalledModule existing = new InstalledModule(
-                ModModules.TEST_CONSUMER
+                TestModules.TEST_CONSUMER
                         .getDefinition()
                         .id(),
                 1,
@@ -57,7 +57,7 @@ class MatrixOperationsTest {
         assertFalse(MatrixOperations.canPlace(
                 matrix,
                 definition,
-                ModModules.TEST_CONSUMER.getDefinition(),
+                TestModules.TEST_CONSUMER.getDefinition(),
                 2,
                 2,
                 0
@@ -65,7 +65,7 @@ class MatrixOperationsTest {
         assertFalse(MatrixOperations.canPlace(
                 matrix,
                 definition,
-                ModModules.TEST_CONSUMER.getDefinition(),
+                TestModules.TEST_CONSUMER.getDefinition(),
                 4,
                 4,
                 0
@@ -73,7 +73,7 @@ class MatrixOperationsTest {
         assertTrue(MatrixOperations.canPlace(
                 matrix,
                 definition,
-                ModModules.TEST_CONSUMER.getDefinition(),
+                TestModules.TEST_CONSUMER.getDefinition(),
                 3,
                 3,
                 0
@@ -85,7 +85,7 @@ class MatrixOperationsTest {
         MatrixDefinition definition =
                 ModMatrices.CIVILIAN.getDefinition();
         InstalledModule module = new InstalledModule(
-                ModModules.TEST_HEALTH
+                TestModules.TEST_HEALTH
                         .getDefinition()
                         .id(),
                 0,
@@ -141,7 +141,7 @@ class MatrixOperationsTest {
                         .id(),
                 List.of(
                         new InstalledModule(
-                                ModModules.TEST_CONSUMER
+                                TestModules.TEST_CONSUMER
                                         .getDefinition()
                                         .id(),
                                 0,
@@ -149,7 +149,7 @@ class MatrixOperationsTest {
                                 0
                         ),
                         new InstalledModule(
-                                ModModules.TEST_GENERATOR
+                                TestModules.TEST_GENERATOR
                                         .getDefinition()
                                         .id(),
                                 2,
@@ -163,7 +163,7 @@ class MatrixOperationsTest {
         MatrixState consumersOnly = MatrixOperations.calculateState(
                 matrix,
                 module -> module.id().equals(
-                        ModModules.TEST_CONSUMER
+                        TestModules.TEST_CONSUMER
                                 .getDefinition()
                                 .id()
                 )

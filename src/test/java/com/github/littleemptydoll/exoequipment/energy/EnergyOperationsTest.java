@@ -139,6 +139,61 @@ class EnergyOperationsTest {
         );
     }
 
+    @Test
+    void externalTransferLimitIsRespectedBeforePoweringConsumer() {
+        ExoskeletonData data = data(
+                ModFrames.CIVILIAN.getDefinition().id(),
+                new InstalledModule(
+                        ModModules.TEST_NIGHT_VISION
+                                .getDefinition()
+                                .id(),
+                        0,
+                        0,
+                        0
+                )
+        );
+        LimitedExternalProvider provider =
+                new LimitedExternalProvider(100, 3);
+
+        EnergyTickResult result =
+                EnergyOperations.tick(data, provider);
+
+        assertEquals(0, result.consumed());
+        assertEquals(0, result.externalInput());
+        assertEquals(0, provider.extracted());
+        assertFalse(
+                result.isPowered(
+                        new InstalledModuleReference(0, 0)
+                )
+        );
+    }
+
+    @Test
+    void deficitIncludesActiveAbilityConsumption() {
+        InstalledModule cloaking =
+                new InstalledModule(
+                        ModModules.TEST_CLOAKING
+                                .getDefinition()
+                                .id(),
+                        0,
+                        0,
+                        0
+                ).withActive(true);
+
+        EnergyTickResult result = EnergyOperations.tick(
+                data(
+                        ModFrames.CIVILIAN
+                                .getDefinition()
+                                .id(),
+                        cloaking
+                ),
+                20
+        );
+
+        assertEquals(0, result.consumed());
+        assertEquals(50, result.deficit());
+    }
+
     private static ExoskeletonData data(
             ResourceLocation frameId,
             InstalledModule... modules
@@ -185,5 +240,49 @@ class EnergyOperationsTest {
                 .orElseThrow()
                 .modules()
                 .get(index);
+    }
+
+    private static final class LimitedExternalProvider
+            implements ExternalEnergyProvider {
+        private final int available;
+        private final int transferLimit;
+        private int extracted;
+
+        private LimitedExternalProvider(
+                int available,
+                int transferLimit
+        ) {
+            this.available = available;
+            this.transferLimit = transferLimit;
+        }
+
+        @Override
+        public int availableEnergy() {
+            return available - extracted;
+        }
+
+        @Override
+        public int extractEnergy(
+                int amount,
+                boolean simulate
+        ) {
+            int transferred = Math.min(
+                    amount,
+                    Math.min(
+                            transferLimit,
+                            available - extracted
+                    )
+            );
+
+            if (!simulate) {
+                extracted += transferred;
+            }
+
+            return transferred;
+        }
+
+        private int extracted() {
+            return extracted;
+        }
     }
 }

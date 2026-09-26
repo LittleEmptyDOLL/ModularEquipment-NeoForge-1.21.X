@@ -29,7 +29,7 @@ final class ShieldProtectionCharacteristics {
         result.add(
                 new Characteristic(
                         CharacteristicCategory.SHIELD,
-                        "protection_transfer",
+                        "protection_transfer.reduction",
                         CharacteristicType.CURRENT,
                         transfer
                 )

@@ -185,6 +185,20 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
                 ));
             }
 
+            value.tagProtections().forEach((id, protection) ->
+                    tooltip.add(TooltipHelper.property(
+                            statusTagLabel(id) + " status protection",
+                            String.format(
+                                    java.util.Locale.ROOT,
+                                    "%.1f%%",
+                                    Math.min(
+                                            1.0D,
+                                            protection * efficiency
+                                    ) * 100.0D
+                            )
+                    ))
+            );
+
             value.protections().forEach((id, protection) ->
                     tooltip.add(TooltipHelper.property(
                             "status " + id.getPath(),
@@ -316,6 +330,15 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
         String path = id.getPath();
         if (path.startsWith("is_") && path.length() > 3) {
             path = path.substring(3);
+        }
+        return NameUtils.toDisplayName(path);
+    }
+
+    private static String statusTagLabel(ResourceLocation id) {
+        String path = id.getPath();
+        int separator = path.lastIndexOf('/');
+        if (separator >= 0 && separator + 1 < path.length()) {
+            path = path.substring(separator + 1);
         }
         return NameUtils.toDisplayName(path);
     }

@@ -12,6 +12,10 @@ public final class TemperatureOperations {
             ModuleDefinition definition,
             double temperature
     ) {
+        if (Double.isNaN(temperature)) {
+            return 1.0D;
+        }
+
         if (!Double.isFinite(temperature)) {
             throw new IllegalArgumentException(
                     "Module temperature must be finite"

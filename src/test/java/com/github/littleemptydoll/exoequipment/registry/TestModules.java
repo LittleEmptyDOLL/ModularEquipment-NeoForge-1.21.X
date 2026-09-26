@@ -1,6 +1,6 @@
 package com.github.littleemptydoll.exoequipment.registry;
 
-import com.github.littleemptydoll.exoequipment.item.ModuleItem;
+import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.module.*;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
@@ -10,14 +10,12 @@ import net.minecraft.world.item.Rarity;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 
 public final class TestModules {
-    private static final EquipmentRegistry<ModuleDefinition, ModuleItem> REGISTRY =
-            ModModules.registry();
-
     private TestModules() {}
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST = REGISTRY.register(
+    public static final TestEntry TEST = register(
             "test",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -28,7 +26,7 @@ public final class TestModules {
             ).build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_NIGHT_VISION = REGISTRY.register(
+    public static final TestEntry TEST_NIGHT_VISION = register(
             "test_night_vision",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -45,7 +43,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_JETPACK = REGISTRY.register(
+    public static final TestEntry TEST_JETPACK = register(
             "test_jetpack",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -67,7 +65,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_CLOAKING = REGISTRY.register(
+    public static final TestEntry TEST_CLOAKING = register(
             "test_cloaking",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -85,7 +83,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_CONSUMER = REGISTRY.register(
+    public static final TestEntry TEST_CONSUMER = register(
             "test_consumer",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -105,7 +103,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_GENERATOR = REGISTRY.register(
+    public static final TestEntry TEST_GENERATOR = register(
             "test_generator",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -125,7 +123,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_BATTERY = REGISTRY.register(
+    public static final TestEntry TEST_BATTERY = register(
             "test_battery",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -144,7 +142,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_SHIELD = REGISTRY.register(
+    public static final TestEntry TEST_SHIELD = register(
             "test_shield",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -158,7 +156,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_EMERGENCY_SHIELD_HIGH = REGISTRY.register(
+    public static final TestEntry TEST_EMERGENCY_SHIELD_HIGH = register(
             "test_emergency_shield_high",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -172,7 +170,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_EMERGENCY_SHIELD_LOW = REGISTRY.register(
+    public static final TestEntry TEST_EMERGENCY_SHIELD_LOW = register(
             "test_emergency_shield_low",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -186,7 +184,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_STATUS_PROTECTION = REGISTRY.register(
+    public static final TestEntry TEST_STATUS_PROTECTION = register(
             "test_status_protection",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -203,7 +201,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_DAMAGE_REDUCTION = REGISTRY.register(
+    public static final TestEntry TEST_DAMAGE_REDUCTION = register(
             "test_damage_reduction",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -223,7 +221,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_BODY_DAMAGE_PROTECTION = REGISTRY.register(
+    public static final TestEntry TEST_BODY_DAMAGE_PROTECTION = register(
             "test_body_damage_protection",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -241,7 +239,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_MOBILITY = REGISTRY.register(
+    public static final TestEntry TEST_MOBILITY = register(
             "test_mobility",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -284,7 +282,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_PICKUP_MAGNET = REGISTRY.register(
+    public static final TestEntry TEST_PICKUP_MAGNET = register(
             "test_pickup_magnet",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -301,7 +299,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_HEATER = REGISTRY.register(
+    public static final TestEntry TEST_HEATER = register(
             "test_heater",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -315,7 +313,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_HEALTH = REGISTRY.register(
+    public static final TestEntry TEST_HEALTH = register(
             "test_health",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -335,7 +333,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_REVIVAL = REGISTRY.register(
+    public static final TestEntry TEST_REVIVAL = register(
             "test_revival",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -349,7 +347,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_HUNGER = REGISTRY.register(
+    public static final TestEntry TEST_HUNGER = register(
             "test_hunger",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -363,7 +361,7 @@ public final class TestModules {
                     .build()
     );
 
-    public static final EquipmentEntry<ModuleDefinition, ModuleItem> TEST_REGENERATION = REGISTRY.register(
+    public static final TestEntry TEST_REGENERATION = register(
             "test_regeneration",
             properties(),
             (id, properties) -> ModuleDefinition.builder(
@@ -377,10 +375,32 @@ public final class TestModules {
                     .build()
     );
 
+    private static TestEntry register(
+            String id,
+            EquipmentProperties properties,
+            BiFunction<ResourceLocation, EquipmentProperties, ModuleDefinition> factory
+    ) {
+        ResourceLocation resourceLocation =
+                ResourceLocation.fromNamespaceAndPath(
+                        ExoEquipment.MODID,
+                        id
+                );
+        ModuleDefinition definition =
+                factory.apply(resourceLocation, properties);
+        ModModules.registerTransientDefinition(definition);
+        return new TestEntry(definition);
+    }
+
     private static EquipmentProperties properties() {
         return new EquipmentProperties(
                 EquipmentTier.BASIC,
                 Rarity.EPIC
         );
+    }
+
+    public record TestEntry(ModuleDefinition getDefinition) {
+        public ModuleDefinition getDefinition() {
+            return getDefinition;
+        }
     }
 }

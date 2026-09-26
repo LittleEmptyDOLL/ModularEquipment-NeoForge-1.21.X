@@ -39,6 +39,19 @@ public final class DefenseOperations {
 
     public static double calculateDamageMultiplier(
             ExoskeletonData data,
+            DamageSource source,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        return calculateDamageMultiplier(
+                data,
+                ExoskeletonModules.activeSupported(data),
+                poweredModules,
+                properties -> properties.reductionForSource(source)
+        );
+    }
+
+    public static double calculateDamageMultiplier(
+            ExoskeletonData data,
             int matrixSlot,
             ResourceLocation damageType,
             Set<InstalledModuleReference> poweredModules
@@ -132,9 +145,8 @@ public final class DefenseOperations {
 
         return damage * calculateDamageMultiplier(
                 data,
-                ExoskeletonModules.activeSupported(data),
-                poweredModules,
-                properties -> properties.reductionForSource(source)
+                source,
+                poweredModules
         );
     }
 

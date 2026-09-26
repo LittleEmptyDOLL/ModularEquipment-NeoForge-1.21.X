@@ -127,7 +127,7 @@ final class UtilityCharacteristics {
                 || cloaking) {
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.UTILITY,
+                            CharacteristicCategory.ACTIVE_ABILITIES,
                             "cloaking.active_consumption",
                             CharacteristicType.STATIC,
                             cloakConsumption
@@ -135,7 +135,7 @@ final class UtilityCharacteristics {
             );
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.UTILITY,
+                            CharacteristicCategory.ACTIVE_ABILITIES,
                             "cloaking.active",
                             CharacteristicType.STATE,
                             cloaking ? 1.0D : 0.0D

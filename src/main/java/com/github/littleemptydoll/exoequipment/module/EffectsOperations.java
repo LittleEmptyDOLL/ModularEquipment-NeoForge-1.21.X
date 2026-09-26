@@ -121,6 +121,16 @@ public final class EffectsOperations {
         return Map.copyOf(applied);
     }
 
+    public static void clear(
+            LivingEntity entity,
+            Map<ResourceLocation, Integer> previouslyApplied
+    ) {
+        previouslyApplied.forEach(
+                (effectId, amplifier) ->
+                        removeEffect(entity, effectId, amplifier)
+        );
+    }
+
     private static boolean applyEffect(
             LivingEntity entity,
             ResourceLocation effectId,

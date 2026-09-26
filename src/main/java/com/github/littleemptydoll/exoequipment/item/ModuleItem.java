@@ -57,7 +57,9 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
 
         if (definition.energy().isPresent()) {
             var energy = definition.energy().get();
-            tooltip.add(TooltipHelper.energyConsumption(applyEfficiency(energy.consumption(), efficiency), efficiency));
+            if (energy.consumption() > 0) {
+                tooltip.add(TooltipHelper.energyConsumption(applyEfficiency(energy.consumption(), efficiency), efficiency));
+            }
             tooltip.add(TooltipHelper.property("priority", energy.priority()));
         }
 
@@ -209,6 +211,7 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
 
         definition.entityDetection().ifPresent(value -> {
             tooltip.add(TooltipHelper.property("detection range", value.range() * efficiency));
+            tooltip.add(TooltipHelper.property("entity detection active consumption", value.activeConsumption() + " FE/t"));
             tooltip.add(TooltipHelper.property("detect players", value.players()));
             tooltip.add(TooltipHelper.property("detect mobs", value.mobs()));
             tooltip.add(TooltipHelper.property("detect hostile", value.hostile()));
@@ -301,6 +304,7 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
 
         definition.blockScanner().ifPresent(value -> {
             tooltip.add(TooltipHelper.property("scanner range", value.range() * efficiency));
+            tooltip.add(TooltipHelper.property("block scanner active consumption", value.activeConsumption() + " FE/t"));
             if (!value.blocks().isEmpty()) {
                 tooltip.add(TooltipHelper.property("scanner blocks", value.blocks().stream()
                         .map(com.github.littleemptydoll.exoequipment.util.NameUtils::toDisplayName)

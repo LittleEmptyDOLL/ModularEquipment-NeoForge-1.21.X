@@ -9,7 +9,8 @@ import java.util.List;
 public record BlockScannerProperties(
         double range,
         List<ResourceLocation> blocks,
-        List<ResourceLocation> tags
+        List<ResourceLocation> tags,
+        int activeConsumption
 ) {
     public static final Codec<BlockScannerProperties> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -22,7 +23,10 @@ public record BlockScannerProperties(
                                     .forGetter(BlockScannerProperties::blocks),
                             ResourceLocation.CODEC.listOf()
                                     .optionalFieldOf("tags", List.of())
-                                    .forGetter(BlockScannerProperties::tags)
+                                    .forGetter(BlockScannerProperties::tags),
+                            Codec.INT
+                                    .optionalFieldOf("active_consumption", 0)
+                                    .forGetter(BlockScannerProperties::activeConsumption)
                     ).apply(instance, BlockScannerProperties::new)
             );
 
@@ -36,6 +40,11 @@ public record BlockScannerProperties(
         if (blocks.isEmpty() && tags.isEmpty()) {
             throw new IllegalArgumentException(
                     "Block scanner must define at least one block or tag"
+            );
+        }
+        if (activeConsumption < 0) {
+            throw new IllegalArgumentException(
+                    "Block scanner active consumption cannot be negative"
             );
         }
 

@@ -4,8 +4,10 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
 import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
+import com.github.littleemptydoll.exoequipment.module.BlockScannerProperties;
 import com.github.littleemptydoll.exoequipment.module.CloakingProperties;
 import com.github.littleemptydoll.exoequipment.module.EnergyProperties;
+import com.github.littleemptydoll.exoequipment.module.EntityDetectionProperties;
 import com.github.littleemptydoll.exoequipment.module.FlightProperties;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
@@ -434,11 +436,6 @@ public final class EnergyOperations {
             ExoskeletonData data, InstalledModule module,
             ModuleDefinition definition, Player player
     ) {
-        if (!module.active() && (definition.entityDetection().isPresent()
-                || definition.blockScanner().isPresent())) {
-            return 0;
-        }
-
         int consumption = definition.energy()
                 .map(EnergyProperties::consumption).orElse(0);
 
@@ -451,6 +448,10 @@ public final class EnergyOperations {
         if (module.active()) {
             consumption += definition.cloaking()
                     .map(CloakingProperties::activeConsumption).orElse(0);
+            consumption += definition.entityDetection()
+                    .map(EntityDetectionProperties::activeConsumption).orElse(0);
+            consumption += definition.blockScanner()
+                    .map(BlockScannerProperties::activeConsumption).orElse(0);
         }
         if (module.flightActive()) {
             consumption += definition.flight()

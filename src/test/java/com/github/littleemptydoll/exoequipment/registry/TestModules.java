@@ -49,8 +49,8 @@ public final class TestModules {
             properties(),
             (id, properties) -> ModuleDefinition.builder(
                             id, properties, ModuleCategory.SENSOR, new ModuleSize(2, 2))
-                    .energy(new EnergyProperties(5))
-                    .entityDetection(new EntityDetectionProperties(8.0D, false, true, false))
+                    .energy(new EnergyProperties(2))
+                    .entityDetection(new EntityDetectionProperties(8.0D, false, true, false, 5))
                     .build()
     );
 
@@ -59,9 +59,8 @@ public final class TestModules {
             properties(),
             (id, properties) -> ModuleDefinition.builder(
                             id, properties, ModuleCategory.SENSOR, new ModuleSize(2, 2))
-                    .energy(new EnergyProperties(5))
                     .blockScanner(new BlockScannerProperties(
-                            8.0D, List.of(ResourceLocation.parse("minecraft:diamond_ore")), List.of()))
+                            8.0D, List.of(ResourceLocation.parse("minecraft:diamond_ore")), List.of(), 5))
                     .build()
     );
 

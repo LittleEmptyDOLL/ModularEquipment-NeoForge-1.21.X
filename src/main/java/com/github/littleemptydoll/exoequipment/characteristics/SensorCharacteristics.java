@@ -16,8 +16,10 @@ final class SensorCharacteristics {
         boolean mobs = false;
         boolean hostile = false;
         boolean entityActive = false;
+        int entityConsumption = 0;
         double blockRange = 0.0D;
         boolean blockActive = false;
+        int blockConsumption = 0;
 
         for (var activeModule
                 : CharacteristicsSupport
@@ -40,10 +42,12 @@ final class SensorCharacteristics {
                 mobs |= detection.mobs();
                 hostile |= detection.hostile();
                 entityActive |= activeModule.module().active();
+                entityConsumption += detection.activeConsumption();
             }
 
             if (definition.blockScanner().isPresent()) {
                 blockActive |= activeModule.module().active();
+                blockConsumption += definition.blockScanner().get().activeConsumption();
                 blockRange =
                         Math.max(
                                 blockRange,
@@ -56,6 +60,12 @@ final class SensorCharacteristics {
 
         if (entityRange > 0.0D) {
             addState(result, "entity_detection.active", entityActive);
+            result.add(new Characteristic(
+                    CharacteristicCategory.SENSOR,
+                    "entity_detection.active_consumption",
+                    CharacteristicType.STATIC,
+                    entityConsumption
+            ));
             result.add(
                     new Characteristic(
                             CharacteristicCategory.SENSOR,
@@ -84,6 +94,12 @@ final class SensorCharacteristics {
 
         if (blockRange > 0.0D) {
             addState(result, "block_scanner.active", blockActive);
+            result.add(new Characteristic(
+                    CharacteristicCategory.SENSOR,
+                    "block_scanner.active_consumption",
+                    CharacteristicType.STATIC,
+                    blockConsumption
+            ));
             result.add(
                     new Characteristic(
                             CharacteristicCategory.SENSOR,

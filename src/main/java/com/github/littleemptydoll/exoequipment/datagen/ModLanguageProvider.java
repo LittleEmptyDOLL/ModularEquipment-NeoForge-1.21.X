@@ -161,11 +161,13 @@ public class ModLanguageProvider extends LanguageProvider {
 
         add("gui.exoequipment.characteristic.entity_detection.range", "Entity detection range");
         add("gui.exoequipment.characteristic.entity_detection.active", "Entity sensor enabled");
+        add("gui.exoequipment.characteristic.entity_detection.active_consumption", "Entity sensor active consumption");
         add("gui.exoequipment.characteristic.entity_detection.players", "Detect players");
         add("gui.exoequipment.characteristic.entity_detection.mobs", "Detect mobs");
         add("gui.exoequipment.characteristic.entity_detection.hostile", "Detect hostile mobs");
         add("gui.exoequipment.characteristic.block_scanner.range", "Block scanner range");
         add("gui.exoequipment.characteristic.block_scanner.active", "Block scanner enabled");
+        add("gui.exoequipment.characteristic.block_scanner.active_consumption", "Block scanner active consumption");
 
         add("gui.exoequipment.characteristic.pickup_magnet.radius", "Radius");
         add("gui.exoequipment.characteristic.pickup_magnet.items", "Pickup items");

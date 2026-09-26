@@ -7,7 +7,8 @@ public record EntityDetectionProperties(
         double range,
         boolean players,
         boolean mobs,
-        boolean hostile
+        boolean hostile,
+        int activeConsumption
 ) {
     public static final Codec<EntityDetectionProperties> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -23,7 +24,10 @@ public record EntityDetectionProperties(
                                     .forGetter(EntityDetectionProperties::mobs),
                             Codec.BOOL
                                     .optionalFieldOf("hostile", false)
-                                    .forGetter(EntityDetectionProperties::hostile)
+                                    .forGetter(EntityDetectionProperties::hostile),
+                            Codec.INT
+                                    .optionalFieldOf("active_consumption", 0)
+                                    .forGetter(EntityDetectionProperties::activeConsumption)
                     ).apply(instance, EntityDetectionProperties::new)
             );
 
@@ -37,6 +41,11 @@ public record EntityDetectionProperties(
         if (!players && !mobs && !hostile) {
             throw new IllegalArgumentException(
                     "Entity detection must enable at least one target type"
+            );
+        }
+        if (activeConsumption < 0) {
+            throw new IllegalArgumentException(
+                    "Entity detection active consumption cannot be negative"
             );
         }
     }

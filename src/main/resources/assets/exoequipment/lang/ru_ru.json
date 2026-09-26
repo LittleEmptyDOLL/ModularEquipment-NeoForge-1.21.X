@@ -357,11 +357,13 @@
 
   "gui.exoequipment.characteristic.entity_detection.range": "Радиус обнаружения сущностей",
   "gui.exoequipment.characteristic.entity_detection.active": "Детектор сущностей включён",
+  "gui.exoequipment.characteristic.entity_detection.active_consumption": "Потребление детектора при работе",
   "gui.exoequipment.characteristic.entity_detection.players": "Обнаружение игроков",
   "gui.exoequipment.characteristic.entity_detection.mobs": "Обнаружение мобов",
   "gui.exoequipment.characteristic.entity_detection.hostile": "Обнаружение враждебных мобов",
   "gui.exoequipment.characteristic.block_scanner.range": "Радиус сканера блоков",
   "gui.exoequipment.characteristic.block_scanner.active": "Сканер блоков включён",
+  "gui.exoequipment.characteristic.block_scanner.active_consumption": "Потребление сканера при работе",
 
   "gui.exoequipment.characteristic.pickup_magnet.radius": "Радиус",
   "gui.exoequipment.characteristic.pickup_magnet.items": "Притягивание предметов",

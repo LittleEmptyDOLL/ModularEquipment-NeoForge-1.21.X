@@ -147,7 +147,7 @@ final class ModSensorModules {
             String id,
             EquipmentTier tier,
             Rarity rarity,
-            int energyConsumption,
+            int activeConsumption,
             double range,
             boolean players,
             boolean mobs,
@@ -164,14 +164,15 @@ final class ModSensorModules {
                                         ENTITY_SENSOR_SIZE
                                 )
                                 .energy(new EnergyProperties(
-                                        energyConsumption,
+                                        0,
                                         SENSOR_PRIORITY
                                 ))
                                 .entityDetection(new EntityDetectionProperties(
                                         range,
                                         players,
                                         mobs,
-                                        hostile
+                                        hostile,
+                                        activeConsumption
                                 ))
                                 .build()
         );
@@ -182,7 +183,7 @@ final class ModSensorModules {
             String id,
             EquipmentTier tier,
             Rarity rarity,
-            int energyConsumption,
+            int activeConsumption,
             double range
     ) {
         registry.register(
@@ -196,13 +197,14 @@ final class ModSensorModules {
                                         BLOCK_SCANNER_SIZE
                                 )
                                 .energy(new EnergyProperties(
-                                        energyConsumption,
+                                        0,
                                         SENSOR_PRIORITY
                                 ))
                                 .blockScanner(new BlockScannerProperties(
                                         range,
                                         List.of(),
-                                        List.of(ORES_TAG)
+                                        List.of(ORES_TAG),
+                                        activeConsumption
                                 ))
                                 .build()
         );

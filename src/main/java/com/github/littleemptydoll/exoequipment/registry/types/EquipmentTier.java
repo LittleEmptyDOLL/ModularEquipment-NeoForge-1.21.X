@@ -10,7 +10,8 @@ public enum EquipmentTier {
     CIVILIAN,
     MILITARY,
     ENGINEERING,
-    EXPERIMENTAL;
+    EXPERIMENTAL,
+    CREATIVE;
 
     public static final Codec<EquipmentTier> CODEC =
             Codec.STRING.comapFlatMap(

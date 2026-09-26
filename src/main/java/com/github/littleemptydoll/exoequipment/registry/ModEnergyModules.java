@@ -91,7 +91,7 @@ final class ModEnergyModules {
         registerGenerator(
                 registry,
                 "creative_generator",
-                EquipmentTier.EXPERIMENTAL,
+                EquipmentTier.CREATIVE,
                 Rarity.EPIC,
                 100000,
                 10

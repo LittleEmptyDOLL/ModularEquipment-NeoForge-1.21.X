@@ -42,7 +42,7 @@ final class UtilityCharacteristics {
         magnet.ifPresent(properties -> {
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.UTILITY,
+                            CharacteristicCategory.PICKUP_MAGNET,
                             "pickup_magnet.radius",
                             CharacteristicType.CURRENT,
                             properties.radius()
@@ -50,7 +50,7 @@ final class UtilityCharacteristics {
             );
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.UTILITY,
+                            CharacteristicCategory.PICKUP_MAGNET,
                             "pickup_magnet.items",
                             CharacteristicType.STATE,
                             properties.mode()
@@ -61,7 +61,7 @@ final class UtilityCharacteristics {
             );
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.UTILITY,
+                            CharacteristicCategory.PICKUP_MAGNET,
                             "pickup_magnet.experience",
                             CharacteristicType.STATE,
                             properties.mode()
@@ -175,7 +175,7 @@ final class UtilityCharacteristics {
         if (emergencyRestore > 0.0D) {
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.UTILITY,
+                            CharacteristicCategory.SHIELD,
                             "emergency_shield.restore",
                             CharacteristicType.STATIC,
                             emergencyRestore
@@ -183,7 +183,7 @@ final class UtilityCharacteristics {
             );
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.UTILITY,
+                            CharacteristicCategory.SHIELD,
                             "emergency_shield.cooldown",
                             CharacteristicType.STATIC,
                             emergencyCooldown

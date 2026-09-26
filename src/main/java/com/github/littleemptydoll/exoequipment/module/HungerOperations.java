@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
 import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
 
+import java.util.List;
 import java.util.Set;
 
 public final class HungerOperations {
@@ -13,11 +14,40 @@ public final class HungerOperations {
             ExoskeletonData data,
             Set<InstalledModuleReference> poweredModules
     ) {
+        return calculateExhaustionReduction(
+                data,
+                null,
+                poweredModules
+        );
+    }
+
+    public static double calculateExhaustionReduction(
+            ExoskeletonData data,
+            int matrixSlot,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        return calculateExhaustionReduction(
+                data,
+                Integer.valueOf(matrixSlot),
+                poweredModules
+        );
+    }
+
+    private static double calculateExhaustionReduction(
+            ExoskeletonData data,
+            Integer matrixSlot,
+            Set<InstalledModuleReference> poweredModules
+    ) {
         double multiplier = 1.0D;
+        List<ExoskeletonModules.ActiveModule> modules =
+                matrixSlot == null
+                        ? ExoskeletonModules.activeSupported(data)
+                        : ExoskeletonModules.supportedInMatrix(
+                                data,
+                                matrixSlot
+                        );
 
-        for (ExoskeletonModules.ActiveModule activeModule
-                : ExoskeletonModules.activeSupported(data)) {
-
+        for (ExoskeletonModules.ActiveModule activeModule : modules) {
             if (!ExoskeletonModules.isPowered(
                     activeModule,
                     poweredModules
@@ -46,7 +76,7 @@ public final class HungerOperations {
             multiplier *= 1.0D - reduction;
 
             if (multiplier <= 0.0D) {
-                return 0.0D;
+                return 1.0D;
             }
         }
 

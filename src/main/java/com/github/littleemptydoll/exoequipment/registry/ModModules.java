@@ -36,6 +36,7 @@ public final class ModModules {
         ModDefenseModules.register(REGISTRY);
         ModStatusProtectionModules.register(REGISTRY);
         ModBodyProtectionModules.register(REGISTRY);
+        ModMobilityModules.register(REGISTRY);
     }
 
     static void registerTransientDefinition(ModuleDefinition definition) {

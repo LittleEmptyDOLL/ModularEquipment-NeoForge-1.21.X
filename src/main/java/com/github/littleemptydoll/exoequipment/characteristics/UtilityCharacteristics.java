@@ -77,7 +77,10 @@ final class UtilityCharacteristics {
             List<Characteristic> result,
             CharacteristicsContext context
     ) {
-        double cloakConsumption = 0.0D;
+        int cloakActivationEnergy = 0;
+        int cloakConsumption = 0;
+        int cloakCooldown = Integer.MAX_VALUE;
+        boolean hasCloaking = false;
         boolean cloaking = false;
         double emergencyRestore = 0.0D;
         int emergencyCooldown =
@@ -95,10 +98,21 @@ final class UtilityCharacteristics {
                             .orElse(null);
 
             if (cloak != null) {
+                hasCloaking = true;
+                cloakActivationEnergy =
+                        Math.max(
+                                cloakActivationEnergy,
+                                cloak.activationEnergy()
+                        );
                 cloakConsumption =
                         Math.max(
                                 cloakConsumption,
                                 cloak.activeConsumption()
+                        );
+                cloakCooldown =
+                        Math.min(
+                                cloakCooldown,
+                                cloak.cooldown()
                         );
                 cloaking |=
                         activeModule.module()
@@ -123,11 +137,26 @@ final class UtilityCharacteristics {
             }
         }
 
-        if (cloakConsumption > 0.0D
-                || cloaking) {
+        if (hasCloaking) {
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.ACTIVE_ABILITIES,
+                            CharacteristicCategory.CLOAKING,
+                            "cloaking.active",
+                            CharacteristicType.STATE,
+                            cloaking ? 1.0D : 0.0D
+                    )
+            );
+            result.add(
+                    new Characteristic(
+                            CharacteristicCategory.CLOAKING,
+                            "cloaking.activation_energy",
+                            CharacteristicType.STATIC,
+                            cloakActivationEnergy
+                    )
+            );
+            result.add(
+                    new Characteristic(
+                            CharacteristicCategory.CLOAKING,
                             "cloaking.active_consumption",
                             CharacteristicType.STATIC,
                             cloakConsumption
@@ -135,10 +164,10 @@ final class UtilityCharacteristics {
             );
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.ACTIVE_ABILITIES,
-                            "cloaking.active",
-                            CharacteristicType.STATE,
-                            cloaking ? 1.0D : 0.0D
+                            CharacteristicCategory.CLOAKING,
+                            "cloaking.cooldown",
+                            CharacteristicType.STATIC,
+                            cloakCooldown
                     )
             );
         }

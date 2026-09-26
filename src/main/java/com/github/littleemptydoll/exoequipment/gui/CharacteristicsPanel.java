@@ -44,14 +44,17 @@ public final class CharacteristicsPanel {
     private static final int VALUE_COLOR = 0xFFEAF7FF;
     private static final int PANEL_BACKGROUND_U = 0;
     private static final int PANEL_BACKGROUND_V = 0;
+    private static final double TICKS_PER_SECOND = 20.0D;
 
     private static final String ATTRIBUTE_PREFIX = "attribute.";
     private static final String CONDITIONAL_ATTRIBUTE_PREFIX = "conditional.attribute.";
     private static final String EFFECT_PREFIX = "effect.";
     private static final String STATUS_PROTECTION_PREFIX = "status_protection.";
     private static final String STATUS_PROTECTION_SUFFIX = ".reduction";
+    private static final String DAMAGE_REDUCTION_PREFIX = "damage_reduction.";
 
     private static final Set<String> PERCENT_ADD_VALUE_ATTRIBUTES = Set.of(
+            "minecraft:generic.attack_knockback",
             "minecraft:generic.knockback_resistance",
             "minecraft:generic.explosion_knockback_resistance",
             "minecraft:generic.water_movement_efficiency",
@@ -422,8 +425,8 @@ public final class CharacteristicsPanel {
             }
         }
 
-        if (key.startsWith("damage_reduction.")) {
-            String damageType = key.substring("damage_reduction.".length());
+        if (key.startsWith(DAMAGE_REDUCTION_PREFIX)) {
+            String damageType = key.substring(DAMAGE_REDUCTION_PREFIX.length());
             if (!"default".equals(damageType)) {
                 ResourceLocation id = ResourceLocation.tryParse(damageType);
                 if (id != null) {
@@ -502,6 +505,14 @@ public final class CharacteristicsPanel {
                     formatNumber(value) + " HP";
             case "emergency_shield.restore" ->
                     formatPercent(value);
+            case "jetpack.vertical_thrust", "jetpack.horizontal_speed",
+                    "elytra.max_speed" ->
+                    formatNumber(value * TICKS_PER_SECOND) + " b/s";
+            case "elytra.acceleration" ->
+                    formatNumber(value * TICKS_PER_SECOND * TICKS_PER_SECOND) + " b/s²";
+            case "blink.distance", "entity_detection.range", "block_scanner.range",
+                    "pickup_magnet.radius" ->
+                    formatNumber(value) + " b";
             default -> formatGenericValue(key, value);
         };
     }
@@ -510,7 +521,9 @@ public final class CharacteristicsPanel {
         if (key.endsWith("cooldown")) {
             return formatTicks(value);
         }
-        if (key.endsWith("reduction") || key.endsWith("chance")) {
+        if (key.startsWith(DAMAGE_REDUCTION_PREFIX)
+                || key.endsWith("reduction")
+                || key.endsWith("chance")) {
             return formatPercent(value);
         }
         if (key.contains("temperature")) {
@@ -524,14 +537,8 @@ public final class CharacteristicsPanel {
             case "add_value" -> PERCENT_ADD_VALUE_ATTRIBUTES.contains(key.attributeId())
                     ? formatSignedPercent(value)
                     : formatSignedNumber(value);
-            case "add_multiplied_base" ->
-                    formatSignedPercent(value)
-                            + " "
-                            + I18n.get("gui.exoequipment.characteristic.attribute.base");
-            case "add_multiplied_total" ->
-                    formatSignedPercent(value)
-                            + " "
-                            + I18n.get("gui.exoequipment.characteristic.attribute.total");
+            case "add_multiplied_base", "add_multiplied_total" ->
+                    formatSignedPercent(value);
             default -> formatNumber(value);
         };
     }
@@ -555,7 +562,7 @@ public final class CharacteristicsPanel {
     }
 
     private String formatTicks(double ticks) {
-        double totalSeconds = Math.max(0.0D, ticks) / 20.0D;
+        double totalSeconds = Math.max(0.0D, ticks) / TICKS_PER_SECOND;
 
         if (totalSeconds < 60.0D) {
             return I18n.get(

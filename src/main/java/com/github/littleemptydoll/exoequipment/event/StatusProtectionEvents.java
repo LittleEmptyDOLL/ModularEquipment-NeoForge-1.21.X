@@ -59,9 +59,7 @@ public final class StatusProtectionEvents {
 
         int duration = StatusProtectionOperations.applyProtection(
                 incoming.getDuration(),
-                context.data(),
-                effectId,
-                context.poweredModules()
+                protection
         );
 
         if (duration <= 0) {

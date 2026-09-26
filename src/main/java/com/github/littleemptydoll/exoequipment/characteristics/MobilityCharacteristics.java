@@ -88,21 +88,10 @@ final class MobilityCharacteristics {
             }
         }
 
-        if (flight) {
-            result.add(
-                    new Characteristic(
-                            CharacteristicCategory.ACTIVE_ABILITIES,
-                            "flight",
-                            CharacteristicType.STATE,
-                            1.0D
-                    )
-            );
-        }
-
         if (jetpackThrust > 0.0D) {
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.MOBILITY,
+                            CharacteristicCategory.JETPACK,
                             "jetpack.vertical_thrust",
                             CharacteristicType.STATIC,
                             jetpackThrust
@@ -110,7 +99,7 @@ final class MobilityCharacteristics {
             );
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.MOBILITY,
+                            CharacteristicCategory.JETPACK,
                             "jetpack.horizontal_speed",
                             CharacteristicType.STATIC,
                             jetpackSpeed
@@ -121,7 +110,7 @@ final class MobilityCharacteristics {
         if (elytraAcceleration > 0.0D) {
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.MOBILITY,
+                            CharacteristicCategory.ELYTRA_BOOST,
                             "elytra.acceleration",
                             CharacteristicType.STATIC,
                             elytraAcceleration
@@ -129,7 +118,7 @@ final class MobilityCharacteristics {
             );
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.MOBILITY,
+                            CharacteristicCategory.ELYTRA_BOOST,
                             "elytra.max_speed",
                             CharacteristicType.STATIC,
                             elytraMaxSpeed
@@ -140,7 +129,7 @@ final class MobilityCharacteristics {
         if (blinkDistance > 0.0D) {
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.ACTIVE_ABILITIES,
+                            CharacteristicCategory.BLINK,
                             "blink.distance",
                             CharacteristicType.STATIC,
                             blinkDistance
@@ -148,7 +137,7 @@ final class MobilityCharacteristics {
             );
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.ACTIVE_ABILITIES,
+                            CharacteristicCategory.BLINK,
                             "blink.activation_energy",
                             CharacteristicType.STATIC,
                             blinkEnergy
@@ -156,10 +145,21 @@ final class MobilityCharacteristics {
             );
             result.add(
                     new Characteristic(
-                            CharacteristicCategory.ACTIVE_ABILITIES,
+                            CharacteristicCategory.BLINK,
                             "blink.cooldown",
                             CharacteristicType.STATIC,
                             blinkCooldown
+                    )
+            );
+        }
+
+        if (flight) {
+            result.add(
+                    new Characteristic(
+                            CharacteristicCategory.FLIGHT,
+                            "flight",
+                            CharacteristicType.STATE,
+                            1.0D
                     )
             );
         }

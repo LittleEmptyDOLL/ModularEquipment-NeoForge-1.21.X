@@ -27,13 +27,21 @@ public record TemperatureBonus(
             );
 
     public TemperatureBonus {
+        if (!Double.isFinite(minTemperature)
+                || !Double.isFinite(maxTemperature)
+                || !Double.isFinite(maximumBonus)) {
+            throw new IllegalArgumentException(
+                    "Temperature bonus values must be finite"
+            );
+        }
+
         if (minTemperature > maxTemperature) {
             throw new IllegalArgumentException(
                     "Temperature bonus minimum cannot exceed maximum"
             );
         }
 
-        if (maximumBonus < 0) {
+        if (maximumBonus < 0.0D) {
             throw new IllegalArgumentException(
                     "Maximum temperature bonus cannot be negative"
             );

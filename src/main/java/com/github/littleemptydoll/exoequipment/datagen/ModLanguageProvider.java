@@ -48,7 +48,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("tooltip.exoequipment.consumption", "Consumption: %s FE/t");
         add("tooltip.exoequipment.generation", "Generation: %s FE/t");
         add("tooltip.exoequipment.capacity", "Capacity: %s/%s FE");
-        add("tooltip.exoequipment.cooling", "Сooling: %s°C");
+        add("tooltip.exoequipment.cooling", "Cooling: %s°C");
         add("tooltip.exoequipment.heat_generation", "Heat generation: %s°C");
         add("tooltip.exoequipment.temperature", "Operating temperature: %s°C - %s°C");
         add("tooltip.exoequipment.temperature_bonus", "Effective temperature: %s°C - %s°C");
@@ -83,6 +83,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.characteristics", "Characteristics");
         add("gui.exoequipment.yes", "Yes");
         add("gui.exoequipment.no", "No");
+
         add("gui.exoequipment.characteristic.category.energy", "Energy");
         add("gui.exoequipment.characteristic.category.thermal", "Thermal");
         add("gui.exoequipment.characteristic.category.defense", "Defense");
@@ -97,36 +98,69 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.characteristic.category.utility", "Utility");
         add("gui.exoequipment.characteristic.category.combat", "Combat");
 
+        add("gui.exoequipment.characteristic.conditional_prefix", "Conditional: ");
+        add("gui.exoequipment.characteristic.unknown_effect", "Unknown effect");
+        add("gui.exoequipment.characteristic.attribute.base", "base");
+        add("gui.exoequipment.characteristic.attribute.total", "total");
+        add("gui.exoequipment.characteristic.time.seconds", "%s s");
+        add("gui.exoequipment.characteristic.time.minutes", "%s min");
+        add("gui.exoequipment.characteristic.time.minutes_seconds", "%s min %s s");
+
         add("gui.exoequipment.characteristic.consumption", "Consumption");
         add("gui.exoequipment.characteristic.generation", "Generation");
-        add("gui.exoequipment.characteristic.storage_capacity", "Storage capacity");
-        add("gui.exoequipment.characteristic.storage_input", "Storage input");
-        add("gui.exoequipment.characteristic.storage_output", "Storage output");
+        add("gui.exoequipment.characteristic.storage_capacity", "Stored energy capacity");
+        add("gui.exoequipment.characteristic.storage_input", "Storage charge rate");
+        add("gui.exoequipment.characteristic.storage_output", "Storage discharge rate");
+        add("gui.exoequipment.characteristic.stored_energy", "Stored energy");
         add("gui.exoequipment.characteristic.max_input", "Maximum input");
         add("gui.exoequipment.characteristic.max_output", "Maximum output");
+
         add("gui.exoequipment.characteristic.heat_generation", "Heat generation");
         add("gui.exoequipment.characteristic.cooling", "Cooling");
         add("gui.exoequipment.characteristic.thermal_balance", "Thermal balance");
-        add("gui.exoequipment.characteristic.current_energy", "Current energy");
-        add("gui.exoequipment.characteristic.capacity", "Shield capacity");
+
+        add("gui.exoequipment.characteristic.damage_reduction.default", "All damage reduction");
+        add("gui.exoequipment.characteristic.body.head.chance", "Head protection chance");
+        add("gui.exoequipment.characteristic.body.head.reduction", "Head damage reduction");
+        add("gui.exoequipment.characteristic.body.chest.chance", "Chest protection chance");
+        add("gui.exoequipment.characteristic.body.chest.reduction", "Chest damage reduction");
+        add("gui.exoequipment.characteristic.body.left_arm.chance", "Left arm protection chance");
+        add("gui.exoequipment.characteristic.body.left_arm.reduction", "Left arm damage reduction");
+        add("gui.exoequipment.characteristic.body.right_arm.chance", "Right arm protection chance");
+        add("gui.exoequipment.characteristic.body.right_arm.reduction", "Right arm damage reduction");
+        add("gui.exoequipment.characteristic.body.left_leg.chance", "Left leg protection chance");
+        add("gui.exoequipment.characteristic.body.left_leg.reduction", "Left leg damage reduction");
+        add("gui.exoequipment.characteristic.body.right_leg.chance", "Right leg protection chance");
+        add("gui.exoequipment.characteristic.body.right_leg.reduction", "Right leg damage reduction");
+        add("gui.exoequipment.characteristic.body.left_foot.chance", "Left foot protection chance");
+        add("gui.exoequipment.characteristic.body.left_foot.reduction", "Left foot damage reduction");
+        add("gui.exoequipment.characteristic.body.right_foot.chance", "Right foot protection chance");
+        add("gui.exoequipment.characteristic.body.right_foot.reduction", "Right foot damage reduction");
+
+        add("gui.exoequipment.characteristic.current_strength", "Current shield strength");
+        add("gui.exoequipment.characteristic.capacity", "Maximum shield strength");
+
         add("gui.exoequipment.characteristic.health_per_second", "Health regeneration");
+        add("gui.exoequipment.characteristic.hunger.exhaustion_reduction", "Hunger exhaustion reduction");
+        add("gui.exoequipment.characteristic.revival.restore_health", "Revival health restored");
+        add("gui.exoequipment.characteristic.revival.cooldown", "Revival cooldown");
+        add("gui.exoequipment.characteristic.thirst.exhaustion_reduction", "Thirst exhaustion reduction");
+
         add("gui.exoequipment.characteristic.flight", "Flight");
         add("gui.exoequipment.characteristic.jetpack.vertical_thrust", "Jetpack vertical thrust");
         add("gui.exoequipment.characteristic.jetpack.horizontal_speed", "Jetpack horizontal speed");
         add("gui.exoequipment.characteristic.elytra.acceleration", "Elytra acceleration");
         add("gui.exoequipment.characteristic.elytra.max_speed", "Elytra maximum speed");
         add("gui.exoequipment.characteristic.blink.distance", "Blink distance");
-        add("gui.exoequipment.characteristic.blink.activation_energy", "Blink energy");
+        add("gui.exoequipment.characteristic.blink.activation_energy", "Blink activation energy");
         add("gui.exoequipment.characteristic.blink.cooldown", "Blink cooldown");
-        add("gui.exoequipment.characteristic.hunger.exhaustion_reduction", "Hunger exhaustion reduction");
-        add("gui.exoequipment.characteristic.revival.restore_health", "Revival health");
-        add("gui.exoequipment.characteristic.revival.cooldown", "Revival cooldown");
-        add("gui.exoequipment.characteristic.thirst.exhaustion_reduction", "Thirst exhaustion reduction");
+
         add("gui.exoequipment.characteristic.entity_detection.range", "Entity detection range");
         add("gui.exoequipment.characteristic.entity_detection.players", "Detect players");
         add("gui.exoequipment.characteristic.entity_detection.mobs", "Detect mobs");
-        add("gui.exoequipment.characteristic.entity_detection.hostile", "Detect hostile");
+        add("gui.exoequipment.characteristic.entity_detection.hostile", "Detect hostile mobs");
         add("gui.exoequipment.characteristic.block_scanner.range", "Block scanner range");
+
         add("gui.exoequipment.characteristic.pickup_magnet.radius", "Pickup magnet radius");
         add("gui.exoequipment.characteristic.pickup_magnet.items", "Pickup items");
         add("gui.exoequipment.characteristic.pickup_magnet.experience", "Pickup experience");

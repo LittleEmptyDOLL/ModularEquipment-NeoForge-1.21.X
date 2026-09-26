@@ -16,6 +16,7 @@ public final class CharacteristicsProvider {
         EnergyCharacteristics.add(result, context);
         ThermalCharacteristics.add(result, context);
         DefenseCharacteristics.add(result, context);
+        ShieldProtectionCharacteristics.add(result, context);
         StatusProtectionCharacteristics.add(result, context);
         SurvivalCharacteristics.add(result, context);
         AttributeCharacteristics.add(result, context);

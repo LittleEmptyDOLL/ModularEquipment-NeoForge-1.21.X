@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonProfile;
 import com.github.littleemptydoll.exoequipment.exoskeleton.MatrixSlot;
 import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
+import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.registry.ModControllers;
@@ -135,6 +136,44 @@ class EnergyOperationsTest {
         assertEquals(0, result.consumed());
         assertEquals(
                 100,
+                module(result.data(), 0).storedEnergy()
+        );
+    }
+
+    @Test
+    void batteryOutputUsesTemperatureScaledLimit() {
+        ExoskeletonData data = data(
+                ModFrames.EXPERIMENTAL.getDefinition().id(),
+                new InstalledModule(
+                        ModModules.TEST_BATTERY
+                                .getDefinition()
+                                .id(),
+                        0,
+                        0,
+                        0,
+                        1000
+                )
+        ).withTemperature(150.0D);
+
+        MatrixData matrix = data.matrices()
+                .get(0)
+                .matrix()
+                .orElseThrow();
+        int expectedOutput =
+                MatrixOperations.calculateEnergyStorageOutput(
+                        matrix,
+                        module -> true,
+                        data.temperature()
+                );
+
+        EnergyOperations.EnergyConsumptionResult result =
+                EnergyOperations.consumeEnergy(data, 50);
+
+        assertTrue(expectedOutput < 50);
+        assertFalse(result.sufficient());
+        assertEquals(expectedOutput, result.consumed());
+        assertEquals(
+                1000 - expectedOutput,
                 module(result.data(), 0).storedEnergy()
         );
     }

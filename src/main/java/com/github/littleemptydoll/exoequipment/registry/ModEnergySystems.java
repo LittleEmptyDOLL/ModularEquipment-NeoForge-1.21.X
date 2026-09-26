@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-public class ModEnergySystems {
+public final class ModEnergySystems {
     private ModEnergySystems() {}
 
     public static final DeferredRegister<EnergySystemDefinition> ENERGY_SYSTEMS =
@@ -20,13 +20,12 @@ public class ModEnergySystems {
     private static final EquipmentRegistry<
             EnergySystemDefinition,
             EnergySystemItem
-            > REGISTRY =
-            new EquipmentRegistry<>(
-                    ENERGY_SYSTEMS,
-                    ModItems.ITEMS,
-                    "_energy_system",
-                    EnergySystemItem::new
-            );
+    > REGISTRY = new EquipmentRegistry<>(
+            ENERGY_SYSTEMS,
+            ModItems.ITEMS,
+            "_energy_system",
+            EnergySystemItem::new
+    );
 
     public static EnergySystemDefinition getDefinition(
             ResourceLocation id
@@ -52,14 +51,13 @@ public class ModEnergySystems {
                     EquipmentTier.CIVILIAN,
                     Rarity.UNCOMMON
             ),
-            (id, properties) ->
-                    new EnergySystemDefinition(
-                            id,
-                            properties,
-                            100,
-                            100,
-                            1.0
-                    )
+            (id, properties) -> new EnergySystemDefinition(
+                    id,
+                    properties,
+                    250,
+                    250,
+                    1.0
+            )
     );
 
     public static final EquipmentEntry<
@@ -71,14 +69,13 @@ public class ModEnergySystems {
                     EquipmentTier.MILITARY,
                     Rarity.RARE
             ),
-            (id, properties) ->
-                    new EnergySystemDefinition(
-                            id,
-                            properties,
-                            200,
-                            200,
-                            1.0
-                    )
+            (id, properties) -> new EnergySystemDefinition(
+                    id,
+                    properties,
+                    750,
+                    1_000,
+                    1.0
+            )
     );
 
     public static final EquipmentEntry<
@@ -90,14 +87,13 @@ public class ModEnergySystems {
                     EquipmentTier.ENGINEERING,
                     Rarity.RARE
             ),
-            (id, properties) ->
-                    new EnergySystemDefinition(
-                            id,
-                            properties,
-                            300,
-                            200,
-                            1.0
-                    )
+            (id, properties) -> new EnergySystemDefinition(
+                    id,
+                    properties,
+                    1_000,
+                    750,
+                    1.0
+            )
     );
 
     public static final EquipmentEntry<
@@ -109,13 +105,12 @@ public class ModEnergySystems {
                     EquipmentTier.EXPERIMENTAL,
                     Rarity.EPIC
             ),
-            (id, properties) ->
-                    new EnergySystemDefinition(
-                            id,
-                            properties,
-                            400,
-                            500,
-                            1.1
-                    )
+            (id, properties) -> new EnergySystemDefinition(
+                    id,
+                    properties,
+                    2_500,
+                    2_500,
+                    1.1
+            )
     );
 }

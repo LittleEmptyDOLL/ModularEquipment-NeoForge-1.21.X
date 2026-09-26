@@ -39,7 +39,8 @@ public record ModuleDefinition(
         Optional<BodyDamageProtectionProperties> bodyDamageProtection,
         Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
         Optional<ThirstProperties> thirst,
-        Optional<BlockScannerProperties> blockScanner
+        Optional<BlockScannerProperties> blockScanner,
+        Optional<ShieldProtectionProperties> shieldProtection
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -103,7 +104,8 @@ public record ModuleDefinition(
                 bodyDamageProtection,
                 bodyDamageRegeneration,
                 thirst,
-                blockScanner
+                blockScanner,
+                shieldProtection
         );
     }
 
@@ -146,7 +148,8 @@ public record ModuleDefinition(
                 extended.bodyDamageProtection(),
                 extended.bodyDamageRegeneration(),
                 extended.thirst(),
-                extended.blockScanner()
+                extended.blockScanner(),
+                extended.shieldProtection()
         );
     }
 
@@ -192,6 +195,7 @@ public record ModuleDefinition(
         private BodyDamageRegenerationProperties bodyDamageRegeneration;
         private ThirstProperties thirst;
         private BlockScannerProperties blockScanner;
+        private ShieldProtectionProperties shieldProtection;
 
         private Builder(
                 ResourceLocation id,
@@ -340,6 +344,11 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder shieldProtection(ShieldProtectionProperties shieldProtection) {
+            this.shieldProtection = shieldProtection;
+            return this;
+        }
+
         public ModuleDefinition build() {
             return new ModuleDefinition(
                     id,
@@ -372,7 +381,8 @@ public record ModuleDefinition(
                     Optional.ofNullable(bodyDamageProtection),
                     Optional.ofNullable(bodyDamageRegeneration),
                     Optional.ofNullable(thirst),
-                    Optional.ofNullable(blockScanner)
+                    Optional.ofNullable(blockScanner),
+                    Optional.ofNullable(shieldProtection)
             );
         }
     }

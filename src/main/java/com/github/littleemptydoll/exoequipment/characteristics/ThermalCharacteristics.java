@@ -37,28 +37,38 @@ final class ThermalCharacteristics {
                     );
         }
 
-        result.add(
-                new Characteristic(
-                        CharacteristicCategory.THERMAL,
-                        "heat_generation",
-                        CharacteristicType.CURRENT,
-                        state.heatGeneration()
-                )
+        addCurrent(
+                result,
+                "heat_generation",
+                state.heatGeneration()
         );
-        result.add(
-                new Characteristic(
-                        CharacteristicCategory.THERMAL,
-                        "cooling",
-                        CharacteristicType.CURRENT,
-                        state.cooling()
-                )
+        addCurrent(
+                result,
+                "cooling",
+                state.cooling()
         );
+        addCurrent(
+                result,
+                "thermal_balance",
+                state.thermalBalance()
+        );
+    }
+
+    private static void addCurrent(
+            List<Characteristic> result,
+            String key,
+            double value
+    ) {
+        if (value == 0.0D) {
+            return;
+        }
+
         result.add(
                 new Characteristic(
                         CharacteristicCategory.THERMAL,
-                        "thermal_balance",
+                        key,
                         CharacteristicType.CURRENT,
-                        state.thermalBalance()
+                        value
                 )
         );
     }

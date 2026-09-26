@@ -2,13 +2,20 @@ package com.github.littleemptydoll.exoequipment.module;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 
 import java.util.Map;
+import java.util.function.Predicate;
 
 public record StatusProtectionProperties(
         double harmfulProtection,
-        Map<ResourceLocation, Double> protections
+        Map<ResourceLocation, Double> protections,
+        Map<ResourceLocation, Double> tagProtections
 ) {
     public static final Codec<StatusProtectionProperties> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -25,9 +32,17 @@ public record StatusProtectionProperties(
                                             ResourceLocation.CODEC,
                                             Codec.DOUBLE
                                     )
-                                    .fieldOf("protections")
+                                    .optionalFieldOf("protections", Map.of())
                                     .forGetter(
                                             StatusProtectionProperties::protections
+                                    ),
+                            Codec.unboundedMap(
+                                            ResourceLocation.CODEC,
+                                            Codec.DOUBLE
+                                    )
+                                    .optionalFieldOf("tags", Map.of())
+                                    .forGetter(
+                                            StatusProtectionProperties::tagProtections
                                     )
                     ).apply(instance, StatusProtectionProperties::new)
             );
@@ -35,43 +50,34 @@ public record StatusProtectionProperties(
     public StatusProtectionProperties(
             Map<ResourceLocation, Double> protections
     ) {
-        this(0.0D, protections);
+        this(0.0D, protections, Map.of());
+    }
+
+    public StatusProtectionProperties(
+            double harmfulProtection,
+            Map<ResourceLocation, Double> protections
+    ) {
+        this(harmfulProtection, protections, Map.of());
+    }
+
+    public StatusProtectionProperties(
+            Map<ResourceLocation, Double> protections,
+            Map<ResourceLocation, Double> tagProtections
+    ) {
+        this(0.0D, protections, tagProtections);
     }
 
     public StatusProtectionProperties {
-        if (!Double.isFinite(harmfulProtection)
-                || harmfulProtection < 0.0D
-                || harmfulProtection > 1.0D) {
-            throw new IllegalArgumentException(
-                    "Harmful status protection must be between 0 and 1"
-            );
-        }
+        validate(harmfulProtection, "Harmful status protection");
 
-        if (protections == null) {
-            throw new IllegalArgumentException(
-                    "Status protections must not be null"
-            );
-        }
-
-        for (Map.Entry<ResourceLocation, Double> entry : protections.entrySet()) {
-            if (entry.getKey() == null || entry.getValue() == null) {
-                throw new IllegalArgumentException(
-                        "Status protections must not contain null entries"
-                );
-            }
-
-            double protection = entry.getValue();
-
-            if (!Double.isFinite(protection)
-                    || protection < 0.0D
-                    || protection > 1.0D) {
-                throw new IllegalArgumentException(
-                        "Status protection must be between 0 and 1"
-                );
-            }
-        }
-
-        protections = Map.copyOf(protections);
+        protections = copyAndValidate(
+                protections,
+                "Status protections"
+        );
+        tagProtections = copyAndValidate(
+                tagProtections,
+                "Status tag protections"
+        );
     }
 
     public double protection(ResourceLocation effectId) {
@@ -86,15 +92,112 @@ public record StatusProtectionProperties(
             ResourceLocation effectId,
             boolean harmful
     ) {
-        if (effectId == null) {
+        return protection(effectId, harmful, tagId -> false);
+    }
+
+    public double protection(Holder<MobEffect> effect) {
+        if (effect == null) {
             return 0.0D;
         }
 
-        Double explicit = protections.get(effectId);
-        if (explicit != null) {
-            return explicit;
+        ResourceLocation effectId = effect.unwrapKey()
+                .map(key -> key.location())
+                .orElse(null);
+        boolean harmful = effect.value().getCategory()
+                == MobEffectCategory.HARMFUL;
+
+        return protection(
+                effectId,
+                harmful,
+                tagId -> effect.is(
+                        TagKey.create(
+                                Registries.MOB_EFFECT,
+                                tagId
+                        )
+                )
+        );
+    }
+
+    public double protection(
+            ResourceLocation effectId,
+            boolean harmful,
+            Predicate<ResourceLocation> tagMatcher
+    ) {
+        if (effectId != null) {
+            Double explicit = protections.get(effectId);
+            if (explicit != null) {
+                return clamp(explicit);
+            }
+        }
+
+        Double matchedTagProtection = null;
+
+        if (tagMatcher != null) {
+            for (Map.Entry<ResourceLocation, Double> entry
+                    : tagProtections.entrySet()) {
+                if (!tagMatcher.test(entry.getKey())) {
+                    continue;
+                }
+
+                matchedTagProtection = matchedTagProtection == null
+                        ? entry.getValue()
+                        : Math.max(
+                                matchedTagProtection,
+                                entry.getValue()
+                        );
+            }
+        }
+
+        if (matchedTagProtection != null) {
+            return clamp(matchedTagProtection);
         }
 
         return harmful ? harmfulProtection : 0.0D;
+    }
+
+    public double tagProtection(ResourceLocation tagId) {
+        if (tagId == null) {
+            return 0.0D;
+        }
+
+        return clamp(tagProtections.getOrDefault(tagId, 0.0D));
+    }
+
+    private static Map<ResourceLocation, Double> copyAndValidate(
+            Map<ResourceLocation, Double> values,
+            String name
+    ) {
+        if (values == null) {
+            return Map.of();
+        }
+
+        for (Map.Entry<ResourceLocation, Double> entry : values.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) {
+                throw new IllegalArgumentException(
+                        name + " must not contain null entries"
+                );
+            }
+
+            validate(entry.getValue(), "Status protection");
+        }
+
+        return Map.copyOf(values);
+    }
+
+    private static void validate(double protection, String name) {
+        if (!Double.isFinite(protection)
+                || protection < 0.0D
+                || protection > 1.0D) {
+            throw new IllegalArgumentException(
+                    name + " must be between 0 and 1: " + protection
+            );
+        }
+    }
+
+    private static double clamp(double protection) {
+        return Math.min(
+                1.0D,
+                Math.max(0.0D, protection)
+        );
     }
 }

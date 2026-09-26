@@ -15,12 +15,21 @@ public record AttributeProperties(
             ).xmap(AttributeProperties::new, AttributeProperties::attributes);
 
     public AttributeProperties {
-        attributes = Map.copyOf(attributes);
+        if (attributes == null) {
+            throw new IllegalArgumentException(
+                    "Attribute definitions must not be null"
+            );
+        }
 
-        for (Map.Entry<ResourceLocation, AttributeModifierProperties> entry : attributes.entrySet()) {
+        for (Map.Entry<ResourceLocation, AttributeModifierProperties> entry
+                : attributes.entrySet()) {
             if (entry.getKey() == null || entry.getValue() == null) {
-                throw new IllegalArgumentException("Attribute definitions must not contain null entries");
+                throw new IllegalArgumentException(
+                        "Attribute definitions must not contain null entries"
+                );
             }
         }
+
+        attributes = Map.copyOf(attributes);
     }
 }

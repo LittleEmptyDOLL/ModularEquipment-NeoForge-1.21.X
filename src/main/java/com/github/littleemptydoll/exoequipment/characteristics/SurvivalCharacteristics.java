@@ -58,18 +58,20 @@ final class SurvivalCharacteristics {
             List<Characteristic> result,
             CharacteristicsContext context
     ) {
-        if (context.isMatrixScope()) {
-            return;
-        }
-
         double hunger =
-                HungerOperations
+                context.isMatrixScope()
+                        ? HungerOperations
+                        .calculateExhaustionReduction(
+                                context.data(),
+                                context.matrixSlot(),
+                                CharacteristicsSupport
+                                        .poweredModules(context)
+                        )
+                        : HungerOperations
                         .calculateExhaustionReduction(
                                 context.data(),
                                 CharacteristicsSupport
-                                        .poweredModules(
-                                                context
-                                        )
+                                        .poweredModules(context)
                         );
 
         if (hunger > 0.0D) {

@@ -104,6 +104,12 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
                             String.format(java.util.Locale.ROOT, "%.1f%%", reduction * efficiency * 100.0D)
                     ))
             );
+            value.tagReductions().forEach((id, reduction) ->
+                    tooltip.add(TooltipHelper.property(
+                            "damage #" + id,
+                            String.format(java.util.Locale.ROOT, "%.1f%%", reduction * efficiency * 100.0D)
+                    ))
+            );
         });
 
         definition.shield().ifPresent(value -> {
@@ -214,7 +220,7 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
         });
 
         definition.temperatureImpact().ifPresent(value ->
-                tooltip.add(TooltipHelper.property("temperature impact resistance", 
+                tooltip.add(TooltipHelper.property("temperature impact resistance",
                         String.format(java.util.Locale.ROOT, "%.1f%%", value.resistance() * 100.0D)))
         );
 

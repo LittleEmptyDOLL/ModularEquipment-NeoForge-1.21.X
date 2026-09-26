@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.registry.ModItems;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -27,15 +28,22 @@ public class ModItemModelProvider extends ItemModelProvider {
         for (DeferredHolder<Item, ? extends Item> holder :
                 ModItems.ITEMS.getEntries()) {
             ResourceLocation id = holder.getId();
+            ResourceLocation texture = modLoc(id.getPath().endsWith("_module")
+                    ? "item/module/" + id.getPath()
+                    : "item/" + id.getPath());
+
+            if (!existingFileHelper.exists(
+                    texture, PackType.CLIENT_RESOURCES, ".png", "textures"
+            )) {
+                texture = modLoc("item/placeholder");
+            }
 
             withExistingParent(
                     id.getPath(),
                     mcLoc("item/generated")
             ).texture(
                     "layer0",
-                    modLoc(id.getPath().endsWith("_module")
-                            ? "item/module/" + id.getPath()
-                            : "item/" + id.getPath())
+                    texture
             );
         }
     }

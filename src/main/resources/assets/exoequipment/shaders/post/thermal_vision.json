@@ -13,7 +13,7 @@
       "use_linear_filter": true,
       "uniforms": [
         { "name": "BlurDir", "values": [1.0, 0.0] },
-        { "name": "Radius", "values": [1.25] }
+        { "name": "Radius", "values": [1.75] }
       ]
     },
     {
@@ -23,7 +23,7 @@
       "use_linear_filter": true,
       "uniforms": [
         { "name": "BlurDir", "values": [0.0, 1.0] },
-        { "name": "Radius", "values": [1.25] }
+        { "name": "Radius", "values": [1.75] }
       ]
     },
     {
@@ -46,7 +46,7 @@
       ]
     },
     {
-      "name": "exoequipment:thermal_grain",
+      "name": "exoequipment:thermal_tone",
       "intarget": "swap",
       "outtarget": "minecraft:main"
     }

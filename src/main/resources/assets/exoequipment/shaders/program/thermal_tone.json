@@ -5,7 +5,7 @@
     "dstrgb": "zero"
   },
   "vertex": "exoequipment:thermal_vision",
-  "fragment": "exoequipment:thermal_grain",
+  "fragment": "exoequipment:thermal_tone",
   "attributes": ["Position"],
   "samplers": [
     { "name": "DiffuseSampler" }

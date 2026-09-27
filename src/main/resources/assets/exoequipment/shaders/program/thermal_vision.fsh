@@ -14,5 +14,5 @@ void main() {
 
     float heat = smoothstep(0.15, 0.85, marker);
     // Preserve color for the vanilla grayscale pass and lift dark scene detail.
-    fragColor = vec4(mix(pow(scene, vec3(0.68)), vec3(1.0), heat), 1.0);
+    fragColor = vec4(mix(pow(scene, vec3(0.60)), vec3(1.0), heat), 1.0);
 }

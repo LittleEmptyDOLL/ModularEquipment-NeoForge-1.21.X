@@ -18,28 +18,29 @@ final class ModThermalModules {
 
     static void register(EquipmentRegistry<ModuleDefinition, ModuleItem> registry) {
         registerThermal(registry, "civilian_cooler", EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON, 3, 4, COOLER_SIZE);
+                Rarity.UNCOMMON, 3, 0, 4, COOLER_SIZE);
         registerThermal(registry, "engineering_cooler", EquipmentTier.ENGINEERING,
-                Rarity.RARE, 5, 8, COOLER_SIZE);
+                Rarity.RARE, 5, 0, 8, COOLER_SIZE);
         registerThermal(registry, "military_cooler", EquipmentTier.MILITARY,
-                Rarity.RARE, 8, 12, COOLER_SIZE);
+                Rarity.RARE, 8, 0, 12, COOLER_SIZE);
         registerThermal(registry, "experimental_cooler", EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC, 12, 20, COOLER_SIZE);
+                Rarity.EPIC, 12, 0, 20, COOLER_SIZE);
 
         registerThermal(registry, "civilian_heater", EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON, 3, 4, HEATER_SIZE);
+                Rarity.UNCOMMON, 3, 4, 0, HEATER_SIZE);
         registerThermal(registry, "engineering_heater", EquipmentTier.ENGINEERING,
-                Rarity.RARE, 5, 8, HEATER_SIZE);
+                Rarity.RARE, 5, 8, 0, HEATER_SIZE);
         registerThermal(registry, "military_heater", EquipmentTier.MILITARY,
-                Rarity.RARE, 8, 12, HEATER_SIZE);
+                Rarity.RARE, 8, 12, 0, HEATER_SIZE);
         registerThermal(registry, "experimental_heater", EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC, 12, 20, HEATER_SIZE);
+                Rarity.EPIC, 12, 20, 0, HEATER_SIZE);
     }
 
     private static void registerThermal(
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
             String id, EquipmentTier tier, Rarity rarity,
-            int energyConsumption, double cooling, ModuleSize size
+            int energyConsumption, double heatGeneration,
+            double cooling, ModuleSize size
     ) {
         registry.register(id, new EquipmentProperties(tier, rarity),
                 (resourceLocation, properties) -> ModuleDefinition.builder(
@@ -47,7 +48,7 @@ final class ModThermalModules {
                                 ModuleCategory.THERMAL, size
                         )
                         .energy(new EnergyProperties(energyConsumption, THERMAL_PRIORITY))
-                        .thermal(new ThermalProperties(0, cooling))
+                        .thermal(new ThermalProperties(heatGeneration, cooling))
                         .build());
     }
 }

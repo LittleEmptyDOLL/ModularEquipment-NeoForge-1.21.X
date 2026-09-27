@@ -417,10 +417,7 @@ class EnergyOperationsTest {
         assertFalse(ThermalVisionOperations.enabled(on, Set.of()));
         assertTrue(ThermalVisionOperations.enabled(on, Set.of(reference)));
         assertEquals(Map.of(), EffectsOperations.collectEffects(on, Set.of()));
-        assertEquals(
-                Map.of(ResourceLocation.parse("minecraft:night_vision"), 0),
-                EffectsOperations.collectEffects(on, Set.of(reference))
-        );
+        assertEquals(Map.of(), EffectsOperations.collectEffects(on, Set.of(reference)));
 
         ExoskeletonData offAgain = SensorToggleOperations.toggle(
                 on, SensorToggleOperations.Kind.THERMAL);

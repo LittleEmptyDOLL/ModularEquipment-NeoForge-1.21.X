@@ -16,7 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
-/** Marks living entities for the thermal post effect, including obscured model parts. */
+/** Marks the visible portions of living entities for the thermal post effect. */
 public final class ThermalVisionRenderLayer<T extends LivingEntity, M extends EntityModel<T>>
         extends RenderLayer<T, M> {
     private static final ResourceLocation WHITE_TEXTURE =
@@ -31,13 +31,13 @@ public final class ThermalVisionRenderLayer<T extends LivingEntity, M extends En
             false,
             false,
             RenderType.CompositeState.builder()
-                    .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
+                    // The eyes shader keeps the marker color identical on every face.
+                    .setShaderState(RenderStateShard.RENDERTYPE_EYES_SHADER)
                     .setTextureState(new RenderStateShard.TextureStateShard(WHITE_TEXTURE, false, false))
                     .setTransparencyState(RenderStateShard.NO_TRANSPARENCY)
-                    .setDepthTestState(RenderStateShard.NO_DEPTH_TEST)
+                    .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
                     .setCullState(RenderStateShard.NO_CULL)
-                    .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setOverlayState(RenderStateShard.OVERLAY)
+                    .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
                     .setWriteMaskState(RenderStateShard.COLOR_WRITE)
                     .setOutputState(RenderStateShard.MAIN_TARGET)
                     .createCompositeState(false)

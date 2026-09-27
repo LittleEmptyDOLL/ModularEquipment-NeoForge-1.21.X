@@ -7,7 +7,44 @@
       "outtarget": "swap"
     },
     {
-      "name": "blit",
+      "name": "blur",
+      "intarget": "swap",
+      "outtarget": "minecraft:main",
+      "uniforms": [
+        { "name": "BlurDir", "values": [1.0, 0.0] },
+        { "name": "Radius", "values": [1.25] }
+      ]
+    },
+    {
+      "name": "blur",
+      "intarget": "minecraft:main",
+      "outtarget": "swap",
+      "uniforms": [
+        { "name": "BlurDir", "values": [0.0, 1.0] },
+        { "name": "Radius", "values": [1.25] }
+      ]
+    },
+    {
+      "name": "color_convolve",
+      "intarget": "swap",
+      "outtarget": "minecraft:main",
+      "uniforms": [
+        { "name": "RedMatrix", "values": [0.2126, 0.7152, 0.0722] },
+        { "name": "GreenMatrix", "values": [0.2126, 0.7152, 0.0722] },
+        { "name": "BlueMatrix", "values": [0.2126, 0.7152, 0.0722] }
+      ]
+    },
+    {
+      "name": "bits",
+      "intarget": "minecraft:main",
+      "outtarget": "swap",
+      "uniforms": [
+        { "name": "Resolution", "values": [16.0] },
+        { "name": "MosaicSize", "values": [2.0] }
+      ]
+    },
+    {
+      "name": "exoequipment:thermal_grain",
       "intarget": "swap",
       "outtarget": "minecraft:main"
     }

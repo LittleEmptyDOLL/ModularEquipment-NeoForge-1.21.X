@@ -8,16 +8,13 @@ import java.util.Set;
 public final class ThermalVisionOperations {
     private ThermalVisionOperations() {}
 
-    public static double range(
+    public static boolean enabled(
             ExoskeletonData data,
             Set<InstalledModuleReference> poweredModules
     ) {
         return ExoskeletonModules.activeSupported(data).stream()
                 .filter(module -> module.module().active()
                         && ExoskeletonModules.isPowered(module, poweredModules))
-                .flatMap(module -> module.definition().thermalVision().stream())
-                .mapToDouble(ThermalVisionProperties::range)
-                .max()
-                .orElse(0.0D);
+                .anyMatch(module -> module.definition().thermalVision().isPresent());
     }
 }

@@ -70,7 +70,7 @@ public final class TestModules {
             (id, properties) -> ModuleDefinition.builder(
                             id, properties, ModuleCategory.SENSOR, new ModuleSize(2, 2))
                     .energy(new EnergyProperties(2))
-                    .thermalVision(new ThermalVisionProperties(12.0D, 5))
+                    .thermalVision(new ThermalVisionProperties(5))
                     .build()
     );
 

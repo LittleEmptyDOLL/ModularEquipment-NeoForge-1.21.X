@@ -168,7 +168,6 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.characteristic.block_scanner.range", "Block scanner range");
         add("gui.exoequipment.characteristic.block_scanner.active", "Block scanner enabled");
         add("gui.exoequipment.characteristic.block_scanner.active_consumption", "Block scanner active consumption");
-        add("gui.exoequipment.characteristic.thermal_vision.range", "Thermal vision range");
         add("gui.exoequipment.characteristic.thermal_vision.active", "Thermal vision enabled");
         add("gui.exoequipment.characteristic.thermal_vision.active_consumption", "Thermal vision active consumption");
 

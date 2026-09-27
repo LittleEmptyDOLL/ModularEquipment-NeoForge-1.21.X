@@ -405,14 +405,14 @@ class EnergyOperationsTest {
         var reference = new InstalledModuleReference(0, 0);
 
         assertEquals(2, EnergyState.calculate(off).consumption());
-        assertEquals(0.0D, ThermalVisionOperations.range(off, Set.of(reference)));
+        assertFalse(ThermalVisionOperations.enabled(off, Set.of(reference)));
 
         ExoskeletonData on = SensorToggleOperations.toggle(
                 off, SensorToggleOperations.Kind.THERMAL);
         assertTrue(module(on, 0).active());
         assertEquals(7, EnergyState.calculate(on).consumption());
-        assertEquals(0.0D, ThermalVisionOperations.range(on, Set.of()));
-        assertEquals(12.0D, ThermalVisionOperations.range(on, Set.of(reference)));
+        assertFalse(ThermalVisionOperations.enabled(on, Set.of()));
+        assertTrue(ThermalVisionOperations.enabled(on, Set.of(reference)));
 
         ExoskeletonData offAgain = SensorToggleOperations.toggle(
                 on, SensorToggleOperations.Kind.THERMAL);

@@ -17,29 +17,24 @@ public final class ThermalVisionClientEffect {
     private static final ResourceLocation EFFECT = ResourceLocation.fromNamespaceAndPath(
             ExoEquipment.MODID, "shaders/post/thermal_vision.json");
     private static PostChain ownedEffect;
-    private static double visibleRange;
+    private static boolean enabled;
     private static long ticks;
     private static long lastLoadAttempt = -100;
 
     private ThermalVisionClientEffect() {}
 
-    public static double visibleRange() {
-        return visibleRange;
-    }
-
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
         ticks++;
-        visibleRange = minecraft.player == null || minecraft.level == null
-                ? 0.0D
-                : ExoskeletonAccess.findContext(minecraft.player)
-                        .map(context -> ThermalVisionOperations.range(
+        enabled = minecraft.player != null && minecraft.level != null
+                && ExoskeletonAccess.findContext(minecraft.player)
+                        .map(context -> ThermalVisionOperations.enabled(
                                 context.data(), context.poweredModules()))
-                        .orElse(0.0D);
+                        .orElse(false);
 
         PostChain current = minecraft.gameRenderer.currentEffect();
-        if (visibleRange <= 0.0D) {
+        if (!enabled) {
             if (ownedEffect != null && current == ownedEffect) {
                 minecraft.gameRenderer.shutdownEffect();
             }
@@ -70,7 +65,7 @@ public final class ThermalVisionClientEffect {
     }
 
     public static boolean isRendering() {
-        return visibleRange > 0.0D
+        return enabled
                 && ownedEffect != null
                 && Minecraft.getInstance().gameRenderer.currentEffect() == ownedEffect;
     }

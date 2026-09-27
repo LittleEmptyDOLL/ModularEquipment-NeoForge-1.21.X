@@ -161,7 +161,7 @@ final class ModSensorModules {
                 (id, properties) -> ModuleDefinition.builder(
                                 id, properties, ModuleCategory.SENSOR, THERMAL_VISION_SIZE)
                         .energy(new EnergyProperties(4, SENSOR_PRIORITY))
-                        .thermalVision(new ThermalVisionProperties(24.0D, 10))
+                        .thermalVision(new ThermalVisionProperties(10))
                         .build()
         );
     }

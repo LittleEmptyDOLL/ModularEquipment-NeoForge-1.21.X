@@ -20,7 +20,7 @@ final class SensorCharacteristics {
         double blockRange = 0.0D;
         boolean blockActive = false;
         int blockConsumption = 0;
-        double thermalRange = 0.0D;
+        boolean thermalInstalled = false;
         int thermalConsumption = 0;
         boolean thermalActive = false;
 
@@ -62,7 +62,7 @@ final class SensorCharacteristics {
 
             if (definition.thermalVision().isPresent()) {
                 var thermal = definition.thermalVision().orElseThrow();
-                thermalRange = Math.max(thermalRange, thermal.range());
+                thermalInstalled = true;
                 thermalConsumption += thermal.activeConsumption();
                 thermalActive |= activeModule.module().active();
             }
@@ -120,11 +120,8 @@ final class SensorCharacteristics {
             );
         }
 
-        if (thermalRange > 0.0D) {
+        if (thermalInstalled) {
             addState(result, "thermal_vision.active", thermalActive);
-            result.add(new Characteristic(
-                    CharacteristicCategory.SENSOR, "thermal_vision.range",
-                    CharacteristicType.STATIC, thermalRange));
             result.add(new Characteristic(
                     CharacteristicCategory.SENSOR, "thermal_vision.active_consumption",
                     CharacteristicType.STATIC, thermalConsumption));

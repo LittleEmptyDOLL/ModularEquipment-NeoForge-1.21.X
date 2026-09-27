@@ -365,7 +365,6 @@
   "gui.exoequipment.characteristic.block_scanner.range": "Радиус сканера блоков",
   "gui.exoequipment.characteristic.block_scanner.active": "Сканер блоков включён",
   "gui.exoequipment.characteristic.block_scanner.active_consumption": "Потребление сканера при работе",
-  "gui.exoequipment.characteristic.thermal_vision.range": "Радиус тепловизора",
   "gui.exoequipment.characteristic.thermal_vision.active": "Тепловизор включён",
   "gui.exoequipment.characteristic.thermal_vision.active_consumption": "Потребление тепловизора при работе",
 

@@ -18,6 +18,8 @@ import java.util.Set;
 public final class EffectsOperations {
     private static final int EFFECT_DURATION =
             MobEffectInstance.INFINITE_DURATION;
+    private static final ResourceLocation NIGHT_VISION =
+            ResourceLocation.parse("minecraft:night_vision");
 
     private EffectsOperations() {}
 
@@ -70,6 +72,11 @@ public final class EffectsOperations {
                                             )
                             )
                     );
+
+            if (activeModule.module().active()
+                    && activeModule.definition().thermalVision().isPresent()) {
+                effects.merge(NIGHT_VISION, 0, Math::max);
+            }
         }
 
         return Map.copyOf(effects);

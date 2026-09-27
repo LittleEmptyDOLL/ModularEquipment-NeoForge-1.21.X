@@ -13,10 +13,8 @@ void main() {
     float marker = 1.0 - smoothstep(0.025, 0.105, distance(scene, markerColor));
 
     float heat = smoothstep(0.15, 0.85, marker);
-    // Brighten shadows only; the gamma curve washed out already lit surfaces.
-    float luminance = dot(scene, vec3(0.2126, 0.7152, 0.0722));
-    float shadow = 1.0 - smoothstep(0.03, 0.45, luminance);
-    vec3 brightenedScene = min(scene + vec3(0.22 * shadow), vec3(0.68));
-    // Ordinary scene colors must stay below the white heat silhouette range.
-    fragColor = vec4(mix(brightenedScene, vec3(1.0), heat), 1.0);
+    // Vanilla night vision brightens the world before this pass. Compress
+    // highlights to reserve white for silhouettes without adding light here.
+    vec3 sceneColor = scene / (vec3(1.0) + 0.48 * scene);
+    fragColor = vec4(mix(sceneColor, vec3(1.0), heat), 1.0);
 }

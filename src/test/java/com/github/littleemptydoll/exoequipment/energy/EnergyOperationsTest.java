@@ -11,6 +11,7 @@ import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
+import com.github.littleemptydoll.exoequipment.module.EffectsOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.module.SensorToggleOperations;
@@ -28,6 +29,7 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -406,6 +408,7 @@ class EnergyOperationsTest {
 
         assertEquals(2, EnergyState.calculate(off).consumption());
         assertFalse(ThermalVisionOperations.enabled(off, Set.of(reference)));
+        assertEquals(Map.of(), EffectsOperations.collectEffects(off, Set.of(reference)));
 
         ExoskeletonData on = SensorToggleOperations.toggle(
                 off, SensorToggleOperations.Kind.THERMAL);
@@ -413,10 +416,16 @@ class EnergyOperationsTest {
         assertEquals(7, EnergyState.calculate(on).consumption());
         assertFalse(ThermalVisionOperations.enabled(on, Set.of()));
         assertTrue(ThermalVisionOperations.enabled(on, Set.of(reference)));
+        assertEquals(Map.of(), EffectsOperations.collectEffects(on, Set.of()));
+        assertEquals(
+                Map.of(ResourceLocation.parse("minecraft:night_vision"), 0),
+                EffectsOperations.collectEffects(on, Set.of(reference))
+        );
 
         ExoskeletonData offAgain = SensorToggleOperations.toggle(
                 on, SensorToggleOperations.Kind.THERMAL);
         assertEquals(2, EnergyState.calculate(offAgain).consumption());
+        assertEquals(Map.of(), EffectsOperations.collectEffects(offAgain, Set.of(reference)));
     }
 
     private static ExoskeletonData data(

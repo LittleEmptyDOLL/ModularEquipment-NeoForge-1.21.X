@@ -200,6 +200,7 @@
   "item.exoequipment.test_blink_module": "Тестовый модуль рывка",
   "item.exoequipment.test_entity_detection_module": "Тестовый детектор сущностей",
   "item.exoequipment.test_block_scanner_module": "Тестовый сканер блоков",
+  "item.exoequipment.military_thermal_vision_module": "Военный тепловизор",
   "item.exoequipment.test_conditional_attributes_module": "Тестовый условный модуль атрибутов",
   "item.exoequipment.test_combat_module": "Тестовый боевой модуль",
   "item.exoequipment.test_utility_module": "Тестовый вспомогательный модуль",
@@ -364,6 +365,9 @@
   "gui.exoequipment.characteristic.block_scanner.range": "Радиус сканера блоков",
   "gui.exoequipment.characteristic.block_scanner.active": "Сканер блоков включён",
   "gui.exoequipment.characteristic.block_scanner.active_consumption": "Потребление сканера при работе",
+  "gui.exoequipment.characteristic.thermal_vision.range": "Радиус тепловизора",
+  "gui.exoequipment.characteristic.thermal_vision.active": "Тепловизор включён",
+  "gui.exoequipment.characteristic.thermal_vision.active_consumption": "Потребление тепловизора при работе",
 
   "gui.exoequipment.characteristic.pickup_magnet.radius": "Радиус",
   "gui.exoequipment.characteristic.pickup_magnet.items": "Притягивание предметов",
@@ -383,5 +387,6 @@
   "key.exoequipment.activate_flight": "Активировать полёт",
   "key.exoequipment.toggle_entity_sensor": "Включить/выключить детектор сущностей",
   "key.exoequipment.toggle_block_scanner": "Включить/выключить сканер блоков",
+  "key.exoequipment.toggle_thermal_vision": "Включить/выключить тепловизор",
   "key.categories.exoequipment": "ExoEquipment"
 }

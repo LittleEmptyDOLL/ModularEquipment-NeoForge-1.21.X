@@ -14,6 +14,7 @@ import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.module.JetpackInputState;
 import com.github.littleemptydoll.exoequipment.module.JetpackProperties;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
+import com.github.littleemptydoll.exoequipment.module.ThermalVisionProperties;
 import com.github.littleemptydoll.exoequipment.registry.ModEnergySystems;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -505,6 +506,8 @@ public final class EnergyOperations {
                     .map(EntityDetectionProperties::activeConsumption).orElse(0);
             consumption += definition.blockScanner()
                     .map(BlockScannerProperties::activeConsumption).orElse(0);
+            consumption += definition.thermalVision()
+                    .map(ThermalVisionProperties::activeConsumption).orElse(0);
         }
         if (module.flightActive()) {
             consumption += definition.flight()

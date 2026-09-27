@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 public record SensorTogglePayload(byte kind) implements CustomPacketPayload {
     public static final byte ENTITY = 0;
     public static final byte BLOCK = 1;
+    public static final byte THERMAL = 2;
 
     public static final Type<SensorTogglePayload> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath(ExoEquipment.MODID, "sensor_toggle")

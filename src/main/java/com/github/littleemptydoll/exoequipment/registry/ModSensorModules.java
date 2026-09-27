@@ -8,6 +8,7 @@ import com.github.littleemptydoll.exoequipment.module.EntityDetectionProperties;
 import com.github.littleemptydoll.exoequipment.module.ModuleCategory;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import com.github.littleemptydoll.exoequipment.module.ModuleSize;
+import com.github.littleemptydoll.exoequipment.module.ThermalVisionProperties;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
@@ -19,6 +20,7 @@ final class ModSensorModules {
     private static final ModuleSize NIGHT_VISION_SIZE = new ModuleSize(1, 1);
     private static final ModuleSize ENTITY_SENSOR_SIZE = new ModuleSize(2, 2);
     private static final ModuleSize BLOCK_SCANNER_SIZE = new ModuleSize(2, 2);
+    private static final ModuleSize THERMAL_VISION_SIZE = new ModuleSize(2, 2);
 
     private static final int SENSOR_PRIORITY = 4;
 
@@ -35,6 +37,7 @@ final class ModSensorModules {
         registerNightVision(registry);
         registerEntitySensors(registry);
         registerBlockScanners(registry);
+        registerThermalVision(registry);
     }
 
     private static void registerNightVision(
@@ -146,6 +149,20 @@ final class ModSensorModules {
                 10,
                 18,
                 24.0D
+        );
+    }
+
+    private static void registerThermalVision(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
+    ) {
+        registry.register(
+                "military_thermal_vision",
+                new EquipmentProperties(EquipmentTier.MILITARY, Rarity.RARE),
+                (id, properties) -> ModuleDefinition.builder(
+                                id, properties, ModuleCategory.SENSOR, THERMAL_VISION_SIZE)
+                        .energy(new EnergyProperties(4, SENSOR_PRIORITY))
+                        .thermalVision(new ThermalVisionProperties(24.0D, 10))
+                        .build()
         );
     }
 

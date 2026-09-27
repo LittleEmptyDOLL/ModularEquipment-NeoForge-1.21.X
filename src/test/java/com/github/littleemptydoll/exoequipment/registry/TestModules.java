@@ -64,6 +64,16 @@ public final class TestModules {
                     .build()
     );
 
+    public static final TestEntry TEST_THERMAL_VISION = register(
+            "test_thermal_vision",
+            properties(),
+            (id, properties) -> ModuleDefinition.builder(
+                            id, properties, ModuleCategory.SENSOR, new ModuleSize(2, 2))
+                    .energy(new EnergyProperties(2))
+                    .thermalVision(new ThermalVisionProperties(12.0D, 5))
+                    .build()
+    );
+
     public static final TestEntry TEST_JETPACK = register(
             "test_jetpack",
             properties(),

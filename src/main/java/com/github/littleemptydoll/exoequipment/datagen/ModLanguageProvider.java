@@ -168,6 +168,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.characteristic.block_scanner.range", "Block scanner range");
         add("gui.exoequipment.characteristic.block_scanner.active", "Block scanner enabled");
         add("gui.exoequipment.characteristic.block_scanner.active_consumption", "Block scanner active consumption");
+        add("gui.exoequipment.characteristic.thermal_vision.range", "Thermal vision range");
+        add("gui.exoequipment.characteristic.thermal_vision.active", "Thermal vision enabled");
+        add("gui.exoequipment.characteristic.thermal_vision.active_consumption", "Thermal vision active consumption");
 
         add("gui.exoequipment.characteristic.pickup_magnet.radius", "Radius");
         add("gui.exoequipment.characteristic.pickup_magnet.items", "Pickup items");
@@ -187,6 +190,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("key.exoequipment.activate_flight", "Activate flight");
         add("key.exoequipment.toggle_entity_sensor", "Toggle entity sensor");
         add("key.exoequipment.toggle_block_scanner", "Toggle block scanner");
+        add("key.exoequipment.toggle_thermal_vision", "Toggle thermal vision");
         add("key.categories.exoequipment", "ExoEquipment");
     }
 }

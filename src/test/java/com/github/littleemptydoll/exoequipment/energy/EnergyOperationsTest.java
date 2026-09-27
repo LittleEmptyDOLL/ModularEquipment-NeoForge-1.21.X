@@ -14,6 +14,7 @@ import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.module.SensorToggleOperations;
+import com.github.littleemptydoll.exoequipment.module.ThermalVisionOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModControllers;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.ModEnergySystems;
@@ -392,6 +393,30 @@ class EnergyOperationsTest {
         assertFalse(module(entityOff, 0).active());
         assertTrue(module(entityOff, 1).active());
         assertEquals(7, EnergyState.calculate(entityOff).consumption());
+    }
+
+    @Test
+    void thermalVisionNeedsActivationAndPower() {
+        ExoskeletonData off = data(
+                ModFrames.CIVILIAN.getDefinition().id(),
+                new InstalledModule(TestModules.TEST_THERMAL_VISION.getDefinition().id(),
+                        0, 0, 0)
+        );
+        var reference = new InstalledModuleReference(0, 0);
+
+        assertEquals(2, EnergyState.calculate(off).consumption());
+        assertEquals(0.0D, ThermalVisionOperations.range(off, Set.of(reference)));
+
+        ExoskeletonData on = SensorToggleOperations.toggle(
+                off, SensorToggleOperations.Kind.THERMAL);
+        assertTrue(module(on, 0).active());
+        assertEquals(7, EnergyState.calculate(on).consumption());
+        assertEquals(0.0D, ThermalVisionOperations.range(on, Set.of()));
+        assertEquals(12.0D, ThermalVisionOperations.range(on, Set.of(reference)));
+
+        ExoskeletonData offAgain = SensorToggleOperations.toggle(
+                on, SensorToggleOperations.Kind.THERMAL);
+        assertEquals(2, EnergyState.calculate(offAgain).consumption());
     }
 
     private static ExoskeletonData data(

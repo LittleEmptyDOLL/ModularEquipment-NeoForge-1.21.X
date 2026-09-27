@@ -64,6 +64,13 @@ public final class ModKeyMappings {
             "key.categories.exoequipment"
     );
 
+    public static final KeyMapping TOGGLE_THERMAL_VISION = new KeyMapping(
+            "key.exoequipment.toggle_thermal_vision",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_H,
+            "key.categories.exoequipment"
+    );
+
     @SubscribeEvent
     public static void register(RegisterKeyMappingsEvent event) {
         event.register(OPEN_EXOSKELETON);
@@ -72,6 +79,7 @@ public final class ModKeyMappings {
         event.register(ACTIVATE_BLINK);
         event.register(TOGGLE_ENTITY_SENSOR);
         event.register(TOGGLE_BLOCK_SCANNER);
+        event.register(TOGGLE_THERMAL_VISION);
     }
 
     private ModKeyMappings() {}
@@ -121,6 +129,10 @@ final class ModKeyMappingHandler {
 
         while (ModKeyMappings.TOGGLE_BLOCK_SCANNER.consumeClick()) {
             PacketDistributor.sendToServer(new SensorTogglePayload(SensorTogglePayload.BLOCK));
+        }
+
+        while (ModKeyMappings.TOGGLE_THERMAL_VISION.consumeClick()) {
+            PacketDistributor.sendToServer(new SensorTogglePayload(SensorTogglePayload.THERMAL));
         }
     }
 

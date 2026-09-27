@@ -492,7 +492,8 @@ public final class CharacteristicsPanel {
         return switch (key) {
             case "consumption", "generation", "storage_input", "storage_output",
                     "max_input", "max_output", "cloaking.active_consumption",
-                    "entity_detection.active_consumption", "block_scanner.active_consumption" ->
+                    "entity_detection.active_consumption", "block_scanner.active_consumption",
+                    "thermal_vision.active_consumption" ->
                     formatNumber(value) + " FE/t";
             case "storage_capacity", "stored_energy", "blink.activation_energy",
                     "cloaking.activation_energy" ->

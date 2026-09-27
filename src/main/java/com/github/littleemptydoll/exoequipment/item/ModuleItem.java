@@ -317,6 +317,12 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
             }
         });
 
+        definition.thermalVision().ifPresent(value -> {
+            tooltip.add(TooltipHelper.property("thermal vision range", value.range() * efficiency));
+            tooltip.add(TooltipHelper.property("thermal vision active consumption",
+                    value.activeConsumption() + " FE/t"));
+        });
+
         if (definition.temperature().isPresent()) {
             var temperatureProperties = definition.temperature().get();
             tooltip.add(TooltipHelper.temperature(

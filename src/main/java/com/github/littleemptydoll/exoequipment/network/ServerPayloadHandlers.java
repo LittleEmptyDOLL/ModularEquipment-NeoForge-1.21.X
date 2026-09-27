@@ -84,6 +84,7 @@ final class ServerPayloadHandlers {
         SensorToggleOperations.Kind kind = switch (payload.kind()) {
             case SensorTogglePayload.ENTITY -> SensorToggleOperations.Kind.ENTITY;
             case SensorTogglePayload.BLOCK -> SensorToggleOperations.Kind.BLOCK;
+            case SensorTogglePayload.THERMAL -> SensorToggleOperations.Kind.THERMAL;
             default -> null;
         };
         if (kind == null) {

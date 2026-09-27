@@ -9,7 +9,7 @@ import java.util.List;
 public final class SensorToggleOperations {
     private SensorToggleOperations() {}
 
-    public enum Kind { ENTITY, BLOCK }
+    public enum Kind { ENTITY, BLOCK, THERMAL }
 
     public static ExoskeletonData toggle(ExoskeletonData data, Kind kind) {
         List<ExoskeletonModules.ActiveModule> targets = new ArrayList<>();
@@ -41,6 +41,7 @@ public final class SensorToggleOperations {
         return switch (kind) {
             case ENTITY -> definition.entityDetection().isPresent();
             case BLOCK -> definition.blockScanner().isPresent();
+            case THERMAL -> definition.thermalVision().isPresent();
         };
     }
 }

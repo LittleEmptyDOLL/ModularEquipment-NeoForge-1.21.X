@@ -40,7 +40,8 @@ public record ModuleDefinition(
         Optional<BodyDamageRegenerationProperties> bodyDamageRegeneration,
         Optional<ThirstProperties> thirst,
         Optional<BlockScannerProperties> blockScanner,
-        Optional<ShieldProtectionProperties> shieldProtection
+        Optional<ShieldProtectionProperties> shieldProtection,
+        Optional<ThermalVisionProperties> thermalVision
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -105,7 +106,8 @@ public record ModuleDefinition(
                 bodyDamageRegeneration,
                 thirst,
                 blockScanner,
-                shieldProtection
+                shieldProtection,
+                thermalVision
         );
     }
 
@@ -149,7 +151,8 @@ public record ModuleDefinition(
                 extended.bodyDamageRegeneration(),
                 extended.thirst(),
                 extended.blockScanner(),
-                extended.shieldProtection()
+                extended.shieldProtection(),
+                extended.thermalVision()
         );
     }
 
@@ -196,6 +199,7 @@ public record ModuleDefinition(
         private ThirstProperties thirst;
         private BlockScannerProperties blockScanner;
         private ShieldProtectionProperties shieldProtection;
+        private ThermalVisionProperties thermalVision;
 
         private Builder(
                 ResourceLocation id,
@@ -349,6 +353,11 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder thermalVision(ThermalVisionProperties thermalVision) {
+            this.thermalVision = thermalVision;
+            return this;
+        }
+
         public ModuleDefinition build() {
             return new ModuleDefinition(
                     id,
@@ -382,7 +391,8 @@ public record ModuleDefinition(
                     Optional.ofNullable(bodyDamageRegeneration),
                     Optional.ofNullable(thirst),
                     Optional.ofNullable(blockScanner),
-                    Optional.ofNullable(shieldProtection)
+                    Optional.ofNullable(shieldProtection),
+                    Optional.ofNullable(thermalVision)
             );
         }
     }

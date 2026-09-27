@@ -13,6 +13,7 @@ void main() {
     float marker = 1.0 - smoothstep(0.025, 0.105, distance(scene, markerColor));
 
     float heat = smoothstep(0.15, 0.85, marker);
-    // Preserve color for the vanilla grayscale pass and lift dark scene detail.
-    fragColor = vec4(mix(pow(scene, vec3(0.60)), vec3(1.0), heat), 1.0);
+    // Lift shadow detail but reserve the highest intensities for heat silhouettes.
+    vec3 liftedScene = min(pow(scene, vec3(0.40)), vec3(0.68));
+    fragColor = vec4(mix(liftedScene, vec3(1.0), heat), 1.0);
 }

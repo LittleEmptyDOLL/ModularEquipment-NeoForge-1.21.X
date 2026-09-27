@@ -89,12 +89,25 @@ public final class EnergyOperations {
             ExternalEnergyProvider externalProvider,
             Player player
     ) {
+        return tick(data, externalProvider, player, 0);
+    }
+
+    public static EnergyTickResult tick(
+            ExoskeletonData data,
+            ExternalEnergyProvider externalProvider,
+            Player player,
+            int inputAlreadyUsed
+    ) {
+        if (inputAlreadyUsed < 0) {
+            throw new IllegalArgumentException("Input already used cannot be negative");
+        }
         if (externalProvider == null) {
             return tick(
                     data,
                     0,
                     (amount, simulate) -> amount,
-                    player
+                    player,
+                    inputAlreadyUsed
             );
         }
 
@@ -117,7 +130,8 @@ public final class EnergyOperations {
                 data,
                 externalAvailable,
                 source,
-                player
+                player,
+                inputAlreadyUsed
         );
     }
 
@@ -129,17 +143,29 @@ public final class EnergyOperations {
             ExoskeletonData data,
             int externalAvailable
     ) {
+        return tick(data, externalAvailable, 0);
+    }
+
+    public static EnergyTickResult tick(
+            ExoskeletonData data,
+            int externalAvailable,
+            int inputAlreadyUsed
+    ) {
         if (externalAvailable < 0) {
             throw new IllegalArgumentException(
                     "External available energy cannot be negative"
             );
+        }
+        if (inputAlreadyUsed < 0) {
+            throw new IllegalArgumentException("Input already used cannot be negative");
         }
 
         return tick(
                 data,
                 externalAvailable,
                 (amount, simulate) -> amount,
-                null
+                null,
+                inputAlreadyUsed
         );
     }
 
@@ -147,7 +173,8 @@ public final class EnergyOperations {
             ExoskeletonData data,
             int externalAvailable,
             ExternalEnergySource externalSource,
-            Player player
+            Player player,
+            int inputAlreadyUsed
     ) {
         if (data.energySystem().isEmpty()) {
             return emptyResult(data);
@@ -165,7 +192,7 @@ public final class EnergyOperations {
         EnergyStorageLayout storage =
                 EnergyStorageLayout.create(data);
 
-        int remainingInput = energySystem.maxInput();
+        int remainingInput = Math.max(0, energySystem.maxInput() - inputAlreadyUsed);
         int remainingOutput = energySystem.maxOutput();
 
         int generated = state.energyGeneration();

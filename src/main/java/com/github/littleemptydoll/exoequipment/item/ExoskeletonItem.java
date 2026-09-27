@@ -13,12 +13,14 @@ import com.github.littleemptydoll.exoequipment.module.FlightOperations;
 import com.github.littleemptydoll.exoequipment.exoskeleton.*;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import com.github.littleemptydoll.exoequipment.registry.ModEnergySystems;
 import com.github.littleemptydoll.exoequipment.util.EquipmentItemUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
@@ -90,14 +92,7 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
         NeoForgeEnergyProvider externalEnergy =
                 NeoForgeEnergyProvider.fromEntity(player);
 
-        EnergyTickResult result = EnergyOperations.tick(
-                getData(stack),
-                externalEnergy,
-                player
-        );
-
-        ExoskeletonData updatedData = result.data();
-
+        ExoskeletonData data = getData(stack);
         ExoskeletonRuntimeState runtime = stack.get(
                 ModDataComponents.EXOSKELETON_RUNTIME.get()
         );
@@ -105,6 +100,23 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
         if (runtime == null) {
             runtime = ExoskeletonRuntimeState.empty();
         }
+
+        var server = ServerLifecycleHooks.getCurrentServer();
+        long tick = server == null ? -1L : server.getTickCount();
+        int maxInput = data.energySystem().map(system ->
+                ModEnergySystems.getDefinition(system.definitionId()).maxInput()
+        ).orElse(0);
+        int usedBefore = maxInput - runtime.remainingInput(tick, maxInput);
+
+        EnergyTickResult result = EnergyOperations.tick(
+                data, externalEnergy, player, usedBefore
+        );
+        int admittedGeneration = Math.min(result.generated(),
+                Math.max(0, maxInput - usedBefore));
+        runtime = runtime.withInput(tick,
+                admittedGeneration + result.externalInput());
+
+        ExoskeletonData updatedData = result.data();
 
         runtime = runtime.withPoweredModules(result.poweredModules());
         updatedData = ShieldOperations.tick(

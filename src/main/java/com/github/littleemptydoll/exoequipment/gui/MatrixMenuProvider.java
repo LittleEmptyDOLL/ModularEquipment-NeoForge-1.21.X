@@ -73,6 +73,8 @@ public final class MatrixMenuProvider {
                     ItemStack.STREAM_CODEC.encode(buffer, matrix.copy());
                     buffer.writeByte(sourceType.id());
                     buffer.writeByte(sourceIndex);
+                    ItemStack.STREAM_CODEC.encode(buffer,
+                            exoskeleton == null ? ItemStack.EMPTY : exoskeleton.copy());
                 }
         );
     }

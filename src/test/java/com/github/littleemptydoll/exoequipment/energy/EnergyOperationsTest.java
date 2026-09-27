@@ -95,6 +95,46 @@ class EnergyOperationsTest {
     }
 
     @Test
+    void multipleChargersShareItemInputLimitWithinTick() {
+        ExoskeletonData data = data(
+                ModFrames.EXPERIMENTAL.getDefinition().id(),
+                new InstalledModule(TestModules.TEST_BATTERY.getDefinition().id(),
+                        0, 0, 0)
+        );
+        ItemStack stack = new ItemStack(ModExoskeletons.BASIC.getItem());
+        stack.set(ModDataComponents.EXOSKELETON_DATA.get(), data);
+
+        assertEquals(100, new ExoskeletonEnergyStorage(stack)
+                .receiveEnergyAtTick(1_000, true, 42));
+        assertEquals(0, new ExoskeletonEnergyStorage(stack).getEnergyStored());
+        assertEquals(100, new ExoskeletonEnergyStorage(stack)
+                .receiveEnergyAtTick(1_000, false, 42));
+        assertEquals(100, new ExoskeletonEnergyStorage(stack)
+                .receiveEnergyAtTick(1_000, false, 42));
+        assertEquals(50, new ExoskeletonEnergyStorage(stack)
+                .receiveEnergyAtTick(1_000, false, 42));
+        assertEquals(0, new ExoskeletonEnergyStorage(stack)
+                .receiveEnergyAtTick(1_000, false, 42));
+        assertEquals(250, new ExoskeletonEnergyStorage(stack).getEnergyStored());
+        assertEquals(100, new ExoskeletonEnergyStorage(stack)
+                .receiveEnergyAtTick(1_000, false, 43));
+    }
+
+    @Test
+    void internalTickUsesRemainingInputAfterItemCharging() {
+        ExoskeletonData data = data(
+                ModFrames.EXPERIMENTAL.getDefinition().id(),
+                new InstalledModule(TestModules.TEST_NIGHT_VISION.getDefinition().id(),
+                        0, 0, 0)
+        );
+
+        EnergyTickResult result = EnergyOperations.tick(data, 100, 250);
+        assertEquals(0, result.consumed());
+        assertEquals(0, result.externalInput());
+        assertFalse(result.isPowered(new InstalledModuleReference(0, 0)));
+    }
+
+    @Test
     void higherPriorityConsumerIsPoweredFirst() {
         ExoskeletonData data = data(
                 ModFrames.CIVILIAN.getDefinition().id(),

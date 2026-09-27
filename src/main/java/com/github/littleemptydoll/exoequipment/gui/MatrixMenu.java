@@ -48,7 +48,7 @@ public class MatrixMenu extends AbstractContainerMenu {
     private final int imageHeight;
     private final int inventoryY;
     private final int[] syncedModuleEnergy;
-    private int syncedTemperature = 2000;
+    private int syncedTemperature = 200;
     private final Inventory playerInventory;
 
     public MatrixMenu(
@@ -62,7 +62,7 @@ public class MatrixMenu extends AbstractContainerMenu {
                 ItemStack.STREAM_CODEC.decode(buffer),
                 Source.fromId(buffer.readByte()),
                 buffer.readByte(),
-                null
+                ItemStack.STREAM_CODEC.decode(buffer)
         );
     }
 
@@ -106,7 +106,8 @@ public class MatrixMenu extends AbstractContainerMenu {
         }
 
         this.matrixStack = matrixStack;
-        this.sourceExoskeleton = sourceExoskeleton;
+        this.sourceExoskeleton = sourceExoskeleton == null || sourceExoskeleton.isEmpty()
+                ? null : sourceExoskeleton;
         this.sourceType = sourceType;
         this.sourceIndex = sourceIndex;
         MatrixDefinition definition = matrixItem.getDefinition();
@@ -119,6 +120,10 @@ public class MatrixMenu extends AbstractContainerMenu {
         this.imageHeight = inventoryY + INVENTORY_BACKGROUND_HEIGHT - 3;
         this.syncedModuleEnergy = new int[Math.max(1, width * height)];
         this.playerInventory = playerInventory;
+        if (this.sourceExoskeleton != null) {
+            syncedTemperature = (int) Math.round(
+                    ExoskeletonItem.getData(this.sourceExoskeleton).temperature() * 10.0D);
+        }
         addPlayerInventory(playerInventory, inventoryY + 18);
         addModuleEnergyDataSlots();
         addTemperatureDataSlot();
@@ -209,10 +214,10 @@ public class MatrixMenu extends AbstractContainerMenu {
     }
 
     private int getServerTemperature() {
-        if (sourceType != Source.EXOSKELETON) return 2000;
+        if (sourceType != Source.EXOSKELETON) return 200;
 
         ItemStack exoskeleton = ExoskeletonMenuProvider.findBodyExoskeleton(getPlayer()).orElse(null);
-        if (exoskeleton == null) return 2000;
+        if (exoskeleton == null) return 200;
 
         double temperature = ExoskeletonItem.getData(exoskeleton).temperature();
         return Math.max(Integer.MIN_VALUE, Math.min(Integer.MAX_VALUE, (int) Math.round(temperature * 10.0D)));

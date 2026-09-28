@@ -6,5 +6,19 @@
         "volume": 0.30
       }
     ]
+  },
+  "visor_on": {
+    "sounds": ["exoequipment:visor_on"]
+  },
+  "visor_off": {
+    "sounds": ["exoequipment:visor_off"]
+  },
+  "jetpack_loop": {
+    "sounds": [
+      {
+        "name": "exoequipment:jetpack_loop",
+        "stream": true
+      }
+    ]
   }
 }

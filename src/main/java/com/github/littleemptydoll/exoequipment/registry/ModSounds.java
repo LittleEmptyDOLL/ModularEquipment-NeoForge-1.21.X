@@ -24,6 +24,19 @@ public final class ModSounds {
                     )
             );
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> VISOR_ON =
+            register("visor_on");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VISOR_OFF =
+            register("visor_off");
+    public static final DeferredHolder<SoundEvent, SoundEvent> JETPACK_LOOP =
+            register("jetpack_loop");
+
+    private static DeferredHolder<SoundEvent, SoundEvent> register(String name) {
+        return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(
+                ResourceLocation.fromNamespaceAndPath(ExoEquipment.MODID, name)
+        ));
+    }
+
     public static void register(net.neoforged.bus.api.IEventBus eventBus) {
         SOUND_EVENTS.register(eventBus);
     }

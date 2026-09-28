@@ -71,8 +71,7 @@ public final class ThermalVisionRenderLayer<T extends LivingEntity, M extends En
             float partialTick
     ) {
         Player viewer = Minecraft.getInstance().player;
-        if (viewer == null || target == viewer || !target.isAlive()
-                || target.isSpectator() || target.isInvisible()
+        if (!ThermalVisionTargets.shouldHighlight(target, viewer)
                 || !ThermalVisionClientEffect.isRendering()
                 || ThermalVisionClientRenderer.markerShader() == null) {
             return;

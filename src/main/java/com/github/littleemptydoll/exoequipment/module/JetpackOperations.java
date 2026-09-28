@@ -15,6 +15,34 @@ public final class JetpackOperations {
 
     private JetpackOperations() {}
 
+    public static boolean isThrusting(
+            Player player,
+            ExoskeletonData data,
+            Set<InstalledModuleReference> poweredModules
+    ) {
+        if (FlightOperations.hasActive(data)) {
+            return false;
+        }
+
+        byte input = JetpackInputState.get(player);
+        if (input == 0) {
+            return false;
+        }
+
+        List<JetpackTarget> targets = collectTargets(data, poweredModules);
+        if (targets.isEmpty()) {
+            return false;
+        }
+
+        if (player.isFallFlying()) {
+            return JetpackInputState.has(input, JetpackInputState.UP)
+                    && targets.get(0).properties().elytra().isPresent();
+        }
+
+        return !player.onGround()
+                || JetpackInputState.has(input, JetpackInputState.UP);
+    }
+
     public static ExoskeletonData tick(
             Player player,
             ExoskeletonData data,

@@ -3,8 +3,10 @@ package com.github.littleemptydoll.exoequipment.client;
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import com.github.littleemptydoll.exoequipment.module.ThermalVisionOperations;
+import com.github.littleemptydoll.exoequipment.registry.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,6 +20,7 @@ public final class ThermalVisionClientEffect {
             ExoEquipment.MODID, "shaders/post/thermal_vision.json");
     private static PostChain ownedEffect;
     private static boolean enabled;
+    private static boolean previousEnabled;
     private static long ticks;
     private static long lastLoadAttempt = -100;
 
@@ -32,6 +35,15 @@ public final class ThermalVisionClientEffect {
                         .map(context -> ThermalVisionOperations.enabled(
                                 context.data(), context.poweredModules()))
                         .orElse(false);
+
+        if (enabled != previousEnabled && minecraft.player != null) {
+            minecraft.getSoundManager().play(SimpleSoundInstance.forUI(
+                    (enabled ? ModSounds.VISOR_ON : ModSounds.VISOR_OFF).get(),
+                    1.0F,
+                    0.65F
+            ));
+        }
+        previousEnabled = enabled;
 
         PostChain current = minecraft.gameRenderer.currentEffect();
         if (!enabled) {

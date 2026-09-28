@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "ThermalLightTextureMixin",
-    "ThermalGameRendererMixin"
+    "ThermalGameRendererMixin",
+    "ThermalDragonRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -2,6 +2,7 @@ package com.github.littleemptydoll.exoequipment.client;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
@@ -14,7 +15,6 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +23,7 @@ import java.util.Map;
 public final class ThermalVisionRenderLayer<T extends LivingEntity, M extends EntityModel<T>>
         extends RenderLayer<T, M> {
     // The post shader maps this distinctive color to a white heat silhouette.
-    private static final int HEAT_MARKER = 0xFFF20DE3;
+    public static final int HEAT_MARKER = 0xFFF20DE3;
     private static final Map<ResourceLocation, RenderType> SILHOUETTES = new HashMap<>();
     private static final RenderStateShard.ShaderStateShard MARKER_SHADER =
             new RenderStateShard.ShaderStateShard(ThermalVisionClientRenderer::markerShader);
@@ -57,6 +57,24 @@ public final class ThermalVisionRenderLayer<T extends LivingEntity, M extends En
         super(parent);
     }
 
+    /** For renderers with their own model pass, draw this after the ordinary textured body. */
+    public static void renderMarker(EntityModel<?> model, PoseStack poseStack,
+                                    MultiBufferSource bufferSource, ResourceLocation texture) {
+        model.renderToBuffer(poseStack, markerBuffer(bufferSource, texture),
+                LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, HEAT_MARKER);
+    }
+
+    /** Custom renderers can submit their own textured geometry with the marker color. */
+    public static VertexConsumer markerBuffer(MultiBufferSource bufferSource, ResourceLocation texture) {
+        return bufferSource.getBuffer(silhouette(texture));
+    }
+
+    public static boolean shouldRender(LivingEntity target) {
+        return ThermalVisionClientEffect.isRendering()
+                && ThermalVisionClientRenderer.markerShader() != null
+                && ThermalVisionTargets.shouldHighlight(target, Minecraft.getInstance().player);
+    }
+
     @Override
     public void render(
             PoseStack poseStack,
@@ -70,19 +88,10 @@ public final class ThermalVisionRenderLayer<T extends LivingEntity, M extends En
             float headPitch,
             float partialTick
     ) {
-        Player viewer = Minecraft.getInstance().player;
-        if (!ThermalVisionTargets.shouldHighlight(target, viewer)
-                || !ThermalVisionClientEffect.isRendering()
-                || ThermalVisionClientRenderer.markerShader() == null) {
+        if (!shouldRender(target)) {
             return;
         }
 
-        getParentModel().renderToBuffer(
-                poseStack,
-                bufferSource.getBuffer(silhouette(getTextureLocation(target))),
-                LightTexture.FULL_BRIGHT,
-                OverlayTexture.NO_OVERLAY,
-                HEAT_MARKER
-        );
+        renderMarker(getParentModel(), poseStack, bufferSource, getTextureLocation(target));
     }
 }

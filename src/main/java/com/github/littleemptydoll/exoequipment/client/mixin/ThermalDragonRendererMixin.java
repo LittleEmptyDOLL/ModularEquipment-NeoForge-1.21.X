@@ -11,20 +11,23 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.objectweb.asm.Opcodes;
 
 /** The dragon extends EntityRenderer, so it cannot receive a LivingEntityRenderer layer. */
 @Mixin(EnderDragonRenderer.class)
 abstract class ThermalDragonRendererMixin {
     @Shadow @Final private EnderDragonRenderer.DragonModel model;
 
-    // The third model draw is the normal textured body (after the two death-only draws).
-    // The dragon's animation and pose are already set up here; the following eyes and
-    // crystal beam render as usual. The marker shader keeps texture alpha and depth.
+    // The eyes render after the body in both the normal and death branches. At this
+    // point the model is animated and the dragon's pose is still on the stack.
+    // Anchor to the eye render type instead of the model call: vanilla uses both
+    // the four-argument and five-argument model render overloads here.
     @Inject(
             method = "render(Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/entity/EnderDragonRenderer$DragonModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V",
-                    ordinal = 2, shift = At.Shift.AFTER)
+            at = @At(value = "FIELD",
+                    target = "Lnet/minecraft/client/renderer/entity/EnderDragonRenderer;EYES:Lnet/minecraft/client/renderer/RenderType;",
+                    opcode = Opcodes.GETSTATIC),
+            require = 0
     )
     private void exo$renderThermalMarker(EnderDragon dragon, float yaw, float partialTick,
                                          PoseStack poseStack, MultiBufferSource bufferSource,

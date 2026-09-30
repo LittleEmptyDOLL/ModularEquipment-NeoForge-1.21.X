@@ -1,0 +1,20 @@
+{
+  "replace": false,
+  "entries": [
+    "exoequipment:tier_components_simple_dungeon",
+    "exoequipment:tier_components_abandoned_mineshaft",
+    "exoequipment:tier_components_desert_pyramid",
+    "exoequipment:tier_components_jungle_temple",
+    "exoequipment:tier_components_stronghold_corridor",
+    "exoequipment:tier_components_stronghold_library",
+    "exoequipment:tier_components_stronghold_crossing",
+    "exoequipment:tier_components_woodland_mansion",
+    "exoequipment:tier_components_pillager_outpost",
+    "exoequipment:tier_components_ancient_city",
+    "exoequipment:tier_components_trial_chambers_supply",
+    "exoequipment:tier_components_trial_chambers_reward",
+    "exoequipment:tier_components_bastion_treasure",
+    "exoequipment:tier_components_nether_bridge",
+    "exoequipment:tier_components_end_city_treasure"
+  ]
+}

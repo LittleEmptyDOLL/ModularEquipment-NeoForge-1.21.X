@@ -9,14 +9,20 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:electronic_component"
+        "item": "exoequipment:mechanical_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "tag": "minecraft:coals"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:civilian_energy_system",
+    "id": "exoequipment:civilian_generator_module",
     "count": 1
   },
-  "energy": 750
+  "energy": 700
 }

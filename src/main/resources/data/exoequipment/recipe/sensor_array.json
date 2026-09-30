@@ -9,14 +9,20 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:structural_component"
+        "item": "minecraft:glass_pane"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:quartz"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:civilian_matrix",
+    "id": "exoequipment:sensor_array",
     "count": 1
   },
-  "energy": 500
+  "energy": 600
 }

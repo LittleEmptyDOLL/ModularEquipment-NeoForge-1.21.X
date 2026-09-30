@@ -3,7 +3,7 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:electronic_component"
+        "item": "exoequipment:thermal_regulator"
       },
       "count": 1
     },
@@ -15,8 +15,8 @@
     }
   ],
   "result": {
-    "id": "exoequipment:civilian_matrix",
+    "id": "exoequipment:civilian_cooler_module",
     "count": 1
   },
-  "energy": 500
+  "energy": 650
 }

@@ -3,20 +3,26 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:energy_component"
+        "item": "exoequipment:mechanical_component"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:electronic_component"
+        "item": "exoequipment:energy_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:blaze_powder"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:civilian_energy_system",
+    "id": "exoequipment:thruster",
     "count": 1
   },
-  "energy": 750
+  "energy": 800
 }

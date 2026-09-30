@@ -2,10 +2,13 @@ package com.github.littleemptydoll.exoequipment.fabricator;
 
 import com.github.littleemptydoll.exoequipment.registry.ModFabricatorRecipes;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
+import com.github.littleemptydoll.exoequipment.registry.ModItems;
+import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
 import java.util.ArrayDeque;
@@ -29,9 +32,17 @@ public final class FabricatorCrafting {
         RecipeHolder<?> holder = player.serverLevel().getRecipeManager().byKey(recipeId).orElse(null);
         if (holder == null || holder.value().getType() != ModFabricatorRecipes.TYPE.get()
                 || !(holder.value() instanceof FabricatorRecipe recipe)
-                || !(recipe.result().getItem() instanceof EquipmentItem<?> output)
                 || recipe.requirements().isEmpty() || recipe.requirements().size() > 32
                 || recipe.result().isEmpty() || recipe.energyCost() < 1) return 0;
+        Item output = recipe.result().getItem();
+        EquipmentTier tier;
+        if (output instanceof EquipmentItem<?> equipment) {
+            tier = equipment.getDefinition().tier();
+        } else if (ModItems.isFabricatorPart(output)) {
+            tier = EquipmentTier.CIVILIAN;
+        } else {
+            return 0;
+        }
 
         Inventory inventory = player.getInventory();
         List<ItemStack> current = new ArrayList<>(PLAYER_SLOTS);
@@ -40,7 +51,7 @@ public final class FabricatorCrafting {
         int crafted = 0;
         int availableEnergy = machine.storedEnergy();
         while (crafted < requested && availableEnergy >= recipe.energyCost()
-                && machine.canCraft(output.getDefinition().tier(), recipe.energyCost())) {
+                && machine.canCraft(tier, recipe.energyCost())) {
             List<ItemStack> next = new ArrayList<>(PLAYER_SLOTS);
             for (ItemStack stack : current) next.add(stack.copy());
             int[] consumed = allocate(next, recipe.requirements());

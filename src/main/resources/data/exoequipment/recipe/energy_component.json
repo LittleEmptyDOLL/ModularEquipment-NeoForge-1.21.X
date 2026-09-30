@@ -3,26 +3,26 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:structural_component"
+        "item": "minecraft:copper_ingot"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "minecraft:redstone"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:mechanical_component"
+        "item": "minecraft:glowstone_dust"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:civilian_frame",
-    "count": 1
+    "id": "exoequipment:energy_component",
+    "count": 2
   },
-  "energy": 500
+  "energy": 300
 }

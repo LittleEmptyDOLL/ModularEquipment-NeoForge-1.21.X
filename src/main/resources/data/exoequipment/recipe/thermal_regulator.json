@@ -3,26 +3,26 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:structural_component"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:composite"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
         "item": "exoequipment:mechanical_component"
       },
       "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:copper_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:snowball"
+      },
+      "count": 4
     }
   ],
   "result": {
-    "id": "exoequipment:civilian_frame",
+    "id": "exoequipment:thermal_regulator",
     "count": 1
   },
-  "energy": 500
+  "energy": 600
 }

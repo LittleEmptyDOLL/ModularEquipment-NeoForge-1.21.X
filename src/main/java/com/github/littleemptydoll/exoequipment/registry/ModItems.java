@@ -14,6 +14,18 @@ public final class ModItems {
 
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ExoEquipment.MODID);
 
+    // Craftable intermediates. Recipes are processed by the Fabricator from the player's inventory.
+    public static final DeferredHolder<Item, Item> CARBON_FIBER = part("carbon_fiber");
+    public static final DeferredHolder<Item, Item> COMPOSITE = part("composite");
+    public static final DeferredHolder<Item, Item> ELECTRONIC_COMPONENT = part("electronic_component");
+    public static final DeferredHolder<Item, Item> MECHANICAL_COMPONENT = part("mechanical_component");
+    public static final DeferredHolder<Item, Item> ENERGY_COMPONENT = part("energy_component");
+    public static final DeferredHolder<Item, Item> STRUCTURAL_COMPONENT = part("structural_component");
+    public static final DeferredHolder<Item, Item> SHIELD_EMITTER = part("shield_emitter");
+    public static final DeferredHolder<Item, Item> THRUSTER = part("thruster");
+    public static final DeferredHolder<Item, Item> SENSOR_ARRAY = part("sensor_array");
+    public static final DeferredHolder<Item, Item> THERMAL_REGULATOR = part("thermal_regulator");
+
     // These three components have no crafting recipes; loot integration follows the
     // structure pools when their locations are defined.
     public static final DeferredHolder<Item, Item> MILITARY_COMPONENT =
@@ -34,6 +46,18 @@ public final class ModItems {
     public static final DeferredHolder<Item, BlockItem> FABRICATOR =
             ITEMS.register("fabricator", () ->
                     new BlockItem(ModBlocks.FABRICATOR.get(), new Item.Properties()));
+
+    private static DeferredHolder<Item, Item> part(String id) {
+        return ITEMS.register(id, () -> new Item(new Item.Properties()));
+    }
+
+    public static boolean isFabricatorPart(Item item) {
+        return item == CARBON_FIBER.get() || item == COMPOSITE.get()
+                || item == ELECTRONIC_COMPONENT.get() || item == MECHANICAL_COMPONENT.get()
+                || item == ENERGY_COMPONENT.get() || item == STRUCTURAL_COMPONENT.get()
+                || item == SHIELD_EMITTER.get() || item == THRUSTER.get()
+                || item == SENSOR_ARRAY.get() || item == THERMAL_REGULATOR.get();
+    }
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

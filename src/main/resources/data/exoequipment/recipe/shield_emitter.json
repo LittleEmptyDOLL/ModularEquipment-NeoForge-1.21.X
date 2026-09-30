@@ -9,14 +9,20 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:structural_component"
+        "item": "exoequipment:energy_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:amethyst_shard"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:civilian_matrix",
+    "id": "exoequipment:shield_emitter",
     "count": 1
   },
-  "energy": 500
+  "energy": 800
 }

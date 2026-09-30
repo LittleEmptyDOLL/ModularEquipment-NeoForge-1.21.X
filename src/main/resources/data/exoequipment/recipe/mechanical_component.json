@@ -3,20 +3,20 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:energy_component"
+        "item": "minecraft:iron_ingot"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:electronic_component"
+        "item": "minecraft:copper_ingot"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:civilian_energy_system",
-    "count": 1
+    "id": "exoequipment:mechanical_component",
+    "count": 2
   },
-  "energy": 750
+  "energy": 250
 }

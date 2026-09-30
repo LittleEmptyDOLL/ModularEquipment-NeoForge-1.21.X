@@ -1,0 +1,22 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "tag": "minecraft:coals"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:string"
+      },
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "exoequipment:carbon_fiber",
+    "count": 2
+  },
+  "energy": 100
+}

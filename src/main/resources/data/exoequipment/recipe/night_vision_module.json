@@ -3,20 +3,20 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:electronic_component"
+        "item": "exoequipment:sensor_array"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:structural_component"
+        "item": "exoequipment:energy_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:civilian_matrix",
+    "id": "exoequipment:night_vision_module",
     "count": 1
   },
-  "energy": 500
+  "energy": 650
 }

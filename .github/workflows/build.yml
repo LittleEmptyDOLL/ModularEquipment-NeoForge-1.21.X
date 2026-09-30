@@ -21,5 +21,14 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build with Gradle
-        run: ./gradlew build --stacktrace
+      - name: Generate resources and build with Gradle
+        run: |
+          ./gradlew runData --stacktrace
+          ./gradlew clean build --stacktrace
+
+      - name: Upload generated resources
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-resources
+          path: src/generated/resources/assets/exoequipment/
+          if-no-files-found: error

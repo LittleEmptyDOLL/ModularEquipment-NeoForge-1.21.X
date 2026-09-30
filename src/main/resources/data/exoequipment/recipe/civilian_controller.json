@@ -3,15 +3,15 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "minecraft:copper_ingot"
+        "item": "exoequipment:electronic_component"
       },
-      "count": 4
+      "count": 2
     },
     {
       "ingredient": {
-        "item": "minecraft:redstone"
+        "item": "exoequipment:mechanical_component"
       },
-      "count": 2
+      "count": 1
     }
   ],
   "result": {

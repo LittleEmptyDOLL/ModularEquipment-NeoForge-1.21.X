@@ -5,17 +5,20 @@ import com.github.littleemptydoll.exoequipment.item.ModuleItem;
 import com.github.littleemptydoll.exoequipment.network.FabricatorCraftPayload;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModFabricatorRecipes;
+import com.github.littleemptydoll.exoequipment.registry.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -26,6 +29,8 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
     private static final int VISIBLE = 6, ENERGY_X = 317, ENERGY_Y = 43, ENERGY_HEIGHT = 113;
     private FabricatorCategory category = FabricatorCategory.EXOSKELETON;
     private int subcategory = -1, scroll, selection, ingredientScroll;
+    private ResourceLocation focusedRecipe;
+    private final ArrayDeque<ResourceLocation> recipeHistory = new ArrayDeque<>();
     private Button craftOne, craftFive, craftMax;
 
     public FabricatorScreen(FabricatorMenu menu, Inventory inventory, Component title) {
@@ -69,8 +74,35 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
     }
 
     private RecipeHolder<FabricatorRecipe> selected() {
+        if (focusedRecipe != null && Minecraft.getInstance().level != null) {
+            for (var holder : Minecraft.getInstance().level.getRecipeManager()
+                    .getAllRecipesFor(ModFabricatorRecipes.TYPE.get())) {
+                if (holder.id().equals(focusedRecipe)) return holder;
+            }
+            return null;
+        }
         List<RecipeHolder<FabricatorRecipe>> list = recipes();
         return selection >= 0 && selection < list.size() ? list.get(selection) : null;
+    }
+
+    private void openPart(ItemStack stack) {
+        if (!ModItems.isFabricatorPart(stack.getItem()) || minecraft == null || minecraft.level == null) return;
+        RecipeHolder<FabricatorRecipe> current = selected();
+        if (current == null) return;
+        for (var holder : minecraft.level.getRecipeManager().getAllRecipesFor(ModFabricatorRecipes.TYPE.get())) {
+            if (holder.value().result().is(stack.getItem())) {
+                recipeHistory.push(current.id());
+                focusedRecipe = holder.id();
+                ingredientScroll = 0;
+                return;
+            }
+        }
+    }
+
+    private void resetPartNavigation() {
+        focusedRecipe = null;
+        recipeHistory.clear();
+        ingredientScroll = 0;
     }
 
     private int listLeft() {
@@ -171,8 +203,12 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         if (selected != null) {
             FabricatorRecipe recipe = selected.value();
             graphics.renderItem(recipe.result(), 163, 43);
-            graphics.drawString(font, font.plainSubstrByWidth(recipe.result().getHoverName().getString(), 121),
+            graphics.drawString(font, font.plainSubstrByWidth(recipe.result().getHoverName().getString(),
+                            recipeHistory.isEmpty() ? 121 : 102),
                     183, 47, TEXT, false);
+            if (!recipeHistory.isEmpty()) {
+                graphics.drawString(font, "<", 293, 47, TEXT, false);
+            }
             graphics.drawString(font, Component.translatable("gui.exoequipment.fabricator.cost",
                     recipe.energyCost()), 163, 65, TEXT, false);
             if (recipe.requirements().size() > 4) {
@@ -255,6 +291,10 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
             }
         }
         if (chosen == null) return;
+        if (!recipeHistory.isEmpty() && x >= 289 && x < 305 && y >= 43 && y < 59) {
+            graphics.renderTooltip(font, Component.translatable("gui.exoequipment.back"), mouseX, mouseY);
+            return;
+        }
         if (x >= 163 && x < 179 && y >= 43 && y < 59) {
             graphics.renderTooltip(font, chosen.value().result(), mouseX, mouseY);
             return;
@@ -279,22 +319,43 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
                 if (x >= 29 + i * 46 && x < 73 + i * 46 && y >= 22 && y < 39) {
                     category = FabricatorCategory.values()[i];
                     subcategory = -1;
-                    selection = scroll = ingredientScroll = 0;
+                    selection = scroll = 0;
+                    resetPartNavigation();
                     return true;
                 }
             }
             if (category == FabricatorCategory.MODULE
                     && x >= 30 && x < 74 && y >= 42 && y < 150) {
                 subcategory = (y - 42) / 12 - 1;
-                selection = scroll = ingredientScroll = 0;
+                selection = scroll = 0;
+                resetPartNavigation();
                 return true;
             }
             if (x >= listLeft() && x < 157 && y >= 42 && y < 138) {
                 int row = (y - 42) / 16;
                 if (row < VISIBLE && scroll + row < recipes().size()) {
                     selection = scroll + row;
-                    ingredientScroll = 0;
+                    resetPartNavigation();
                     return true;
+                }
+            }
+            if (!recipeHistory.isEmpty() && x >= 289 && x < 305 && y >= 43 && y < 59) {
+                ResourceLocation parent = recipeHistory.pop();
+                focusedRecipe = recipeHistory.isEmpty() ? null : parent;
+                ingredientScroll = 0;
+                return true;
+            }
+            RecipeHolder<FabricatorRecipe> shown = selected();
+            if (shown != null) {
+                for (int cell = 0; cell < 4; cell++) {
+                    int index = ingredientScroll * 2 + cell;
+                    if (index >= shown.value().requirements().size()) break;
+                    int ix = 163 + (cell % 2) * 73, iy = 85 + (cell / 2) * 25;
+                    if (x >= ix && x < ix + 16 && y >= iy && y < iy + 16) {
+                        ItemStack[] alternatives = shown.value().requirements().get(index).ingredient().getItems();
+                        if (alternatives.length > 0) openPart(alternatives[0]);
+                        return true;
+                    }
                 }
             }
         }

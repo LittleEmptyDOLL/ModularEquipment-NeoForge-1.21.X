@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "exoequipment:item/module/engineering_body_protection_module"
+  }
+}

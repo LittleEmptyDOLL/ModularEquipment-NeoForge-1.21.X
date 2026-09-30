@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "exoequipment:item/module/military_sensory_status_protection_module"
+  }
+}

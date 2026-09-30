@@ -1,0 +1,22 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:shield_emitter"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:structural_component"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "exoequipment:civilian_projectile_protection_module",
+    "count": 1
+  },
+  "energy": 650
+}

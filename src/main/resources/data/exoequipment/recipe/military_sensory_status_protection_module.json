@@ -1,0 +1,28 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:civilian_sensory_status_protection_module"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:shield_emitter"
+      },
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "exoequipment:military_sensory_status_protection_module",
+    "count": 1
+  },
+  "energy": 1400
+}

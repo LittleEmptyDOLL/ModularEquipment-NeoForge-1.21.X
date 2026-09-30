@@ -1,0 +1,22 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:thruster"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:mechanical_component"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "exoequipment:civilian_blink_module",
+    "count": 1
+  },
+  "energy": 650
+}

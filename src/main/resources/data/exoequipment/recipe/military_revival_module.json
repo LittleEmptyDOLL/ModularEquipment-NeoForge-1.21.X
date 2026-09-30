@@ -1,0 +1,28 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:structural_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:shield_emitter"
+      },
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "exoequipment:military_revival_module",
+    "count": 1
+  },
+  "energy": 1550
+}

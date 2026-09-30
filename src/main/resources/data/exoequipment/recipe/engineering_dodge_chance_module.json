@@ -1,0 +1,44 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:civilian_dodge_chance_module"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:shield_emitter"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:thermal_regulator"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "exoequipment:engineering_dodge_chance_module",
+    "count": 1
+  },
+  "energy": 1400,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "apothic_attributes"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "exoequipment:engineering_dodge_chance_module"
+    }
+  ]
+}

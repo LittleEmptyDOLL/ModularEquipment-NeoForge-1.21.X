@@ -1,0 +1,34 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:civilian_mining_speed_module"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:thermal_regulator"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "exoequipment:engineering_mining_speed_module",
+    "count": 1
+  },
+  "energy": 1400
+}

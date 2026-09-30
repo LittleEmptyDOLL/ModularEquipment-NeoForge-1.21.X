@@ -18,28 +18,31 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMenu> {
     private static final int BACKGROUND = 0xFF14212B, SLOT = 0xFF35434D, TEXT = 0xFFDEE6E9;
-    private static final int VISIBLE = 3;
+    private static final int PANEL = 0xFF20313B, SELECTED = 0xFF35667A;
+    private static final int VISIBLE = 6, ENERGY_X = 317, ENERGY_Y = 43, ENERGY_HEIGHT = 113;
     private FabricatorCategory category = FabricatorCategory.EXOSKELETON;
-    private int subcategory = -1, scroll, selection;
+    private int subcategory = -1, scroll, selection, ingredientScroll;
+    private Button craftOne, craftFive, craftMax;
 
     public FabricatorScreen(FabricatorMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
-        imageWidth = 256;
+        imageWidth = 336;
         imageHeight = 252;
     }
 
     @Override
     protected void init() {
         super.init();
-        addRenderableWidget(Button.builder(Component.literal("×1"), b -> craft(1))
-                .bounds(leftPos + 145, topPos + 109, 30, 16).build());
-        addRenderableWidget(Button.builder(Component.literal("×5"), b -> craft(5))
-                .bounds(leftPos + 180, topPos + 109, 30, 16).build());
-        addRenderableWidget(Button.builder(Component.literal("Max"), b -> craft(64))
-                .bounds(leftPos + 215, topPos + 109, 33, 16).build());
+        craftOne = addRenderableWidget(Button.builder(Component.literal("×1"), b -> craft(1))
+                .bounds(leftPos + 211, topPos + 142, 29, 17).build());
+        craftFive = addRenderableWidget(Button.builder(Component.literal("×5"), b -> craft(5))
+                .bounds(leftPos + 243, topPos + 142, 29, 17).build());
+        craftMax = addRenderableWidget(Button.builder(Component.translatable("gui.exoequipment.fabricator.max"),
+                b -> craft(64)).bounds(leftPos + 275, topPos + 142, 30, 17).build());
     }
 
     private void craft(int amount) {
@@ -70,31 +73,68 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         return selection >= 0 && selection < list.size() ? list.get(selection) : null;
     }
 
+    private int listLeft() {
+        return category == FabricatorCategory.MODULE ? 77 : 29;
+    }
+
+    private static Component moduleCategoryName(int index) {
+        if (index < 0) return Component.translatable("gui.exoequipment.fabricator.all");
+        String name = ModuleCategory.values()[index].name().toLowerCase(Locale.ROOT);
+        return Component.translatable("gui.exoequipment.fabricator.module_category." + name);
+    }
+
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         int x = leftPos, y = topPos;
         graphics.fill(x, y, x + imageWidth, y + imageHeight, BACKGROUND);
-        graphics.fill(x + 7, y + 27, x + 249, y + 32, SLOT);
-        int width = 240 * Math.max(0, Math.min(menu.energy(), FabricatorBlockEntity.CAPACITY))
-                / FabricatorBlockEntity.CAPACITY;
-        graphics.fill(x + 8, y + 28, x + 8 + width, y + 31, 0xFF49B5D6);
+        graphics.fill(x + 27, y + 20, x + 309, y + 160, PANEL);
         for (int i = 0; i < FabricatorCategory.values().length; i++) {
-            int left = x + 8 + i * 40;
-            graphics.fill(left, y + 37, left + 38, y + 51,
-                    FabricatorCategory.values()[i] == category ? 0xFF35667A : SLOT);
+            int left = x + 29 + i * 46;
+            graphics.fill(left, y + 22, left + 44, y + 39,
+                    FabricatorCategory.values()[i] == category ? SELECTED : SLOT);
         }
-        graphics.fill(x + 7, y + 54, x + 139, y + 108, SLOT);
-        graphics.fill(x + 142, y + 54, x + 249, y + 106, SLOT);
-        for (int i = 0; i < FabricatorUnlocks.UPGRADE_SLOT_COUNT; i++) {
-            slotBackground(graphics, x + 74 + i * 43, y + 135);
-        }
-        graphics.fill(x + 46, y + 171, x + 210, y + 251, SLOT);
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) {
-                slotBackground(graphics, x + 47 + col * 18, y + 174 + row * 18);
+        if (category == FabricatorCategory.MODULE) {
+            graphics.fill(x + 29, y + 41, x + 75, y + 151, SLOT);
+            for (int i = -1; i < ModuleCategory.values().length; i++) {
+                int top = y + 42 + (i + 1) * 12;
+                if (i == subcategory) graphics.fill(x + 30, top, x + 74, top + 12, SELECTED);
             }
         }
-        for (int col = 0; col < 9; col++) slotBackground(graphics, x + 47 + col * 18, y + 232);
+        graphics.fill(x + listLeft() - 1, y + 41, x + 158, y + 140, SLOT);
+        graphics.fill(x + 160, y + 41, x + 307, y + 140, SLOT);
+        for (int i = 0; i < FabricatorUnlocks.UPGRADE_SLOT_COUNT; i++) {
+            slotBackground(graphics, x + 6, y + 57 + i * 25);
+        }
+        graphics.fill(x + ENERGY_X - 2, y + ENERGY_Y - 2,
+                x + ENERGY_X + 13, y + ENERGY_Y + ENERGY_HEIGHT + 2, SLOT);
+        graphics.fill(x + ENERGY_X, y + ENERGY_Y,
+                x + ENERGY_X + 11, y + ENERGY_Y + ENERGY_HEIGHT, 0xFF0D151A);
+        int energy = Math.max(0, Math.min(menu.energy(), FabricatorBlockEntity.CAPACITY));
+        int filled = ENERGY_HEIGHT * energy / FabricatorBlockEntity.CAPACITY;
+        graphics.fill(x + ENERGY_X + 1, y + ENERGY_Y + ENERGY_HEIGHT - filled,
+                x + ENERGY_X + 10, y + ENERGY_Y + ENERGY_HEIGHT, 0xFF49B5D6);
+        RecipeHolder<FabricatorRecipe> chosen = selected();
+        if (chosen != null && minecraft != null && minecraft.level != null
+                && (minecraft.level.getGameTime() / 10) % 2 == 0) {
+            int cost = chosen.value().energyCost();
+            int height = Math.max(2, (int) Math.ceil((double) cost * ENERGY_HEIGHT
+                    / FabricatorBlockEntity.CAPACITY));
+            int top = y + ENERGY_Y + ENERGY_HEIGHT - filled;
+            if (energy >= cost) {
+                graphics.fill(x + ENERGY_X + 1, top,
+                        x + ENERGY_X + 10, Math.min(top + height, y + ENERGY_Y + ENERGY_HEIGHT), 0xFFE6F6FF);
+            } else {
+                graphics.fill(x + ENERGY_X + 1, Math.max(y + ENERGY_Y, top - height),
+                        x + ENERGY_X + 10, Math.max(y + ENERGY_Y + 2, top), 0xFFE87070);
+            }
+        }
+        graphics.fill(x + 85, y + 173, x + 251, y + 251, SLOT);
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 9; col++) {
+                slotBackground(graphics, x + 86 + col * 18, y + 174 + row * 18);
+            }
+        }
+        for (int col = 0; col < 9; col++) slotBackground(graphics, x + 86 + col * 18, y + 232);
     }
 
     private static void slotBackground(GuiGraphics graphics, int x, int y) {
@@ -104,39 +144,50 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, 8, 7, TEXT, false);
-        graphics.drawString(font, Component.translatable("gui.exoequipment.fabricator.energy",
-                menu.energy(), FabricatorBlockEntity.CAPACITY), 8, 17, TEXT, false);
+        graphics.drawString(font, title, 29, 7, TEXT, false);
         FabricatorCategory[] categories = FabricatorCategory.values();
         for (int i = 0; i < categories.length; i++) {
             Component name = Component.translatable(categories[i].translationKey());
-            String shortName = font.plainSubstrByWidth(name.getString(), 34);
-            graphics.drawString(font, shortName, 11 + i * 40, 40, TEXT, false);
+            String shortName = font.plainSubstrByWidth(name.getString(), 40);
+            graphics.drawString(font, shortName, 32 + i * 46, 26, TEXT, false);
+        }
+        if (category == FabricatorCategory.MODULE) {
+            for (int i = -1; i < ModuleCategory.values().length; i++) {
+                graphics.drawString(font, font.plainSubstrByWidth(moduleCategoryName(i).getString(), 42),
+                        31, 44 + (i + 1) * 12, TEXT, false);
+            }
         }
         List<RecipeHolder<FabricatorRecipe>> list = recipes();
         for (int row = 0; row < VISIBLE && scroll + row < list.size(); row++) {
-            int index = scroll + row;
+            int index = scroll + row, top = 42 + row * 16;
             ItemStack output = list.get(index).value().result();
-            if (index == selection) graphics.fill(8, 55 + row * 17, 138, 72 + row * 17, 0xFF35667A);
-            graphics.renderItem(output, 10, 55 + row * 17);
+            if (index == selection) graphics.fill(listLeft(), top, 157, top + 16, SELECTED);
+            graphics.renderItem(output, listLeft(), top);
             graphics.drawString(font,
-                    font.plainSubstrByWidth(output.getHoverName().getString(), 106),
-                    29, 59 + row * 17, TEXT, false);
+                    font.plainSubstrByWidth(output.getHoverName().getString(), 157 - listLeft() - 19),
+                    listLeft() + 18, top + 4, TEXT, false);
         }
         RecipeHolder<FabricatorRecipe> selected = selected();
         if (selected != null) {
             FabricatorRecipe recipe = selected.value();
-            graphics.renderItem(recipe.result(), 145, 57);
-            graphics.drawString(font, font.plainSubstrByWidth(recipe.result().getHoverName().getString(), 82),
-                    163, 60, TEXT, false);
+            graphics.renderItem(recipe.result(), 163, 43);
+            graphics.drawString(font, font.plainSubstrByWidth(recipe.result().getHoverName().getString(), 121),
+                    183, 47, TEXT, false);
             graphics.drawString(font, Component.translatable("gui.exoequipment.fabricator.cost",
-                    recipe.energyCost()), 144, 76, TEXT, false);
-            for (int i = 0; i < Math.min(4, recipe.requirements().size()); i++) {
-                FabricatorIngredient entry = recipe.requirements().get(i);
+                    recipe.energyCost()), 163, 65, TEXT, false);
+            if (recipe.requirements().size() > 4) {
+                graphics.drawString(font, (ingredientScroll * 2 + 1) + "-"
+                        + Math.min(recipe.requirements().size(), ingredientScroll * 2 + 4)
+                        + "/" + recipe.requirements().size(), 266, 76, TEXT, false);
+            }
+            for (int cell = 0; cell < 4; cell++) {
+                int index = ingredientScroll * 2 + cell;
+                if (index >= recipe.requirements().size()) break;
+                FabricatorIngredient entry = recipe.requirements().get(index);
                 ItemStack[] alternatives = entry.ingredient().getItems();
                 if (alternatives.length == 0) continue;
-                int ix = 144 + i * 26;
-                graphics.renderItem(alternatives[0], ix, 89);
+                int ix = 163 + (cell % 2) * 73, iy = 85 + (cell / 2) * 25;
+                graphics.renderItem(alternatives[0], ix, iy);
                 int available = 0;
                 if (minecraft != null && minecraft.player != null) {
                     for (int slot = 0; slot < 36; slot++) {
@@ -144,74 +195,105 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
                         if (entry.ingredient().test(held)) available += held.getCount();
                     }
                 }
-                graphics.drawString(font, Math.min(available, 99) + "/" + entry.count(),
-                        ix + 2, 98, available >= entry.count() ? TEXT : 0xFFFF9999, true);
+                graphics.drawString(font, available + "/" + entry.count(), ix + 19, iy + 4,
+                        available >= entry.count() ? TEXT : 0xFFFF9999, false);
             }
         }
-        if (category == FabricatorCategory.MODULE) {
-            String name = subcategory < 0 ? Component.translatable("gui.exoequipment.fabricator.all").getString()
-                    : ModuleCategory.values()[subcategory].name();
-            graphics.drawString(font, "< " + name + " >", 8, 114, TEXT, false);
-        }
-        graphics.drawString(font, Component.translatable("gui.exoequipment.fabricator.upgrades"),
-                8, 131, TEXT, false);
-        graphics.drawString(font, playerInventoryTitle, 47, 161, TEXT, false);
+        graphics.drawString(font, Component.translatable("gui.exoequipment.fabricator.craft"),
+                163, 146, TEXT, false);
+        graphics.drawString(font, playerInventoryTitle, 87, 162, TEXT, false);
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(graphics, mouseX, mouseY, partialTick);
+        RecipeHolder<FabricatorRecipe> chosen = selected();
+        boolean enabled = chosen != null && menu.energy() >= chosen.value().energyCost();
+        craftOne.active = craftFive.active = craftMax.active = enabled;
         super.render(graphics, mouseX, mouseY, partialTick);
         renderTooltip(graphics, mouseX, mouseY);
-        if (menu.getCarried().isEmpty()) {
-            if (mouseY >= topPos + 37 && mouseY < topPos + 51) {
-                for (int i = 0; i < FabricatorCategory.values().length; i++) {
-                    if (mouseX >= leftPos + 8 + i * 40 && mouseX < leftPos + 46 + i * 40) {
-                        graphics.renderTooltip(font, Component.translatable(
-                                FabricatorCategory.values()[i].translationKey()), mouseX, mouseY);
-                        return;
-                    }
+        if (!menu.getCarried().isEmpty()) return;
+        int x = mouseX - leftPos, y = mouseY - topPos;
+        if (x >= ENERGY_X - 2 && x < ENERGY_X + 13
+                && y >= ENERGY_Y - 2 && y < ENERGY_Y + ENERGY_HEIGHT + 2) {
+            graphics.renderTooltip(font, Component.translatable("gui.exoequipment.fabricator.energy",
+                    menu.energy(), FabricatorBlockEntity.CAPACITY), mouseX, mouseY);
+            return;
+        }
+        for (int i = 0; i < FabricatorUnlocks.UPGRADE_SLOT_COUNT; i++) {
+            if (x >= 6 && x < 24 && y >= 57 + i * 25 && y < 75 + i * 25
+                    && !menu.slots.get(i).hasItem()) {
+                String tier = switch (i) {
+                    case FabricatorUnlocks.MILITARY_SLOT -> "military";
+                    case FabricatorUnlocks.ENGINEERING_SLOT -> "engineering";
+                    default -> "experimental";
+                };
+                graphics.renderTooltip(font, Component.translatable("gui.exoequipment.fabricator." + tier),
+                        mouseX, mouseY);
+                return;
+            }
+        }
+        if (y >= 22 && y < 39) {
+            for (int i = 0; i < FabricatorCategory.values().length; i++) {
+                if (x >= 29 + i * 46 && x < 73 + i * 46) {
+                    graphics.renderTooltip(font,
+                            Component.translatable(FabricatorCategory.values()[i].translationKey()), mouseX, mouseY);
+                    return;
                 }
             }
-            RecipeHolder<FabricatorRecipe> selected = selected();
-            if (selected != null && mouseY >= topPos + 89 && mouseY < topPos + 105) {
-                for (int i = 0; i < Math.min(4, selected.value().requirements().size()); i++) {
-                    int x = leftPos + 144 + i * 26;
-                    if (mouseX >= x && mouseX < x + 16) {
-                        FabricatorIngredient entry = selected.value().requirements().get(i);
-                        ItemStack[] alternatives = entry.ingredient().getItems();
-                        if (alternatives.length > 0) graphics.renderTooltip(font, alternatives[0], mouseX, mouseY);
-                        return;
-                    }
-                }
+        }
+        if (category == FabricatorCategory.MODULE && x >= 30 && x < 74 && y >= 42 && y < 150) {
+            graphics.renderTooltip(font, moduleCategoryName((y - 42) / 12 - 1), mouseX, mouseY);
+            return;
+        }
+        List<RecipeHolder<FabricatorRecipe>> list = recipes();
+        if (x >= listLeft() && x < 157 && y >= 42 && y < 138) {
+            int row = (y - 42) / 16;
+            if (scroll + row < list.size()) {
+                graphics.renderTooltip(font, list.get(scroll + row).value().result(), mouseX, mouseY);
+                return;
+            }
+        }
+        if (chosen == null) return;
+        if (x >= 163 && x < 179 && y >= 43 && y < 59) {
+            graphics.renderTooltip(font, chosen.value().result(), mouseX, mouseY);
+            return;
+        }
+        for (int cell = 0; cell < 4; cell++) {
+            int index = ingredientScroll * 2 + cell;
+            if (index >= chosen.value().requirements().size()) break;
+            int ix = 163 + (cell % 2) * 73, iy = 85 + (cell / 2) * 25;
+            if (x >= ix && x < ix + 16 && y >= iy && y < iy + 16) {
+                ItemStack[] alternatives = chosen.value().requirements().get(index).ingredient().getItems();
+                if (alternatives.length > 0) graphics.renderTooltip(font, alternatives[0], mouseX, mouseY);
+                return;
             }
         }
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        int x = (int) mouseX - leftPos, y = (int) mouseY - topPos;
         if (button == 0) {
             for (int i = 0; i < FabricatorCategory.values().length; i++) {
-                if (mouseX >= leftPos + 8 + i * 40 && mouseX < leftPos + 46 + i * 40
-                        && mouseY >= topPos + 37 && mouseY < topPos + 51) {
+                if (x >= 29 + i * 46 && x < 73 + i * 46 && y >= 22 && y < 39) {
                     category = FabricatorCategory.values()[i];
                     subcategory = -1;
-                    selection = scroll = 0;
+                    selection = scroll = ingredientScroll = 0;
                     return true;
                 }
             }
             if (category == FabricatorCategory.MODULE
-                    && mouseX >= leftPos + 8 && mouseX < leftPos + 139
-                    && mouseY >= topPos + 109 && mouseY < topPos + 126) {
-                subcategory = subcategory >= ModuleCategory.values().length - 1 ? -1 : subcategory + 1;
-                selection = scroll = 0;
+                    && x >= 30 && x < 74 && y >= 42 && y < 150) {
+                subcategory = (y - 42) / 12 - 1;
+                selection = scroll = ingredientScroll = 0;
                 return true;
             }
-            if (mouseX >= leftPos + 8 && mouseX < leftPos + 139
-                    && mouseY >= topPos + 54 && mouseY < topPos + 108) {
-                int row = ((int) mouseY - topPos - 54) / 17;
+            if (x >= listLeft() && x < 157 && y >= 42 && y < 138) {
+                int row = (y - 42) / 16;
                 if (row < VISIBLE && scroll + row < recipes().size()) {
                     selection = scroll + row;
+                    ingredientScroll = 0;
                     return true;
                 }
             }
@@ -221,11 +303,20 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (mouseX >= leftPos + 8 && mouseX < leftPos + 139
-                && mouseY >= topPos + 54 && mouseY < topPos + 108 && scrollY != 0) {
+        int x = (int) mouseX - leftPos, y = (int) mouseY - topPos;
+        if (x >= listLeft() && x < 157 && y >= 42 && y < 138 && scrollY != 0) {
             scroll = Math.max(0, Math.min(Math.max(0, recipes().size() - VISIBLE),
                     scroll + (scrollY > 0 ? -1 : 1)));
             return true;
+        }
+        if (x >= 160 && x < 307 && y >= 81 && y < 137 && scrollY != 0) {
+            RecipeHolder<FabricatorRecipe> chosen = selected();
+            if (chosen != null) {
+                int rows = (chosen.value().requirements().size() + 1) / 2;
+                ingredientScroll = Math.max(0, Math.min(Math.max(0, rows - 2),
+                        ingredientScroll + (scrollY > 0 ? -1 : 1)));
+                return true;
+            }
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }

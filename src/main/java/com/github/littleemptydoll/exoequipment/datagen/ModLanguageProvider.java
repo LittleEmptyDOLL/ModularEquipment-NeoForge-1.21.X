@@ -20,6 +20,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add("block.exoequipment.fabricator", "Fabricator");
         add("gui.exoequipment.fabricator.upgrades", "Tier upgrades");
         add("gui.exoequipment.fabricator.cost", "Cost: %s FE");
+        add("gui.exoequipment.fabricator.craft", "Craft");
+        add("gui.exoequipment.fabricator.max", "Max");
         add("gui.exoequipment.fabricator.all", "All");
         add("gui.exoequipment.fabricator.energy", "Energy: %s / %s FE");
         add("gui.exoequipment.fabricator.military", "Military");
@@ -31,6 +33,14 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.fabricator.category.energy_system", "Energy System");
         add("gui.exoequipment.fabricator.category.matrix", "Matrix");
         add("gui.exoequipment.fabricator.category.module", "Module");
+        add("gui.exoequipment.fabricator.module_category.energy", "Energy");
+        add("gui.exoequipment.fabricator.module_category.thermal", "Thermal");
+        add("gui.exoequipment.fabricator.module_category.defense", "Defense");
+        add("gui.exoequipment.fabricator.module_category.mobility", "Mobility");
+        add("gui.exoequipment.fabricator.module_category.survival", "Survival");
+        add("gui.exoequipment.fabricator.module_category.sensor", "Sensors");
+        add("gui.exoequipment.fabricator.module_category.combat", "Combat");
+        add("gui.exoequipment.fabricator.module_category.utility", "Utility");
 
         for (DeferredHolder<Item, ? extends Item> holder : ModItems.ITEMS.getEntries()) {
             ResourceLocation id = holder.getId();

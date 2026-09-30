@@ -387,6 +387,14 @@
   "gui.exoequipment.fabricator.category.energy_system": "Энергосистема",
   "gui.exoequipment.fabricator.category.matrix": "Матрица",
   "gui.exoequipment.fabricator.category.module": "Модуль",
+  "gui.exoequipment.fabricator.module_category.energy": "Энергия",
+  "gui.exoequipment.fabricator.module_category.thermal": "Тепло",
+  "gui.exoequipment.fabricator.module_category.defense": "Защита",
+  "gui.exoequipment.fabricator.module_category.mobility": "Движение",
+  "gui.exoequipment.fabricator.module_category.survival": "Выживание",
+  "gui.exoequipment.fabricator.module_category.sensor": "Сенсоры",
+  "gui.exoequipment.fabricator.module_category.combat": "Бой",
+  "gui.exoequipment.fabricator.module_category.utility": "Утилиты",
   "block.exoequipment.fabricator": "Фабрикатор",
   "gui.exoequipment.fabricator.upgrades": "Улучшения технологий",
   "gui.exoequipment.fabricator.energy": "Энергия: %s / %s FE",
@@ -394,5 +402,7 @@
   "gui.exoequipment.fabricator.engineering": "Инженерный",
   "gui.exoequipment.fabricator.experimental": "Экспериментальный",
   "gui.exoequipment.fabricator.cost": "Стоимость: %s FE",
+  "gui.exoequipment.fabricator.craft": "Создать",
+  "gui.exoequipment.fabricator.max": "Макс",
   "gui.exoequipment.fabricator.all": "Все"
 }

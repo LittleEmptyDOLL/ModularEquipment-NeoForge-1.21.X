@@ -41,7 +41,7 @@ public final class FabricatorMenu extends AbstractContainerMenu {
 
         for (int index = 0; index < FabricatorUnlocks.UPGRADE_SLOT_COUNT; index++) {
             final int slot = index;
-            addSlot(new SlotItemHandler(handler, index, 75 + index * 43, 136) {
+            addSlot(new SlotItemHandler(handler, index, 7, 58 + index * 25) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return FabricatorUnlocks.accepts(slot, stack);
@@ -50,11 +50,11 @@ public final class FabricatorMenu extends AbstractContainerMenu {
         }
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
-                addSlot(new Slot(inventory, col + row * 9 + 9, 47 + col * 18, 174 + row * 18));
+                addSlot(new Slot(inventory, col + row * 9 + 9, 87 + col * 18, 175 + row * 18));
             }
         }
         for (int col = 0; col < 9; col++) {
-            addSlot(new Slot(inventory, col, 47 + col * 18, 232));
+            addSlot(new Slot(inventory, col, 87 + col * 18, 233));
         }
 
         addDataSlot(new DataSlot() {

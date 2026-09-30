@@ -1,0 +1,40 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:civilian_frame"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:structural_component"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
+      },
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:mechanical_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:shield_emitter"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "exoequipment:military_frame",
+    "count": 1
+  },
+  "energy": 1200
+}

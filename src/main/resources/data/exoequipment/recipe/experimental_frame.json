@@ -1,0 +1,40 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:military_frame"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:engineering_frame"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:experimental_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
+      },
+      "count": 3
+    }
+  ],
+  "result": {
+    "id": "exoequipment:experimental_frame",
+    "count": 1
+  },
+  "energy": 3400
+}

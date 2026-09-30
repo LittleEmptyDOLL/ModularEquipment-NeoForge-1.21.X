@@ -1,0 +1,28 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:military_entity_sensor_module"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:sensor_array"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:thermal_regulator"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "exoequipment:military_thermal_vision_module",
+    "count": 1
+  },
+  "energy": 2200
+}

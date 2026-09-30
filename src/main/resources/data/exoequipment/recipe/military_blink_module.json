@@ -1,0 +1,34 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:thruster"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:sensor_array"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:shield_emitter"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "exoequipment:military_blink_module",
+    "count": 1
+  },
+  "energy": 1900
+}

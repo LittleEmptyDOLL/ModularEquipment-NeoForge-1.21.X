@@ -1,0 +1,40 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:civilian_matrix"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:structural_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:sensor_array"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:sensor_array"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "exoequipment:engineering_matrix",
+    "count": 1
+  },
+  "energy": 1200
+}

@@ -18,6 +18,8 @@ public class ModLanguageProvider extends LanguageProvider {
     protected void addTranslations() {
         add("itemGroup.exoequipment", "Modular Equipment");
         add("block.exoequipment.fabricator", "Fabricator");
+        add("block.exoequipment.titanium_ore", "Titanium Ore");
+        add("block.exoequipment.deepslate_titanium_ore", "Deepslate Titanium Ore");
         add("gui.exoequipment.fabricator.upgrades", "Tier upgrades");
         add("gui.exoequipment.fabricator.cost", "Cost: %s FE");
         add("gui.exoequipment.fabricator.craft", "Craft");

@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#c:is_overworld",
+  "features": [
+    "exoequipment:titanium_ore_deep",
+    "exoequipment:titanium_ore_high"
+  ],
+  "step": "underground_ores"
+}

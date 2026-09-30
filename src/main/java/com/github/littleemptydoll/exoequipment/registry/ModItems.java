@@ -14,6 +14,15 @@ public final class ModItems {
 
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ExoEquipment.MODID);
 
+    public static final DeferredHolder<Item, BlockItem> TITANIUM_ORE =
+            ITEMS.register("titanium_ore", () ->
+                    new BlockItem(ModBlocks.TITANIUM_ORE.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, BlockItem> DEEPSLATE_TITANIUM_ORE =
+            ITEMS.register("deepslate_titanium_ore", () ->
+                    new BlockItem(ModBlocks.DEEPSLATE_TITANIUM_ORE.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, Item> RAW_TITANIUM = part("raw_titanium");
+    public static final DeferredHolder<Item, Item> TITANIUM_INGOT = part("titanium_ingot");
+
     // Craftable intermediates. Recipes are processed by the Fabricator from the player's inventory.
     public static final DeferredHolder<Item, Item> CARBON_FIBER = part("carbon_fiber");
     public static final DeferredHolder<Item, Item> COMPOSITE = part("composite");

@@ -1,0 +1,9 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    { "ingredient": { "item": "exoequipment:composite" }, "count": 1 },
+    { "ingredient": { "tag": "c:ingots/titanium" }, "count": 1 }
+  ],
+  "result": { "id": "exoequipment:structural_component", "count": 3 },
+  "energy": 300
+}

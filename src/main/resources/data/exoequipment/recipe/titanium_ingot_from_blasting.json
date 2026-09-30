@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "ingredient": { "item": "exoequipment:raw_titanium" },
+  "result": { "id": "exoequipment:titanium_ingot", "count": 1 },
+  "experience": 0.7,
+  "cookingtime": 100
+}

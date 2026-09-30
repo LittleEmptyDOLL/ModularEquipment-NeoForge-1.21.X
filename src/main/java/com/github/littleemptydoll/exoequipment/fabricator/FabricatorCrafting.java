@@ -26,7 +26,7 @@ public final class FabricatorCrafting {
                 || menu.machine() != machine || !menu.stillValid(player)
                 || player.level().getBlockEntity(machine.getBlockPos()) != machine
                 || requested < 1 || requested > MAX_BATCH) return 0;
-        RecipeHolder<?> holder = player.serverLevel().getRecipeManager().byId(recipeId).orElse(null);
+        RecipeHolder<?> holder = player.serverLevel().getRecipeManager().byKey(recipeId).orElse(null);
         if (holder == null || holder.value().getType() != ModFabricatorRecipes.TYPE.get()
                 || !(holder.value() instanceof FabricatorRecipe recipe)
                 || !(recipe.result().getItem() instanceof EquipmentItem<?> output)

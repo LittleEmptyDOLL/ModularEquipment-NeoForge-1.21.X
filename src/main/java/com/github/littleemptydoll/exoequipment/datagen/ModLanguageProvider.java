@@ -17,6 +17,12 @@ public class ModLanguageProvider extends LanguageProvider {
     @Override
     protected void addTranslations() {
         add("itemGroup.exoequipment", "Modular Equipment");
+        add("gui.exoequipment.fabricator.category.exoskeleton", "Exoskeleton");
+        add("gui.exoequipment.fabricator.category.frame", "Frame");
+        add("gui.exoequipment.fabricator.category.controller", "Controller");
+        add("gui.exoequipment.fabricator.category.energy_system", "Energy System");
+        add("gui.exoequipment.fabricator.category.matrix", "Matrix");
+        add("gui.exoequipment.fabricator.category.module", "Module");
 
         for (DeferredHolder<Item, ? extends Item> holder : ModItems.ITEMS.getEntries()) {
             ResourceLocation id = holder.getId();

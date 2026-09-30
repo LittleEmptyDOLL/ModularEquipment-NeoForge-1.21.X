@@ -214,7 +214,6 @@
   "item.exoequipment.test_lso_temperature_cold_modifier_module": "Тестовый холодный модификатор температуры LSO",
   "item.exoequipment.test_lso_temperature_impact_module": "Тестовая защита от влияния температуры LSO",
   "item.exoequipment.test_lso_painkiller_module": "Тестовый модуль обезболивания LSO",
-
   "tooltip.exoequipment.type": "Тип: %s",
   "tooltip.exoequipment.tier": "Уровень: %s",
   "tooltip.exoequipment.size": "Размер: %s x %s",
@@ -243,7 +242,6 @@
   "tooltip.exoequipment.heat_generation": "Выделение тепла: %s°C",
   "tooltip.exoequipment.temperature": "Рабочая температура: %s°C - %s°C",
   "tooltip.exoequipment.temperature_bonus": "Эффективная температура: %s°C - %s°C",
-
   "gui.exoequipment.exoskeleton": "Экзоскелет",
   "gui.exoequipment.components": "Компоненты",
   "gui.exoequipment.matrices": "Матрицы",
@@ -274,7 +272,6 @@
   "gui.exoequipment.characteristics": "Характеристики",
   "gui.exoequipment.yes": "Да",
   "gui.exoequipment.no": "Нет",
-
   "gui.exoequipment.characteristic.category.energy": "Энергия",
   "gui.exoequipment.characteristic.category.thermal": "Температура",
   "gui.exoequipment.characteristic.category.defense": "Защита",
@@ -293,13 +290,11 @@
   "gui.exoequipment.characteristic.category.sensor": "Сенсоры",
   "gui.exoequipment.characteristic.category.utility": "Вспомогательные",
   "gui.exoequipment.characteristic.category.combat": "Бой",
-
   "gui.exoequipment.characteristic.conditional_prefix": "Условно: ",
   "gui.exoequipment.characteristic.unknown_effect": "Неизвестный эффект",
   "gui.exoequipment.characteristic.time.seconds": "%s с",
   "gui.exoequipment.characteristic.time.minutes": "%s мин",
   "gui.exoequipment.characteristic.time.minutes_seconds": "%s мин %s с",
-
   "gui.exoequipment.characteristic.consumption": "Потребление",
   "gui.exoequipment.characteristic.generation": "Генерация",
   "gui.exoequipment.characteristic.storage_capacity": "Ёмкость хранилища",
@@ -308,11 +303,9 @@
   "gui.exoequipment.characteristic.stored_energy": "Запас энергии",
   "gui.exoequipment.characteristic.max_input": "Максимальный вход",
   "gui.exoequipment.characteristic.max_output": "Максимальный выход",
-
   "gui.exoequipment.characteristic.heat_generation": "Выделение тепла",
   "gui.exoequipment.characteristic.cooling": "Охлаждение",
   "gui.exoequipment.characteristic.thermal_balance": "Тепловой баланс",
-
   "gui.exoequipment.characteristic.damage_reduction.default": "Снижение всего урона",
   "gui.exoequipment.characteristic.damage_reduction.tag.minecraft_is_projectile": "Снижение урона от снарядов",
   "gui.exoequipment.characteristic.damage_reduction.tag.minecraft_is_explosion": "Снижение урона от взрывов",
@@ -337,16 +330,13 @@
   "gui.exoequipment.characteristic.body.left_foot.reduction": "Снижение урона левой ступни",
   "gui.exoequipment.characteristic.body.right_foot.chance": "Шанс защиты правой ступни",
   "gui.exoequipment.characteristic.body.right_foot.reduction": "Снижение урона правой ступни",
-
   "gui.exoequipment.characteristic.current_strength": "Текущая прочность щита",
   "gui.exoequipment.characteristic.capacity": "Максимальная прочность щита",
-
   "gui.exoequipment.characteristic.health_per_second": "Регенерация здоровья",
   "gui.exoequipment.characteristic.hunger.exhaustion_reduction": "Снижение истощения голода",
   "gui.exoequipment.characteristic.revival.restore_health": "Здоровье после реанимации",
   "gui.exoequipment.characteristic.revival.cooldown": "Перезарядка реанимации",
   "gui.exoequipment.characteristic.thirst.exhaustion_reduction": "Снижение истощения жажды",
-
   "gui.exoequipment.characteristic.flight": "Полёт доступен",
   "gui.exoequipment.characteristic.jetpack.vertical_thrust": "Вертикальная тяга",
   "gui.exoequipment.characteristic.jetpack.horizontal_speed": "Горизонтальная скорость",
@@ -355,7 +345,6 @@
   "gui.exoequipment.characteristic.blink.distance": "Дистанция",
   "gui.exoequipment.characteristic.blink.activation_energy": "Энергия активации",
   "gui.exoequipment.characteristic.blink.cooldown": "Перезарядка",
-
   "gui.exoequipment.characteristic.entity_detection.range": "Радиус обнаружения сущностей",
   "gui.exoequipment.characteristic.entity_detection.active": "Детектор сущностей включён",
   "gui.exoequipment.characteristic.entity_detection.active_consumption": "Потребление детектора при работе",
@@ -367,7 +356,6 @@
   "gui.exoequipment.characteristic.block_scanner.active_consumption": "Потребление сканера при работе",
   "gui.exoequipment.characteristic.thermal_vision.active": "Тепловизор включён",
   "gui.exoequipment.characteristic.thermal_vision.active_consumption": "Потребление тепловизора при работе",
-
   "gui.exoequipment.characteristic.pickup_magnet.radius": "Радиус",
   "gui.exoequipment.characteristic.pickup_magnet.items": "Притягивание предметов",
   "gui.exoequipment.characteristic.pickup_magnet.experience": "Притягивание опыта",
@@ -377,7 +365,6 @@
   "gui.exoequipment.characteristic.cloaking.cooldown": "Перезарядка",
   "gui.exoequipment.characteristic.emergency_shield.restore": "Аварийное восстановление",
   "gui.exoequipment.characteristic.emergency_shield.cooldown": "Перезарядка аварийного щита",
-
   "menu.exoequipment.matrix": "Матрица",
   "menu.exoequipment.profiles": "Профили",
   "key.exoequipment.open_exoskeleton": "Открыть экзоскелет",
@@ -387,5 +374,17 @@
   "key.exoequipment.toggle_entity_sensor": "Включить/выключить детектор сущностей",
   "key.exoequipment.toggle_block_scanner": "Включить/выключить сканер блоков",
   "key.exoequipment.toggle_thermal_vision": "Включить/выключить тепловизор",
-  "key.categories.exoequipment": "ExoEquipment"
+  "key.categories.exoequipment": "ExoEquipment",
+  "item.exoequipment.military_component": "Военный компонент",
+  "item.exoequipment.engineering_component": "Инженерный компонент",
+  "item.exoequipment.experimental_component": "Экспериментальный компонент",
+  "item.exoequipment.military_fabricator_upgrade": "Военное улучшение фабрикатора",
+  "item.exoequipment.engineering_fabricator_upgrade": "Инженерное улучшение фабрикатора",
+  "item.exoequipment.experimental_fabricator_upgrade": "Экспериментальное улучшение фабрикатора",
+  "gui.exoequipment.fabricator.category.exoskeleton": "Экзоскелет",
+  "gui.exoequipment.fabricator.category.frame": "Каркас",
+  "gui.exoequipment.fabricator.category.controller": "Контроллер",
+  "gui.exoequipment.fabricator.category.energy_system": "Энергосистема",
+  "gui.exoequipment.fabricator.category.matrix": "Матрица",
+  "gui.exoequipment.fabricator.category.module": "Модуль"
 }

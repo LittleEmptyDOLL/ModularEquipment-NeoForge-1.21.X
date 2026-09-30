@@ -9,10 +9,12 @@ import com.github.littleemptydoll.exoequipment.registry.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -27,11 +29,12 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
     private static final int BACKGROUND = 0xFF14212B, SLOT = 0xFF35434D, TEXT = 0xFFDEE6E9;
     private static final int PANEL = 0xFF20313B, SELECTED = 0xFF35667A;
     private static final int VISIBLE = 6, ENERGY_X = 317, ENERGY_Y = 43, ENERGY_HEIGHT = 113;
-    private FabricatorCategory category = FabricatorCategory.EXOSKELETON;
+    private static final int TAB_X = 29, TAB_STEP = 40, TAB_WIDTH = 38;
+    private FabricatorCategory category = FabricatorCategory.COMPONENTS;
     private int subcategory = -1, scroll, selection, ingredientScroll;
     private ResourceLocation focusedRecipe;
     private final ArrayDeque<ResourceLocation> recipeHistory = new ArrayDeque<>();
-    private Button craftOne, craftFive, craftMax;
+    private Button craftButton;
 
     public FabricatorScreen(FabricatorMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -42,18 +45,15 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
     @Override
     protected void init() {
         super.init();
-        craftOne = addRenderableWidget(Button.builder(Component.literal("×1"), b -> craft(1))
-                .bounds(leftPos + 211, topPos + 142, 29, 17).build());
-        craftFive = addRenderableWidget(Button.builder(Component.literal("×5"), b -> craft(5))
-                .bounds(leftPos + 243, topPos + 142, 29, 17).build());
-        craftMax = addRenderableWidget(Button.builder(Component.translatable("gui.exoequipment.fabricator.max"),
-                b -> craft(64)).bounds(leftPos + 275, topPos + 142, 30, 17).build());
+        craftButton = addRenderableWidget(Button.builder(
+                Component.translatable("gui.exoequipment.fabricator.craft"), b -> craft())
+                .bounds(leftPos + 163, topPos + 142, 142, 17).build());
     }
 
-    private void craft(int amount) {
+    private void craft() {
         RecipeHolder<FabricatorRecipe> selected = selected();
         if (selected != null) {
-            PacketDistributor.sendToServer(new FabricatorCraftPayload(selected.id(), amount));
+            PacketDistributor.sendToServer(new FabricatorCraftPayload(selected.id(), Screen.hasShiftDown() ? 64 : 1));
         }
     }
 
@@ -62,8 +62,9 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         if (Minecraft.getInstance().level == null) return list;
         for (var holder : Minecraft.getInstance().level.getRecipeManager()
                 .getAllRecipesFor(ModFabricatorRecipes.TYPE.get())) {
-            if (!(holder.value().result().getItem() instanceof EquipmentItem<?> item)
-                    || FabricatorCategory.of(item) != category) continue;
+            Item item = holder.value().result().getItem();
+            if (!(item instanceof EquipmentItem<?>) && !ModItems.isFabricatorPart(item)) continue;
+            if (FabricatorCategory.of(item) != category) continue;
             if (category == FabricatorCategory.MODULE && subcategory >= 0
                     && (item instanceof ModuleItem module)
                     && module.getDefinition().category() != ModuleCategory.values()[subcategory]) continue;
@@ -121,8 +122,8 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         graphics.fill(x, y, x + imageWidth, y + imageHeight, BACKGROUND);
         graphics.fill(x + 27, y + 20, x + 309, y + 160, PANEL);
         for (int i = 0; i < FabricatorCategory.values().length; i++) {
-            int left = x + 29 + i * 46;
-            graphics.fill(left, y + 22, left + 44, y + 39,
+            int left = x + TAB_X + i * TAB_STEP;
+            graphics.fill(left, y + 22, left + TAB_WIDTH, y + 39,
                     FabricatorCategory.values()[i] == category ? SELECTED : SLOT);
         }
         if (category == FabricatorCategory.MODULE) {
@@ -180,8 +181,8 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         FabricatorCategory[] categories = FabricatorCategory.values();
         for (int i = 0; i < categories.length; i++) {
             Component name = Component.translatable(categories[i].translationKey());
-            String shortName = font.plainSubstrByWidth(name.getString(), 40);
-            graphics.drawString(font, shortName, 32 + i * 46, 26, TEXT, false);
+            String shortName = font.plainSubstrByWidth(name.getString(), TAB_WIDTH - 4);
+            graphics.drawString(font, shortName, TAB_X + 2 + i * TAB_STEP, 26, TEXT, false);
         }
         if (category == FabricatorCategory.MODULE) {
             for (int i = -1; i < ModuleCategory.values().length; i++) {
@@ -235,8 +236,6 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
                         available >= entry.count() ? TEXT : 0xFFFF9999, false);
             }
         }
-        graphics.drawString(font, Component.translatable("gui.exoequipment.fabricator.craft"),
-                163, 146, TEXT, false);
         graphics.drawString(font, playerInventoryTitle, 87, 162, TEXT, false);
     }
 
@@ -245,7 +244,9 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         renderBackground(graphics, mouseX, mouseY, partialTick);
         RecipeHolder<FabricatorRecipe> chosen = selected();
         boolean enabled = chosen != null && menu.energy() >= chosen.value().energyCost();
-        craftOne.active = craftFive.active = craftMax.active = enabled;
+        craftButton.active = enabled;
+        craftButton.setMessage(Component.translatable(Screen.hasShiftDown()
+                ? "gui.exoequipment.fabricator.craft_stack" : "gui.exoequipment.fabricator.craft"));
         super.render(graphics, mouseX, mouseY, partialTick);
         renderTooltip(graphics, mouseX, mouseY);
         if (!menu.getCarried().isEmpty()) return;
@@ -271,7 +272,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         }
         if (y >= 22 && y < 39) {
             for (int i = 0; i < FabricatorCategory.values().length; i++) {
-                if (x >= 29 + i * 46 && x < 73 + i * 46) {
+                if (x >= TAB_X + i * TAB_STEP && x < TAB_X + i * TAB_STEP + TAB_WIDTH) {
                     graphics.renderTooltip(font,
                             Component.translatable(FabricatorCategory.values()[i].translationKey()), mouseX, mouseY);
                     return;
@@ -316,7 +317,8 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         int x = (int) mouseX - leftPos, y = (int) mouseY - topPos;
         if (button == 0) {
             for (int i = 0; i < FabricatorCategory.values().length; i++) {
-                if (x >= 29 + i * 46 && x < 73 + i * 46 && y >= 22 && y < 39) {
+                if (x >= TAB_X + i * TAB_STEP && x < TAB_X + i * TAB_STEP + TAB_WIDTH
+                        && y >= 22 && y < 39) {
                     category = FabricatorCategory.values()[i];
                     subcategory = -1;
                     selection = scroll = 0;

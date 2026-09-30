@@ -48,9 +48,12 @@ public final class FabricatorCrafting {
         List<ItemStack> current = new ArrayList<>(PLAYER_SLOTS);
         for (int i = 0; i < PLAYER_SLOTS; i++) current.add(inventory.getItem(i).copy());
 
+        // A batch can yield at most one full output stack, including multi-item recipes.
+        int maxCrafts = Math.min(requested,
+                Math.max(1, recipe.result().getMaxStackSize() / recipe.result().getCount()));
         int crafted = 0;
         int availableEnergy = machine.storedEnergy();
-        while (crafted < requested && availableEnergy >= recipe.energyCost()
+        while (crafted < maxCrafts && availableEnergy >= recipe.energyCost()
                 && machine.canCraft(tier, recipe.energyCost())) {
             List<ItemStack> next = new ArrayList<>(PLAYER_SLOTS);
             for (ItemStack stack : current) next.add(stack.copy());

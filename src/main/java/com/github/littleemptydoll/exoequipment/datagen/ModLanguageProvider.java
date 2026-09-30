@@ -21,12 +21,13 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.fabricator.upgrades", "Tier upgrades");
         add("gui.exoequipment.fabricator.cost", "Cost: %s FE");
         add("gui.exoequipment.fabricator.craft", "Craft");
-        add("gui.exoequipment.fabricator.max", "Max");
+        add("gui.exoequipment.fabricator.craft_stack", "Craft up to a stack");
         add("gui.exoequipment.fabricator.all", "All");
         add("gui.exoequipment.fabricator.energy", "Energy: %s / %s FE");
         add("gui.exoequipment.fabricator.military", "Military");
         add("gui.exoequipment.fabricator.engineering", "Engineering");
         add("gui.exoequipment.fabricator.experimental", "Experimental");
+        add("gui.exoequipment.fabricator.category.components", "Components");
         add("gui.exoequipment.fabricator.category.exoskeleton", "Exoskeleton");
         add("gui.exoequipment.fabricator.category.frame", "Frame");
         add("gui.exoequipment.fabricator.category.controller", "Controller");

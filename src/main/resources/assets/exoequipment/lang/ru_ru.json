@@ -391,6 +391,7 @@
   "item.exoequipment.military_fabricator_upgrade": "Военное улучшение фабрикатора",
   "item.exoequipment.engineering_fabricator_upgrade": "Инженерное улучшение фабрикатора",
   "item.exoequipment.experimental_fabricator_upgrade": "Экспериментальное улучшение фабрикатора",
+  "gui.exoequipment.fabricator.category.components": "Компоненты",
   "gui.exoequipment.fabricator.category.exoskeleton": "Экзоскелет",
   "gui.exoequipment.fabricator.category.frame": "Каркас",
   "gui.exoequipment.fabricator.category.controller": "Контроллер",
@@ -413,6 +414,6 @@
   "gui.exoequipment.fabricator.experimental": "Экспериментальный",
   "gui.exoequipment.fabricator.cost": "Стоимость: %s FE",
   "gui.exoequipment.fabricator.craft": "Создать",
-  "gui.exoequipment.fabricator.max": "Макс",
+  "gui.exoequipment.fabricator.craft_stack": "Создать до стака",
   "gui.exoequipment.fabricator.all": "Все"
 }

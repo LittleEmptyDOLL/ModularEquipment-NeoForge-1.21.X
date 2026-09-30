@@ -2,6 +2,7 @@ package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.item.*;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
@@ -29,6 +30,10 @@ public final class ModItems {
             ITEMS.register("engineering_fabricator_upgrade", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, Item> EXPERIMENTAL_FABRICATOR_UPGRADE =
             ITEMS.register("experimental_fabricator_upgrade", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+
+    public static final DeferredHolder<Item, BlockItem> FABRICATOR =
+            ITEMS.register("fabricator", () ->
+                    new BlockItem(ModBlocks.FABRICATOR.get(), new Item.Properties()));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

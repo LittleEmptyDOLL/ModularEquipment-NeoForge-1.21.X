@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonProfilesScreen;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonScreen;
 import com.github.littleemptydoll.exoequipment.gui.MatrixScreen;
+import com.github.littleemptydoll.exoequipment.fabricator.FabricatorScreen;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -31,6 +32,8 @@ public final class ClientModEvents {
                 ModMenus.MATRIX.get(),
                 MatrixScreen::new
         );
+
+        event.register(ModMenus.FABRICATOR.get(), FabricatorScreen::new);
 
         event.register(
                 ModMenus.EXOSKELETON_PROFILES.get(),

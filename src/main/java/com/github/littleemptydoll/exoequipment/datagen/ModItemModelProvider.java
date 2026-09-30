@@ -5,6 +5,7 @@ import com.github.littleemptydoll.exoequipment.registry.ModItems;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -27,6 +28,7 @@ public class ModItemModelProvider extends ItemModelProvider {
     protected void registerModels() {
         for (DeferredHolder<Item, ? extends Item> holder :
                 ModItems.ITEMS.getEntries()) {
+            if (holder.get() instanceof BlockItem) continue;
             ResourceLocation id = holder.getId();
             ResourceLocation texture = modLoc(id.getPath().endsWith("_module")
                     ? "item/module/" + id.getPath()

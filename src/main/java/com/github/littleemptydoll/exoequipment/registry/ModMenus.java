@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenu;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonProfileMenu;
 import com.github.littleemptydoll.exoequipment.gui.MatrixMenu;
+import com.github.littleemptydoll.exoequipment.fabricator.FabricatorMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.bus.api.IEventBus;
@@ -40,6 +41,11 @@ public final class ModMenus {
             () -> IMenuTypeExtension.create(
                     ExoskeletonProfileMenu::new
             )
+    );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<FabricatorMenu>> FABRICATOR = MENUS.register(
+            "fabricator",
+            () -> IMenuTypeExtension.create(FabricatorMenu::new)
     );
 
     public static void register(IEventBus eventBus) {

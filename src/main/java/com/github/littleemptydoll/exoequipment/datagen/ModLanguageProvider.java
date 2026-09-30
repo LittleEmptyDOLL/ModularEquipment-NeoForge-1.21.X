@@ -17,6 +17,12 @@ public class ModLanguageProvider extends LanguageProvider {
     @Override
     protected void addTranslations() {
         add("itemGroup.exoequipment", "Modular Equipment");
+        add("block.exoequipment.fabricator", "Fabricator");
+        add("gui.exoequipment.fabricator.upgrades", "Tier upgrades");
+        add("gui.exoequipment.fabricator.energy", "Energy: %s / %s FE");
+        add("gui.exoequipment.fabricator.military", "Military");
+        add("gui.exoequipment.fabricator.engineering", "Engineering");
+        add("gui.exoequipment.fabricator.experimental", "Experimental");
         add("gui.exoequipment.fabricator.category.exoskeleton", "Exoskeleton");
         add("gui.exoequipment.fabricator.category.frame", "Frame");
         add("gui.exoequipment.fabricator.category.controller", "Controller");

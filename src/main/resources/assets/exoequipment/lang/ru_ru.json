@@ -386,5 +386,11 @@
   "gui.exoequipment.fabricator.category.controller": "Контроллер",
   "gui.exoequipment.fabricator.category.energy_system": "Энергосистема",
   "gui.exoequipment.fabricator.category.matrix": "Матрица",
-  "gui.exoequipment.fabricator.category.module": "Модуль"
+  "gui.exoequipment.fabricator.category.module": "Модуль",
+  "block.exoequipment.fabricator": "Фабрикатор",
+  "gui.exoequipment.fabricator.upgrades": "Улучшения технологий",
+  "gui.exoequipment.fabricator.energy": "Энергия: %s / %s FE",
+  "gui.exoequipment.fabricator.military": "Военный",
+  "gui.exoequipment.fabricator.engineering": "Инженерный",
+  "gui.exoequipment.fabricator.experimental": "Экспериментальный"
 }

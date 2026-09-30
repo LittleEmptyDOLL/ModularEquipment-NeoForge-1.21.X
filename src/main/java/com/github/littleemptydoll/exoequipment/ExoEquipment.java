@@ -17,6 +17,8 @@ public class ExoEquipment {
         ModRegistries.register(eventBus);
         eventBus.addListener(ModRegistryKeys::register);
 
+        ModBlocks.register(eventBus);
+        ModBlockEntities.register(eventBus);
         ModItems.register(eventBus);
         ModDataComponents.register(eventBus);
         ModMenus.register(eventBus);

@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "exoequipment:item/module/engineering_step_assist_module"
-  }
-}

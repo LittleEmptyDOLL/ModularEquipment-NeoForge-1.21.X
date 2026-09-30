@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        { "type": "minecraft:item", "name": "exoequipment:military_component", "weight": 3 },
+        { "type": "minecraft:item", "name": "exoequipment:engineering_component", "weight": 1 },
+        { "type": "minecraft:empty", "weight": 14 }
+      ]
+    }
+  ]
+}

@@ -26,6 +26,10 @@ jobs:
           ./gradlew runData --stacktrace
           ./gradlew clean build --stacktrace
 
+      - name: Verify game data on a server
+        timeout-minutes: 10
+        run: ./gradlew runGameTestServer --stacktrace
+
       - name: Upload generated resources
         uses: actions/upload-artifact@v4
         with:

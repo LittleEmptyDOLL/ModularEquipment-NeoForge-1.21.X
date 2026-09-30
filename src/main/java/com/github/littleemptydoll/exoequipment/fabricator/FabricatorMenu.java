@@ -20,7 +20,8 @@ public final class FabricatorMenu extends AbstractContainerMenu {
 
     private final ContainerLevelAccess access;
     private final FabricatorBlockEntity blockEntity;
-    private int syncedEnergy;
+    private int syncedEnergyLow;
+    private int syncedEnergyHigh;
 
     public FabricatorMenu(int id, Inventory inventory, RegistryFriendlyByteBuf buffer) {
         this(id, inventory, buffer.readBlockPos(), null);
@@ -59,12 +60,23 @@ public final class FabricatorMenu extends AbstractContainerMenu {
         addDataSlot(new DataSlot() {
             @Override
             public int get() {
-                return blockEntity == null ? syncedEnergy : blockEntity.storedEnergy();
+                return blockEntity == null ? syncedEnergyLow : blockEntity.storedEnergy() & 0xFFFF;
             }
 
             @Override
             public void set(int value) {
-                syncedEnergy = value;
+                syncedEnergyLow = value & 0xFFFF;
+            }
+        });
+        addDataSlot(new DataSlot() {
+            @Override
+            public int get() {
+                return blockEntity == null ? syncedEnergyHigh : blockEntity.storedEnergy() >>> 16;
+            }
+
+            @Override
+            public void set(int value) {
+                syncedEnergyHigh = value & 0xFFFF;
             }
         });
     }
@@ -74,7 +86,7 @@ public final class FabricatorMenu extends AbstractContainerMenu {
     }
 
     public int energy() {
-        return blockEntity == null ? syncedEnergy : blockEntity.storedEnergy();
+        return blockEntity == null ? (syncedEnergyHigh << 16) | syncedEnergyLow : blockEntity.storedEnergy();
     }
 
     @Override

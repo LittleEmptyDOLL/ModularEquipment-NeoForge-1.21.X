@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IRI",
+    "RCR",
+    "IRI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "C": {
+      "item": "exoequipment:experimental_component"
+    }
+  },
+  "result": {
+    "id": "exoequipment:experimental_fabricator_upgrade",
+    "count": 1
+  }
+}

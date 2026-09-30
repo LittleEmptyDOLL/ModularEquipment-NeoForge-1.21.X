@@ -1,0 +1,22 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "minecraft:iron_ingot"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:redstone"
+      },
+      "count": 4
+    }
+  ],
+  "result": {
+    "id": "exoequipment:civilian_energy_system",
+    "count": 1
+  },
+  "energy": 750
+}

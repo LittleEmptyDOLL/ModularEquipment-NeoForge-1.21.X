@@ -58,7 +58,7 @@ public final class FabricatorBlockEntity extends BlockEntity implements MenuProv
     }
 
     public boolean canCraft(EquipmentTier tier, int energyCost) {
-        return energyCost >= 0 && energyCost <= storedEnergy()
+        return energyCost > 0 && energyCost <= storedEnergy()
                 && FabricatorUnlocks.unlocked(tier,
                         upgrades.getStackInSlot(FabricatorUnlocks.MILITARY_SLOT),
                         upgrades.getStackInSlot(FabricatorUnlocks.ENGINEERING_SLOT),

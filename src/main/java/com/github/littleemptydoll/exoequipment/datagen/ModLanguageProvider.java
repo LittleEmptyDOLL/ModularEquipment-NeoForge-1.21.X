@@ -19,6 +19,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add("itemGroup.exoequipment", "Modular Equipment");
         add("block.exoequipment.fabricator", "Fabricator");
         add("gui.exoequipment.fabricator.upgrades", "Tier upgrades");
+        add("gui.exoequipment.fabricator.cost", "Cost: %s FE");
+        add("gui.exoequipment.fabricator.all", "All");
         add("gui.exoequipment.fabricator.energy", "Energy: %s / %s FE");
         add("gui.exoequipment.fabricator.military", "Military");
         add("gui.exoequipment.fabricator.engineering", "Engineering");

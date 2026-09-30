@@ -392,5 +392,7 @@
   "gui.exoequipment.fabricator.energy": "Энергия: %s / %s FE",
   "gui.exoequipment.fabricator.military": "Военный",
   "gui.exoequipment.fabricator.engineering": "Инженерный",
-  "gui.exoequipment.fabricator.experimental": "Экспериментальный"
+  "gui.exoequipment.fabricator.experimental": "Экспериментальный",
+  "gui.exoequipment.fabricator.cost": "Стоимость: %s FE",
+  "gui.exoequipment.fabricator.all": "Все"
 }

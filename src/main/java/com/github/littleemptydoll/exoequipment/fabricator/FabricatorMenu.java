@@ -40,7 +40,7 @@ public final class FabricatorMenu extends AbstractContainerMenu {
 
         for (int index = 0; index < FabricatorUnlocks.UPGRADE_SLOT_COUNT; index++) {
             final int slot = index;
-            addSlot(new SlotItemHandler(handler, index, 43 + index * 36, 50) {
+            addSlot(new SlotItemHandler(handler, index, 75 + index * 43, 136) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return FabricatorUnlocks.accepts(slot, stack);
@@ -49,11 +49,11 @@ public final class FabricatorMenu extends AbstractContainerMenu {
         }
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
-                addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+                addSlot(new Slot(inventory, col + row * 9 + 9, 47 + col * 18, 174 + row * 18));
             }
         }
         for (int col = 0; col < 9; col++) {
-            addSlot(new Slot(inventory, col, 8 + col * 18, 142));
+            addSlot(new Slot(inventory, col, 47 + col * 18, 232));
         }
 
         addDataSlot(new DataSlot() {
@@ -67,6 +67,10 @@ public final class FabricatorMenu extends AbstractContainerMenu {
                 syncedEnergy = value;
             }
         });
+    }
+
+    public FabricatorBlockEntity machine() {
+        return blockEntity;
     }
 
     public int energy() {

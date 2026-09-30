@@ -3,6 +3,8 @@ package com.github.littleemptydoll.exoequipment.network;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonMenu;
 import com.github.littleemptydoll.exoequipment.gui.ExoskeletonProfileMenu;
 import com.github.littleemptydoll.exoequipment.gui.MatrixMenu;
+import com.github.littleemptydoll.exoequipment.fabricator.FabricatorMenu;
+import com.github.littleemptydoll.exoequipment.fabricator.FabricatorCrafting;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -33,6 +35,19 @@ public final class ModNetworking {
                                                 payload.active()
                                         )
                         )
+        );
+
+        registrar.playToServer(
+                FabricatorCraftPayload.TYPE,
+                FabricatorCraftPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player
+                            && player.containerMenu instanceof FabricatorMenu menu
+                            && menu.machine() != null) {
+                        FabricatorCrafting.craft(player, menu.machine(),
+                                payload.recipeId(), payload.amount());
+                    }
+                })
         );
 
         registrar.playToServer(

@@ -22,6 +22,7 @@ public class ExoEquipment {
         ModItems.register(eventBus);
         ModDataComponents.register(eventBus);
         ModMenus.register(eventBus);
+        ModFabricatorRecipes.register(eventBus);
         ModNetworking.register(eventBus);
         ModSounds.register(eventBus);
         ModCreativeTabs.register(eventBus);

@@ -312,10 +312,10 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     private void renderCarriedModulePreview(GuiGraphics guiGraphics, int gridX, int gridY, int moduleX, int moduleY) {
         ModuleItem moduleItem = (ModuleItem) menu.getCarried().getItem();
         ModuleSize size = MatrixOperations.getRotatedSize(moduleItem.getDefinition().size(), carriedModuleRotation);
-        int x = gridX + moduleX * MatrixMenu.CELL_SIZE + 2;
-        int y = gridY + moduleY * MatrixMenu.CELL_SIZE + 2;
-        int width = size.width() * MatrixMenu.CELL_SIZE - 3;
-        int height = size.height() * MatrixMenu.CELL_SIZE - 3;
+        int x = gridX + moduleX * MatrixMenu.CELL_SIZE + 1;
+        int y = gridY + moduleY * MatrixMenu.CELL_SIZE + 1;
+        int width = size.width() * MatrixMenu.CELL_SIZE - 2;
+        int height = size.height() * MatrixMenu.CELL_SIZE - 2;
         guiGraphics.fill(x, y, x + width, y + height, MODULE_PREVIEW_BACKGROUND_COLOR);
         guiGraphics.renderOutline(x, y, width, height, MODULE_PREVIEW_BORDER_COLOR);
         renderScaledItem(guiGraphics, menu.getCarried(), x, y, width, height);
@@ -324,10 +324,10 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     private void renderModule(GuiGraphics guiGraphics, InstalledModule module, int gridX, int gridY, int moduleX, int moduleY, int rotation) {
         ModuleDefinition definition = ModModules.getDefinition(module.id());
         ModuleSize size = MatrixOperations.getRotatedSize(definition.size(), rotation);
-        int x = gridX + moduleX * MatrixMenu.CELL_SIZE + 2;
-        int y = gridY + moduleY * MatrixMenu.CELL_SIZE + 2;
-        int width = size.width() * MatrixMenu.CELL_SIZE - 3;
-        int height = size.height() * MatrixMenu.CELL_SIZE - 3;
+        int x = gridX + moduleX * MatrixMenu.CELL_SIZE + 1;
+        int y = gridY + moduleY * MatrixMenu.CELL_SIZE + 1;
+        int width = size.width() * MatrixMenu.CELL_SIZE - 2;
+        int height = size.height() * MatrixMenu.CELL_SIZE - 2;
         renderModuleBackground(guiGraphics, x, y, width, height, size.width(), size.height());
         ItemStack stack = createModuleStack(module);
         if (!stack.isEmpty()) renderScaledItem(guiGraphics, stack, x, y, width, height);

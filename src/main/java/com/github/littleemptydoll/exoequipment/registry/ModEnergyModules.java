@@ -68,7 +68,13 @@ final class ModEnergyModules {
                 EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON,
                 40,
-                5
+                5,
+                new TemperatureProperties(
+                        0,
+                        100,
+                        Optional.empty(),
+                        Optional.empty()
+                )
         );
         registerGenerator(
                 registry,
@@ -76,7 +82,17 @@ final class ModEnergyModules {
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
                 130,
-                10
+                10,
+                new TemperatureProperties(
+                        -20,
+                        150,
+                        Optional.empty(),
+                        Optional.of(new TemperatureBonus(
+                                60,
+                                120,
+                                0.3
+                        ))
+                )
         );
         registerGenerator(
                 registry,
@@ -84,7 +100,13 @@ final class ModEnergyModules {
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
                 180,
-                20
+                20,
+                new TemperatureProperties(
+                        0,
+                        120,
+                        Optional.empty(),
+                        Optional.empty()
+                )
         );
         registerGenerator(
                 registry,
@@ -92,7 +114,17 @@ final class ModEnergyModules {
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
                 500,
-                30
+                30,
+                new TemperatureProperties(
+                        -20,
+                        150,
+                        Optional.empty(),
+                        Optional.of(new TemperatureBonus(
+                                80,
+                                140,
+                                0.3
+                        ))
+                )
         );
         registerGenerator(
                 registry,
@@ -100,7 +132,17 @@ final class ModEnergyModules {
                 EquipmentTier.CREATIVE,
                 Rarity.EPIC,
                 100000,
-                0
+                0,
+                new TemperatureProperties(
+                        -200,
+                        1000,
+                        Optional.empty(),
+                        Optional.of(new TemperatureBonus(
+                                100,
+                                800,
+                                10.0
+                        ))
+                )
         );
     }
 
@@ -138,7 +180,8 @@ final class ModEnergyModules {
             EquipmentTier tier,
             Rarity rarity,
             int generation,
-            int heatGeneration
+            int heatGeneration,
+            TemperatureProperties temperatureProperties
     ) {
         registry.register(
                 id,
@@ -155,6 +198,7 @@ final class ModEnergyModules {
                                         heatGeneration,
                                         0
                                 ))
+                                .temperature(temperatureProperties)
                                 .build()
         );
     }

@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Rarity;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -14,7 +15,7 @@ final class ModMobilityModules {
     private static final ModuleSize SPEED_SIZE = new ModuleSize(1, 2);
     private static final ModuleSize JUMP_SIZE = new ModuleSize(1, 2);
     private static final ModuleSize SWIM_SIZE = new ModuleSize(1, 2);
-    private static final ModuleSize STEP_SIZE = new ModuleSize(1, 1);
+    private static final ModuleSize ELYTRA_SIZE = new ModuleSize(2, 2);
     private static final ModuleSize JETPACK_SIZE = new ModuleSize(2, 3);
     private static final ModuleSize BLINK_SIZE = new ModuleSize(2, 2);
     private static final ModuleSize FLIGHT_SIZE = new ModuleSize(3, 3);
@@ -31,6 +32,8 @@ final class ModMobilityModules {
             ResourceLocation.parse("minecraft:generic.jump_strength");
     private static final ResourceLocation STEP_HEIGHT =
             ResourceLocation.parse("minecraft:generic.step_height");
+    private static final ResourceLocation ELYTRA_FLIGHT =
+            ResourceLocation.parse("apothic_attributes:elytra_flight");
 
     private ModMobilityModules() {}
 
@@ -40,9 +43,9 @@ final class ModMobilityModules {
         registerMovementSpeedModules(registry);
         registerJumpModules(registry);
         registerSwimModules(registry);
-        registerStepHeightModules(registry);
         registerJetpacks(registry);
         registerBlinkModules(registry);
+        registerElytraModule(registry);
         registerFlightModule(registry);
     }
 
@@ -51,43 +54,30 @@ final class ModMobilityModules {
     ) {
         registerAttributeModule(
                 registry,
-                "civilian_movement_speed",
+                "civilian_movement_actuator",
                 EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON,
                 SPEED_SIZE,
-                5,
-                MOVEMENT_SPEED,
-                multipliedBase(0.10D)
+                10,
+                Map.ofEntries(Map.entry(MOVEMENT_SPEED, multipliedBase(0.10D)))
         );
         registerAttributeModule(
                 registry,
-                "engineering_movement_speed",
-                EquipmentTier.ENGINEERING,
-                Rarity.RARE,
-                SPEED_SIZE,
-                8,
-                MOVEMENT_SPEED,
-                multipliedBase(0.15D)
-        );
-        registerAttributeModule(
-                registry,
-                "military_movement_speed",
+                "military_high_power_actuator",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
                 SPEED_SIZE,
-                12,
-                MOVEMENT_SPEED,
-                multipliedBase(0.20D)
+                25,
+                Map.ofEntries(Map.entry(MOVEMENT_SPEED, multipliedBase(0.25D)))
         );
         registerAttributeModule(
                 registry,
-                "experimental_movement_speed",
+                "experimental_actuator",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
                 SPEED_SIZE,
-                18,
-                MOVEMENT_SPEED,
-                multipliedBase(0.30D)
+                40,
+                Map.ofEntries(Map.entry(MOVEMENT_SPEED, multipliedBase(0.35D)))
         );
     }
 
@@ -96,43 +86,39 @@ final class ModMobilityModules {
     ) {
         registerAttributeModule(
                 registry,
-                "civilian_jump_assist",
+                "civilian_leg_assist",
                 EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON,
                 JUMP_SIZE,
-                4,
-                JUMP_STRENGTH,
-                multipliedBase(0.10D)
+                15,
+                Map.ofEntries(
+                        Map.entry(JUMP_STRENGTH, multipliedBase(0.10D)),
+                        Map.entry(STEP_HEIGHT, addValue(0.25D))
+                )
         );
         registerAttributeModule(
                 registry,
-                "engineering_jump_assist",
+                "engineering_mobility_control",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
                 JUMP_SIZE,
-                7,
-                JUMP_STRENGTH,
-                multipliedBase(0.15D)
+                25,
+                Map.ofEntries(
+                        Map.entry(JUMP_STRENGTH, multipliedBase(0.20D)),
+                        Map.entry(STEP_HEIGHT, addValue(0.5D))
+                )
         );
         registerAttributeModule(
                 registry,
-                "military_jump_assist",
-                EquipmentTier.MILITARY,
-                Rarity.RARE,
-                JUMP_SIZE,
-                10,
-                JUMP_STRENGTH,
-                multipliedBase(0.20D)
-        );
-        registerAttributeModule(
-                registry,
-                "experimental_jump_assist",
+                "experimental_mobility_control",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
                 JUMP_SIZE,
-                15,
-                JUMP_STRENGTH,
-                multipliedBase(0.30D)
+                40,
+                Map.ofEntries(
+                        Map.entry(JUMP_STRENGTH, multipliedBase(0.30D)),
+                        Map.entry(STEP_HEIGHT, addValue(0.5D))
+                )
         );
     }
 
@@ -141,23 +127,12 @@ final class ModMobilityModules {
     ) {
         registerAttributeModule(
                 registry,
-                "civilian_swim_assist",
-                EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON,
-                SWIM_SIZE,
-                4,
-                WATER_MOVEMENT_EFFICIENCY,
-                addValue(0.15D)
-        );
-        registerAttributeModule(
-                registry,
-                "engineering_swim_assist",
+                "engineering_aquatic_mobility",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
                 SWIM_SIZE,
-                7,
-                WATER_MOVEMENT_EFFICIENCY,
-                addValue(0.30D)
+                15,
+                Map.ofEntries(Map.entry(WATER_MOVEMENT_EFFICIENCY, addValue(0.30D)))
         );
         registerAttributeModule(
                 registry,
@@ -165,64 +140,8 @@ final class ModMobilityModules {
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
                 SWIM_SIZE,
-                10,
-                WATER_MOVEMENT_EFFICIENCY,
-                addValue(0.45D)
-        );
-        registerAttributeModule(
-                registry,
-                "experimental_swim_assist",
-                EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC,
-                SWIM_SIZE,
-                15,
-                WATER_MOVEMENT_EFFICIENCY,
-                addValue(0.60D)
-        );
-    }
-
-    private static void registerStepHeightModules(
-            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
-    ) {
-        registerAttributeModule(
-                registry,
-                "civilian_step_assist",
-                EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON,
-                STEP_SIZE,
-                3,
-                STEP_HEIGHT,
-                addValue(0.25D)
-        );
-        registerAttributeModule(
-                registry,
-                "engineering_step_assist",
-                EquipmentTier.ENGINEERING,
-                Rarity.RARE,
-                STEP_SIZE,
-                5,
-                STEP_HEIGHT,
-                addValue(0.50D)
-        );
-        registerAttributeModule(
-                registry,
-                "military_step_assist",
-                EquipmentTier.MILITARY,
-                Rarity.RARE,
-                STEP_SIZE,
-                8,
-                STEP_HEIGHT,
-                addValue(0.75D)
-        );
-        registerAttributeModule(
-                registry,
-                "experimental_step_assist",
-                EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC,
-                STEP_SIZE,
-                12,
-                STEP_HEIGHT,
-                addValue(1.00D)
+                25,
+                Map.ofEntries(Map.entry(WATER_MOVEMENT_EFFICIENCY, addValue(0.40D)))
         );
     }
 
@@ -234,10 +153,10 @@ final class ModMobilityModules {
                 "civilian_jetpack",
                 EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON,
-                4,
+                15,
                 0.25D,
                 0.20D,
-                12,
+                100,
                 Optional.empty()
         );
         registerJetpack(
@@ -245,10 +164,10 @@ final class ModMobilityModules {
                 "engineering_jetpack",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
-                6,
+                25,
                 0.35D,
                 0.30D,
-                18,
+                180,
                 Optional.of(new ElytraBoostProperties(
                         0.025D,
                         1.25D
@@ -259,10 +178,10 @@ final class ModMobilityModules {
                 "military_jetpack",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
-                8,
+                35,
                 0.45D,
                 0.45D,
-                25,
+                300,
                 Optional.of(new ElytraBoostProperties(
                         0.04D,
                         1.75D
@@ -273,10 +192,10 @@ final class ModMobilityModules {
                 "experimental_jetpack",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
-                12,
+                50,
                 0.60D,
                 0.65D,
-                40,
+                600,
                 Optional.of(new ElytraBoostProperties(
                         0.06D,
                         2.50D
@@ -289,20 +208,11 @@ final class ModMobilityModules {
     ) {
         registerBlink(
                 registry,
-                "civilian_blink",
-                EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON,
-                4.0D,
-                300,
-                100
-        );
-        registerBlink(
-                registry,
                 "engineering_blink",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
                 6.0D,
-                500,
+                1_500,
                 80
         );
         registerBlink(
@@ -311,7 +221,7 @@ final class ModMobilityModules {
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
                 8.0D,
-                700,
+                2_000,
                 60
         );
         registerBlink(
@@ -319,9 +229,25 @@ final class ModMobilityModules {
                 "experimental_blink",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
-                12.0D,
-                1_000,
+                14.0D,
+                3_000,
                 40
+        );
+    }
+
+    private static void registerElytraModule(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
+    ) {
+        registerAttributeModule(
+                registry,
+                "engineering_elytra_system",
+                EquipmentTier.ENGINEERING,
+                Rarity.EPIC,
+                ELYTRA_SIZE,
+                30,
+                Map.ofEntries(
+                        Map.entry(ELYTRA_FLIGHT, addValue(1.0D))
+                )
         );
     }
 
@@ -345,10 +271,10 @@ final class ModMobilityModules {
                                         FLIGHT_SIZE
                                 )
                                 .energy(new EnergyProperties(
-                                        30,
+                                        40,
                                         MOBILITY_PRIORITY
                                 ))
-                                .flight(new FlightProperties(90))
+                                .flight(new FlightProperties(500))
                                 .build()
         );
     }
@@ -360,8 +286,7 @@ final class ModMobilityModules {
             Rarity rarity,
             ModuleSize size,
             int energyConsumption,
-            ResourceLocation attribute,
-            AttributeModifierProperties modifier
+            Map<ResourceLocation, AttributeModifierProperties> entries
     ) {
         registry.register(
                 id,
@@ -377,9 +302,7 @@ final class ModMobilityModules {
                                         energyConsumption,
                                         MOBILITY_PRIORITY
                                 ))
-                                .attributes(new AttributeProperties(
-                                        Map.of(attribute, modifier)
-                                ))
+                                .attributes(new AttributeProperties(entries))
                                 .build()
         );
     }

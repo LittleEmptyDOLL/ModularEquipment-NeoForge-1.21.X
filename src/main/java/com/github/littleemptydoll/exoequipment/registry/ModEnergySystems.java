@@ -54,8 +54,8 @@ public final class ModEnergySystems {
             (id, properties) -> new EnergySystemDefinition(
                     id,
                     properties,
-                    250,
-                    250,
+                    500,
+                    500,
                     1.0
             )
     );
@@ -72,8 +72,8 @@ public final class ModEnergySystems {
             (id, properties) -> new EnergySystemDefinition(
                     id,
                     properties,
-                    750,
-                    1_000,
+                    1_750,
+                    2_500,
                     1.0
             )
     );
@@ -90,8 +90,8 @@ public final class ModEnergySystems {
             (id, properties) -> new EnergySystemDefinition(
                     id,
                     properties,
-                    1_000,
-                    750,
+                    2_500,
+                    1_750,
                     1.0
             )
     );
@@ -108,8 +108,8 @@ public final class ModEnergySystems {
             (id, properties) -> new EnergySystemDefinition(
                     id,
                     properties,
-                    2_500,
-                    2_500,
+                    5_000,
+                    5_000,
                     1.1
             )
     );

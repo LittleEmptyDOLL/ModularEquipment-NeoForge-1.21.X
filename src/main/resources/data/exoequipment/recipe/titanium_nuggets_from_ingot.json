@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [{"tag": "c:ingots/titanium"}],
+  "result": {"id": "exoequipment:titanium_nugget", "count": 9}
+}

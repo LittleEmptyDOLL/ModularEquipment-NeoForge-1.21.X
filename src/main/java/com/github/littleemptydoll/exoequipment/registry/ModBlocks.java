@@ -20,6 +20,12 @@ public final class ModBlocks {
     public static final DeferredHolder<Block, Block> DEEPSLATE_TITANIUM_ORE =
             BLOCKS.register("deepslate_titanium_ore", () -> new Block(BlockBehaviour.Properties
                     .ofFullCopy(Blocks.DEEPSLATE_IRON_ORE).requiresCorrectToolForDrops()));
+    public static final DeferredHolder<Block, Block> RAW_TITANIUM_BLOCK =
+            BLOCKS.register("raw_titanium_block", () -> new Block(BlockBehaviour.Properties
+                    .ofFullCopy(Blocks.RAW_IRON_BLOCK).requiresCorrectToolForDrops()));
+    public static final DeferredHolder<Block, Block> TITANIUM_BLOCK =
+            BLOCKS.register("titanium_block", () -> new Block(BlockBehaviour.Properties
+                    .ofFullCopy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops()));
 
     private ModBlocks() {}
 

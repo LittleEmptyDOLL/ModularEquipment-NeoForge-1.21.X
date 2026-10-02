@@ -16,10 +16,13 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         // Temporary appearance until the Fabricator receives its own texture/model.
         simpleBlockWithItem(ModBlocks.FABRICATOR.get(),
                 models().cubeAll("fabricator", mcLoc("block/iron_block")));
-        // Temporary vanilla textures until the titanium artwork is finalized.
         simpleBlockWithItem(ModBlocks.TITANIUM_ORE.get(),
-                models().cubeAll("titanium_ore", mcLoc("block/iron_ore")));
+                models().cubeAll("titanium_ore", modLoc("block/titanium_ore")));
         simpleBlockWithItem(ModBlocks.DEEPSLATE_TITANIUM_ORE.get(),
-                models().cubeAll("deepslate_titanium_ore", mcLoc("block/deepslate_iron_ore")));
+                models().cubeAll("deepslate_titanium_ore", modLoc("block/deepslate_titanium_ore")));
+        simpleBlockWithItem(ModBlocks.RAW_TITANIUM_BLOCK.get(),
+                models().cubeAll("raw_titanium_block", modLoc("block/raw_titanium_block")));
+        simpleBlockWithItem(ModBlocks.TITANIUM_BLOCK.get(),
+                models().cubeAll("titanium_block", modLoc("block/titanium_block")));
     }
 }

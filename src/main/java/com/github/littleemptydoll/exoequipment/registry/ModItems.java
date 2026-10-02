@@ -22,6 +22,13 @@ public final class ModItems {
                     new BlockItem(ModBlocks.DEEPSLATE_TITANIUM_ORE.get(), new Item.Properties()));
     public static final DeferredHolder<Item, Item> RAW_TITANIUM = part("raw_titanium");
     public static final DeferredHolder<Item, Item> TITANIUM_INGOT = part("titanium_ingot");
+    public static final DeferredHolder<Item, Item> TITANIUM_NUGGET = part("titanium_nugget");
+    public static final DeferredHolder<Item, BlockItem> RAW_TITANIUM_BLOCK =
+            ITEMS.register("raw_titanium_block", () ->
+                    new BlockItem(ModBlocks.RAW_TITANIUM_BLOCK.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, BlockItem> TITANIUM_BLOCK =
+            ITEMS.register("titanium_block", () ->
+                    new BlockItem(ModBlocks.TITANIUM_BLOCK.get(), new Item.Properties()));
 
     // Craftable intermediates. Recipes are processed by the Fabricator from the player's inventory.
     public static final DeferredHolder<Item, Item> CARBON_FIBER = part("carbon_fiber");

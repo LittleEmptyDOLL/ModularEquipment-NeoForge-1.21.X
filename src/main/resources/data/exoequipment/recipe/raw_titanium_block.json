@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": ["TTT", "TTT", "TTT"],
+  "key": {"T": {"tag": "c:raw_materials/titanium"}},
+  "result": {"id": "exoequipment:raw_titanium_block"}
+}

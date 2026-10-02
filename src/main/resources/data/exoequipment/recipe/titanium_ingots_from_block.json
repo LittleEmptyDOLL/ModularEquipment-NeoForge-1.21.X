@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [{"item": "exoequipment:titanium_block"}],
+  "result": {"id": "exoequipment:titanium_ingot", "count": 9}
+}

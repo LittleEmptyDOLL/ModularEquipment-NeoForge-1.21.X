@@ -28,7 +28,11 @@ jobs:
 
       - name: Verify game data on a server
         timeout-minutes: 10
-        run: ./gradlew runGameTestServer --stacktrace
+        run: |
+          ./gradlew runGameTestServer --stacktrace 2>&1 | tee gametest.log
+          if grep -E 'Failed to start the minecraft server|No test functions were given' gametest.log; then
+            exit 1
+          fi
 
       - name: Upload generated resources
         uses: actions/upload-artifact@v4

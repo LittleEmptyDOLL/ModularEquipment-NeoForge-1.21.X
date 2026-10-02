@@ -1,4 +1,4 @@
 {
   "replace": false,
-  "values": ["exoequipment:titanium_ore", "exoequipment:deepslate_titanium_ore"]
+  "values": ["exoequipment:titanium_ore", "exoequipment:deepslate_titanium_ore", "exoequipment:raw_titanium_block", "exoequipment:titanium_block"]
 }

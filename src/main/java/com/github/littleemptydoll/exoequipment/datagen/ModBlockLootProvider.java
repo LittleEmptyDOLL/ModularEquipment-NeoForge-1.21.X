@@ -18,7 +18,8 @@ public final class ModBlockLootProvider extends BlockLootSubProvider {
     @Override
     protected Iterable<Block> getKnownBlocks() {
         // The Fabricator's loot table is maintained in src/main/resources.
-        return List.of(ModBlocks.TITANIUM_ORE.get(), ModBlocks.DEEPSLATE_TITANIUM_ORE.get());
+        return List.of(ModBlocks.TITANIUM_ORE.get(), ModBlocks.DEEPSLATE_TITANIUM_ORE.get(),
+                ModBlocks.RAW_TITANIUM_BLOCK.get(), ModBlocks.TITANIUM_BLOCK.get());
     }
 
     @Override
@@ -27,5 +28,7 @@ public final class ModBlockLootProvider extends BlockLootSubProvider {
                 createOreDrop(ModBlocks.TITANIUM_ORE.get(), ModItems.RAW_TITANIUM.get()));
         add(ModBlocks.DEEPSLATE_TITANIUM_ORE.get(),
                 createOreDrop(ModBlocks.DEEPSLATE_TITANIUM_ORE.get(), ModItems.RAW_TITANIUM.get()));
+        dropSelf(ModBlocks.RAW_TITANIUM_BLOCK.get());
+        dropSelf(ModBlocks.TITANIUM_BLOCK.get());
     }
 }

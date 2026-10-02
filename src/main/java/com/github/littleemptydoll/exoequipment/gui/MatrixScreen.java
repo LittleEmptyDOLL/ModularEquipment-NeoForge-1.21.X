@@ -22,6 +22,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import com.mojang.math.Axis;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -49,8 +50,10 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
     private static final int BUTTON_Y = 6;
     private static final int BUTTON_NORMAL_U = 76;
     private static final int BUTTON_HOVER_U = 90;
-    private static final int MODULE_BACKGROUND_COLOR = 0xFF2C5366;
-    private static final int MODULE_BORDER_COLOR = 0xFF76B5C9;
+    private static final ResourceLocation MODULE_BACKGROUND_1X1 = ResourceLocation.fromNamespaceAndPath(ExoEquipment.MODID, "textures/gui/module_background_1x1.png");
+    private static final ResourceLocation MODULE_BACKGROUND_1X3 = ResourceLocation.fromNamespaceAndPath(ExoEquipment.MODID, "textures/gui/module_background_1x3.png");
+    private static final ResourceLocation MODULE_BACKGROUND_3X3 = ResourceLocation.fromNamespaceAndPath(ExoEquipment.MODID, "textures/gui/module_background_3x3.png");
+    private static final int MODULE_TILE_SIZE = 32;
     private static final int MODULE_PREVIEW_BACKGROUND_COLOR = 0x553F7185;
     private static final int MODULE_PREVIEW_BORDER_COLOR = 0xFF9ED9EA;
 
@@ -325,10 +328,58 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         int y = gridY + moduleY * MatrixMenu.CELL_SIZE + 2;
         int width = size.width() * MatrixMenu.CELL_SIZE - 3;
         int height = size.height() * MatrixMenu.CELL_SIZE - 3;
-        guiGraphics.fill(x, y, x + width, y + height, MODULE_BACKGROUND_COLOR);
-        guiGraphics.renderOutline(x, y, width, height, MODULE_BORDER_COLOR);
+        renderModuleBackground(guiGraphics, x, y, width, height, size.width(), size.height());
         ItemStack stack = createModuleStack(module);
         if (!stack.isEmpty()) renderScaledItem(guiGraphics, stack, x, y, width, height);
+    }
+
+    private void renderModuleBackground(GuiGraphics graphics, int x, int y, int width, int height,
+                                        int cellsWide, int cellsHigh) {
+        if (cellsWide == 1 && cellsHigh == 1) {
+            blitModuleTile(graphics, MODULE_BACKGROUND_1X1, x, y, width, height, 0, 0, 32, 32);
+        } else if (cellsWide == 1) {
+            renderModuleStrip(graphics, x, y, width, height, cellsHigh);
+        } else if (cellsHigh == 1) {
+            var pose = graphics.pose();
+            pose.pushPose();
+            pose.translate(x, y + height, 0);
+            pose.mulPose(Axis.ZP.rotationDegrees(-90));
+            renderModuleStrip(graphics, 0, 0, height, width, cellsWide);
+            pose.popPose();
+        } else {
+            for (int row = 0; row < cellsHigh; row++) {
+                int top = y + row * height / cellsHigh;
+                int bottom = y + (row + 1) * height / cellsHigh;
+                int sourceRow = row == 0 ? 0 : row == cellsHigh - 1 ? 2 : 1;
+                for (int column = 0; column < cellsWide; column++) {
+                    int left = x + column * width / cellsWide;
+                    int right = x + (column + 1) * width / cellsWide;
+                    int sourceColumn = column == 0 ? 0 : column == cellsWide - 1 ? 2 : 1;
+                    blitModuleTile(graphics, MODULE_BACKGROUND_3X3, left, top, right - left, bottom - top,
+                            sourceColumn * MODULE_TILE_SIZE, sourceRow * MODULE_TILE_SIZE, 96, 96);
+                }
+            }
+        }
+    }
+
+    private void renderModuleStrip(GuiGraphics graphics, int x, int y, int width, int height, int cells) {
+        for (int row = 0; row < cells; row++) {
+            int top = y + row * height / cells;
+            int bottom = y + (row + 1) * height / cells;
+            int sourceRow = row == 0 ? 0 : row == cells - 1 ? 2 : 1;
+            blitModuleTile(graphics, MODULE_BACKGROUND_1X3, x, top, width, bottom - top,
+                    0, sourceRow * MODULE_TILE_SIZE, 32, 96);
+        }
+    }
+
+    private void blitModuleTile(GuiGraphics graphics, ResourceLocation texture, int x, int y, int width, int height,
+                                int u, int v, int textureWidth, int textureHeight) {
+        var pose = graphics.pose();
+        pose.pushPose();
+        pose.translate(x, y, 0);
+        pose.scale(width / (float) MODULE_TILE_SIZE, height / (float) MODULE_TILE_SIZE, 1);
+        graphics.blit(texture, 0, 0, u, v, MODULE_TILE_SIZE, MODULE_TILE_SIZE, textureWidth, textureHeight);
+        pose.popPose();
     }
 
     private void renderScaledItem(GuiGraphics guiGraphics, ItemStack stack, int x, int y, int width, int height) {

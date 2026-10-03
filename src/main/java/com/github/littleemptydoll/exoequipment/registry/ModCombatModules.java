@@ -337,6 +337,43 @@ final class ModCombatModules {
                     )
             );
         }
+
+        registerLaser(registry, "rapid_laser_defense", EquipmentTier.ENGINEERING,
+                Rarity.RARE, MEDIUM_SIZE, 10, 3, 6, 900);
+        registerLaser(registry, "personal_laser_defense", EquipmentTier.MILITARY,
+                Rarity.RARE, MEDIUM_SIZE, 12, 5, 12, 1_500);
+        registerLaser(registry, "heavy_laser_defense", EquipmentTier.MILITARY,
+                Rarity.RARE, LARGE_SIZE, 16, 9, 20, 3_500);
+        registerLaser(registry, "experimental_laser_defense", EquipmentTier.EXPERIMENTAL,
+                Rarity.EPIC, LARGE_SIZE, 20, 7, 8, 3_000);
+
+        registerDischarge(registry, "crowd_discharge_system", EquipmentTier.ENGINEERING,
+                Rarity.RARE, LARGE_SIZE, 5, 4, 5, 0.70F, 2, 3, 50, 10_000);
+        registerDischarge(registry, "discharge_defense", EquipmentTier.MILITARY,
+                Rarity.RARE, LARGE_SIZE, 6, 5, 8, 0.75F, 1, 3, 60, 8_000);
+        registerDischarge(registry, "experimental_arc_defense", EquipmentTier.EXPERIMENTAL,
+                Rarity.EPIC, new ModuleSize(3, 3), 7, 6, 10, 0.80F, 2, 5, 40, 25_000);
+    }
+
+    private static void registerLaser(EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
+                                      String id, EquipmentTier tier, Rarity rarity, ModuleSize size,
+                                      double range, float damage, int cooldown, int energyCost) {
+        registry.register(id, new EquipmentProperties(tier, rarity),
+                (key, properties) -> ModuleDefinition.builder(key, properties, ModuleCategory.COMBAT, size)
+                        .laserDefense(new LaserDefenseProperties(range, damage, cooldown, energyCost,
+                                false, true, true))
+                        .build());
+    }
+
+    private static void registerDischarge(EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
+                                          String id, EquipmentTier tier, Rarity rarity, ModuleSize size,
+                                          double range, double jumpRange, float damage, float falloff,
+                                          int targets, int bounces, int cooldown, int energyCost) {
+        registry.register(id, new EquipmentProperties(tier, rarity),
+                (key, properties) -> ModuleDefinition.builder(key, properties, ModuleCategory.COMBAT, size)
+                        .dischargeDefense(new DischargeDefenseProperties(range, jumpRange, damage,
+                                falloff, targets, bounces, cooldown, energyCost, false, true, true))
+                        .build());
     }
 
     private static void registerAttributeModule(

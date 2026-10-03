@@ -116,6 +116,16 @@ public final class ModNetworking {
         );
 
         registrar.playToServer(
+                CombatTogglePayload.TYPE,
+                CombatTogglePayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        ServerPayloadHandlers.handleCombatToggle(player, payload);
+                    }
+                })
+        );
+
+        registrar.playToServer(
                 OpenExoskeletonPayload.TYPE,
                 OpenExoskeletonPayload.STREAM_CODEC,
                 (payload, context) ->

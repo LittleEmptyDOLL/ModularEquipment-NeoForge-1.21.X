@@ -11,6 +11,8 @@ import com.github.littleemptydoll.exoequipment.matrix.MatrixDefinition;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.module.BlinkProperties;
 import com.github.littleemptydoll.exoequipment.module.CloakingProperties;
+import com.github.littleemptydoll.exoequipment.module.LaserDefenseProperties;
+import com.github.littleemptydoll.exoequipment.module.DischargeDefenseProperties;
 import com.github.littleemptydoll.exoequipment.module.InstalledModule;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.ModMatrices;
@@ -455,6 +457,10 @@ public class MatrixMenu extends AbstractContainerMenu {
                 moduleDefinition.cloaking().map(CloakingProperties::cooldown).orElse(0),
                 moduleDefinition.blink().map(BlinkProperties::cooldown).orElse(0)
         );
+        maxAbilityCooldown = Math.max(maxAbilityCooldown,
+                moduleDefinition.laserDefense().map(LaserDefenseProperties::cooldown).orElse(0));
+        maxAbilityCooldown = Math.max(maxAbilityCooldown,
+                moduleDefinition.dischargeDefense().map(DischargeDefenseProperties::cooldown).orElse(0));
         abilityCooldown = Math.min(finalAbilityCooldown, maxAbilityCooldown);
 
         InstalledModule module = new InstalledModule(
@@ -544,6 +550,10 @@ public class MatrixMenu extends AbstractContainerMenu {
                     definition.cloaking().map(CloakingProperties::cooldown).orElse(0),
                     definition.blink().map(BlinkProperties::cooldown).orElse(0)
             );
+            maxAbilityCooldown = Math.max(maxAbilityCooldown,
+                    definition.laserDefense().map(LaserDefenseProperties::cooldown).orElse(0));
+            maxAbilityCooldown = Math.max(maxAbilityCooldown,
+                    definition.dischargeDefense().map(DischargeDefenseProperties::cooldown).orElse(0));
             if (maxAbilityCooldown > 0) {
                 moduleStack.set(
                         ModDataComponents.MODULE_ABILITY_COOLDOWN.get(),
@@ -589,7 +599,8 @@ public class MatrixMenu extends AbstractContainerMenu {
                 module.emergencyShieldCooldown(),
                 module.active(),
                 module.abilityCooldown(),
-                module.flightActive()
+                module.flightActive(),
+                module.weaponCharge()
         );
         MatrixData updated = replaceModule(matrix, definition, module, movedModule);
         if (updated.equals(matrix)) return false;

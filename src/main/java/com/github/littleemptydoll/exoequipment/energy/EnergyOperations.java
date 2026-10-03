@@ -298,6 +298,41 @@ public final class EnergyOperations {
             poweredModules.add(consumer.reference());
         }
 
+        // Weapon capacitors are filled over several ticks. The per-tick transfer
+        // shares the same input/output budget as normal consumers and batteries.
+        ExoskeletonData updatedData = data;
+        if (storage.availableInput() > 0 || storage.availableOutput() > 0) {
+            for (ExoskeletonModules.ActiveModule activeModule : ExoskeletonModules.activeSupported(data)) {
+                InstalledModule module = activeModule.module();
+                if (!module.active()) continue;
+                int cost = activeModule.definition().laserDefense()
+                        .map(properties -> properties.energyCost())
+                        .orElseGet(() -> activeModule.definition().dischargeDefense()
+                                .map(properties -> properties.energyCost()).orElse(0));
+                if (cost <= 0 || module.weaponCharge() >= cost || remainingOutput <= 0) continue;
+
+                int requested = Math.min(cost - module.weaponCharge(), remainingOutput);
+                int fromGenerated = Math.min(requested, generatedAvailable);
+                int remaining = requested - fromGenerated;
+                int fromExternal = extractExternal(externalSource,
+                        Math.min(remaining, Math.min(externalAvailable, remainingInput)), false);
+                remaining -= fromExternal;
+                int fromBattery = storage.discharge(Math.min(remaining, remainingInput - fromExternal));
+                int transferred = fromGenerated + fromExternal + fromBattery;
+                if (transferred <= 0) continue;
+
+                updatedData = ExoskeletonModules.update(updatedData, activeModule.reference(),
+                        module.withWeaponCharge(module.weaponCharge() + transferred));
+                generatedAvailable -= fromGenerated;
+                externalAvailable -= fromExternal;
+                externalInput += fromExternal;
+                remainingInput -= fromExternal + fromBattery;
+                remainingOutput -= transferred;
+                discharged += fromBattery;
+                consumed += transferred;
+            }
+        }
+
         if (generatedAvailable > 0
                 && remainingOutput > 0) {
             int chargeRequested = Math.min(
@@ -345,7 +380,7 @@ public final class EnergyOperations {
             }
         }
 
-        ExoskeletonData updatedData = storage.apply(data);
+        updatedData = storage.apply(updatedData);
 
         int deficit = Math.max(0, totalDemand - consumed);
         int generatedUsed =

@@ -1,0 +1,34 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:rapid_laser_defense_module"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:heavy_laser_defense_module"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:experimental_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 3
+    }
+  ],
+  "result": {
+    "id": "exoequipment:experimental_laser_defense_module",
+    "count": 1
+  },
+  "energy": 8200
+}

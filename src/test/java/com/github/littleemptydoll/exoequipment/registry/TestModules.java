@@ -184,6 +184,15 @@ public final class TestModules {
                     .build()
     );
 
+    public static final TestEntry TEST_LASER_DEFENSE = register(
+            "test_laser_defense", properties(),
+            (id, properties) -> ModuleDefinition.builder(id, properties,
+                            ModuleCategory.COMBAT, new ModuleSize(2, 2))
+                    .laserDefense(new LaserDefenseProperties(12, 5, 12, 350,
+                            false, true, true))
+                    .build()
+    );
+
     public static final TestEntry TEST_SHIELD = register(
             "test_shield",
             properties(),

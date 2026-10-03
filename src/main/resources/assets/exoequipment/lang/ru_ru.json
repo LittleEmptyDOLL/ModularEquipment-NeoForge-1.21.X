@@ -415,5 +415,14 @@
   "gui.exoequipment.fabricator.cost": "Стоимость: %s FE",
   "gui.exoequipment.fabricator.craft": "Создать",
   "gui.exoequipment.fabricator.craft_stack": "Создать до стака",
-  "gui.exoequipment.fabricator.all": "Все"
+  "gui.exoequipment.fabricator.all": "Все",
+  "item.exoequipment.rapid_laser_defense_module": "Скоростная лазерная защита",
+  "item.exoequipment.personal_laser_defense_module": "Персональная лазерная защита",
+  "item.exoequipment.heavy_laser_defense_module": "Тяжёлая лазерная защита",
+  "item.exoequipment.experimental_laser_defense_module": "Экспериментальная лазерная защита",
+  "item.exoequipment.crowd_discharge_system_module": "Система массового разряда",
+  "item.exoequipment.discharge_defense_module": "Разрядная защита",
+  "item.exoequipment.experimental_arc_defense_module": "Экспериментальная дуговая защита",
+  "key.exoequipment.toggle_laser_defense": "Включить/выключить лазерную защиту",
+  "key.exoequipment.toggle_discharge_defense": "Включить/выключить разрядную защиту"
 }

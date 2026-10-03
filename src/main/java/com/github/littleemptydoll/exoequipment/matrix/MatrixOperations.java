@@ -168,7 +168,8 @@ public final class MatrixOperations {
                         module.emergencyShieldCooldown(),
                         module.active(),
                         module.abilityCooldown(),
-                        module.flightActive()
+                        module.flightActive(),
+                        module.weaponCharge()
                 );
 
         return replaceModule(
@@ -207,7 +208,8 @@ public final class MatrixOperations {
                         module.emergencyShieldCooldown(),
                         module.active(),
                         module.abilityCooldown(),
-                        module.flightActive()
+                        module.flightActive(),
+                        module.weaponCharge()
                 );
 
         return replaceModule(

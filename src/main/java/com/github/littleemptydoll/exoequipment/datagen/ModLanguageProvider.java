@@ -219,6 +219,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add("key.exoequipment.toggle_entity_sensor", "Toggle entity sensor");
         add("key.exoequipment.toggle_block_scanner", "Toggle block scanner");
         add("key.exoequipment.toggle_thermal_vision", "Toggle thermal vision");
+        add("key.exoequipment.toggle_laser_defense", "Toggle laser defense");
+        add("key.exoequipment.toggle_discharge_defense", "Toggle discharge defense");
         add("key.categories.exoequipment", "ExoEquipment");
     }
 }

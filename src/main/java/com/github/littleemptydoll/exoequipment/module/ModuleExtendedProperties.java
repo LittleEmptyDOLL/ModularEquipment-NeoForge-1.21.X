@@ -19,7 +19,9 @@ public record ModuleExtendedProperties(
         Optional<ThirstProperties> thirst,
         Optional<BlockScannerProperties> blockScanner,
         Optional<ShieldProtectionProperties> shieldProtection,
-        Optional<ThermalVisionProperties> thermalVision
+        Optional<ThermalVisionProperties> thermalVision,
+        Optional<LaserDefenseProperties> laserDefense,
+        Optional<DischargeDefenseProperties> dischargeDefense
 ) {
     public static final MapCodec<ModuleExtendedProperties> CODEC =
             RecordCodecBuilder.mapCodec(instance ->
@@ -51,7 +53,11 @@ public record ModuleExtendedProperties(
                             ShieldProtectionProperties.CODEC.optionalFieldOf("shield_protection")
                                     .forGetter(ModuleExtendedProperties::shieldProtection),
                             ThermalVisionProperties.CODEC.optionalFieldOf("thermal_vision")
-                                    .forGetter(ModuleExtendedProperties::thermalVision)
+                                    .forGetter(ModuleExtendedProperties::thermalVision),
+                            LaserDefenseProperties.CODEC.optionalFieldOf("laser_defense")
+                                    .forGetter(ModuleExtendedProperties::laserDefense),
+                            DischargeDefenseProperties.CODEC.optionalFieldOf("discharge_defense")
+                                    .forGetter(ModuleExtendedProperties::dischargeDefense)
                     ).apply(instance, ModuleExtendedProperties::new)
             );
 }

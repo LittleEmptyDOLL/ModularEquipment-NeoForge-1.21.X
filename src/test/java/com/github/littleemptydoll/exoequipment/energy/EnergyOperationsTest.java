@@ -141,6 +141,28 @@ class EnergyOperationsTest {
     }
 
     @Test
+    void weaponChargesAcrossTicksWithoutExceedingBatteryOutput() {
+        ExoskeletonData data = data(ModFrames.EXPERIMENTAL.getDefinition().id(),
+                new InstalledModule(TestModules.TEST_BATTERY.getDefinition().id(), 0, 0, 0, 1_000),
+                new InstalledModule(TestModules.TEST_LASER_DEFENSE.getDefinition().id(), 2, 0, 0)
+                        .withActive(true));
+
+        EnergyTickResult first = EnergyOperations.tick(data);
+        assertEquals(200, first.consumed());
+        assertEquals(200, module(first.data(), 1).weaponCharge());
+        assertEquals(800, module(first.data(), 0).storedEnergy());
+
+        EnergyTickResult second = EnergyOperations.tick(first.data());
+        assertEquals(150, second.consumed());
+        assertEquals(350, module(second.data(), 1).weaponCharge());
+        assertEquals(650, module(second.data(), 0).storedEnergy());
+
+        EnergyTickResult full = EnergyOperations.tick(second.data());
+        assertEquals(0, full.consumed());
+        assertEquals(350, module(full.data(), 1).weaponCharge());
+    }
+
+    @Test
     void higherPriorityConsumerIsPoweredFirst() {
         ExoskeletonData data = data(
                 ModFrames.CIVILIAN.getDefinition().id(),

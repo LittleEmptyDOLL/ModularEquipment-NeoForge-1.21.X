@@ -10,6 +10,7 @@ import com.github.littleemptydoll.exoequipment.module.StatusProtectionOperations
 import com.github.littleemptydoll.exoequipment.module.BlinkOperations;
 import com.github.littleemptydoll.exoequipment.module.CloakingOperations;
 import com.github.littleemptydoll.exoequipment.module.FlightOperations;
+import com.github.littleemptydoll.exoequipment.module.CombatDefenseOperations;
 import com.github.littleemptydoll.exoequipment.exoskeleton.*;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
@@ -17,6 +18,7 @@ import com.github.littleemptydoll.exoequipment.registry.ModEnergySystems;
 import com.github.littleemptydoll.exoequipment.util.EquipmentItemUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -130,6 +132,9 @@ public class ExoskeletonItem extends EquipmentItem<ExoskeletonDefinition> implem
                 runtime.poweredModules()
         );
         updatedData = BlinkOperations.tick(updatedData);
+        if (player instanceof ServerPlayer serverPlayer) {
+            updatedData = CombatDefenseOperations.tick(serverPlayer, updatedData);
+        }
         updatedData = FlightOperations.tick(
                 updatedData,
                 runtime.poweredModules()

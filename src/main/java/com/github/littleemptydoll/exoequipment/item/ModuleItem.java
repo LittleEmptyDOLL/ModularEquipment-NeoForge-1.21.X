@@ -318,6 +318,26 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
             }
         });
 
+        definition.laserDefense().ifPresent(value -> {
+            tooltip.add(TooltipHelper.property("laser range", value.range()));
+            tooltip.add(TooltipHelper.property("laser damage", value.damage()));
+            tooltip.add(TooltipHelper.property("laser cooldown", value.cooldown() + " ticks"));
+            tooltip.add(TooltipHelper.property("laser energy", value.energyCost() + " FE/shot"));
+            tooltip.add(TooltipHelper.property("target players", value.targetPlayers()));
+        });
+
+        definition.dischargeDefense().ifPresent(value -> {
+            tooltip.add(TooltipHelper.property("discharge range", value.range()));
+            tooltip.add(TooltipHelper.property("arc jump range", value.jumpRange()));
+            tooltip.add(TooltipHelper.property("discharge damage", value.damage()));
+            tooltip.add(TooltipHelper.property("damage per bounce", Math.round(value.falloff() * 100) + "%"));
+            tooltip.add(TooltipHelper.property("initial targets", value.targets()));
+            tooltip.add(TooltipHelper.property("bounces", value.bounces()));
+            tooltip.add(TooltipHelper.property("discharge cooldown", value.cooldown() + " ticks"));
+            tooltip.add(TooltipHelper.property("discharge energy", value.energyCost() + " FE/use"));
+            tooltip.add(TooltipHelper.property("target players", value.targetPlayers()));
+        });
+
         definition.thermalVision().ifPresent(value -> {
             tooltip.add(TooltipHelper.property("thermal vision active consumption",
                     value.activeConsumption() + " FE/t"));

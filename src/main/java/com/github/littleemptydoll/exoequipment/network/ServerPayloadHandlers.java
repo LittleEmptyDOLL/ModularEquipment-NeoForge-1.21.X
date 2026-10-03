@@ -13,6 +13,7 @@ import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
 import com.github.littleemptydoll.exoequipment.module.BlinkOperations;
 import com.github.littleemptydoll.exoequipment.module.CloakingOperations;
+import com.github.littleemptydoll.exoequipment.module.CombatToggleOperations;
 import com.github.littleemptydoll.exoequipment.module.FlightOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.module.JetpackInputState;
@@ -99,6 +100,22 @@ final class ServerPayloadHandlers {
                         exoskeleton.set(ModDataComponents.EXOSKELETON_DATA.get(), updated);
                     }
                 });
+    }
+
+    static void handleCombatToggle(ServerPlayer player, CombatTogglePayload payload) {
+        CombatToggleOperations.Kind kind = switch (payload.kind()) {
+            case CombatTogglePayload.LASER -> CombatToggleOperations.Kind.LASER;
+            case CombatTogglePayload.DISCHARGE -> CombatToggleOperations.Kind.DISCHARGE;
+            default -> null;
+        };
+        if (kind == null) return;
+        ExoskeletonMenuProvider.findBodyExoskeleton(player).ifPresent(exoskeleton -> {
+            var data = ExoskeletonItem.getData(exoskeleton);
+            var updated = CombatToggleOperations.toggle(data, kind);
+            if (updated != data) {
+                exoskeleton.set(ModDataComponents.EXOSKELETON_DATA.get(), updated);
+            }
+        });
     }
 
     static void handleFlight(

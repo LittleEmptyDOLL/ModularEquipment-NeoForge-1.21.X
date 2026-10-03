@@ -5,6 +5,7 @@ import com.github.littleemptydoll.exoequipment.network.BlinkPayload;
 import com.github.littleemptydoll.exoequipment.network.FlightPayload;
 import com.github.littleemptydoll.exoequipment.network.JetpackInputPayload;
 import com.github.littleemptydoll.exoequipment.network.CloakingPayload;
+import com.github.littleemptydoll.exoequipment.network.CombatTogglePayload;
 import com.github.littleemptydoll.exoequipment.network.OpenExoskeletonPayload;
 import com.github.littleemptydoll.exoequipment.network.SensorTogglePayload;
 import com.github.littleemptydoll.exoequipment.module.JetpackInputState;
@@ -71,6 +72,16 @@ public final class ModKeyMappings {
             "key.categories.exoequipment"
     );
 
+    public static final KeyMapping TOGGLE_LASER_DEFENSE = new KeyMapping(
+            "key.exoequipment.toggle_laser_defense", InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_J, "key.categories.exoequipment"
+    );
+
+    public static final KeyMapping TOGGLE_DISCHARGE_DEFENSE = new KeyMapping(
+            "key.exoequipment.toggle_discharge_defense", InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_K, "key.categories.exoequipment"
+    );
+
     @SubscribeEvent
     public static void register(RegisterKeyMappingsEvent event) {
         event.register(OPEN_EXOSKELETON);
@@ -80,6 +91,8 @@ public final class ModKeyMappings {
         event.register(TOGGLE_ENTITY_SENSOR);
         event.register(TOGGLE_BLOCK_SCANNER);
         event.register(TOGGLE_THERMAL_VISION);
+        event.register(TOGGLE_LASER_DEFENSE);
+        event.register(TOGGLE_DISCHARGE_DEFENSE);
     }
 
     private ModKeyMappings() {}
@@ -133,6 +146,14 @@ final class ModKeyMappingHandler {
 
         while (ModKeyMappings.TOGGLE_THERMAL_VISION.consumeClick()) {
             PacketDistributor.sendToServer(new SensorTogglePayload(SensorTogglePayload.THERMAL));
+        }
+
+        while (ModKeyMappings.TOGGLE_LASER_DEFENSE.consumeClick()) {
+            PacketDistributor.sendToServer(new CombatTogglePayload(CombatTogglePayload.LASER));
+        }
+
+        while (ModKeyMappings.TOGGLE_DISCHARGE_DEFENSE.consumeClick()) {
+            PacketDistributor.sendToServer(new CombatTogglePayload(CombatTogglePayload.DISCHARGE));
         }
     }
 

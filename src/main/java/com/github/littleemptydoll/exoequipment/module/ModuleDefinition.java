@@ -41,7 +41,9 @@ public record ModuleDefinition(
         Optional<ThirstProperties> thirst,
         Optional<BlockScannerProperties> blockScanner,
         Optional<ShieldProtectionProperties> shieldProtection,
-        Optional<ThermalVisionProperties> thermalVision
+        Optional<ThermalVisionProperties> thermalVision,
+        Optional<LaserDefenseProperties> laserDefense,
+        Optional<DischargeDefenseProperties> dischargeDefense
 ) implements EquipmentDefinition {
     public static final Codec<ModuleDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -107,7 +109,9 @@ public record ModuleDefinition(
                 thirst,
                 blockScanner,
                 shieldProtection,
-                thermalVision
+                thermalVision,
+                laserDefense,
+                dischargeDefense
         );
     }
 
@@ -152,7 +156,9 @@ public record ModuleDefinition(
                 extended.thirst(),
                 extended.blockScanner(),
                 extended.shieldProtection(),
-                extended.thermalVision()
+                extended.thermalVision(),
+                extended.laserDefense(),
+                extended.dischargeDefense()
         );
     }
 
@@ -200,6 +206,8 @@ public record ModuleDefinition(
         private BlockScannerProperties blockScanner;
         private ShieldProtectionProperties shieldProtection;
         private ThermalVisionProperties thermalVision;
+        private LaserDefenseProperties laserDefense;
+        private DischargeDefenseProperties dischargeDefense;
 
         private Builder(
                 ResourceLocation id,
@@ -358,6 +366,16 @@ public record ModuleDefinition(
             return this;
         }
 
+        public Builder laserDefense(LaserDefenseProperties laserDefense) {
+            this.laserDefense = laserDefense;
+            return this;
+        }
+
+        public Builder dischargeDefense(DischargeDefenseProperties dischargeDefense) {
+            this.dischargeDefense = dischargeDefense;
+            return this;
+        }
+
         public ModuleDefinition build() {
             return new ModuleDefinition(
                     id,
@@ -392,7 +410,9 @@ public record ModuleDefinition(
                     Optional.ofNullable(thirst),
                     Optional.ofNullable(blockScanner),
                     Optional.ofNullable(shieldProtection),
-                    Optional.ofNullable(thermalVision)
+                    Optional.ofNullable(thermalVision),
+                    Optional.ofNullable(laserDefense),
+                    Optional.ofNullable(dischargeDefense)
             );
         }
     }

@@ -242,7 +242,7 @@ final class ModSurvivalModules {
                         ModuleDefinition.builder(
                                         resourceLocation,
                                         properties,
-                                        ModuleCategory.DEFENSE,
+                                        ModuleCategory.SURVIVAL,
                                         size
                                 )
                                 .energy(new EnergyProperties(

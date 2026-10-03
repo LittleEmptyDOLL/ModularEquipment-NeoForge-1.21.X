@@ -110,15 +110,17 @@ class EnergyOperationsTest {
         assertEquals(100, new ExoskeletonEnergyStorage(stack)
                 .receiveEnergyAtTick(1_000, true, 42));
         assertEquals(0, new ExoskeletonEnergyStorage(stack).getEnergyStored());
-        assertEquals(100, new ExoskeletonEnergyStorage(stack)
-                .receiveEnergyAtTick(1_000, false, 42));
-        assertEquals(100, new ExoskeletonEnergyStorage(stack)
-                .receiveEnergyAtTick(1_000, false, 42));
-        assertEquals(50, new ExoskeletonEnergyStorage(stack)
-                .receiveEnergyAtTick(1_000, false, 42));
+        int inputLimit = ModEnergySystems.CIVILIAN.getDefinition().maxInput();
+        int received = 0;
+        while (received < inputLimit) {
+            int transfer = new ExoskeletonEnergyStorage(stack)
+                    .receiveEnergyAtTick(1_000, false, 42);
+            assertEquals(Math.min(100, inputLimit - received), transfer);
+            received += transfer;
+        }
         assertEquals(0, new ExoskeletonEnergyStorage(stack)
                 .receiveEnergyAtTick(1_000, false, 42));
-        assertEquals(250, new ExoskeletonEnergyStorage(stack).getEnergyStored());
+        assertEquals(inputLimit, new ExoskeletonEnergyStorage(stack).getEnergyStored());
         assertEquals(100, new ExoskeletonEnergyStorage(stack)
                 .receiveEnergyAtTick(1_000, false, 43));
     }
@@ -131,7 +133,8 @@ class EnergyOperationsTest {
                         0, 0, 0)
         );
 
-        EnergyTickResult result = EnergyOperations.tick(data, 100, 250);
+        EnergyTickResult result = EnergyOperations.tick(data, 100,
+                ModEnergySystems.CIVILIAN.getDefinition().maxInput());
         assertEquals(0, result.consumed());
         assertEquals(0, result.externalInput());
         assertFalse(result.isPowered(new InstalledModuleReference(0, 0)));

@@ -60,7 +60,8 @@ public final class TestModules {
             (id, properties) -> ModuleDefinition.builder(
                             id, properties, ModuleCategory.SENSOR, new ModuleSize(2, 2))
                     .blockScanner(new BlockScannerProperties(
-                            8.0D, List.of(ResourceLocation.parse("minecraft:diamond_ore")), List.of(), 5))
+                            8.0D, List.of(ResourceLocation.parse("minecraft:diamond_ore")), List.of(), 5,
+                            0x1AE6FF))
                     .build()
     );
 

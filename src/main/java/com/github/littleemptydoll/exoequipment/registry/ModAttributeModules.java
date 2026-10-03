@@ -39,30 +39,15 @@ final class ModAttributeModules {
             series("knockback_resistance", ModuleCategory.DEFENSE, SMALL,
                     "minecraft:generic.knockback_resistance", AttributeModifier.Operation.ADD_VALUE,
                     8, 0.1D, 0.2D, 0.3D, 0.5D),
-            series("safe_fall", ModuleCategory.MOBILITY, SMALL,
+            series("safe_fall", ModuleCategory.DEFENSE, SMALL,
                     "minecraft:generic.safe_fall_distance", AttributeModifier.Operation.ADD_VALUE,
-                    5, 1, 2, 3, 5),
-            series("mining_speed", ModuleCategory.UTILITY, MEDIUM,
-                    "minecraft:generic.block_break_speed", AttributeModifier.Operation.ADD_MULTIPLIED_BASE,
-                    2, 0.1D, 0.2D, 0.3D, 0.5D),
-            series("mining_range", ModuleCategory.UTILITY, SMALL,
-                    "minecraft:generic.block_interaction_range", AttributeModifier.Operation.ADD_VALUE,
-                    2, 0.5D, 1.0D, 1.5D, 2.0D),
-            series("underwater_mining", ModuleCategory.UTILITY, SMALL,
-                    "minecraft:generic.submerged_mining_speed", AttributeModifier.Operation.ADD_VALUE,
-                    2, 0.1D, 0.2D, 0.3D, 0.5D),
-            series("luck", ModuleCategory.UTILITY, SMALL,
-                    "minecraft:generic.luck", AttributeModifier.Operation.ADD_VALUE,
-                    2, 0.5D, 1.0D, 1.5D, 2.0D)
+                    5, 1, 2, 3, 5)
     );
 
     private static final List<Series> APOTHIC_SERIES = List.of(
             series("dodge_chance", ModuleCategory.DEFENSE, MEDIUM,
                     "apothic_attributes:dodge_chance", AttributeModifier.Operation.ADD_VALUE,
-                    8, 0.02D, 0.04D, 0.06D, 0.10D),
-            series("experience_gained", ModuleCategory.UTILITY, SMALL,
-                    "apothic_attributes:experience_gained", AttributeModifier.Operation.ADD_VALUE,
-                    2, 0.05D, 0.10D, 0.15D, 0.25D)
+                    8, 0.02D, 0.04D, 0.06D, 0.10D)
     );
 
     private ModAttributeModules() {}

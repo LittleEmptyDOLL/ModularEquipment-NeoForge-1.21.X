@@ -124,7 +124,7 @@ final class ModSurvivalModules {
         );
         registerRegeneration(
                 registry,
-                "military_regeneration",
+                "military_combat_regeneration",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
                 60,
@@ -160,7 +160,7 @@ final class ModSurvivalModules {
     static void registerBodyRegenerationModules(EquipmentRegistry<ModuleDefinition, ModuleItem> registry) {
         registerBodyRegeneration(registry, "medical_recovery_system", EquipmentTier.ENGINEERING,
                 Rarity.RARE, 35, 0.10D);
-        registerBodyRegeneration(registry, "advanced_trauma_system", EquipmentTier.MILITARY,
+        registerBodyRegeneration(registry, "advanced_recovery_system", EquipmentTier.MILITARY,
                 Rarity.RARE, 70, 0.25D);
     }
 

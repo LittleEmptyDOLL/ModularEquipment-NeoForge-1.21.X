@@ -1,29 +1,25 @@
 package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.item.ModuleItem;
-import com.github.littleemptydoll.exoequipment.module.AttributeModifierProperties;
-import com.github.littleemptydoll.exoequipment.module.AttributeProperties;
-import com.github.littleemptydoll.exoequipment.module.EnergyProperties;
-import com.github.littleemptydoll.exoequipment.module.HungerProperties;
-import com.github.littleemptydoll.exoequipment.module.ModuleCategory;
-import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
-import com.github.littleemptydoll.exoequipment.module.ModuleSize;
-import com.github.littleemptydoll.exoequipment.module.RegenerationProperties;
+import com.github.littleemptydoll.exoequipment.module.*;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Rarity;
+import net.neoforged.fml.ModList;
 
 import java.util.Map;
 
 final class ModSurvivalModules {
-    private static final ModuleSize HEALTH_SIZE = new ModuleSize(1, 2);
-    private static final ModuleSize HUNGER_SIZE = new ModuleSize(1, 2);
-    private static final ModuleSize REGENERATION_SIZE = new ModuleSize(2, 2);
+    private static final ModuleSize SMALL_SIZE = new ModuleSize(1, 2);
+    private static final ModuleSize MEDIUM_SIZE = new ModuleSize(2, 2);
+    private static final ModuleSize LARGE_SIZE = new ModuleSize(2, 3);
+    private static final ModuleSize HUGE_SIZE = new ModuleSize(3, 3);
 
     // Survival systems should remain powered before mobility and utility
     // modules, but ordinary survival assistance stays below hard defenses.
     private static final int SURVIVAL_PRIORITY = 7;
+    private static final int TICKS_PER_MINUTE = 20 * 60;
 
     private static final ResourceLocation MAX_HEALTH =
             ResourceLocation.parse("minecraft:generic.max_health");
@@ -34,8 +30,12 @@ final class ModSurvivalModules {
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry
     ) {
         registerHealthModules(registry);
-        registerHungerModules(registry);
+        registerLifeSupportModules(registry);
         registerRegenerationModules(registry);
+        registerRevivals(registry);
+        if (ModList.get() != null && ModList.get().isLoaded("legendarysurvivaloverhaul")) {
+            registerBodyRegenerationModules(registry);
+        }
     }
 
     private static void registerHealthModules(
@@ -43,73 +43,68 @@ final class ModSurvivalModules {
     ) {
         registerHealth(
                 registry,
-                "civilian_health",
+                "vitality_support",
                 EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON,
-                3,
-                2.0D
+                10,
+                2.0D,
+                SMALL_SIZE
         );
         registerHealth(
                 registry,
-                "engineering_health",
-                EquipmentTier.ENGINEERING,
-                Rarity.RARE,
-                5,
-                4.0D
-        );
-        registerHealth(
-                registry,
-                "military_health",
+                "combat_vitality_support",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
-                8,
-                6.0D
+                25,
+                6.0D,
+                MEDIUM_SIZE
         );
         registerHealth(
                 registry,
-                "experimental_health",
+                "experimental_vitality_support",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
-                12,
-                10.0D
+                40,
+                10.0D,
+                MEDIUM_SIZE
         );
     }
 
-    private static void registerHungerModules(
+    private static void registerLifeSupportModules(
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry
     ) {
-        registerHunger(
-                registry,
-                "civilian_metabolic_assist",
-                EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON,
-                2,
-                0.10D
+        registry.register("metabolic_assist", new EquipmentProperties(EquipmentTier.CIVILIAN, Rarity.UNCOMMON),
+                (resourceLocation, properties) -> ModuleDefinition.builder(
+                                resourceLocation, properties, ModuleCategory.SURVIVAL, SMALL_SIZE)
+                        .energy(new EnergyProperties(10, SURVIVAL_PRIORITY))
+                        .hunger(new HungerProperties(0.15D))
+                        .build()
         );
-        registerHunger(
-                registry,
-                "engineering_metabolic_assist",
-                EquipmentTier.ENGINEERING,
-                Rarity.RARE,
-                3,
-                0.20D
-        );
-        registerHunger(
-                registry,
-                "military_metabolic_assist",
-                EquipmentTier.MILITARY,
-                Rarity.RARE,
-                5,
-                0.30D
-        );
-        registerHunger(
-                registry,
-                "experimental_metabolic_assist",
-                EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC,
-                8,
-                0.45D
-        );
+
+        if (ModList.get() != null && ModList.get().isLoaded("legendarysurvivaloverhaul")) {
+            registry.register("hydration_assist", new EquipmentProperties(EquipmentTier.CIVILIAN, Rarity.UNCOMMON),
+                    (resourceLocation, properties) -> ModuleDefinition.builder(
+                                    resourceLocation, properties, ModuleCategory.SURVIVAL, SMALL_SIZE)
+                            .energy(new EnergyProperties(10, SURVIVAL_PRIORITY))
+                            .thirst(new ThirstProperties(0.15D))
+                            .build());
+            registry.register("life_support_system", new EquipmentProperties(EquipmentTier.ENGINEERING, Rarity.RARE),
+                    (resourceLocation, properties) -> ModuleDefinition.builder(
+                                    resourceLocation, properties, ModuleCategory.SURVIVAL, MEDIUM_SIZE)
+                            .energy(new EnergyProperties(25, SURVIVAL_PRIORITY))
+                            .hunger(new HungerProperties(0.25D))
+                            .thirst(new ThirstProperties(0.25D))
+                            .build()
+            );
+            registry.register("advanced_life_support", new EquipmentProperties(EquipmentTier.EXPERIMENTAL, Rarity.EPIC),
+                    (resourceLocation, properties) -> ModuleDefinition.builder(
+                                    resourceLocation, properties, ModuleCategory.SURVIVAL, MEDIUM_SIZE)
+                            .energy(new EnergyProperties(50, SURVIVAL_PRIORITY))
+                            .hunger(new HungerProperties(0.45D))
+                            .thirst(new ThirstProperties(0.45D))
+                            .build()
+            );
+        }
     }
 
     private static void registerRegenerationModules(
@@ -117,18 +112,10 @@ final class ModSurvivalModules {
     ) {
         registerRegeneration(
                 registry,
-                "civilian_regeneration",
-                EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON,
-                5,
-                0.10D
-        );
-        registerRegeneration(
-                registry,
                 "engineering_regeneration",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
-                8,
+                25,
                 0.25D
         );
         registerRegeneration(
@@ -136,17 +123,41 @@ final class ModSurvivalModules {
                 "military_regeneration",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
-                12,
+                60,
                 0.50D
         );
-        registerRegeneration(
+    }
+
+    private static void registerRevivals(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
+    ) {
+        registerRevival(
                 registry,
-                "experimental_regeneration",
+                "emergency_revival_system",
+                EquipmentTier.MILITARY,
+                Rarity.RARE,
+                4.0D,
+                10 * TICKS_PER_MINUTE,
+                50,
+                LARGE_SIZE
+        );
+        registerRevival(
+                registry,
+                "experimental_revival_system",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
-                20,
-                1.00D
+                6.0D,
+                5 * TICKS_PER_MINUTE,
+                100,
+                HUGE_SIZE
         );
+    }
+
+    static void registerBodyRegenerationModules(EquipmentRegistry<ModuleDefinition, ModuleItem> registry) {
+        registerBodyRegeneration(registry, "medical_recovery_system", EquipmentTier.ENGINEERING,
+                Rarity.RARE, 35, 0.10D);
+        registerBodyRegeneration(registry, "advanced_trauma_system", EquipmentTier.MILITARY,
+                Rarity.RARE, 70, 0.25D);
     }
 
     private static void registerHealth(
@@ -155,7 +166,8 @@ final class ModSurvivalModules {
             EquipmentTier tier,
             Rarity rarity,
             int energyConsumption,
-            double maxHealth
+            double maxHealth,
+            ModuleSize size
     ) {
         registry.register(
                 id,
@@ -165,7 +177,7 @@ final class ModSurvivalModules {
                                         resourceLocation,
                                         properties,
                                         ModuleCategory.SURVIVAL,
-                                        HEALTH_SIZE
+                                        size
                                 )
                                 .energy(new EnergyProperties(
                                         energyConsumption,
@@ -179,35 +191,6 @@ final class ModSurvivalModules {
                                                         AttributeModifier.Operation.ADD_VALUE
                                                 )
                                         )
-                                ))
-                                .build()
-        );
-    }
-
-    private static void registerHunger(
-            EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
-            String id,
-            EquipmentTier tier,
-            Rarity rarity,
-            int energyConsumption,
-            double exhaustionReduction
-    ) {
-        registry.register(
-                id,
-                new EquipmentProperties(tier, rarity),
-                (resourceLocation, properties) ->
-                        ModuleDefinition.builder(
-                                        resourceLocation,
-                                        properties,
-                                        ModuleCategory.SURVIVAL,
-                                        HUNGER_SIZE
-                                )
-                                .energy(new EnergyProperties(
-                                        energyConsumption,
-                                        SURVIVAL_PRIORITY
-                                ))
-                                .hunger(new HungerProperties(
-                                        exhaustionReduction
                                 ))
                                 .build()
         );
@@ -229,7 +212,7 @@ final class ModSurvivalModules {
                                         resourceLocation,
                                         properties,
                                         ModuleCategory.SURVIVAL,
-                                        REGENERATION_SIZE
+                                        MEDIUM_SIZE
                                 )
                                 .energy(new EnergyProperties(
                                         energyConsumption,
@@ -240,5 +223,51 @@ final class ModSurvivalModules {
                                 ))
                                 .build()
         );
+    }
+
+    private static void registerRevival(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
+            String id,
+            EquipmentTier tier,
+            Rarity rarity,
+            double restoreHealth,
+            int cooldown,
+            int energyConsumption,
+            ModuleSize size
+    ) {
+        registry.register(
+                id,
+                new EquipmentProperties(tier, rarity),
+                (resourceLocation, properties) ->
+                        ModuleDefinition.builder(
+                                        resourceLocation,
+                                        properties,
+                                        ModuleCategory.DEFENSE,
+                                        size
+                                )
+                                .energy(new EnergyProperties(
+                                        energyConsumption,
+                                        10
+                                ))
+                                .revival(new RevivalProperties(
+                                        restoreHealth,
+                                        cooldown,
+                                        40
+                                ))
+                                .build()
+        );
+    }
+
+    private static void registerBodyRegeneration(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
+            String id, EquipmentTier tier, Rarity rarity,
+            int consumption, double healthPerSecond
+    ) {
+        registry.register(id, new EquipmentProperties(tier, rarity),
+                (resourceLocation, properties) -> ModuleDefinition.builder(
+                                resourceLocation, properties, ModuleCategory.SURVIVAL, LARGE_SIZE)
+                        .energy(new EnergyProperties(consumption, SURVIVAL_PRIORITY))
+                        .bodyDamageRegeneration(new BodyDamageRegenerationProperties(healthPerSecond))
+                        .build());
     }
 }

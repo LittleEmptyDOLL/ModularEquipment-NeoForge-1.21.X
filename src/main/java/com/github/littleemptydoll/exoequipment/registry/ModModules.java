@@ -43,9 +43,6 @@ public final class ModModules {
         ModThermalModules.register(REGISTRY);
         ModCombatModules.register(REGISTRY);
         ModUtilityModules.register(REGISTRY);
-        if (ModList.get() != null && ModList.get().isLoaded("legendarysurvivaloverhaul")) {
-            ModLsoModules.register(REGISTRY);
-        }
         ModAttributeModules.register(REGISTRY);
     }
 

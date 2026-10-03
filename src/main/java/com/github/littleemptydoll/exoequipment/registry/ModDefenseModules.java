@@ -12,7 +12,6 @@ import java.util.Optional;
 final class ModDefenseModules {
     private static final ModuleSize SHIELD_SIZE = new ModuleSize(2, 2);
     private static final ModuleSize EMERGENCY_SHIELD_SIZE = new ModuleSize(2, 2);
-    private static final ModuleSize REVIVAL_SIZE = new ModuleSize(2, 3);
     private static final ModuleSize SPECIALIZED_PROTECTION_SIZE = new ModuleSize(2, 2);
     private static final ModuleSize GENERAL_PROTECTION_SIZE = new ModuleSize(2, 3);
     private static final ModuleSize IMMUNITY_SIZE = new ModuleSize(2, 3);
@@ -44,7 +43,6 @@ final class ModDefenseModules {
         registerDamageProtection(registry);
         registerImmunities(registry);
         registerEmergencyShields(registry);
-        registerRevivals(registry);
         registerShieldProtection(registry);
     }
 
@@ -208,38 +206,6 @@ final class ModDefenseModules {
                 1.0D,
                 2 * TICKS_PER_MINUTE,
                 20
-        );
-    }
-
-    private static void registerRevivals(
-            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
-    ) {
-        registerRevival(
-                registry,
-                "engineering_revival",
-                EquipmentTier.ENGINEERING,
-                Rarity.RARE,
-                4.0D,
-                15 * TICKS_PER_MINUTE,
-                25
-        );
-        registerRevival(
-                registry,
-                "military_revival",
-                EquipmentTier.MILITARY,
-                Rarity.RARE,
-                4.0D,
-                10 * TICKS_PER_MINUTE,
-                35
-        );
-        registerRevival(
-                registry,
-                "experimental_revival",
-                EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC,
-                6.0D,
-                5 * TICKS_PER_MINUTE,
-                50
         );
     }
 
@@ -490,38 +456,6 @@ final class ModDefenseModules {
                                                 cooldown
                                         )
                                 )
-                                .build()
-        );
-    }
-
-    private static void registerRevival(
-            EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
-            String id,
-            EquipmentTier tier,
-            Rarity rarity,
-            double restoreHealth,
-            int cooldown,
-            int energyConsumption
-    ) {
-        registry.register(
-                id,
-                new EquipmentProperties(tier, rarity),
-                (resourceLocation, properties) ->
-                        ModuleDefinition.builder(
-                                        resourceLocation,
-                                        properties,
-                                        ModuleCategory.DEFENSE,
-                                        REVIVAL_SIZE
-                                )
-                                .energy(new EnergyProperties(
-                                        energyConsumption,
-                                        10
-                                ))
-                                .revival(new RevivalProperties(
-                                        restoreHealth,
-                                        cooldown,
-                                        40
-                                ))
                                 .build()
         );
     }

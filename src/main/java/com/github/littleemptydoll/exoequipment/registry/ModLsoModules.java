@@ -30,56 +30,6 @@ final class ModLsoModules {
         registerThirst(registry, "experimental_thirst_assist", EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC, 8, 0.45D);
 
-        registerTemperature(registry, "civilian_heat_resistance", EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON, 3, 0.5D, 0.0D);
-        registerTemperature(registry, "engineering_heat_resistance", EquipmentTier.ENGINEERING,
-                Rarity.RARE, 5, 1.0D, 0.0D);
-        registerTemperature(registry, "military_heat_resistance", EquipmentTier.MILITARY,
-                Rarity.RARE, 7, 1.5D, 0.0D);
-        registerTemperature(registry, "experimental_heat_resistance", EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC, 10, 2.5D, 0.0D);
-
-        registerTemperature(registry, "civilian_cold_resistance", EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON, 3, 0.0D, 0.5D);
-        registerTemperature(registry, "engineering_cold_resistance", EquipmentTier.ENGINEERING,
-                Rarity.RARE, 5, 0.0D, 1.0D);
-        registerTemperature(registry, "military_cold_resistance", EquipmentTier.MILITARY,
-                Rarity.RARE, 7, 0.0D, 1.5D);
-        registerTemperature(registry, "experimental_cold_resistance", EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC, 10, 0.0D, 2.5D);
-
-        registerModifier(registry, "civilian_personal_heater", EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON, 3, 0.5D, 0.0D);
-        registerModifier(registry, "engineering_personal_heater", EquipmentTier.ENGINEERING,
-                Rarity.RARE, 5, 1.0D, 0.0D);
-        registerModifier(registry, "military_personal_heater", EquipmentTier.MILITARY,
-                Rarity.RARE, 7, 1.5D, 0.0D);
-        registerModifier(registry, "experimental_personal_heater", EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC, 10, 2.0D, 0.0D);
-        registerModifier(registry, "civilian_personal_cooler", EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON, 3, -0.5D, 0.0D);
-        registerModifier(registry, "engineering_personal_cooler", EquipmentTier.ENGINEERING,
-                Rarity.RARE, 5, -1.0D, 0.0D);
-        registerModifier(registry, "military_personal_cooler", EquipmentTier.MILITARY,
-                Rarity.RARE, 7, -1.5D, 0.0D);
-        registerModifier(registry, "experimental_personal_cooler", EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC, 10, -2.0D, 0.0D);
-        registerModifier(registry, "civilian_thermal_resistance", EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON, 3, 0.0D, 0.5D);
-        registerModifier(registry, "engineering_thermal_resistance", EquipmentTier.ENGINEERING,
-                Rarity.RARE, 5, 0.0D, 1.0D);
-        registerModifier(registry, "military_thermal_resistance", EquipmentTier.MILITARY,
-                Rarity.RARE, 7, 0.0D, 1.5D);
-        registerModifier(registry, "experimental_thermal_resistance", EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC, 10, 0.0D, 2.5D);
-
-        registerImpact(registry, "engineering_temperature_isolation", EquipmentTier.ENGINEERING,
-                Rarity.RARE, 5, 0.25D);
-        registerImpact(registry, "military_temperature_isolation", EquipmentTier.MILITARY,
-                Rarity.RARE, 8, 0.50D);
-        registerImpact(registry, "experimental_temperature_isolation", EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC, 12, 0.75D);
-
         registerBodyRegeneration(registry, "civilian_body_regeneration", EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON, 6, 0.05D);
         registerBodyRegeneration(registry, "engineering_body_regeneration", EquipmentTier.ENGINEERING,
@@ -100,47 +50,6 @@ final class ModLsoModules {
                                 resourceLocation, properties, ModuleCategory.SURVIVAL, THIRST_SIZE)
                         .energy(new EnergyProperties(consumption, PRIORITY))
                         .thirst(new ThirstProperties(reduction))
-                        .build());
-    }
-
-    private static void registerTemperature(
-            EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
-            String id, EquipmentTier tier, Rarity rarity, int consumption,
-            double heatResistance, double coldResistance
-    ) {
-        registry.register(id, new EquipmentProperties(tier, rarity),
-                (resourceLocation, properties) -> ModuleDefinition.builder(
-                                resourceLocation, properties, ModuleCategory.THERMAL, TEMPERATURE_SIZE)
-                        .energy(new EnergyProperties(consumption, PRIORITY))
-                        .temperatureModifier(new TemperatureModifierProperties(
-                                0.0D, heatResistance, coldResistance, 0.0D))
-                        .build());
-    }
-
-    private static void registerImpact(
-            EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
-            String id, EquipmentTier tier, Rarity rarity,
-            int consumption, double resistance
-    ) {
-        registry.register(id, new EquipmentProperties(tier, rarity),
-                (resourceLocation, properties) -> ModuleDefinition.builder(
-                                resourceLocation, properties, ModuleCategory.THERMAL, TEMPERATURE_SIZE)
-                        .energy(new EnergyProperties(consumption, PRIORITY))
-                        .temperatureImpact(new TemperatureImpactProperties(resistance))
-                        .build());
-    }
-
-    private static void registerModifier(
-            EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
-            String id, EquipmentTier tier, Rarity rarity, int consumption,
-            double temperature, double thermalResistance
-    ) {
-        registry.register(id, new EquipmentProperties(tier, rarity),
-                (resourceLocation, properties) -> ModuleDefinition.builder(
-                                resourceLocation, properties, ModuleCategory.THERMAL, TEMPERATURE_SIZE)
-                        .energy(new EnergyProperties(consumption, PRIORITY))
-                        .temperatureModifier(new TemperatureModifierProperties(
-                                temperature, 0.0D, 0.0D, thermalResistance))
                         .build());
     }
 

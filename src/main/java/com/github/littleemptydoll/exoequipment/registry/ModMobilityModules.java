@@ -132,7 +132,7 @@ final class ModMobilityModules {
                 Rarity.RARE,
                 SWIM_SIZE,
                 15,
-                Map.ofEntries(Map.entry(WATER_MOVEMENT_EFFICIENCY, addValue(0.30D)))
+                Map.ofEntries(Map.entry(WATER_MOVEMENT_EFFICIENCY, addValue(0.25D)))
         );
         registerAttributeModule(
                 registry,
@@ -141,7 +141,7 @@ final class ModMobilityModules {
                 Rarity.RARE,
                 SWIM_SIZE,
                 25,
-                Map.ofEntries(Map.entry(WATER_MOVEMENT_EFFICIENCY, addValue(0.40D)))
+                Map.ofEntries(Map.entry(WATER_MOVEMENT_EFFICIENCY, addValue(0.50D)))
         );
     }
 

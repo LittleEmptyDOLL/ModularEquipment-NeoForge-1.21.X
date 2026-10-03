@@ -16,6 +16,7 @@ final class ModCombatModules {
     private static final ModuleSize SMALL_SIZE = new ModuleSize(1, 2);
     private static final ModuleSize MEDIUM_SIZE = new ModuleSize(2, 2);
     private static final ModuleSize LARGE_SIZE = new ModuleSize(2, 3);
+    private static final ModuleSize HUGE_SIZE = new ModuleSize(3, 3);
     private static final int COMBAT_PRIORITY = 4;
 
     private static final ResourceLocation ATTACK_DAMAGE =
@@ -69,6 +70,25 @@ final class ModCombatModules {
         );
         registerAttributeModule(
                 registry,
+                "high_power_actuator",
+                EquipmentTier.MILITARY,
+                Rarity.RARE,
+                SMALL_SIZE,
+                30,
+                Map.ofEntries(Map.entry(ATTACK_DAMAGE, multipliedBase(0.25D)))
+        );
+        registerAttributeModule(
+                registry,
+                "experimental_damage_actuator",
+                EquipmentTier.EXPERIMENTAL,
+                Rarity.EPIC,
+                SMALL_SIZE,
+                60,
+                Map.ofEntries(Map.entry(ATTACK_DAMAGE, multipliedBase(0.40D)))
+        );
+
+        registerAttributeModule(
+                registry,
                 "attack_servo",
                 EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON,
@@ -76,6 +96,25 @@ final class ModCombatModules {
                 10,
                 Map.ofEntries(Map.entry(ATTACK_SPEED, multipliedBase(0.10D)))
         );
+        registerAttributeModule(
+                registry,
+                "advanced_attack_servo",
+                EquipmentTier.ENGINEERING,
+                Rarity.RARE,
+                SMALL_SIZE,
+                25,
+                Map.ofEntries(Map.entry(ATTACK_SPEED, multipliedBase(0.20D)))
+        );
+        registerAttributeModule(
+                registry,
+                "experimental_attack_servo",
+                EquipmentTier.EXPERIMENTAL,
+                Rarity.EPIC,
+                SMALL_SIZE,
+                55,
+                Map.ofEntries(Map.entry(ATTACK_SPEED, multipliedBase(0.35D)))
+        );
+
         registerAttributeModule(
                 registry,
                 "combat_actuator",
@@ -90,40 +129,11 @@ final class ModCombatModules {
         );
         registerAttributeModule(
                 registry,
-                "impact_amplifier",
-                EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON,
-                SMALL_SIZE,
-                10,
-                Map.ofEntries(Map.entry(ATTACK_KNOCKBACK, multipliedBase(0.10D)))
-        );
-
-        registerAttributeModule(
-                registry,
-                "high_power_actuator",
-                EquipmentTier.MILITARY,
-                Rarity.RARE,
-                SMALL_SIZE,
-                30,
-                Map.ofEntries(Map.entry(ATTACK_DAMAGE, multipliedBase(0.25D)))
-        );
-
-        registerAttributeModule(
-                registry,
-                "advanced_attack_servo",
-                EquipmentTier.ENGINEERING,
-                Rarity.RARE,
-                SMALL_SIZE,
-                25,
-                Map.ofEntries(Map.entry(ATTACK_SPEED, multipliedBase(0.20D)))
-        );
-        registerAttributeModule(
-                registry,
                 "combat_processor",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
                 MEDIUM_SIZE,
-                35,
+                40,
                 Map.ofEntries(
                         Map.entry(ATTACK_DAMAGE, multipliedBase(0.15D)),
                         Map.entry(ATTACK_SPEED, multipliedBase(0.15D))
@@ -132,22 +142,14 @@ final class ModCombatModules {
 
         registerAttributeModule(
                 registry,
-                "experimental_damage_actuator",
-                EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC,
+                "impact_amplifier",
+                EquipmentTier.CIVILIAN,
+                Rarity.UNCOMMON,
                 SMALL_SIZE,
-                60,
-                Map.ofEntries(Map.entry(ATTACK_DAMAGE, multipliedBase(0.40D)))
+                10,
+                Map.ofEntries(Map.entry(ATTACK_KNOCKBACK, multipliedBase(0.10D)))
         );
-        registerAttributeModule(
-                registry,
-                "experimental_attack_servo",
-                EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC,
-                SMALL_SIZE,
-                55,
-                Map.ofEntries(Map.entry(ATTACK_SPEED, multipliedBase(0.35D)))
-        );
+
         registerAttributeModule(
                 registry,
                 "long_sword",
@@ -179,6 +181,45 @@ final class ModCombatModules {
             );
             registerAttributeModule(
                     registry,
+                    "precision_targeting",
+                    EquipmentTier.ENGINEERING,
+                    Rarity.RARE,
+                    MEDIUM_SIZE,
+                    40,
+                    Map.ofEntries(
+                            Map.entry(CRIT_CHANCE, multipliedBase(0.10D)),
+                            Map.entry(CRIT_DAMAGE, multipliedBase(0.20D))
+                    )
+            );
+            registerAttributeModule(
+                    registry,
+                    "critical_strike_system",
+                    EquipmentTier.EXPERIMENTAL,
+                    Rarity.EPIC,
+                    MEDIUM_SIZE,
+                    80,
+                    Map.ofEntries(
+                            Map.entry(CRIT_CHANCE, multipliedBase(0.20D)),
+                            Map.entry(CRIT_DAMAGE, multipliedBase(0.40D))
+                    )
+            );
+
+            registerAttributeModule(
+                    registry,
+                    "experimental_combat_processor",
+                    EquipmentTier.EXPERIMENTAL,
+                    Rarity.EPIC,
+                    LARGE_SIZE,
+                    90,
+                    Map.ofEntries(
+                            Map.entry(ATTACK_DAMAGE, multipliedBase(0.25D)),
+                            Map.entry(ATTACK_SPEED, multipliedBase(0.20D)),
+                            Map.entry(CRIT_CHANCE, multipliedBase(0.10D))
+                    )
+            );
+
+            registerAttributeModule(
+                    registry,
                     "heavy_target_system",
                     EquipmentTier.MILITARY,
                     Rarity.RARE,
@@ -186,6 +227,7 @@ final class ModCombatModules {
                     45,
                     Map.ofEntries(Map.entry(CURRENT_HP_DAMAGE, multipliedBase(0.05D)))
             );
+
             registerAttributeModule(
                     registry,
                     "combat_recovery",
@@ -195,6 +237,19 @@ final class ModCombatModules {
                     50,
                     Map.ofEntries(Map.entry(LIFE_STEAL, multipliedBase(0.05D)))
             );
+            registerAttributeModule(
+                    registry,
+                    "predator_system",
+                    EquipmentTier.EXPERIMENTAL,
+                    Rarity.EPIC,
+                    LARGE_SIZE,
+                    100,
+                    Map.ofEntries(
+                            Map.entry(LIFE_STEAL, multipliedBase(0.075D)),
+                            Map.entry(OVERHEAL, multipliedBase(0.10D))
+                    )
+            );
+
             registerAttributeModule(
                     registry,
                     "armor_penetrator",
@@ -207,7 +262,6 @@ final class ModCombatModules {
                             Map.entry(PROTECTION_PIERCE, multipliedBase(0.10D))
                     )
             );
-
             registerAttributeModule(
                     registry,
                     "defense_disruptor",
@@ -220,6 +274,21 @@ final class ModCombatModules {
                             Map.entry(PROTECTION_SHRED, multipliedBase(0.10D))
                     )
             );
+            registerAttributeModule(
+                    registry,
+                    "adaptive_penetrator",
+                    EquipmentTier.EXPERIMENTAL,
+                    Rarity.EPIC,
+                    MEDIUM_SIZE,
+                    90,
+                    Map.ofEntries(
+                            Map.entry(ARMOR_PIERCE, multipliedBase(0.25D)),
+                            Map.entry(PROTECTION_PIERCE, multipliedBase(0.15D)),
+                            Map.entry(ARMOR_SHRED, multipliedBase(0.10D)),
+                            Map.entry(PROTECTION_SHRED, multipliedBase(0.05D))
+                    )
+            );
+
             registerAttributeModule(
                     registry,
                     "marksman_system",
@@ -240,70 +309,6 @@ final class ModCombatModules {
                     SMALL_SIZE,
                     20,
                     Map.ofEntries(Map.entry(DRAW_SPEED, multipliedBase(0.15D)))
-            );
-            registerAttributeModule(
-                    registry,
-                    "precision_targeting",
-                    EquipmentTier.ENGINEERING,
-                    Rarity.RARE,
-                    MEDIUM_SIZE,
-                    40,
-                    Map.ofEntries(
-                            Map.entry(CRIT_CHANCE, multipliedBase(0.10D)),
-                            Map.entry(CRIT_DAMAGE, multipliedBase(0.20D))
-                    )
-            );
-
-            registerAttributeModule(
-                    registry,
-                    "critical_strike_system",
-                    EquipmentTier.EXPERIMENTAL,
-                    Rarity.EPIC,
-                    MEDIUM_SIZE,
-                    80,
-                    Map.ofEntries(
-                            Map.entry(CRIT_CHANCE, multipliedBase(0.20D)),
-                            Map.entry(CRIT_DAMAGE, multipliedBase(0.40D))
-                    )
-            );
-            registerAttributeModule(
-                    registry,
-                    "adaptive_penetrator",
-                    EquipmentTier.EXPERIMENTAL,
-                    Rarity.EPIC,
-                    MEDIUM_SIZE,
-                    90,
-                    Map.ofEntries(
-                            Map.entry(ARMOR_PIERCE, multipliedBase(0.25D)),
-                            Map.entry(PROTECTION_PIERCE, multipliedBase(0.15D)),
-                            Map.entry(ARMOR_SHRED, multipliedBase(0.10D)),
-                            Map.entry(PROTECTION_SHRED, multipliedBase(0.05D))
-                    )
-            );
-            registerAttributeModule(
-                    registry,
-                    "predator_system",
-                    EquipmentTier.EXPERIMENTAL,
-                    Rarity.EPIC,
-                    LARGE_SIZE,
-                    100,
-                    Map.ofEntries(
-                            Map.entry(LIFE_STEAL, multipliedBase(0.075D)),
-                            Map.entry(OVERHEAL, multipliedBase(0.10D))
-                    )
-            );
-            registerAttributeModule(
-                    registry,
-                    "experimental_combat_processor",
-                    EquipmentTier.EXPERIMENTAL,
-                    Rarity.EPIC,
-                    LARGE_SIZE,
-                    90,
-                    Map.ofEntries(
-                            Map.entry(ATTACK_DAMAGE, multipliedBase(0.25D)),
-                            Map.entry(ATTACK_SPEED, multipliedBase(0.20D)),
-                            Map.entry(CRIT_CHANCE, multipliedBase(0.10D))
-                    )
             );
 
             registerAttributeThermalModule(
@@ -340,21 +345,88 @@ final class ModCombatModules {
             );
         }
 
-        registerLaser(registry, "rapid_laser_defense", EquipmentTier.ENGINEERING,
-                Rarity.RARE, MEDIUM_SIZE, 10, 3, 6, 900);
-        registerLaser(registry, "personal_laser_defense", EquipmentTier.MILITARY,
-                Rarity.RARE, MEDIUM_SIZE, 12, 5, 12, 1_500);
-        registerLaser(registry, "heavy_laser_defense", EquipmentTier.MILITARY,
-                Rarity.RARE, LARGE_SIZE, 16, 9, 20, 3_500);
-        registerLaser(registry, "experimental_laser_defense", EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC, LARGE_SIZE, 20, 7, 8, 3_000);
+        registerLaser(
+                registry,
+                "rapid_laser_defense",
+                EquipmentTier.ENGINEERING,
+                Rarity.RARE,
+                MEDIUM_SIZE,
+                10,
+                3,
+                6,
+                900);
+        registerLaser(
+                registry,
+                "personal_laser_defense",
+                EquipmentTier.MILITARY,
+                Rarity.RARE,
+                MEDIUM_SIZE,
+                12,
+                5,
+                12,
+                1_500);
+        registerLaser(
+                registry,
+                "heavy_laser_defense",
+                EquipmentTier.MILITARY,
+                Rarity.RARE,
+                LARGE_SIZE,
+                16,
+                9,
+                20,
+                3_500);
+        registerLaser(registry,
+                "experimental_laser_defense",
+                EquipmentTier.EXPERIMENTAL,
+                Rarity.EPIC,
+                LARGE_SIZE,
+                20,
+                7,
+                8,
+                3_000);
 
-        registerDischarge(registry, "crowd_discharge_system", EquipmentTier.ENGINEERING,
-                Rarity.RARE, LARGE_SIZE, 5, 4, 5, 0.70F, 2, 3, 50, 10_000);
-        registerDischarge(registry, "discharge_defense", EquipmentTier.MILITARY,
-                Rarity.RARE, LARGE_SIZE, 6, 5, 8, 0.75F, 1, 3, 60, 8_000);
-        registerDischarge(registry, "experimental_arc_defense", EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC, new ModuleSize(3, 3), 7, 6, 10, 0.80F, 2, 5, 40, 25_000);
+        registerDischarge(
+                registry,
+                "crowd_discharge_system",
+                EquipmentTier.ENGINEERING,
+                Rarity.RARE,
+                LARGE_SIZE,
+                5,
+                4,
+                5,
+                0.70F,
+                2,
+                3,
+                50,
+                10_000);
+        registerDischarge(
+                registry,
+                "discharge_defense",
+                EquipmentTier.MILITARY,
+                Rarity.RARE,
+                LARGE_SIZE,
+                6,
+                5,
+                8,
+                0.75F,
+                1,
+                3,
+                60,
+                8_000);
+        registerDischarge(
+                registry,
+                "experimental_arc_defense",
+                EquipmentTier.EXPERIMENTAL,
+                Rarity.EPIC,
+                HUGE_SIZE,
+                7,
+                6,
+                10,
+                0.80F,
+                2,
+                5,
+                40,
+                25_000);
 
         registerAdrenaline(registry);
     }

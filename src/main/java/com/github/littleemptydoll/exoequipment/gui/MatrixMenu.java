@@ -599,8 +599,7 @@ public class MatrixMenu extends AbstractContainerMenu {
                 module.emergencyShieldCooldown(),
                 module.active(),
                 module.abilityCooldown(),
-                module.flightActive(),
-                module.weaponCharge()
+                module.flightActive()
         );
         MatrixData updated = replaceModule(matrix, definition, module, movedModule);
         if (updated.equals(matrix)) return false;

@@ -58,6 +58,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add("tooltip.exoequipment.size", "Size: %s x %s");
         add("tooltip.exoequipment.input", "Max input: %s FE/t");
         add("tooltip.exoequipment.output", "Max output: %s FE/t");
+        add("tooltip.exoequipment.buffer_capacity", "Buffer capacity: %s FE");
+        add("gui.exoequipment.energy.battery", "Batteries: %s / %s FE");
+        add("gui.exoequipment.energy.buffer", "Buffer: %s / %s FE");
         add("tooltip.exoequipment.efficiency", "Efficiency: %s%%");
         add("tooltip.exoequipment.frame", "Frame: %s");
         add("tooltip.exoequipment.controller", "Controller: %s");
@@ -145,6 +148,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.characteristic.storage_input", "Storage charge rate");
         add("gui.exoequipment.characteristic.storage_output", "Storage discharge rate");
         add("gui.exoequipment.characteristic.stored_energy", "Stored energy");
+        add("gui.exoequipment.characteristic.buffer_stored", "Buffer charge");
+        add("gui.exoequipment.characteristic.buffer_capacity", "Buffer capacity");
         add("gui.exoequipment.characteristic.max_input", "Maximum input");
         add("gui.exoequipment.characteristic.max_output", "Maximum output");
 

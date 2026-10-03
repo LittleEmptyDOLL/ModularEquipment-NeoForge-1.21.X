@@ -10,7 +10,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
-/** Exposes the installed batteries to item chargers, including Curios chargers. */
+/** Exposes the buffer and installed batteries to item chargers, including Curios chargers. */
 public final class ExoskeletonEnergyStorage implements IEnergyStorage {
     private final ItemStack stack;
 
@@ -60,14 +60,14 @@ public final class ExoskeletonEnergyStorage implements IEnergyStorage {
 
     @Override
     public int getEnergyStored() {
-        return EnergyState.calculate(ExoskeletonItem.getData(stack))
-                .storedEnergy();
+        EnergyState state = EnergyState.calculate(ExoskeletonItem.getData(stack));
+        return state.storedEnergy() + state.bufferStored();
     }
 
     @Override
     public int getMaxEnergyStored() {
-        return EnergyState.calculate(ExoskeletonItem.getData(stack))
-                .storageCapacity();
+        EnergyState state = EnergyState.calculate(ExoskeletonItem.getData(stack));
+        return state.storageCapacity() + state.bufferCapacity();
     }
 
     @Override
@@ -79,7 +79,7 @@ public final class ExoskeletonEnergyStorage implements IEnergyStorage {
     public boolean canReceive() {
         EnergyState state = EnergyState.calculate(ExoskeletonItem.getData(stack));
         return state.maxInput() > 0
-                && state.storageCapacity() > 0
-                && state.storageInput() > 0;
+                && (state.bufferCapacity() > 0
+                    || state.storageCapacity() > 0 && state.storageInput() > 0);
     }
 }

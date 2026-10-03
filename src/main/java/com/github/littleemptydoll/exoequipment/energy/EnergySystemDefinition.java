@@ -11,7 +11,8 @@ public record EnergySystemDefinition(
         EquipmentProperties properties,
         int maxInput,
         int maxOutput,
-        double efficiency
+        double efficiency,
+        int bufferCapacity
 ) implements EquipmentDefinition {
     public static final Codec<EnergySystemDefinition> CODEC =
             RecordCodecBuilder.create(instance ->
@@ -30,7 +31,9 @@ public record EnergySystemDefinition(
                                     .forGetter(EnergySystemDefinition::maxOutput),
                             Codec.DOUBLE
                                     .fieldOf("efficiency")
-                                    .forGetter(EnergySystemDefinition::efficiency)
+                                    .forGetter(EnergySystemDefinition::efficiency),
+                            Codec.INT.optionalFieldOf("buffer_capacity", 0)
+                                    .forGetter(EnergySystemDefinition::bufferCapacity)
                     ).apply(
                             instance,
                             EnergySystemDefinition::new
@@ -38,6 +41,9 @@ public record EnergySystemDefinition(
             );
 
     public EnergySystemDefinition {
+        if (bufferCapacity < 0) {
+            throw new IllegalArgumentException("Buffer capacity cannot be negative");
+        }
         if (maxInput < 0) {
             throw new IllegalArgumentException(
                     "Maximum input cannot be negative"

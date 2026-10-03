@@ -58,6 +58,9 @@ public class EnergySystemItem extends EquipmentItem<EnergySystemDefinition> {
                 )
         );
 
+        tooltip.add(Component.translatable("tooltip.exoequipment.buffer_capacity",
+                definition.bufferCapacity()));
+
         tooltip.add(
                 TooltipHelper.efficiency(
                         definition.efficiency()

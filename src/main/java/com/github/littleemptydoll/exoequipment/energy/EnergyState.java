@@ -23,7 +23,9 @@ public record EnergyState(
         int storageInput,
         int storageOutput,
         int generation,
-        int consumption
+        int consumption,
+        int bufferStored,
+        int bufferCapacity
 ) {
     public EnergyState {
         if (storedEnergy < 0) {
@@ -53,6 +55,9 @@ public record EnergyState(
         if (storedEnergy > storageCapacity) {
             throw new IllegalArgumentException("Stored energy cannot exceed storage capacity");
         }
+        if (bufferStored < 0 || bufferCapacity < 0 || bufferStored > bufferCapacity) {
+            throw new IllegalArgumentException("Invalid energy buffer state");
+        }
     }
 
     public static EnergyState calculate(ExoskeletonData data) {
@@ -61,7 +66,7 @@ public record EnergyState(
 
     public static EnergyState calculate(ExoskeletonData data, Player player) {
         if (data.energySystem().isEmpty()) {
-            return new EnergyState(0, 0, 0, 0, 0, 0, 0, 0);
+            return new EnergyState(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
 
         ResourceLocation energySystemId = data.energySystem().get().definitionId();
@@ -91,7 +96,9 @@ public record EnergyState(
                 state.energyStorageInput(),
                 state.energyStorageOutput(),
                 state.energyGeneration(),
-                EnergyOperations.calculateCurrentConsumption(data, player, null)
+                EnergyOperations.calculateCurrentConsumption(data, player, null),
+                Math.min(data.energySystem().orElseThrow().bufferStored(), definition.bufferCapacity()),
+                definition.bufferCapacity()
         );
     }
 
@@ -100,7 +107,7 @@ public record EnergyState(
     }
 
     public int availableEnergy() {
-        return storedEnergy + generation;
+        return storedEnergy + bufferStored + generation;
     }
 
     public int availableInput() {
@@ -115,7 +122,7 @@ public record EnergyState(
     }
 
     public boolean canOperate() {
-        return (generation > 0 || storedEnergy > 0)
-                && (consumption == 0 || generation > 0 || storedEnergy > 0);
+        return (generation > 0 || storedEnergy > 0 || bufferStored > 0)
+                && (consumption == 0 || generation > 0 || storedEnergy > 0 || bufferStored > 0);
     }
 }

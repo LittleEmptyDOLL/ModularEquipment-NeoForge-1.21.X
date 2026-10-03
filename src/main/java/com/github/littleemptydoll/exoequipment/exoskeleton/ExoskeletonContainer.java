@@ -118,7 +118,9 @@ public class ExoskeletonContainer implements Container {
             return ItemStack.EMPTY;
         }
 
-        return entry.getItem().getDefaultInstance();
+        ItemStack stack = entry.getItem().getDefaultInstance();
+        stack.set(ModDataComponents.ENERGY_SYSTEM.get(), energySystem.get());
+        return stack;
     }
 
     private ItemStack getMatrixStack(int slot) {
@@ -360,9 +362,8 @@ public class ExoskeletonContainer implements Container {
 
         return ExoskeletonOperations.installEnergySystem(
                 data,
-                new EnergySystem(
-                        item.getDefinition().id()
-                )
+                stack.getOrDefault(ModDataComponents.ENERGY_SYSTEM.get(),
+                        new EnergySystem(item.getDefinition().id()))
         );
     }
 

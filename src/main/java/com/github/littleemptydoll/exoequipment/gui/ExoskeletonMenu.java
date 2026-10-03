@@ -45,7 +45,9 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
     private static final int DATA_ENERGY_STATUS = 4;
     private static final int DATA_STATUS_FLAGS = 5;
     private static final int DATA_TEMPERATURE = 6;
-    private static final int DATA_COUNT = 7;
+    private static final int DATA_BUFFER_STORED = 7;
+    private static final int DATA_BUFFER_CAPACITY = 8;
+    private static final int DATA_COUNT = 9;
 
     public static final int ENERGY_STATUS_GREEN = 0;
     public static final int ENERGY_STATUS_YELLOW = 1;
@@ -126,6 +128,8 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
             case DATA_ENERGY_STATUS -> status.severity();
             case DATA_STATUS_FLAGS -> status.flags();
             case DATA_TEMPERATURE -> (int) Math.round(data.temperature() * 10.0D);
+            case DATA_BUFFER_STORED -> energy.bufferStored();
+            case DATA_BUFFER_CAPACITY -> energy.bufferCapacity();
             default -> 0;
         };
     }
@@ -155,6 +159,14 @@ public class ExoskeletonMenu extends AbstractContainerMenu {
 
     public int getEnergyCapacity() {
         return syncedData[DATA_ENERGY_CAPACITY];
+    }
+
+    public int getBufferStored() {
+        return syncedData[DATA_BUFFER_STORED];
+    }
+
+    public int getBufferCapacity() {
+        return syncedData[DATA_BUFFER_CAPACITY];
     }
 
     public int getActiveProfile() {

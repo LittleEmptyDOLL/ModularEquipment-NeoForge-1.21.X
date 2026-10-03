@@ -57,7 +57,7 @@ class EnergyOperationsTest {
     }
 
     @Test
-    void itemCapabilityReceivesEnergyIntoActiveBattery() {
+    void itemCapabilityFillsBufferBeforeBattery() {
         ExoskeletonData data = data(
                 ModFrames.EXPERIMENTAL.getDefinition().id(),
                 new InstalledModule(TestModules.TEST_BATTERY.getDefinition().id(),
@@ -69,30 +69,35 @@ class EnergyOperationsTest {
         IEnergyStorage energy = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         assertTrue(energy != null && energy.canReceive());
         assertFalse(energy.canExtract());
-        assertEquals(10_000, energy.getMaxEnergyStored());
+        assertEquals(15_000, energy.getMaxEnergyStored());
         assertEquals(9_950, energy.getEnergyStored());
-        assertEquals(50, energy.receiveEnergy(200, true));
+        assertEquals(200, energy.receiveEnergy(200, true));
         assertEquals(9_950, energy.getEnergyStored());
-        assertEquals(50, energy.receiveEnergy(200, false));
-        assertEquals(10_000, energy.getEnergyStored());
-        assertEquals(10_000, module(ExoskeletonItem.getData(stack), 0).storedEnergy());
-        assertEquals(0, energy.receiveEnergy(200, false));
+        assertEquals(200, energy.receiveEnergy(200, false));
+        assertEquals(10_150, energy.getEnergyStored());
+        assertEquals(200, ExoskeletonItem.getData(stack).energySystem().orElseThrow().bufferStored());
+        assertEquals(9_950, module(ExoskeletonItem.getData(stack), 0).storedEnergy());
     }
 
     @Test
-    void itemChargingRespectsStorageInputAndMissingEnergySystem() {
+    void itemChargingPrioritizesBufferThenRespectsBatteryInput() {
         ExoskeletonData data = data(
                 ModFrames.EXPERIMENTAL.getDefinition().id(),
                 new InstalledModule(TestModules.TEST_BATTERY.getDefinition().id(),
                         0, 0, 0)
         );
         var simulation = EnergyOperations.receiveExternalEnergy(data, 200, true);
-        assertEquals(100, simulation.received());
-        assertEquals(0, module(simulation.data(), 0).storedEnergy());
+        assertEquals(200, simulation.received());
+        assertEquals(0, simulation.data().energySystem().orElseThrow().bufferStored());
 
         var actual = EnergyOperations.receiveExternalEnergy(data, 200, false);
-        assertEquals(100, actual.received());
-        assertEquals(100, module(actual.data(), 0).storedEnergy());
+        assertEquals(200, actual.received());
+        assertEquals(200, actual.data().energySystem().orElseThrow().bufferStored());
+        assertEquals(0, module(actual.data(), 0).storedEnergy());
+        var fullBuffer = data.withEnergySystem(data.energySystem().orElseThrow().withBufferStored(5_000));
+        var overflow = EnergyOperations.receiveExternalEnergy(fullBuffer, 200, false);
+        assertEquals(100, overflow.received());
+        assertEquals(100, module(overflow.data(), 0).storedEnergy());
         assertEquals(0, EnergyOperations.receiveExternalEnergy(
                 ExoskeletonData.empty(), 200, false).received());
     }
@@ -107,7 +112,7 @@ class EnergyOperationsTest {
         ItemStack stack = new ItemStack(ModExoskeletons.BASIC.getItem());
         stack.set(ModDataComponents.EXOSKELETON_DATA.get(), data);
 
-        assertEquals(100, new ExoskeletonEnergyStorage(stack)
+        assertEquals(500, new ExoskeletonEnergyStorage(stack)
                 .receiveEnergyAtTick(1_000, true, 42));
         assertEquals(0, new ExoskeletonEnergyStorage(stack).getEnergyStored());
         int inputLimit = ModEnergySystems.CIVILIAN.getDefinition().maxInput();
@@ -115,13 +120,13 @@ class EnergyOperationsTest {
         while (received < inputLimit) {
             int transfer = new ExoskeletonEnergyStorage(stack)
                     .receiveEnergyAtTick(1_000, false, 42);
-            assertEquals(Math.min(100, inputLimit - received), transfer);
+            assertEquals(inputLimit - received, transfer);
             received += transfer;
         }
         assertEquals(0, new ExoskeletonEnergyStorage(stack)
                 .receiveEnergyAtTick(1_000, false, 42));
         assertEquals(inputLimit, new ExoskeletonEnergyStorage(stack).getEnergyStored());
-        assertEquals(100, new ExoskeletonEnergyStorage(stack)
+        assertEquals(500, new ExoskeletonEnergyStorage(stack)
                 .receiveEnergyAtTick(1_000, false, 43));
     }
 
@@ -141,25 +146,60 @@ class EnergyOperationsTest {
     }
 
     @Test
-    void weaponChargesAcrossTicksWithoutExceedingBatteryOutput() {
+    void batteriesRefillSharedBufferAcrossTicksAndBurstIsAtomic() {
         ExoskeletonData data = data(ModFrames.EXPERIMENTAL.getDefinition().id(),
-                new InstalledModule(TestModules.TEST_BATTERY.getDefinition().id(), 0, 0, 0, 1_000),
-                new InstalledModule(TestModules.TEST_LASER_DEFENSE.getDefinition().id(), 2, 0, 0)
-                        .withActive(true));
-
+                new InstalledModule(TestModules.TEST_BATTERY.getDefinition().id(), 0, 0, 0, 1_000));
         EnergyTickResult first = EnergyOperations.tick(data);
-        assertEquals(200, first.consumed());
-        assertEquals(200, module(first.data(), 1).weaponCharge());
+        assertEquals(200, first.data().energySystem().orElseThrow().bufferStored());
         assertEquals(800, module(first.data(), 0).storedEnergy());
+        assertEquals(0, first.consumed());
 
         EnergyTickResult second = EnergyOperations.tick(first.data());
-        assertEquals(150, second.consumed());
-        assertEquals(350, module(second.data(), 1).weaponCharge());
-        assertEquals(650, module(second.data(), 0).storedEnergy());
+        assertEquals(400, second.data().energySystem().orElseThrow().bufferStored());
+        assertEquals(600, module(second.data(), 0).storedEnergy());
 
-        EnergyTickResult full = EnergyOperations.tick(second.data());
-        assertEquals(0, full.consumed());
-        assertEquals(350, module(full.data(), 1).weaponCharge());
+        var rejected = EnergyOperations.consumeEnergy(second.data(), 401);
+        assertFalse(rejected.sufficient());
+        assertEquals(0, rejected.consumed());
+        assertEquals(second.data(), rejected.data());
+
+        var accepted = EnergyOperations.consumeEnergy(second.data(), 350);
+        assertTrue(accepted.sufficient());
+        assertEquals(50, accepted.data().energySystem().orElseThrow().bufferStored());
+        assertEquals(600, module(accepted.data(), 0).storedEnergy());
+    }
+
+    @Test
+    void legacyEnergySystemCodecLoadsEmptyBuffer() {
+        var id = ModEnergySystems.CIVILIAN.getDefinition().id();
+        var decoded = EnergySystem.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE,
+                new com.google.gson.JsonPrimitive(id.toString())).getOrThrow();
+        assertEquals(new EnergySystem(id), decoded);
+    }
+
+    @Test
+    void burstCanExceedBusOutputButRequiresFullBufferCharge() {
+        ExoskeletonData data = data(ModFrames.CIVILIAN.getDefinition().id())
+                .withEnergySystem(new EnergySystem(ModEnergySystems.CIVILIAN.getDefinition().id(), 1_000));
+        var result = EnergyOperations.consumeEnergy(data, 800);
+        assertTrue(result.sufficient());
+        assertEquals(200, result.data().energySystem().orElseThrow().bufferStored());
+        assertFalse(EnergyOperations.consumeEnergy(result.data(), 300).sufficient());
+    }
+
+    @Test
+    void continuousPowerUsesBatteryBeforeBuffer() {
+        ExoskeletonData data = data(ModFrames.EXPERIMENTAL.getDefinition().id(),
+                new InstalledModule(TestModules.TEST_BATTERY.getDefinition().id(), 0, 0, 0, 5),
+                new InstalledModule(TestModules.TEST_NIGHT_VISION.getDefinition().id(), 2, 0, 0))
+                .withEnergySystem(new EnergySystem(ModEnergySystems.CIVILIAN.getDefinition().id(), 5_000));
+        var first = EnergyOperations.tick(data);
+        assertEquals(5, first.consumed());
+        assertEquals(5_000, first.data().energySystem().orElseThrow().bufferStored());
+        assertEquals(0, module(first.data(), 0).storedEnergy());
+        var second = EnergyOperations.tick(first.data());
+        assertEquals(5, second.consumed());
+        assertEquals(4_995, second.data().energySystem().orElseThrow().bufferStored());
     }
 
     @Test
@@ -228,10 +268,8 @@ class EnergyOperationsTest {
         assertTrue(result.generated() > 0);
         assertEquals(result.generated(), result.charged());
         assertEquals(0, result.wasted());
-        assertEquals(
-                result.charged(),
-                module(result.data(), 1).storedEnergy()
-        );
+        assertEquals(result.charged(), result.data().energySystem().orElseThrow().bufferStored());
+        assertEquals(0, module(result.data(), 1).storedEnergy());
     }
 
     @Test
@@ -261,41 +299,17 @@ class EnergyOperationsTest {
     }
 
     @Test
-    void batteryOutputUsesTemperatureScaledLimit() {
-        ExoskeletonData data = data(
-                ModFrames.EXPERIMENTAL.getDefinition().id(),
-                new InstalledModule(
-                        TestModules.TEST_BATTERY
-                                .getDefinition()
-                                .id(),
-                        0,
-                        0,
-                        0,
-                        1000
-                )
-        ).withTemperature(150.0D);
+    void batteryRefillUsesTemperatureScaledOutputLimit() {
+        ExoskeletonData data = data(ModFrames.EXPERIMENTAL.getDefinition().id(),
+                new InstalledModule(TestModules.TEST_BATTERY.getDefinition().id(), 0, 0, 0, 1_000))
+                .withTemperature(150.0D);
+        MatrixData matrix = data.matrices().get(0).matrix().orElseThrow();
+        int expectedOutput = MatrixOperations.calculateEnergyStorageOutput(
+                matrix, module -> true, data.temperature());
 
-        MatrixData matrix = data.matrices()
-                .get(0)
-                .matrix()
-                .orElseThrow();
-        int expectedOutput =
-                MatrixOperations.calculateEnergyStorageOutput(
-                        matrix,
-                        module -> true,
-                        data.temperature()
-                );
-
-        EnergyOperations.EnergyConsumptionResult result =
-                EnergyOperations.consumeEnergy(data, 50);
-
-        assertTrue(expectedOutput < 50);
-        assertFalse(result.sufficient());
-        assertEquals(expectedOutput, result.consumed());
-        assertEquals(
-                1000 - expectedOutput,
-                module(result.data(), 0).storedEnergy()
-        );
+        EnergyTickResult result = EnergyOperations.tick(data);
+        assertEquals(expectedOutput, result.data().energySystem().orElseThrow().bufferStored());
+        assertEquals(1_000 - expectedOutput, module(result.data(), 0).storedEnergy());
     }
 
     @Test
@@ -318,8 +332,8 @@ class EnergyOperationsTest {
                 EnergyOperations.tick(data, provider);
 
         assertEquals(0, result.consumed());
-        assertEquals(0, result.externalInput());
-        assertEquals(0, provider.extracted());
+        assertEquals(3, result.externalInput());
+        assertEquals(3, provider.extracted());
         assertFalse(
                 result.isPowered(
                         new InstalledModuleReference(0, 0)

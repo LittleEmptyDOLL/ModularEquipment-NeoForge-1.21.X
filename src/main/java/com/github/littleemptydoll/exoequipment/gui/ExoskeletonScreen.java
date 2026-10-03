@@ -171,7 +171,8 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
         drawExpandedParametersButton(guiGraphics);
         drawProfileHover(guiGraphics);
 
-        drawStatusValue(guiGraphics, formatEnergy(menu.getEnergyStored(), menu.getEnergyCapacity()), ENERGY_Y);
+        drawStatusValue(guiGraphics, formatEnergy(menu.getEnergyStored() + menu.getBufferStored(),
+                menu.getEnergyCapacity() + menu.getBufferCapacity()), ENERGY_Y);
         drawStatusValue(guiGraphics, formatTemperature(menu.getTemperature()), TEMPERATURE_Y);
         drawStatusValue(guiGraphics, getProfileText(), PROFILE_Y);
         drawMatrixIndicators(guiGraphics);
@@ -357,6 +358,16 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     protected void renderTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         int localMouseX = mouseX - leftPos;
         int localMouseY = mouseY - topPos;
+
+        if (isInside(localMouseX, localMouseY, STATUS_VALUE_X, ENERGY_Y,
+                PROFILE_MAX_WIDTH, 12)) {
+            guiGraphics.renderComponentTooltip(font, List.of(
+                    Component.translatable("gui.exoequipment.energy.battery",
+                            menu.getEnergyStored(), menu.getEnergyCapacity()),
+                    Component.translatable("gui.exoequipment.energy.buffer",
+                            menu.getBufferStored(), menu.getBufferCapacity())), mouseX, mouseY);
+            return;
+        }
 
         if (isInside(
                 localMouseX,

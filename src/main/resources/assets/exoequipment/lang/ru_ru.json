@@ -424,5 +424,10 @@
   "item.exoequipment.discharge_defense_module": "Разрядная защита",
   "item.exoequipment.experimental_arc_defense_module": "Экспериментальная дуговая защита",
   "key.exoequipment.toggle_laser_defense": "Включить/выключить лазерную защиту",
-  "key.exoequipment.toggle_discharge_defense": "Включить/выключить разрядную защиту"
+  "key.exoequipment.toggle_discharge_defense": "Включить/выключить разрядную защиту",
+  "tooltip.exoequipment.buffer_capacity": "Ёмкость буфера: %s FE",
+  "gui.exoequipment.energy.battery": "Батареи: %s / %s FE",
+  "gui.exoequipment.energy.buffer": "Буфер: %s / %s FE",
+  "gui.exoequipment.characteristic.buffer_stored": "Заряд буфера",
+  "gui.exoequipment.characteristic.buffer_capacity": "Ёмкость буфера"
 }

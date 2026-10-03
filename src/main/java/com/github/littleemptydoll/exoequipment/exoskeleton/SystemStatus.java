@@ -44,7 +44,7 @@ public record SystemStatus(int severity, int flags) {
         if (energy.maxInput() == 0 && energy.maxOutput() == 0) {
             severity = GRAY;
         } else if (energy.generation() == 0
-                && energy.storedEnergy() == 0
+                && energy.storedEnergy() == 0 && energy.bufferStored() == 0
                 && energy.consumption() > 0) {
             flags |= FLAG_ENERGY_CRITICAL;
             severity = RED;

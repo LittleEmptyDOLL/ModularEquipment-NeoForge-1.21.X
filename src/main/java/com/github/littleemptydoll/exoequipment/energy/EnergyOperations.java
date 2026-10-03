@@ -41,15 +41,14 @@ import java.util.Set;
  *     <li>batteries.</li>
  * </ol>
  *
- * <p>Battery charging is the lowest-priority consumer of the bus. Generator
- * surplus is used before external energy, and battery storage itself applies
- * its own {@code maxInput} limit.</p>
+ * <p>Surplus charges the shared buffer first, then batteries. A battery can
+ * refill the buffer between bursts within its discharge and bus limits.
+ * Bursts spend only the charged buffer and can exceed the per-tick bus output.</p>
  */
 public final class EnergyOperations {
     private EnergyOperations() {}
 
-    /** Accepts energy pushed into the item by a charger. Only active batteries
-     * can store it; the energy system and battery input limits both apply. */
+    /** Accepts charger energy into the buffer first, then active batteries. */
     public static EnergyReceiveResult receiveExternalEnergy(
             ExoskeletonData data, int maxReceive, boolean simulate
     ) {
@@ -57,19 +56,22 @@ public final class EnergyOperations {
             return new EnergyReceiveResult(data, 0);
         }
 
-        int maxInput = ModEnergySystems.getDefinition(
-                data.energySystem().orElseThrow().definitionId()
-        ).maxInput();
+        var system = data.energySystem().orElseThrow();
+        var definition = ModEnergySystems.getDefinition(system.definitionId());
+        int maxInput = definition.maxInput();
         EnergyStorageLayout storage = EnergyStorageLayout.create(data);
+        int bufferRoom = Math.max(0, definition.bufferCapacity() - system.bufferStored());
         int accepted = Math.min(maxReceive,
-                Math.min(maxInput, storage.availableInput()));
+                Math.min(maxInput, bufferRoom + storage.availableInput()));
 
         if (simulate || accepted == 0) {
             return new EnergyReceiveResult(data, accepted);
         }
 
-        int received = storage.charge(accepted);
-        return new EnergyReceiveResult(storage.apply(data), received);
+        int toBuffer = Math.min(bufferRoom, accepted);
+        int toBattery = storage.charge(accepted - toBuffer);
+        return new EnergyReceiveResult(storage.apply(data.withEnergySystem(
+                system.withBufferStored(system.bufferStored() + toBuffer))), toBuffer + toBattery);
     }
 
     public record EnergyReceiveResult(ExoskeletonData data, int received) {}
@@ -192,6 +194,8 @@ public final class EnergyOperations {
         var state = ExoskeletonState.calculateState(data);
         EnergyStorageLayout storage =
                 EnergyStorageLayout.create(data);
+        int buffer = Math.min(data.energySystem().orElseThrow().bufferStored(),
+                energySystem.bufferCapacity());
 
         int remainingInput = Math.max(0, energySystem.maxInput() - inputAlreadyUsed);
         int remainingOutput = energySystem.maxOutput();
@@ -245,11 +249,10 @@ public final class EnergyOperations {
                             storage.availableOutput()
                     )
             );
+            int availableBuffer = Math.min(buffer, remainingInput);
 
-            if (generatedAvailable
-                    + availableExternal
-                    + availableBattery
-                    < required) {
+            if (generatedAvailable + Math.min(remainingInput,
+                    availableExternal + availableBattery + availableBuffer) < required) {
                 continue;
             }
 
@@ -272,9 +275,15 @@ public final class EnergyOperations {
 
             int fromBattery = 0;
             if (remaining > 0) {
-                fromBattery = storage.discharge(remaining);
+                fromBattery = storage.discharge(Math.min(remaining,
+                        remainingInput - fromExternal));
                 remaining -= fromBattery;
             }
+
+            int fromBuffer = Math.min(remaining,
+                    Math.min(buffer, remainingInput - fromExternal - fromBattery));
+            remaining -= fromBuffer;
+            buffer -= fromBuffer;
 
             if (remaining > 0) {
                 // A well-behaved external provider returns the amount it
@@ -282,104 +291,76 @@ public final class EnergyOperations {
                 // do not mark the module as powered with partial energy.
                 externalInput += fromExternal;
                 externalAvailable -= fromExternal;
-                remainingInput -= fromExternal + fromBattery;
-                discharged += fromBattery;
+                remainingInput -= fromExternal + fromBattery + fromBuffer;
+                discharged += fromBattery + fromBuffer;
                 continue;
             }
 
             generatedAvailable -= fromGenerated;
             externalInput += fromExternal;
             externalAvailable -= fromExternal;
-            remainingInput -= fromExternal + fromBattery;
-            discharged += fromBattery;
+            remainingInput -= fromExternal + fromBattery + fromBuffer;
+            discharged += fromBattery + fromBuffer;
             consumed += required;
             remainingOutput -= required;
 
             poweredModules.add(consumer.reference());
         }
 
-        // Weapon capacitors are filled over several ticks. The per-tick transfer
-        // shares the same input/output budget as normal consumers and batteries.
-        ExoskeletonData updatedData = data;
-        if (storage.availableInput() > 0 || storage.availableOutput() > 0) {
-            for (ExoskeletonModules.ActiveModule activeModule : ExoskeletonModules.activeSupported(data)) {
-                InstalledModule module = activeModule.module();
-                if (!module.active()) continue;
-                int cost = activeModule.definition().laserDefense()
-                        .map(properties -> properties.energyCost())
-                        .orElseGet(() -> activeModule.definition().dischargeDefense()
-                                .map(properties -> properties.energyCost()).orElse(0));
-                if (cost <= 0 || module.weaponCharge() >= cost || remainingOutput <= 0) continue;
+        // Fill the shared reserve before batteries. All transfers into it
+        // happen during ticks; a burst never pulls from a battery directly.
+        int bufferRoom = Math.max(0, energySystem.bufferCapacity() - buffer);
+        int fromGenerated = Math.min(bufferRoom, Math.min(generatedAvailable, remainingOutput));
+        buffer += fromGenerated;
+        charged += fromGenerated;
+        generatedAvailable -= fromGenerated;
+        remainingOutput -= fromGenerated;
+        bufferRoom -= fromGenerated;
 
-                int requested = Math.min(cost - module.weaponCharge(), remainingOutput);
-                int fromGenerated = Math.min(requested, generatedAvailable);
-                int remaining = requested - fromGenerated;
-                int fromExternal = extractExternal(externalSource,
-                        Math.min(remaining, Math.min(externalAvailable, remainingInput)), false);
-                remaining -= fromExternal;
-                int fromBattery = storage.discharge(Math.min(remaining, remainingInput - fromExternal));
-                int transferred = fromGenerated + fromExternal + fromBattery;
-                if (transferred <= 0) continue;
+        int externalRequested = Math.min(bufferRoom,
+                Math.min(externalAvailable, Math.min(remainingInput, remainingOutput)));
+        int fromExternal = extractExternal(externalSource, externalRequested, false);
+        buffer += fromExternal;
+        charged += fromExternal;
+        externalInput += fromExternal;
+        externalAvailable -= fromExternal;
+        remainingInput -= fromExternal;
+        remainingOutput -= fromExternal;
+        bufferRoom -= fromExternal;
 
-                updatedData = ExoskeletonModules.update(updatedData, activeModule.reference(),
-                        module.withWeaponCharge(module.weaponCharge() + transferred));
-                generatedAvailable -= fromGenerated;
-                externalAvailable -= fromExternal;
-                externalInput += fromExternal;
-                remainingInput -= fromExternal + fromBattery;
-                remainingOutput -= transferred;
-                discharged += fromBattery;
-                consumed += transferred;
-            }
-        }
+        // A battery can refill an empty reserve over multiple ticks. Its
+        // output and the energy bus input/output budgets limit that transfer.
+        int fromBattery = storage.discharge(Math.min(bufferRoom,
+                Math.min(remainingInput, Math.min(remainingOutput, storage.availableOutput()))));
+        buffer += fromBattery;
+        charged += fromBattery;
+        discharged += fromBattery;
+        remainingInput -= fromBattery;
+        remainingOutput -= fromBattery;
 
-        if (generatedAvailable > 0
-                && remainingOutput > 0) {
-            int chargeRequested = Math.min(
-                    generatedAvailable,
-                    Math.min(
-                            remainingOutput,
-                            storage.availableInput()
-                    )
-            );
-
-            int transferred = storage.charge(chargeRequested);
+        if (generatedAvailable > 0 && remainingOutput > 0) {
+            int requested = Math.min(generatedAvailable,
+                    Math.min(remainingOutput, storage.availableInput()));
+            int transferred = storage.charge(requested);
             charged += transferred;
             generatedAvailable -= transferred;
             remainingOutput -= transferred;
         }
 
-        if (externalAvailable > 0
-                && remainingInput > 0
-                && remainingOutput > 0) {
-            int chargeRequested = Math.min(
-                    externalAvailable,
-                    Math.min(
-                            remainingInput,
-                            Math.min(
-                                    remainingOutput,
-                                    storage.availableInput()
-                            )
-                    )
-            );
-
-            int externalCharge = extractExternal(
-                    externalSource,
-                    chargeRequested,
-                    false
-            );
-
-            if (externalCharge > 0) {
-                int transferred = storage.charge(externalCharge);
-
-                charged += transferred;
-                externalInput += transferred;
-                externalAvailable -= transferred;
-                remainingInput -= transferred;
-                remainingOutput -= transferred;
-            }
+        if (externalAvailable > 0 && remainingInput > 0 && remainingOutput > 0) {
+            int requested = Math.min(externalAvailable,
+                    Math.min(remainingInput, Math.min(remainingOutput, storage.availableInput())));
+            int extracted = extractExternal(externalSource, requested, false);
+            int transferred = storage.charge(extracted);
+            charged += transferred;
+            externalInput += transferred;
+            externalAvailable -= transferred;
+            remainingInput -= transferred;
+            remainingOutput -= transferred;
         }
 
+        ExoskeletonData updatedData = data.withEnergySystem(
+                data.energySystem().orElseThrow().withBufferStored(buffer));
         updatedData = storage.apply(updatedData);
 
         int deficit = Math.max(0, totalDemand - consumed);
@@ -459,29 +440,16 @@ public final class EnergyOperations {
             );
         }
 
-        var energySystem = ModEnergySystems.getDefinition(
-                data.energySystem()
-                        .get()
-                        .definitionId()
-        );
-
-        if (amount > energySystem.maxOutput()) {
-            return new EnergyConsumptionResult(
-                    data,
-                    false,
-                    0
-            );
+        var system = data.energySystem().orElseThrow();
+        int available = Math.min(system.bufferStored(),
+                ModEnergySystems.getDefinition(system.definitionId()).bufferCapacity());
+        if (amount > available) {
+            return new EnergyConsumptionResult(data, false, 0);
         }
-
-        EnergyStorageLayout storage =
-                EnergyStorageLayout.create(data);
-        int transferred = storage.discharge(amount);
-
         return new EnergyConsumptionResult(
-                storage.apply(data),
-                transferred == amount,
-                transferred
-        );
+                data.withEnergySystem(system.withBufferStored(available - amount)),
+                true, amount);
+
     }
 
     private static List<EnergyConsumer> collectConsumers(

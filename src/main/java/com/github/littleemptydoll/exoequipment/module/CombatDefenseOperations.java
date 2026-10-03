@@ -1,6 +1,6 @@
 package com.github.littleemptydoll.exoequipment.module;
 
-import com.github.littleemptydoll.exoequipment.energy.EnergyState;
+import com.github.littleemptydoll.exoequipment.energy.EnergyOperations;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
 import net.minecraft.core.particles.ParticleOptions;
@@ -18,14 +18,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-/** Server-authoritative auto-defense; each module owns its charge and cooldown. */
+/** Server-authoritative auto-defense; bursts draw from the shared energy buffer. */
 public final class CombatDefenseOperations {
     private CombatDefenseOperations() {}
 
     public static ExoskeletonData tick(ServerPlayer owner, ExoskeletonData data) {
         ExoskeletonData updated = data;
-        boolean hasBattery = data.energySystem().isPresent()
-                && EnergyState.calculate(data).storageCapacity() > 0;
         Set<UUID> claimed = new HashSet<>();
         boolean firedAny = false;
 
@@ -40,19 +38,20 @@ public final class CombatDefenseOperations {
                 module = module.withAbilityCooldown(cooldown);
                 updated = ExoskeletonModules.update(updated, active.reference(), module);
             }
-            if (!hasBattery || !module.active() || cooldown > 0) continue;
+            if (!module.active() || cooldown > 0) continue;
 
             int cost = laser != null ? laser.energyCost() : discharge.energyCost();
-            if (module.weaponCharge() < cost) continue;
+            var payment = EnergyOperations.consumeEnergy(updated, cost);
+            if (!payment.sufficient()) continue;
 
             boolean fired = laser != null
                     ? fireLaser(owner, laser, claimed)
                     : fireDischarge(owner, discharge, claimed);
             if (fired) {
                 firedAny = true;
+                updated = payment.data();
                 updated = ExoskeletonModules.update(updated, active.reference(),
-                        module.withWeaponCharge(module.weaponCharge() - cost)
-                                .withAbilityCooldown(laser != null ? laser.cooldown() : discharge.cooldown()));
+                        module.withAbilityCooldown(laser != null ? laser.cooldown() : discharge.cooldown()));
             }
         }
         if (firedAny) {

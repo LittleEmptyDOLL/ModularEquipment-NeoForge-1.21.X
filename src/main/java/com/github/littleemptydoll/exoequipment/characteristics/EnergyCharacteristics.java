@@ -74,6 +74,9 @@ final class EnergyCharacteristics {
                 state.storedEnergy()
         );
 
+        addCurrent(result, "buffer_stored", state.bufferStored());
+        addCurrent(result, "buffer_capacity", state.bufferCapacity());
+
         addCurrent(
                 result,
                 "max_input",

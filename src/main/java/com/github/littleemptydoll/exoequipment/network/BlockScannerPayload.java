@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.network;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.module.ScannedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -11,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.ArrayList;
 import java.util.List;
 
-public record BlockScannerPayload(List<BlockPos> positions)
+public record BlockScannerPayload(List<ScannedBlock> positions)
         implements CustomPacketPayload {
 
     public static final Type<BlockScannerPayload> TYPE = new Type<>(
@@ -21,10 +22,19 @@ public record BlockScannerPayload(List<BlockPos> positions)
             )
     );
 
-    private static final StreamCodec<RegistryFriendlyByteBuf, List<BlockPos>> POSITIONS_CODEC =
+    private static final StreamCodec<RegistryFriendlyByteBuf, ScannedBlock> SCANNED_BLOCK_CODEC =
+            StreamCodec.composite(
+                    BlockPos.STREAM_CODEC,
+                    ScannedBlock::position,
+                    ByteBufCodecs.VAR_INT,
+                    ScannedBlock::color,
+                    ScannedBlock::new
+            );
+
+    private static final StreamCodec<RegistryFriendlyByteBuf, List<ScannedBlock>> POSITIONS_CODEC =
             ByteBufCodecs.collection(
                     ArrayList::new,
-                    BlockPos.STREAM_CODEC
+                    SCANNED_BLOCK_CODEC
             );
 
     public static final StreamCodec<RegistryFriendlyByteBuf, BlockScannerPayload> STREAM_CODEC =

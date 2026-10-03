@@ -14,14 +14,15 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public final class BlockScannerOperations {
     private BlockScannerOperations() {}
 
-    public static List<BlockPos> scanBlocks(
+    public static List<ScannedBlock> scanBlocks(
             Level level,
             BlockPos center,
             ExoskeletonData data,
@@ -42,7 +43,7 @@ public final class BlockScannerOperations {
                 .orElse(0.0D);
 
         int radius = (int) Math.ceil(maxRange);
-        Set<BlockPos> result = new HashSet<>();
+        Map<BlockPos, Integer> result = new LinkedHashMap<>();
 
         for (BlockPos pos : BlockPos.betweenClosed(
                 center.offset(-radius, -radius, -radius),
@@ -61,16 +62,17 @@ public final class BlockScannerOperations {
                         level.getBlockState(pos),
                         target.properties()
                 )) {
-                    result.add(pos.immutable());
+                    result.putIfAbsent(pos.immutable(), target.properties().color());
                     break;
                 }
             }
         }
 
-        return result.stream()
+        return result.entrySet().stream()
                 .sorted(Comparator.comparingDouble(
-                        pos -> pos.distSqr(center)
+                        entry -> entry.getKey().distSqr(center)
                 ))
+                .map(entry -> new ScannedBlock(entry.getKey(), entry.getValue()))
                 .toList();
     }
 

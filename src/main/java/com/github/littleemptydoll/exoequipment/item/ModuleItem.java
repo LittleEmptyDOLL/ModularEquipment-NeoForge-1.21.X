@@ -304,6 +304,7 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
 
         definition.blockScanner().ifPresent(value -> {
             tooltip.add(TooltipHelper.property("scanner range", value.range() * efficiency));
+            tooltip.add(TooltipHelper.property("scanner color", String.format(java.util.Locale.ROOT, "#%06X", value.color())));
             tooltip.add(TooltipHelper.property("block scanner active consumption", value.activeConsumption() + " FE/t"));
             if (!value.blocks().isEmpty()) {
                 tooltip.add(TooltipHelper.property("scanner blocks", value.blocks().stream()

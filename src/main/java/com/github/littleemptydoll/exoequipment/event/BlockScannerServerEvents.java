@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonModules;
 import com.github.littleemptydoll.exoequipment.module.BlockScannerOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
+import com.github.littleemptydoll.exoequipment.module.ScannedBlock;
 import com.github.littleemptydoll.exoequipment.network.BlockScannerPayload;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -74,7 +75,7 @@ public final class BlockScannerServerEvents {
             return;
         }
 
-        List<BlockPos> positions =
+        List<ScannedBlock> positions =
                 scannerModules.isEmpty()
                         ? List.of()
                         : BlockScannerOperations.scanBlocks(
@@ -164,7 +165,7 @@ public final class BlockScannerServerEvents {
 
     private record ScanCache(
             ScanKey key,
-            List<BlockPos> positions
+            List<ScannedBlock> positions
     ) {
         private ScanCache {
             positions = List.copyOf(positions);

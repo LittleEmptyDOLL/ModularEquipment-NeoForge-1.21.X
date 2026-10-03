@@ -130,7 +130,8 @@ final class ModSensorModules {
                 Rarity.RARE,
                 20,
                 50,
-                16.0D
+                16.0D,
+                0x1AE6FF
         );
         registerBlockScanner(
                 registry,
@@ -139,7 +140,8 @@ final class ModSensorModules {
                 Rarity.EPIC,
                 30,
                 70,
-                24.0D
+                24.0D,
+                0xC17AFF
         );
     }
 
@@ -201,7 +203,8 @@ final class ModSensorModules {
             Rarity rarity,
             int energyConsumption,
             int activeConsumption,
-            double range
+            double range,
+            int color
     ) {
         registry.register(
                 id,
@@ -221,7 +224,8 @@ final class ModSensorModules {
                                         range,
                                         List.of(),
                                         List.of(ORES_TAG),
-                                        activeConsumption
+                                        activeConsumption,
+                                        color
                                 ))
                                 .build()
         );

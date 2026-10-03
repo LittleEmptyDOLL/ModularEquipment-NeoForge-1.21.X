@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.client;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.module.ScannedBlock;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -8,7 +9,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -44,11 +44,11 @@ public final class BlockScannerClient {
                     .createCompositeState(false)
     );
 
-    private static volatile List<BlockPos> positions = List.of();
+    private static volatile List<ScannedBlock> positions = List.of();
 
     private BlockScannerClient() {}
 
-    public static void setPositions(List<BlockPos> newPositions) {
+    public static void setPositions(List<ScannedBlock> newPositions) {
         positions = List.copyOf(newPositions);
     }
 
@@ -81,14 +81,15 @@ public final class BlockScannerClient {
                 -cameraPos.z
         );
 
-        for (BlockPos pos : positions) {
+        for (ScannedBlock scanned : positions) {
+            int color = scanned.color();
             LevelRenderer.renderLineBox(
                     event.getPoseStack(),
                     consumer,
-                    new AABB(pos).inflate(0.002D),
-                    0.1F,
-                    0.9F,
-                    1.0F,
+                    new AABB(scanned.position()).inflate(0.002D),
+                    ((color >> 16) & 0xFF) / 255.0F,
+                    ((color >> 8) & 0xFF) / 255.0F,
+                    (color & 0xFF) / 255.0F,
                     1.0F
             );
         }

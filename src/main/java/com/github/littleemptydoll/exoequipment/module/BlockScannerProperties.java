@@ -10,8 +10,11 @@ public record BlockScannerProperties(
         double range,
         List<ResourceLocation> blocks,
         List<ResourceLocation> tags,
-        int activeConsumption
+        int activeConsumption,
+        int color
 ) {
+    public static final int DEFAULT_COLOR = 0x1AE6FF;
+
     public static final Codec<BlockScannerProperties> CODEC =
             RecordCodecBuilder.create(instance ->
                     instance.group(
@@ -26,7 +29,10 @@ public record BlockScannerProperties(
                                     .forGetter(BlockScannerProperties::tags),
                             Codec.INT
                                     .optionalFieldOf("active_consumption", 0)
-                                    .forGetter(BlockScannerProperties::activeConsumption)
+                                    .forGetter(BlockScannerProperties::activeConsumption),
+                            Codec.INT
+                                    .optionalFieldOf("color", DEFAULT_COLOR)
+                                    .forGetter(BlockScannerProperties::color)
                     ).apply(instance, BlockScannerProperties::new)
             );
 
@@ -46,6 +52,9 @@ public record BlockScannerProperties(
             throw new IllegalArgumentException(
                     "Block scanner active consumption cannot be negative"
             );
+        }
+        if (color < 0 || color > 0xFFFFFF) {
+            throw new IllegalArgumentException("Block scanner color must be a 24-bit RGB value");
         }
 
         blocks = List.copyOf(blocks);

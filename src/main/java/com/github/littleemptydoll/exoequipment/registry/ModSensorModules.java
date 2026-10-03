@@ -20,7 +20,7 @@ final class ModSensorModules {
     private static final ModuleSize NIGHT_VISION_SIZE = new ModuleSize(1, 1);
     private static final ModuleSize ENTITY_SENSOR_SIZE = new ModuleSize(2, 2);
     private static final ModuleSize BLOCK_SCANNER_SIZE = new ModuleSize(2, 2);
-    private static final ModuleSize THERMAL_VISION_SIZE = new ModuleSize(2, 2);
+    private static final ModuleSize THERMAL_VISION_SIZE = new ModuleSize(2, 3);
 
     private static final int SENSOR_PRIORITY = 4;
 
@@ -57,7 +57,7 @@ final class ModSensorModules {
                                         NIGHT_VISION_SIZE
                                 )
                                 .energy(new EnergyProperties(
-                                        2,
+                                        20,
                                         SENSOR_PRIORITY
                                 ))
                                 .effects(new EffectsProperties(
@@ -72,48 +72,48 @@ final class ModSensorModules {
     ) {
         registerEntitySensor(
                 registry,
-                "civilian_entity_sensor",
+                "basic_entity_sensor",
                 EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON,
-                2,
-                4,
+                20,
+                30,
                 12.0D,
                 false,
                 true,
-                false
+                true
         );
         registerEntitySensor(
                 registry,
-                "engineering_entity_sensor",
+                "lifeform_scanner",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
-                4,
-                6,
-                16.0D,
-                false,
+                30,
+                40,
+                20.0D,
+                true,
                 true,
                 true
         );
         registerEntitySensor(
                 registry,
-                "military_entity_sensor",
+                "threat_sensor",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
-                7,
-                9,
-                24.0D,
+                30,
+                50,
+                28.0D,
                 true,
-                true,
+                false,
                 true
         );
         registerEntitySensor(
                 registry,
-                "experimental_entity_sensor",
+                "multispectral_sensor",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
-                10,
-                14,
-                32.0D,
+                40,
+                70,
+                40.0D,
                 true,
                 true,
                 true
@@ -125,29 +125,20 @@ final class ModSensorModules {
     ) {
         registerBlockScanner(
                 registry,
-                "engineering_ore_scanner",
+                "resource_scanner",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
-                6,
-                8,
-                12.0D
-        );
-        registerBlockScanner(
-                registry,
-                "military_ore_scanner",
-                EquipmentTier.MILITARY,
-                Rarity.RARE,
-                8,
-                12,
+                20,
+                50,
                 16.0D
         );
         registerBlockScanner(
                 registry,
-                "experimental_ore_scanner",
+                "advanced_resource_scanner",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
-                10,
-                18,
+                30,
+                70,
                 24.0D
         );
     }
@@ -156,12 +147,12 @@ final class ModSensorModules {
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry
     ) {
         registry.register(
-                "military_thermal_vision",
+                "thermal_vision",
                 new EquipmentProperties(EquipmentTier.MILITARY, Rarity.RARE),
                 (id, properties) -> ModuleDefinition.builder(
                                 id, properties, ModuleCategory.SENSOR, THERMAL_VISION_SIZE)
-                        .energy(new EnergyProperties(4, SENSOR_PRIORITY))
-                        .thermalVision(new ThermalVisionProperties(10))
+                        .energy(new EnergyProperties(20, SENSOR_PRIORITY))
+                        .thermalVision(new ThermalVisionProperties(40))
                         .build()
         );
     }

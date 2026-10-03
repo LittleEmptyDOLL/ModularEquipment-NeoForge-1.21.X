@@ -27,6 +27,7 @@ public final class CombatDefenseOperations {
         boolean hasBattery = data.energySystem().isPresent()
                 && EnergyState.calculate(data).storageCapacity() > 0;
         Set<UUID> claimed = new HashSet<>();
+        boolean firedAny = false;
 
         for (var active : ExoskeletonModules.activeSupported(data)) {
             LaserDefenseProperties laser = active.definition().laserDefense().orElse(null);
@@ -48,9 +49,17 @@ public final class CombatDefenseOperations {
                     ? fireLaser(owner, laser, claimed)
                     : fireDischarge(owner, discharge, claimed);
             if (fired) {
+                firedAny = true;
                 updated = ExoskeletonModules.update(updated, active.reference(),
                         module.withWeaponCharge(module.weaponCharge() - cost)
                                 .withAbilityCooldown(laser != null ? laser.cooldown() : discharge.cooldown()));
+            }
+        }
+        if (firedAny) {
+            for (var active : ExoskeletonModules.activeSupported(updated)) {
+                if (active.module().active() && active.definition().cloaking().isPresent()) {
+                    updated = CloakingOperations.deactivate(updated, active.reference());
+                }
             }
         }
         return updated;

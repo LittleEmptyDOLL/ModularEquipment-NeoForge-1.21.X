@@ -8,7 +8,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.fml.ModList;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 final class ModCombatModules {
     private static final ModuleSize SMALL_SIZE = new ModuleSize(1, 2);
@@ -353,6 +355,8 @@ final class ModCombatModules {
                 Rarity.RARE, LARGE_SIZE, 6, 5, 8, 0.75F, 1, 3, 60, 8_000);
         registerDischarge(registry, "experimental_arc_defense", EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC, new ModuleSize(3, 3), 7, 6, 10, 0.80F, 2, 5, 40, 25_000);
+
+        registerAdrenaline(registry);
     }
 
     private static void registerLaser(EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
@@ -432,6 +436,29 @@ final class ModCombatModules {
                                 .thermal(thermalProperties)
                                 .build()
         );
+    }
+
+    private static void registerAdrenaline(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
+    ) {
+        registry.register("adrenaline",
+                new EquipmentProperties(EquipmentTier.MILITARY, Rarity.RARE),
+                (resourceLocation, properties) ->
+                        ModuleDefinition.builder(
+                                        resourceLocation,
+                                        properties,
+                                        ModuleCategory.COMBAT,
+                                        MEDIUM_SIZE)
+                                .energy(new EnergyProperties(30, 4))
+                                .conditionalAttributes(new ConditionalAttributeProperties(
+                                        List.of(new AttributeCondition(
+                                                AttributeCondition.Type.HEALTH_BELOW, Optional.of(0.30D))),
+                                        new AttributeProperties(Map.ofEntries(
+                                                Map.entry(ATTACK_DAMAGE, multipliedBase(0.25D)),
+                                                Map.entry(ATTACK_SPEED, multipliedBase(0.15D))
+                                        )))
+                                )
+                                .build());
     }
 
     private static AttributeModifierProperties multipliedBase(

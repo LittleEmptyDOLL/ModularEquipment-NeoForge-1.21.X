@@ -23,6 +23,8 @@ final class ModSurvivalModules {
 
     private static final ResourceLocation MAX_HEALTH =
             ResourceLocation.parse("minecraft:generic.max_health");
+    private static final ResourceLocation OXYGEN_BONUS =
+            ResourceLocation.parse("minecraft:generic.oxygen_bonus");
 
     private ModSurvivalModules() {}
 
@@ -36,6 +38,7 @@ final class ModSurvivalModules {
         if (ModList.get() != null && ModList.get().isLoaded("legendarysurvivaloverhaul")) {
             registerBodyRegenerationModules(registry);
         }
+        registerUnderwaterModules(registry);
     }
 
     private static void registerHealthModules(
@@ -88,6 +91,7 @@ final class ModSurvivalModules {
                             .energy(new EnergyProperties(10, SURVIVAL_PRIORITY))
                             .thirst(new ThirstProperties(0.15D))
                             .build());
+
             registry.register("life_support_system", new EquipmentProperties(EquipmentTier.ENGINEERING, Rarity.RARE),
                     (resourceLocation, properties) -> ModuleDefinition.builder(
                                     resourceLocation, properties, ModuleCategory.SURVIVAL, MEDIUM_SIZE)
@@ -158,6 +162,31 @@ final class ModSurvivalModules {
                 Rarity.RARE, 35, 0.10D);
         registerBodyRegeneration(registry, "advanced_trauma_system", EquipmentTier.MILITARY,
                 Rarity.RARE, 70, 0.25D);
+    }
+
+    private static void registerUnderwaterModules(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry
+    ) {
+        registry.register(
+                "respiratory_support",
+                new EquipmentProperties(EquipmentTier.ENGINEERING, Rarity.RARE),
+                (resourceLocation, properties) ->
+                        ModuleDefinition.builder(
+                                        resourceLocation,
+                                        properties,
+                                        ModuleCategory.SURVIVAL,
+                                        SMALL_SIZE
+                                )
+                                .energy(new EnergyProperties(
+                                        20,
+                                        SURVIVAL_PRIORITY
+                                ))
+                                .attributes(new AttributeProperties(
+                                        Map.of(OXYGEN_BONUS, multipliedBase(0.25D)
+                                        )
+                                ))
+                                .build()
+        );
     }
 
     private static void registerHealth(
@@ -269,5 +298,14 @@ final class ModSurvivalModules {
                         .energy(new EnergyProperties(consumption, SURVIVAL_PRIORITY))
                         .bodyDamageRegeneration(new BodyDamageRegenerationProperties(healthPerSecond))
                         .build());
+    }
+
+    private static AttributeModifierProperties multipliedBase(
+            double amount
+    ) {
+        return new AttributeModifierProperties(
+                amount,
+                AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+        );
     }
 }

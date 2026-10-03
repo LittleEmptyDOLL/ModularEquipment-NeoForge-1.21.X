@@ -1,10 +1,8 @@
 package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.item.ModuleItem;
-import com.github.littleemptydoll.exoequipment.module.AttributeCondition;
 import com.github.littleemptydoll.exoequipment.module.AttributeModifierProperties;
 import com.github.littleemptydoll.exoequipment.module.AttributeProperties;
-import com.github.littleemptydoll.exoequipment.module.ConditionalAttributeProperties;
 import com.github.littleemptydoll.exoequipment.module.EnergyProperties;
 import com.github.littleemptydoll.exoequipment.module.ModuleCategory;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
@@ -17,7 +15,6 @@ import net.neoforged.fml.ModList;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 final class ModAttributeModules {
     private static final ModuleSize SMALL = new ModuleSize(1, 2);
@@ -42,9 +39,6 @@ final class ModAttributeModules {
             series("knockback_resistance", ModuleCategory.DEFENSE, SMALL,
                     "minecraft:generic.knockback_resistance", AttributeModifier.Operation.ADD_VALUE,
                     8, 0.1D, 0.2D, 0.3D, 0.5D),
-            series("oxygen_reserve", ModuleCategory.SURVIVAL, SMALL,
-                    "minecraft:generic.oxygen_bonus", AttributeModifier.Operation.ADD_VALUE,
-                    7, 1, 2, 3, 5),
             series("safe_fall", ModuleCategory.MOBILITY, SMALL,
                     "minecraft:generic.safe_fall_distance", AttributeModifier.Operation.ADD_VALUE,
                     5, 1, 2, 3, 5),
@@ -78,9 +72,6 @@ final class ModAttributeModules {
         if (ModList.get() != null && ModList.get().isLoaded("apothic_attributes")) {
             registerSeries(registry, APOTHIC_SERIES);
         }
-        for (int tier = 0; tier < TIERS.length; tier++) {
-            registerAdrenaline(registry, tier);
-        }
     }
 
     private static void registerSeries(
@@ -105,24 +96,6 @@ final class ModAttributeModules {
                         .attributes(new AttributeProperties(Map.of(series.attribute(),
                                 new AttributeModifierProperties(
                                         series.amounts()[index], series.operation()))))
-                        .build());
-    }
-
-    private static void registerAdrenaline(
-            EquipmentRegistry<ModuleDefinition, ModuleItem> registry, int tier
-    ) {
-        registry.register(PREFIXES[tier] + "adrenaline",
-                new EquipmentProperties(TIERS[tier], RARITIES[tier]),
-                (resourceLocation, properties) -> ModuleDefinition.builder(
-                                resourceLocation, properties, ModuleCategory.COMBAT, MEDIUM)
-                        .energy(new EnergyProperties(ENERGY[tier], 4))
-                        .conditionalAttributes(new ConditionalAttributeProperties(
-                                List.of(new AttributeCondition(
-                                        AttributeCondition.Type.HEALTH_BELOW, Optional.of(0.30D))),
-                                new AttributeProperties(Map.of(
-                                        ResourceLocation.parse("minecraft:generic.attack_damage"),
-                                        new AttributeModifierProperties(tier + 1.0D,
-                                                AttributeModifier.Operation.ADD_VALUE)))))
                         .build());
     }
 

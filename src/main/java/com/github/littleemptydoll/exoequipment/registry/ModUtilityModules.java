@@ -11,26 +11,22 @@ import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.world.item.Rarity;
 
 final class ModUtilityModules {
-    private static final ModuleSize MAGNET_SIZE = new ModuleSize(1, 2);
-    private static final ModuleSize CLOAKING_SIZE = new ModuleSize(2, 2);
+    private static final ModuleSize SMALL_SIZE = new ModuleSize(1, 2);
+    private static final ModuleSize MEDIUM_SIZE = new ModuleSize(2, 2);
     private static final int UTILITY_PRIORITY = 2;
 
     private ModUtilityModules() {}
 
     static void register(EquipmentRegistry<ModuleDefinition, ModuleItem> registry) {
-        registerMagnet(registry, "civilian_pickup_magnet", EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON, 3, 4.0D, PickupMagnetProperties.Mode.ITEMS);
-        registerMagnet(registry, "engineering_pickup_magnet", EquipmentTier.ENGINEERING,
-                Rarity.RARE, 5, 6.0D, PickupMagnetProperties.Mode.BOTH);
-        registerMagnet(registry, "military_pickup_magnet", EquipmentTier.MILITARY,
-                Rarity.RARE, 7, 8.0D, PickupMagnetProperties.Mode.BOTH);
-        registerMagnet(registry, "experimental_pickup_magnet", EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC, 10, 12.0D, PickupMagnetProperties.Mode.BOTH);
+        registerMagnet(registry, "pickup_magnet", EquipmentTier.CIVILIAN,
+                Rarity.UNCOMMON, 15, 5.0D, PickupMagnetProperties.Mode.ITEMS);
+        registerMagnet(registry, "advanced_pickup_magnet", EquipmentTier.ENGINEERING,
+                Rarity.RARE, 25, 10.0D, PickupMagnetProperties.Mode.BOTH);
 
         registerCloaking(registry, "military_cloaking", EquipmentTier.MILITARY,
-                Rarity.RARE, 12, 100, 12, 200);
+                Rarity.RARE, 20, 2500, 150, 200);
         registerCloaking(registry, "experimental_cloaking", EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC, 18, 80, 18, 100);
+                Rarity.EPIC, 40, 5000, 250, 100);
     }
 
     private static void registerMagnet(
@@ -41,7 +37,7 @@ final class ModUtilityModules {
         registry.register(id, new EquipmentProperties(tier, rarity),
                 (resourceLocation, properties) -> ModuleDefinition.builder(
                                 resourceLocation, properties,
-                                ModuleCategory.UTILITY, MAGNET_SIZE
+                                ModuleCategory.UTILITY, SMALL_SIZE
                         )
                         .energy(new EnergyProperties(energyConsumption, UTILITY_PRIORITY))
                         .pickupMagnet(new PickupMagnetProperties(radius, mode))
@@ -57,7 +53,7 @@ final class ModUtilityModules {
         registry.register(id, new EquipmentProperties(tier, rarity),
                 (resourceLocation, properties) -> ModuleDefinition.builder(
                                 resourceLocation, properties,
-                                ModuleCategory.UTILITY, CLOAKING_SIZE
+                                ModuleCategory.UTILITY, MEDIUM_SIZE
                         )
                         .energy(new EnergyProperties(energyConsumption, UTILITY_PRIORITY))
                         .cloaking(new CloakingProperties(activationEnergy,

@@ -157,7 +157,8 @@ final class ModMobilityModules {
                 0.25D,
                 0.20D,
                 100,
-                Optional.empty()
+                Optional.empty(),
+                new ThermalProperties(5, 0)
         );
         registerJetpack(
                 registry,
@@ -171,7 +172,8 @@ final class ModMobilityModules {
                 Optional.of(new ElytraBoostProperties(
                         0.025D,
                         1.25D
-                ))
+                )),
+                new ThermalProperties(8, 0)
         );
         registerJetpack(
                 registry,
@@ -185,7 +187,8 @@ final class ModMobilityModules {
                 Optional.of(new ElytraBoostProperties(
                         0.04D,
                         1.75D
-                ))
+                )),
+                new ThermalProperties(10, 0)
         );
         registerJetpack(
                 registry,
@@ -199,7 +202,8 @@ final class ModMobilityModules {
                 Optional.of(new ElytraBoostProperties(
                         0.06D,
                         2.50D
-                ))
+                )),
+                new ThermalProperties(20, 0)
         );
     }
 
@@ -316,7 +320,8 @@ final class ModMobilityModules {
             double verticalThrust,
             double horizontalSpeed,
             int activeConsumption,
-            Optional<ElytraBoostProperties> elytra
+            Optional<ElytraBoostProperties> elytra,
+            ThermalProperties thermalProperties
     ) {
         registry.register(
                 id,
@@ -338,6 +343,7 @@ final class ModMobilityModules {
                                         activeConsumption,
                                         elytra
                                 ))
+                                .thermal(thermalProperties)
                                 .build()
         );
     }

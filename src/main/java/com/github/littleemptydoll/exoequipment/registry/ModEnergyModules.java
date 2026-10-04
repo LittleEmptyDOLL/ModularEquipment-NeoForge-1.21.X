@@ -8,8 +8,9 @@ import net.minecraft.world.item.Rarity;
 import java.util.Optional;
 
 final class ModEnergyModules {
-    private static final ModuleSize BATTERY_SIZE = new ModuleSize(2, 3);
-    private static final ModuleSize GENERATOR_SIZE = new ModuleSize(3, 3);
+    private static final ModuleSize SMALL_SIZE = new ModuleSize(2, 2);
+    private static final ModuleSize MEDIUM_SIZE = new ModuleSize(2, 3);
+    private static final ModuleSize LARGE_SIZE = new ModuleSize(3, 3);
 
     private ModEnergyModules() {}
 
@@ -21,6 +22,7 @@ final class ModEnergyModules {
                 "basic_battery",
                 EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON,
+                SMALL_SIZE,
                 250_000,
                 100,
                 100
@@ -30,6 +32,7 @@ final class ModEnergyModules {
                 "high_rate_battery",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
+                MEDIUM_SIZE,
                 650_000,
                 600,
                 500
@@ -39,6 +42,7 @@ final class ModEnergyModules {
                 "high_capacity_battery",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
+                MEDIUM_SIZE,
                 1_000_000,
                 300,
                 400
@@ -48,6 +52,7 @@ final class ModEnergyModules {
                 "discharge_battery",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
+                MEDIUM_SIZE,
                 500_000,
                 250,
                 800
@@ -57,6 +62,7 @@ final class ModEnergyModules {
                 "experimental_battery",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
+                MEDIUM_SIZE,
                 3_000_000,
                 2_000,
                 2_000
@@ -67,6 +73,7 @@ final class ModEnergyModules {
                 "compact_generator",
                 EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON,
+                SMALL_SIZE,
                 40,
                 5,
                 new TemperatureProperties(
@@ -81,6 +88,7 @@ final class ModEnergyModules {
                 "advanced_generator",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
+                MEDIUM_SIZE,
                 130,
                 10,
                 new TemperatureProperties(
@@ -99,6 +107,7 @@ final class ModEnergyModules {
                 "high_output_generator",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
+                MEDIUM_SIZE,
                 180,
                 20,
                 new TemperatureProperties(
@@ -113,6 +122,7 @@ final class ModEnergyModules {
                 "experimental_generator",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
+                LARGE_SIZE,
                 500,
                 30,
                 new TemperatureProperties(
@@ -131,6 +141,7 @@ final class ModEnergyModules {
                 "creative_generator",
                 EquipmentTier.CREATIVE,
                 Rarity.EPIC,
+                LARGE_SIZE,
                 100000,
                 0,
                 new TemperatureProperties(
@@ -151,6 +162,7 @@ final class ModEnergyModules {
             String id,
             EquipmentTier tier,
             Rarity rarity,
+            ModuleSize size,
             int capacity,
             int maxInput,
             int maxOutput
@@ -163,7 +175,7 @@ final class ModEnergyModules {
                                         resourceLocation,
                                         properties,
                                         ModuleCategory.ENERGY,
-                                        BATTERY_SIZE
+                                        size
                                 )
                                 .storage(new StorageProperties(
                                         capacity,
@@ -179,6 +191,7 @@ final class ModEnergyModules {
             String id,
             EquipmentTier tier,
             Rarity rarity,
+            ModuleSize size,
             int generation,
             int heatGeneration,
             TemperatureProperties temperatureProperties
@@ -191,7 +204,7 @@ final class ModEnergyModules {
                                         resourceLocation,
                                         properties,
                                         ModuleCategory.ENERGY,
-                                        GENERATOR_SIZE
+                                        size
                                 )
                                 .generation(new GenerationProperties(generation))
                                 .thermal(new ThermalProperties(

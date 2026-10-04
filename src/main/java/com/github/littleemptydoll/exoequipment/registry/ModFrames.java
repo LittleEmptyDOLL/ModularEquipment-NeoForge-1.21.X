@@ -58,7 +58,7 @@ public class ModFrames {
                             id,
                             properties,
                             new ModuleSize(
-                                    1,
+                                    2,
                                     2
                             )
                     )

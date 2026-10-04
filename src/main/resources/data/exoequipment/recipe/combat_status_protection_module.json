@@ -5,36 +5,36 @@
       "ingredient": {
         "item": "exoequipment:sensor_array"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
         "item": "exoequipment:electronic_component"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
         "item": "exoequipment:energy_component"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "exoequipment:titanium_ingot"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:engineering_component"
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_body_protection_module",
+    "id": "exoequipment:combat_status_protection_module",
     "count": 1
   },
-  "energy": 125000
+  "energy": 110000
 }

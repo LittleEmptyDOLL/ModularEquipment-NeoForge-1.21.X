@@ -3,19 +3,7 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:sensor_array"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:electronic_component"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:energy_component"
+        "item": "exoequipment:titanium_ingot"
       },
       "count": 2
     },
@@ -27,13 +15,25 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:engineering_component"
+        "item": "exoequipment:sensor_array"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_body_protection_module",
+    "id": "exoequipment:military_vital_protection_module",
     "count": 1
   },
   "energy": 125000

@@ -11,7 +11,7 @@
       "ingredient": {
         "item": "exoequipment:electronic_component"
       },
-      "count": 2
+      "count": 3
     },
     {
       "ingredient": {
@@ -21,20 +21,26 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "minecraft:diamond"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:engineering_component"
+        "item": "minecraft:netherite_scrap"
       },
       "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:experimental_component"
+      },
+      "count": 2
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_body_protection_module",
+    "id": "exoequipment:experimental_status_protection_module",
     "count": 1
   },
-  "energy": 125000
+  "energy": 500000
 }

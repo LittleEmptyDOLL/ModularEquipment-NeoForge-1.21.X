@@ -3,13 +3,13 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_combat_status_protection_module"
+        "item": "exoequipment:sensor_array"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "exoequipment:electronic_component"
       },
       "count": 2
     },
@@ -21,14 +21,20 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:thermal_regulator"
+        "item": "minecraft:honey_bottle"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_combat_status_protection_module",
+    "id": "exoequipment:biological_protection_module",
     "count": 1
   },
-  "energy": 1400
+  "energy": 100000
 }

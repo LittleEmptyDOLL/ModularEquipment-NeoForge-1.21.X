@@ -3,27 +3,27 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:sensor_array"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
         "item": "exoequipment:electronic_component"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:energy_component"
+        "item": "exoequipment:mechanical_component"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
         "item": "exoequipment:composite"
       },
-      "count": 2
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:slime_ball"
+      },
+      "count": 1
     },
     {
       "ingredient": {
@@ -33,8 +33,8 @@
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_body_protection_module",
+    "id": "exoequipment:mobility_protection_module",
     "count": 1
   },
-  "energy": 125000
+  "energy": 90000
 }

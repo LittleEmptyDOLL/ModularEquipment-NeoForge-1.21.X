@@ -5,7 +5,7 @@
       "ingredient": {
         "item": "exoequipment:sensor_array"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
@@ -15,26 +15,26 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:energy_component"
+        "item": "minecraft:gold_ingot"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "minecraft:amethyst_shard"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:engineering_component"
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_body_protection_module",
+    "id": "exoequipment:sensory_protection_module",
     "count": 1
   },
-  "energy": 125000
+  "energy": 110000
 }

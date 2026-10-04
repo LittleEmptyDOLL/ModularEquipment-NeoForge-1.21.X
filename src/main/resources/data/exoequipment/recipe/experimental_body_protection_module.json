@@ -3,25 +3,37 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:engineering_body_protection_module"
+        "item": "exoequipment:titanium_ingot"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:military_body_protection_module"
+        "item": "exoequipment:composite"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:sensor_array"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:netherite_ingot"
       },
       "count": 1
     },
     {
       "ingredient": {
         "item": "exoequipment:experimental_component"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:shield_emitter"
       },
       "count": 2
     }
@@ -30,5 +42,5 @@
     "id": "exoequipment:experimental_body_protection_module",
     "count": 1
   },
-  "energy": 3700
+  "energy": 450000
 }

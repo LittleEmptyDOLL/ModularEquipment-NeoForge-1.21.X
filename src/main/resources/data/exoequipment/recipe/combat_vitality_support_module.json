@@ -3,9 +3,9 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_metabolic_assist_module"
+        "item": "exoequipment:electronic_component"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
@@ -15,20 +15,26 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "minecraft:golden_apple"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:ghast_tear"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:military_metabolic_assist_module",
+    "id": "exoequipment:combat_vitality_support_module",
     "count": 1
   },
-  "energy": 1400
+  "energy": 125000
 }

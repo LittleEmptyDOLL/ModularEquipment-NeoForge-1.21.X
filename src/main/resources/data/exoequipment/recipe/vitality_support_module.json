@@ -3,13 +3,25 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_metabolic_assist_module"
+        "item": "exoequipment:electronic_component"
       },
       "count": 1
     },
     {
       "ingredient": {
         "item": "exoequipment:energy_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:golden_apple"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:gold_ingot"
       },
       "count": 2
     },
@@ -18,17 +30,11 @@
         "item": "exoequipment:composite"
       },
       "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:thermal_regulator"
-      },
-      "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_metabolic_assist_module",
+    "id": "exoequipment:vitality_support_module",
     "count": 1
   },
-  "energy": 1400
+  "energy": 30000
 }

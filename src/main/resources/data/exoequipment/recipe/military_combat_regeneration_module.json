@@ -3,13 +3,13 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:electronic_component"
+        "item": "exoequipment:energy_component"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:energy_component"
+        "item": "exoequipment:electronic_component"
       },
       "count": 2
     },
@@ -17,7 +17,7 @@
       "ingredient": {
         "item": "minecraft:ghast_tear"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
@@ -27,14 +27,20 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:engineering_component"
+        "item": "exoequipment:titanium_ingot"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_regeneration_module",
+    "id": "exoequipment:military_combat_regeneration_module",
     "count": 1
   },
-  "energy": 125000
+  "energy": 175000
 }

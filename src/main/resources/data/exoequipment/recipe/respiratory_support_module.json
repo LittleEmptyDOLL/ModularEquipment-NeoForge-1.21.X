@@ -3,7 +3,7 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_health_module"
+        "item": "exoequipment:electronic_component"
       },
       "count": 1
     },
@@ -11,24 +11,30 @@
       "ingredient": {
         "item": "exoequipment:energy_component"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "minecraft:prismarine_crystals"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:thermal_regulator"
+        "item": "minecraft:pufferfish"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_health_module",
+    "id": "exoequipment:respiratory_support_module",
     "count": 1
   },
-  "energy": 1400
+  "energy": 70000
 }

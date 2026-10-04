@@ -3,9 +3,9 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_body_regeneration_module"
+        "item": "exoequipment:electronic_component"
       },
-      "count": 1
+      "count": 3
     },
     {
       "ingredient": {
@@ -15,30 +15,38 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "exoequipment:sensor_array"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "minecraft:golden_apple"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:golden_carrot"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:experimental_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:military_body_regeneration_module",
+    "id": "exoequipment:advanced_life_support_module",
     "count": 1
   },
-  "energy": 1400,
+  "energy": 300000,
   "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "legendarysurvivaloverhaul"
-    },
-    {
-      "type": "neoforge:item_exists",
-      "item": "exoequipment:military_body_regeneration_module"
     }
   ]
 }

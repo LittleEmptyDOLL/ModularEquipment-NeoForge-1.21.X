@@ -3,9 +3,9 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_health_module"
+        "item": "exoequipment:electronic_component"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
@@ -15,20 +15,26 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "minecraft:enchanted_golden_apple"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "minecraft:ghast_tear"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:experimental_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:military_health_module",
+    "id": "exoequipment:experimental_vitality_support_module",
     "count": 1
   },
-  "energy": 1400
+  "energy": 350000
 }

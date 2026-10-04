@@ -3,7 +3,7 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:electronic_component"
+        "item": "minecraft:totem_of_undying"
       },
       "count": 2
     },
@@ -15,26 +15,32 @@
     },
     {
       "ingredient": {
-        "item": "minecraft:ghast_tear"
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:sensor_array"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "minecraft:golden_apple"
+        "item": "exoequipment:titanium_ingot"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:engineering_component"
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_regeneration_module",
+    "id": "exoequipment:emergency_revival_system_module",
     "count": 1
   },
-  "energy": 125000
+  "energy": 250000
 }

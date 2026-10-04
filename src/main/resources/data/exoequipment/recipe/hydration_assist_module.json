@@ -3,7 +3,7 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_thirst_assist_module"
+        "item": "exoequipment:electronic_component"
       },
       "count": 1
     },
@@ -11,34 +11,37 @@
       "ingredient": {
         "item": "exoequipment:energy_component"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "type": "neoforge:components",
+        "items": "minecraft:potion",
+        "components": {
+          "minecraft:potion_contents": {
+            "potion": "minecraft:water"
+          }
+        },
+        "strict": false
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "minecraft:glass_bottle"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:military_thirst_assist_module",
+    "id": "exoequipment:hydration_assist_module",
     "count": 1
   },
-  "energy": 1400,
+  "energy": 25000,
   "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "legendarysurvivaloverhaul"
-    },
-    {
-      "type": "neoforge:item_exists",
-      "item": "exoequipment:military_thirst_assist_module"
     }
   ]
 }

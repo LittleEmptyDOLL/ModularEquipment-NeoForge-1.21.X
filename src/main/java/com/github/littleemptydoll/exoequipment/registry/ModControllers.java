@@ -92,7 +92,7 @@ public class ModControllers {
                     new ControllerDefinition(
                             id,
                             properties,
-                            2,
+                            3,
                             2
                     )
     );

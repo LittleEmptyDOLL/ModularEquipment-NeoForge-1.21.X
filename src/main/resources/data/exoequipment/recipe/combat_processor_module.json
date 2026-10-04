@@ -3,15 +3,21 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_attack_speed_module"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
         "item": "exoequipment:mechanical_component"
       },
       "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 1
     },
     {
       "ingredient": {
@@ -21,14 +27,14 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:military_attack_speed_module",
+    "id": "exoequipment:combat_processor_module",
     "count": 1
   },
-  "energy": 1400
+  "energy": 100000
 }

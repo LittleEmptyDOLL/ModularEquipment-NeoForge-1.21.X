@@ -3,32 +3,32 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_attack_damage_module"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
         "item": "exoequipment:mechanical_component"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:gold_ingot"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:thermal_regulator"
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_attack_damage_module",
+    "id": "exoequipment:advanced_attack_servo_module",
     "count": 1
   },
-  "energy": 1400
+  "energy": 80000
 }

@@ -1,0 +1,43 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:mechanical_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:structural_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "tag": "c:ingots/steel"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:piston"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "exoequipment:impact_amplifier_module",
+    "count": 1
+  },
+  "energy": 20000,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/steel"
+      }
+    }
+  ]
+}

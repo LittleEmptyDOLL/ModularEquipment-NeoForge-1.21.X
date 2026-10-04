@@ -5,18 +5,30 @@
       "ingredient": {
         "item": "exoequipment:mechanical_component"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
         "item": "exoequipment:electronic_component"
       },
       "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:copper_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:redstone"
+      },
+      "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:civilian_attack_speed_module",
+    "id": "exoequipment:attack_servo_module",
     "count": 1
   },
-  "energy": 650
+  "energy": 20000
 }

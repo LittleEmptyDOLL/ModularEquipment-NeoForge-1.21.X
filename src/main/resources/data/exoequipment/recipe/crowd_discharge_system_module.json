@@ -3,25 +3,37 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:engineering_component"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:sensor_array"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
         "item": "exoequipment:energy_component"
       },
       "count": 3
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "minecraft:copper_ingot"
+      },
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:sensor_array"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:lightning_rod"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
@@ -30,5 +42,5 @@
     "id": "exoequipment:crowd_discharge_system_module",
     "count": 1
   },
-  "energy": 3500
+  "energy": 175000
 }

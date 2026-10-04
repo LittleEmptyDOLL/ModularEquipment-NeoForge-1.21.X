@@ -3,32 +3,44 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:military_component"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:shield_emitter"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
         "item": "exoequipment:energy_component"
       },
       "count": 3
     },
     {
       "ingredient": {
-        "item": "exoequipment:electronic_component"
+        "item": "minecraft:copper_ingot"
+      },
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:sensor_array"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:gold_ingot"
       },
       "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:lightning_rod"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:military_component"
+      },
+      "count": 1
     }
   ],
   "result": {
     "id": "exoequipment:discharge_defense_module",
     "count": 1
   },
-  "energy": 3800
+  "energy": 200000
 }

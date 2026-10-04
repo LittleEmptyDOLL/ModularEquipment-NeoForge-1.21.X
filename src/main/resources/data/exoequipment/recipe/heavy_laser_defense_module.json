@@ -3,32 +3,38 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:personal_laser_defense_module"
+        "item": "exoequipment:sensor_array"
       },
       "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:military_component"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:composite"
-      },
-      "count": 2
     },
     {
       "ingredient": {
         "item": "exoequipment:energy_component"
       },
       "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:diamond"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:titanium_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:military_component"
+      },
+      "count": 1
     }
   ],
   "result": {
     "id": "exoequipment:heavy_laser_defense_module",
     "count": 1
   },
-  "energy": 5200
+  "energy": 225000
 }

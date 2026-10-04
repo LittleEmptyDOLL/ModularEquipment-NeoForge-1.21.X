@@ -3,13 +3,37 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:crowd_discharge_system_module"
+        "item": "exoequipment:energy_component"
       },
-      "count": 1
+      "count": 4
     },
     {
       "ingredient": {
-        "item": "exoequipment:discharge_defense_module"
+        "item": "minecraft:copper_ingot"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:sensor_array"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:lightning_rod"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:diamond"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:netherite_scrap"
       },
       "count": 1
     },
@@ -17,18 +41,12 @@
       "ingredient": {
         "item": "exoequipment:experimental_component"
       },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:energy_component"
-      },
-      "count": 4
+      "count": 2
     }
   ],
   "result": {
     "id": "exoequipment:experimental_arc_defense_module",
     "count": 1
   },
-  "energy": 11000
+  "energy": 600000
 }

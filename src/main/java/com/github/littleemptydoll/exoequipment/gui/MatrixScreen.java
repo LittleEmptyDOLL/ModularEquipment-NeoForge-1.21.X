@@ -443,7 +443,12 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         ItemStack stack = createModuleStack(module);
         if (stack.isEmpty()) return;
 
-        guiGraphics.renderTooltip(font, stack, mouseX, mouseY);
+        if (stack.getItem() instanceof ModuleItem) {
+            ModuleItem.withTooltipTemperature(menu.getTemperature(),
+                    () -> guiGraphics.renderTooltip(font, stack, mouseX, mouseY));
+        } else {
+            guiGraphics.renderTooltip(font, stack, mouseX, mouseY);
+        }
     }
 
     private InstalledModule getModuleAtMouse(int mouseX, int mouseY) {

@@ -5,11 +5,17 @@
       "ingredient": {
         "item": "exoequipment:energy_component"
       },
-      "count": 4
+      "count": 3
     },
     {
       "ingredient": {
         "item": "exoequipment:titanium_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
       },
       "count": 2
     },
@@ -21,32 +27,14 @@
     },
     {
       "ingredient": {
-        "item": "minecraft:netherite_scrap"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
-        "item": "minecraft:blaze_rod"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:thermal_regulator"
+        "item": "exoequipment:military_component"
       },
       "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:experimental_component"
-      },
-      "count": 2
     }
   ],
   "result": {
-    "id": "exoequipment:experimental_generator_module",
+    "id": "exoequipment:high_capacity_battery_module",
     "count": 1
   },
-  "energy": 500000
+  "energy": 125000
 }

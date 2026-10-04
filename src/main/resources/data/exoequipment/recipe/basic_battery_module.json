@@ -5,42 +5,36 @@
       "ingredient": {
         "item": "exoequipment:energy_component"
       },
-      "count": 4
+      "count": 2
     },
     {
       "ingredient": {
-        "item": "minecraft:netherite_ingot"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "minecraft:diamond"
+        "item": "minecraft:copper_ingot"
       },
       "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:redstone"
+      },
+      "count": 2
     },
     {
       "ingredient": {
         "item": "minecraft:gold_ingot"
       },
-      "count": 3
+      "count": 1
     },
     {
       "ingredient": {
         "item": "exoequipment:composite"
       },
-      "count": 2
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:experimental_component"
-      },
-      "count": 2
+      "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:experimental_battery_module",
+    "id": "exoequipment:basic_battery_module",
     "count": 1
   },
-  "energy": 450000
+  "energy": 20000
 }

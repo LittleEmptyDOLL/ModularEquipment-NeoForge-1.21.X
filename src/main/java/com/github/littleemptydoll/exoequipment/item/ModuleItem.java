@@ -19,6 +19,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import java.util.List;
 
 public class ModuleItem extends EquipmentItem<ModuleDefinition> {
+    private static final ThreadLocal<Double> TOOLTIP_TEMPERATURE = new ThreadLocal<>();
 
     public ModuleItem(
             DeferredHolder<ModuleDefinition, ModuleDefinition> definition,
@@ -41,7 +42,21 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
             List<Component> tooltip,
             TooltipFlag flag
     ) {
-        appendHoverTextWithTemperature(stack, tooltip, Double.NaN);
+        Double temperature = TOOLTIP_TEMPERATURE.get();
+        appendHoverTextWithTemperature(stack, tooltip,
+                temperature == null ? Double.NaN : temperature);
+    }
+
+    /** Apply matrix temperature while building the item's normal tooltip. */
+    public static void withTooltipTemperature(double temperature, Runnable render) {
+        Double previous = TOOLTIP_TEMPERATURE.get();
+        try {
+            TOOLTIP_TEMPERATURE.set(temperature);
+            render.run();
+        } finally {
+            if (previous == null) TOOLTIP_TEMPERATURE.remove();
+            else TOOLTIP_TEMPERATURE.set(previous);
+        }
     }
 
     public void appendHoverTextWithTemperature(

@@ -211,16 +211,16 @@ final class ModDefenseModules {
                 "engineering_shield_reinforcement",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
-                0.50D,
-                50
+                0.40D,
+                30
         );
         registerShieldProtection(
                 registry,
                 "military_shield_reinforcement",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
-                0.75D,
-                75
+                0.70D,
+                50
         );
         registerShieldProtection(
                 registry,
@@ -228,7 +228,7 @@ final class ModDefenseModules {
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
                 1.0D,
-                100
+                80
         );
     }
 

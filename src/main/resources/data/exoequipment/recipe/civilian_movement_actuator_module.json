@@ -3,32 +3,32 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_movement_speed_module"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:thruster"
+        "item": "exoequipment:mechanical_component"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "exoequipment:structural_component"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "minecraft:iron_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:electronic_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:military_movement_speed_module",
+    "id": "exoequipment:civilian_movement_actuator_module",
     "count": 1
   },
-  "energy": 1400
+  "energy": 25000
 }

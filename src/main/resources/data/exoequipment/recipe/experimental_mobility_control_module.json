@@ -15,32 +15,32 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "exoequipment:electronic_component"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:sensor_array"
+        "item": "exoequipment:energy_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:diamond"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "minecraft:prismarine_crystals"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:military_component"
+        "item": "exoequipment:experimental_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:military_swim_assist_module",
+    "id": "exoequipment:experimental_mobility_control_module",
     "count": 1
   },
-  "energy": 125000
+  "energy": 350000
 }

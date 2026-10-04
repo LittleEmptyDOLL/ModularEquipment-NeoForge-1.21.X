@@ -3,13 +3,13 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:titanium_ingot"
+        "item": "exoequipment:mechanical_component"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:mechanical_component"
+        "item": "exoequipment:electronic_component"
       },
       "count": 2
     },
@@ -21,26 +21,20 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:sensor_array"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "minecraft:prismarine_crystals"
+        "item": "minecraft:slime_ball"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:military_component"
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:military_swim_assist_module",
+    "id": "exoequipment:engineering_mobility_control_module",
     "count": 1
   },
-  "energy": 125000
+  "energy": 75000
 }

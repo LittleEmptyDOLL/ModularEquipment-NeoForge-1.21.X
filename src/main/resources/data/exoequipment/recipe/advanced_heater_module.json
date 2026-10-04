@@ -5,42 +5,42 @@
       "ingredient": {
         "item": "exoequipment:thermal_regulator"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
         "item": "exoequipment:energy_component"
       },
-      "count": 3
+      "count": 2
     },
     {
       "ingredient": {
         "item": "exoequipment:electronic_component"
       },
-      "count": 2
-    },
-    {
-      "ingredient": {
-        "item": "minecraft:blue_ice"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
-        "item": "minecraft:diamond"
-      },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:experimental_component"
+        "item": "minecraft:copper_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:blaze_powder"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:experimental_cooler_module",
+    "id": "exoequipment:advanced_heater_module",
     "count": 1
   },
-  "energy": 325000
+  "energy": 100000
 }

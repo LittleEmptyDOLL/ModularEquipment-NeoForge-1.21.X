@@ -9,24 +9,32 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:structural_component"
+        "item": "exoequipment:electronic_component"
       },
       "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:blaze_powder"
+      },
+      "count": 2
     }
   ],
   "result": {
-    "id": "exoequipment:civilian_cold_resistance_module",
+    "id": "exoequipment:cold_protection_module",
     "count": 1
   },
-  "energy": 650,
+  "energy": 25000,
   "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "legendarysurvivaloverhaul"
-    },
-    {
-      "type": "neoforge:item_exists",
-      "item": "exoequipment:civilian_cold_resistance_module"
     }
   ]
 }

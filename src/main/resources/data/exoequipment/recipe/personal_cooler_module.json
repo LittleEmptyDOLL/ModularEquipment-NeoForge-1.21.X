@@ -3,15 +3,21 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_thermal_resistance_module"
+        "item": "exoequipment:thermal_regulator"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:thermal_regulator"
+        "item": "exoequipment:energy_component"
       },
       "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 1
     },
     {
       "ingredient": {
@@ -21,24 +27,26 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "minecraft:packed_ice"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:military_thermal_resistance_module",
+    "id": "exoequipment:personal_cooler_module",
     "count": 1
   },
-  "energy": 1400,
+  "energy": 90000,
   "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "legendarysurvivaloverhaul"
-    },
-    {
-      "type": "neoforge:item_exists",
-      "item": "exoequipment:military_thermal_resistance_module"
     }
   ]
 }

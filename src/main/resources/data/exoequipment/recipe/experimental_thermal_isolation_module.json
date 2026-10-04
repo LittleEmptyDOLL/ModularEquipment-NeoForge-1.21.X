@@ -9,21 +9,21 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:energy_component"
-      },
-      "count": 3
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:electronic_component"
+        "item": "exoequipment:composite"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "minecraft:blue_ice"
+        "item": "exoequipment:carbon_fiber"
       },
       "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:titanium_ingot"
+      },
+      "count": 1
     },
     {
       "ingredient": {
@@ -39,8 +39,14 @@
     }
   ],
   "result": {
-    "id": "exoequipment:experimental_cooler_module",
+    "id": "exoequipment:experimental_thermal_isolation_module",
     "count": 1
   },
-  "energy": 325000
+  "energy": 275000,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "legendarysurvivaloverhaul"
+    }
+  ]
 }

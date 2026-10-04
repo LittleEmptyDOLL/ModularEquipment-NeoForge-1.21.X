@@ -3,15 +3,15 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:structural_component"
+        "item": "exoequipment:thermal_regulator"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:thermal_regulator"
+        "item": "exoequipment:electronic_component"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
@@ -21,24 +21,20 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "minecraft:ice"
       },
-      "count": 1
+      "count": 2
     }
   ],
   "result": {
-    "id": "exoequipment:military_temperature_isolation_module",
+    "id": "exoequipment:heat_protection_module",
     "count": 1
   },
-  "energy": 1550,
+  "energy": 25000,
   "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "legendarysurvivaloverhaul"
-    },
-    {
-      "type": "neoforge:item_exists",
-      "item": "exoequipment:military_temperature_isolation_module"
     }
   ]
 }

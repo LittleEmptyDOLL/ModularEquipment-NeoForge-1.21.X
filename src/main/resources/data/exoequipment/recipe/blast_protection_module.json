@@ -15,13 +15,7 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:energy_component"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:electronic_component"
+        "item": "exoequipment:structural_component"
       },
       "count": 2
     },
@@ -30,11 +24,17 @@
         "item": "exoequipment:military_component"
       },
       "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:obsidian"
+      },
+      "count": 2
     }
   ],
   "result": {
-    "id": "exoequipment:military_protection_module",
+    "id": "exoequipment:blast_protection_module",
     "count": 1
   },
-  "energy": 150000
+  "energy": 110000
 }

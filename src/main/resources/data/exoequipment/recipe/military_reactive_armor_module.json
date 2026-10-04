@@ -5,17 +5,11 @@
       "ingredient": {
         "item": "exoequipment:titanium_ingot"
       },
-      "count": 2
+      "count": 3
     },
     {
       "ingredient": {
         "item": "exoequipment:composite"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:energy_component"
       },
       "count": 2
     },
@@ -27,13 +21,19 @@
     },
     {
       "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
         "item": "exoequipment:military_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:military_protection_module",
+    "id": "exoequipment:military_reactive_armor_module",
     "count": 1
   },
   "energy": 150000

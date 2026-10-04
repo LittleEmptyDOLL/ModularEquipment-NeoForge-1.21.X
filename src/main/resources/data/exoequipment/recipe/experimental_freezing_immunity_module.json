@@ -3,32 +3,38 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:engineering_protection_module"
+        "item": "exoequipment:thermal_regulator"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:military_protection_module"
+        "item": "exoequipment:energy_component"
       },
-      "count": 1
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:blaze_rod"
+      },
+      "count": 2
     },
     {
       "ingredient": {
         "item": "exoequipment:experimental_component"
       },
       "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:shield_emitter"
-      },
-      "count": 2
     }
   ],
   "result": {
     "id": "exoequipment:experimental_freezing_immunity_module",
     "count": 1
   },
-  "energy": 3700
+  "energy": 300000
 }

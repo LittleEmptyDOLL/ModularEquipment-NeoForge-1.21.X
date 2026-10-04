@@ -3,13 +3,31 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:engineering_protection_module"
+        "item": "exoequipment:mechanical_component"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:military_protection_module"
+        "item": "exoequipment:energy_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:feather"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:netherite_scrap"
       },
       "count": 1
     },
@@ -18,17 +36,11 @@
         "item": "exoequipment:experimental_component"
       },
       "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:shield_emitter"
-      },
-      "count": 2
     }
   ],
   "result": {
     "id": "exoequipment:experimental_fall_immunity_module",
     "count": 1
   },
-  "energy": 3700
+  "energy": 300000
 }

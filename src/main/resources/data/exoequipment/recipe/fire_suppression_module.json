@@ -3,9 +3,9 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:titanium_ingot"
+        "item": "exoequipment:thermal_regulator"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
@@ -17,24 +17,30 @@
       "ingredient": {
         "item": "exoequipment:energy_component"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
         "item": "exoequipment:electronic_component"
       },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:magma_cream"
+      },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:military_component"
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:military_protection_module",
+    "id": "exoequipment:fire_suppression_module",
     "count": 1
   },
-  "energy": 150000
+  "energy": 100000
 }

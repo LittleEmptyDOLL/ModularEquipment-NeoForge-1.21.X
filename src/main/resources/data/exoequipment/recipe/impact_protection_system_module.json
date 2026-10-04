@@ -3,7 +3,13 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:energy_component"
+        "item": "exoequipment:mechanical_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
       },
       "count": 2
     },
@@ -11,30 +17,24 @@
       "ingredient": {
         "item": "exoequipment:electronic_component"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
-        "item": "minecraft:heart_of_the_sea"
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "minecraft:prismarine_crystals"
+        "item": "minecraft:slime_ball"
       },
       "count": 2
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:experimental_component"
-      },
-      "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:experimental_drowning_immunity_module",
+    "id": "exoequipment:impact_protection_system_module",
     "count": 1
   },
-  "energy": 300000
+  "energy": 75000
 }

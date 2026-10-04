@@ -118,7 +118,6 @@ final class ModSurvivalModules {
                 registry,
                 "engineering_regeneration",
                 EquipmentTier.ENGINEERING,
-                Rarity.RARE,
                 25,
                 0.25D
         );
@@ -126,7 +125,6 @@ final class ModSurvivalModules {
                 registry,
                 "military_combat_regeneration",
                 EquipmentTier.MILITARY,
-                Rarity.RARE,
                 60,
                 0.50D
         );
@@ -159,9 +157,9 @@ final class ModSurvivalModules {
 
     static void registerBodyRegenerationModules(EquipmentRegistry<ModuleDefinition, ModuleItem> registry) {
         registerBodyRegeneration(registry, "medical_recovery_system", EquipmentTier.ENGINEERING,
-                Rarity.RARE, 35, 0.10D);
+                35, 0.10D);
         registerBodyRegeneration(registry, "advanced_recovery_system", EquipmentTier.MILITARY,
-                Rarity.RARE, 70, 0.25D);
+                70, 0.25D);
     }
 
     private static void registerUnderwaterModules(
@@ -229,13 +227,12 @@ final class ModSurvivalModules {
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
             String id,
             EquipmentTier tier,
-            Rarity rarity,
             int energyConsumption,
             double healthPerSecond
     ) {
         registry.register(
                 id,
-                new EquipmentProperties(tier, rarity),
+                new EquipmentProperties(tier, Rarity.RARE),
                 (resourceLocation, properties) ->
                         ModuleDefinition.builder(
                                         resourceLocation,
@@ -289,10 +286,10 @@ final class ModSurvivalModules {
 
     private static void registerBodyRegeneration(
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
-            String id, EquipmentTier tier, Rarity rarity,
+            String id, EquipmentTier tier,
             int consumption, double healthPerSecond
     ) {
-        registry.register(id, new EquipmentProperties(tier, rarity),
+        registry.register(id, new EquipmentProperties(tier, Rarity.RARE),
                 (resourceLocation, properties) -> ModuleDefinition.builder(
                                 resourceLocation, properties, ModuleCategory.SURVIVAL, LARGE_SIZE)
                         .energy(new EnergyProperties(consumption, SURVIVAL_PRIORITY))

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#exoequipment:status_protection/biological",
+    "#exoequipment:status_protection/combat",
+    "#exoequipment:status_protection/mobility",
+    "#exoequipment:status_protection/sensory"
+  ]
+}

@@ -315,9 +315,6 @@ final class ModCombatModules {
                     registry,
                     "incendiary_attack_system",
                     EquipmentTier.MILITARY,
-                    Rarity.RARE,
-                    MEDIUM_SIZE,
-                    40,
                     Map.ofEntries(Map.entry(FIRE_DAMAGE, addValue(4.0D))),
                     new ThermalProperties(5,0)
             );
@@ -325,9 +322,6 @@ final class ModCombatModules {
                     registry,
                     "cryogenic_attack_system",
                     EquipmentTier.ENGINEERING,
-                    Rarity.RARE,
-                    MEDIUM_SIZE,
-                    40,
                     Map.ofEntries(Map.entry(COLD_DAMAGE, addValue(4.0D))),
                     new ThermalProperties(0,5)
             );
@@ -484,24 +478,21 @@ final class ModCombatModules {
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
             String id,
             EquipmentTier tier,
-            Rarity rarity,
-            ModuleSize size,
-            int energyConsumption,
             Map<ResourceLocation, AttributeModifierProperties> entries,
             ThermalProperties thermalProperties
     ) {
         registry.register(
                 id,
-                new EquipmentProperties(tier, rarity),
+                new EquipmentProperties(tier, Rarity.RARE),
                 (resourceLocation, properties) ->
                         ModuleDefinition.builder(
                                         resourceLocation,
                                         properties,
                                         ModuleCategory.COMBAT,
-                                        size
+                                        ModCombatModules.MEDIUM_SIZE
                                 )
                                 .energy(new EnergyProperties(
-                                        energyConsumption,
+                                        40,
                                         COMBAT_PRIORITY
                                 ))
                                 .attributes(new AttributeProperties(entries))

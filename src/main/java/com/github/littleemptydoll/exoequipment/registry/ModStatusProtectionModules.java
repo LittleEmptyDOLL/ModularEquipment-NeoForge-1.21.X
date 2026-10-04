@@ -14,123 +14,74 @@ import net.minecraft.world.item.Rarity;
 import java.util.Map;
 
 final class ModStatusProtectionModules {
-    private static final ModuleSize SPECIALIZED_SIZE =
+    private static final ModuleSize MEDIUM_SIZE =
             new ModuleSize(2, 2);
-    private static final ModuleSize IMMUNITY_SIZE =
-            new ModuleSize(2, 3);
+    private static final ModuleSize HUGE_SIZE =
+            new ModuleSize(3, 3);
 
     private static final int PROTECTION_PRIORITY = 8;
-    private static final int IMMUNITY_PRIORITY = 9;
 
     static final ResourceLocation BIOLOGICAL = tag("biological");
     static final ResourceLocation MOBILITY = tag("mobility");
     static final ResourceLocation SENSORY = tag("sensory");
     static final ResourceLocation COMBAT = tag("combat");
+    static final ResourceLocation NEGATIVE_EFFECTS = tag("negative_effects");
 
     private ModStatusProtectionModules() {}
 
     static void register(
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry
     ) {
-        registerProtectionSeries(
-                registry,
-                "biological_status_protection",
-                BIOLOGICAL
-        );
-        registerProtectionSeries(
-                registry,
-                "mobility_status_protection",
-                MOBILITY
-        );
-        registerProtectionSeries(
-                registry,
-                "sensory_status_protection",
-                SENSORY
-        );
-        registerProtectionSeries(
-                registry,
-                "combat_status_protection",
-                COMBAT
-        );
-
-        registerImmunity(
-                registry,
-                "experimental_poison_immunity",
-                minecraftEffect("poison"),
-                100
-        );
-        registerImmunity(
-                registry,
-                "experimental_wither_immunity",
-                minecraftEffect("wither"),
-                140
-        );
-        registerImmunity(
-                registry,
-                "experimental_blindness_immunity",
-                minecraftEffect("blindness"),
-                90
-        );
-        registerImmunity(
-                registry,
-                "experimental_darkness_immunity",
-                minecraftEffect("darkness"),
-                100
-        );
-        registerImmunity(
-                registry,
-                "experimental_slowness_immunity",
-                minecraftEffect("slowness"),
-                90
-        );
-        registerImmunity(
-                registry,
-                "experimental_mining_fatigue_immunity",
-                minecraftEffect("mining_fatigue"),
-                90
-        );
-    }
-
-    private static void registerProtectionSeries(
-            EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
-            String suffix,
-            ResourceLocation effectTag
-    ) {
         registerProtection(
                 registry,
-                "civilian_" + suffix,
-                EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON,
-                effectTag,
-                0.35D,
-                15
-        );
-        registerProtection(
-                registry,
-                "engineering_" + suffix,
+                "biological_protection",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
-                effectTag,
-                0.55D,
-                30
+                BIOLOGICAL,
+                0.70D,
+                70,
+                MEDIUM_SIZE
         );
         registerProtection(
                 registry,
-                "military_" + suffix,
+                "mobility_protection",
+                EquipmentTier.ENGINEERING,
+                Rarity.RARE,
+                MOBILITY,
+                0.60D,
+                60,
+                MEDIUM_SIZE
+        );
+        registerProtection(
+                registry,
+                "sensory_protection",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
-                effectTag,
+                SENSORY,
                 0.75D,
-                50
+                75,
+                MEDIUM_SIZE
         );
         registerProtection(
                 registry,
-                "experimental_" + suffix,
+                "combat_status_protection",
+                EquipmentTier.MILITARY,
+                Rarity.RARE,
+                COMBAT,
+                0.75D,
+                75,
+                MEDIUM_SIZE
+        );
+
+        registerProtection(
+                registry,
+                "experimental_status_protection",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
-                effectTag,
+                NEGATIVE_EFFECTS,
                 0.90D,
-                80
+                120,
+                HUGE_SIZE
         );
     }
 
@@ -141,7 +92,8 @@ final class ModStatusProtectionModules {
             Rarity rarity,
             ResourceLocation effectTag,
             double protection,
-            int energyConsumption
+            int energyConsumption,
+            ModuleSize size
     ) {
         registry.register(
                 id,
@@ -151,7 +103,7 @@ final class ModStatusProtectionModules {
                                         resourceLocation,
                                         properties,
                                         ModuleCategory.DEFENSE,
-                                        SPECIALIZED_SIZE
+                                        size
                                 )
                                 .energy(new EnergyProperties(
                                         energyConsumption,
@@ -171,49 +123,10 @@ final class ModStatusProtectionModules {
         );
     }
 
-    private static void registerImmunity(
-            EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
-            String id,
-            ResourceLocation effectId,
-            int energyConsumption
-    ) {
-        registry.register(
-                id,
-                new EquipmentProperties(
-                        EquipmentTier.EXPERIMENTAL,
-                        Rarity.EPIC
-                ),
-                (resourceLocation, properties) ->
-                        ModuleDefinition.builder(
-                                        resourceLocation,
-                                        properties,
-                                        ModuleCategory.DEFENSE,
-                                        IMMUNITY_SIZE
-                                )
-                                .energy(new EnergyProperties(
-                                        energyConsumption,
-                                        IMMUNITY_PRIORITY
-                                ))
-                                .statusProtection(
-                                        new StatusProtectionProperties(
-                                                Map.of(effectId, 1.0D)
-                                        )
-                                )
-                                .build()
-        );
-    }
-
     private static ResourceLocation tag(String path) {
         return ResourceLocation.fromNamespaceAndPath(
                 ExoEquipment.MODID,
                 "status_protection/" + path
-        );
-    }
-
-    private static ResourceLocation minecraftEffect(String path) {
-        return ResourceLocation.fromNamespaceAndPath(
-                "minecraft",
-                path
         );
     }
 }

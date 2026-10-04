@@ -4,18 +4,18 @@ import com.github.littleemptydoll.exoequipment.item.ModuleItem;
 import com.github.littleemptydoll.exoequipment.module.*;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Rarity;
+import net.neoforged.fml.ModList;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 final class ModDefenseModules {
-    private static final ModuleSize SHIELD_SIZE = new ModuleSize(2, 2);
-    private static final ModuleSize EMERGENCY_SHIELD_SIZE = new ModuleSize(2, 2);
-    private static final ModuleSize SPECIALIZED_PROTECTION_SIZE = new ModuleSize(2, 2);
-    private static final ModuleSize GENERAL_PROTECTION_SIZE = new ModuleSize(2, 3);
-    private static final ModuleSize IMMUNITY_SIZE = new ModuleSize(2, 3);
-    private static final ModuleSize SHIELD_PROTECTION_SIZE = new ModuleSize(1, 2);
+    private static final ModuleSize SMALL_SIZE = new ModuleSize(1, 2);
+    private static final ModuleSize MEDIUM_SIZE = new ModuleSize(2, 2);
+    private static final ModuleSize LARGE_SIZE = new ModuleSize(2, 3);
 
     private static final int PROTECTION_PRIORITY = 8;
     private static final int IMMUNITY_PRIORITY = 9;
@@ -34,6 +34,21 @@ final class ModDefenseModules {
     private static final ResourceLocation BYPASSES_ENCHANTMENTS = minecraftTag("bypasses_enchantments");
     private static final ResourceLocation BYPASSES_INVULNERABILITY = minecraftTag("bypasses_invulnerability");
 
+    private static final ResourceLocation ARMOR =
+            ResourceLocation.parse("minecraft:generic.armor");
+    private static final ResourceLocation ARMOR_TOUGHNESS =
+            ResourceLocation.parse("minecraft:generic.armor_toughness");
+    private static final ResourceLocation SAFE_FALL_DISTANCE =
+            ResourceLocation.parse("minecraft:generic.safe_fall_distance");
+    private static final ResourceLocation FALL_DAMAGE_MULTIPLIER =
+            ResourceLocation.parse("minecraft:generic.fall_damage_multiplier");
+    private static final ResourceLocation KNOCKBACK_RESISTANCE =
+            ResourceLocation.parse("minecraft:generic.knockback_resistance");
+    private static final ResourceLocation EXPLOSION_KNOCKBACK_RESISTANCE =
+            ResourceLocation.parse("minecraft:generic.explosion_knockback_resistance");
+    private static final ResourceLocation DODGE_CHANCE =
+            ResourceLocation.parse("apothic_attributes:dodge_chance");
+
     private ModDefenseModules() {}
 
     static void register(
@@ -44,6 +59,7 @@ final class ModDefenseModules {
         registerImmunities(registry);
         registerEmergencyShields(registry);
         registerShieldProtection(registry);
+        registerAttributeModules(registry);
     }
 
     private static void registerShields(
@@ -57,7 +73,7 @@ final class ModDefenseModules {
                 4,
                 0.025D,
                 200,
-                20
+                80
         );
         registerShield(
                 registry,
@@ -65,19 +81,19 @@ final class ModDefenseModules {
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
                 6,
-                0.05D,
+                0.06D,
                 120,
-                30
+                130
         );
         registerShield(
                 registry,
                 "military_shield",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
-                8,
-                0.04D,
+                10,
+                0.035D,
                 100,
-                35
+                180
         );
         registerShield(
                 registry,
@@ -87,7 +103,7 @@ final class ModDefenseModules {
                 12,
                 0.10D,
                 80,
-                50
+                300
         );
     }
 
@@ -98,50 +114,37 @@ final class ModDefenseModules {
         // to almost every ordinary damage source.
         registerGeneralProtection(
                 registry,
-                "civilian_protection",
-                EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON,
-                0.05D,
-                30
-        );
-        registerGeneralProtection(
-                registry,
-                "engineering_protection",
-                EquipmentTier.ENGINEERING,
-                Rarity.RARE,
-                0.10D,
-                60
-        );
-        registerGeneralProtection(
-                registry,
                 "military_protection",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
                 0.15D,
-                90
+                100
         );
         registerGeneralProtection(
                 registry,
                 "experimental_protection",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
-                0.20D,
+                0.25D,
                 150
         );
 
-        registerProtectionSeries(
+        registerSpecializedProtection(
                 registry,
-                "projectile_protection",
+                "ballistic_protection",
+                EquipmentTier.MILITARY,
                 IS_PROJECTILE
         );
-        registerProtectionSeries(
+        registerSpecializedProtection(
                 registry,
                 "blast_protection",
+                EquipmentTier.MILITARY,
                 IS_EXPLOSION
         );
-        registerProtectionSeries(
+        registerSpecializedProtection(
                 registry,
-                "fire_protection",
+                "fire_suppression",
+                EquipmentTier.ENGINEERING,
                 IS_FIRE
         );
     }
@@ -182,15 +185,6 @@ final class ModDefenseModules {
     ) {
         registerEmergencyShield(
                 registry,
-                "engineering_emergency_shield",
-                EquipmentTier.ENGINEERING,
-                Rarity.RARE,
-                0.5D,
-                4 * TICKS_PER_MINUTE,
-                10
-        );
-        registerEmergencyShield(
-                registry,
                 "military_emergency_shield",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
@@ -214,77 +208,26 @@ final class ModDefenseModules {
     ) {
         registerShieldProtection(
                 registry,
-                "civilian_shield_protection",
-                EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON,
-                0.25D,
-                10
-        );
-        registerShieldProtection(
-                registry,
-                "engineering_shield_protection",
+                "engineering_shield_reinforcement",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
                 0.50D,
-                20
+                50
         );
         registerShieldProtection(
                 registry,
-                "military_shield_protection",
+                "military_shield_reinforcement",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
                 0.75D,
-                35
+                75
         );
         registerShieldProtection(
                 registry,
-                "experimental_shield_protection",
+                "advanced_shield_reinforcement",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
                 1.0D,
-                50
-        );
-    }
-
-    private static void registerProtectionSeries(
-            EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
-            String suffix,
-            ResourceLocation damageTag
-    ) {
-        registerSpecializedProtection(
-                registry,
-                "civilian_" + suffix,
-                EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON,
-                damageTag,
-                0.10D,
-                20
-        );
-        registerSpecializedProtection(
-                registry,
-                "engineering_" + suffix,
-                EquipmentTier.ENGINEERING,
-                Rarity.RARE,
-                damageTag,
-                0.20D,
-                40
-        );
-        registerSpecializedProtection(
-                registry,
-                "military_" + suffix,
-                EquipmentTier.MILITARY,
-                Rarity.RARE,
-                damageTag,
-                0.30D,
-                60
-        );
-        registerSpecializedProtection(
-                registry,
-                "experimental_" + suffix,
-                EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC,
-                damageTag,
-                0.40D,
                 100
         );
     }
@@ -313,7 +256,7 @@ final class ModDefenseModules {
                 id,
                 tier,
                 rarity,
-                GENERAL_PROTECTION_SIZE,
+                ModDefenseModules.LARGE_SIZE,
                 damageReduction,
                 energyConsumption,
                 PROTECTION_PRIORITY
@@ -324,22 +267,19 @@ final class ModDefenseModules {
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
             String id,
             EquipmentTier tier,
-            Rarity rarity,
-            ResourceLocation damageTag,
-            double reduction,
-            int energyConsumption
+            ResourceLocation damageTag
     ) {
         registerDamageReduction(
                 registry,
                 id,
                 tier,
-                rarity,
-                SPECIALIZED_PROTECTION_SIZE,
+                Rarity.RARE,
+                MEDIUM_SIZE,
                 new DamageReductionProperties(
                         Map.of(),
-                        Map.of(damageTag, reduction)
+                        Map.of(damageTag, 0.3)
                 ),
-                energyConsumption,
+                60,
                 PROTECTION_PRIORITY
         );
     }
@@ -355,7 +295,7 @@ final class ModDefenseModules {
                 id,
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
-                IMMUNITY_SIZE,
+                LARGE_SIZE,
                 new DamageReductionProperties(
                         Map.of(),
                         Map.of(damageTag, 1.0D)
@@ -412,7 +352,7 @@ final class ModDefenseModules {
                                         resourceLocation,
                                         properties,
                                         ModuleCategory.DEFENSE,
-                                        SHIELD_SIZE
+                                        MEDIUM_SIZE
                                 )
                                 .energy(new EnergyProperties(
                                         energyConsumption,
@@ -444,7 +384,7 @@ final class ModDefenseModules {
                                         resourceLocation,
                                         properties,
                                         ModuleCategory.DEFENSE,
-                                        EMERGENCY_SHIELD_SIZE
+                                        MEDIUM_SIZE
                                 )
                                 .energy(new EnergyProperties(
                                         energyConsumption,
@@ -476,7 +416,7 @@ final class ModDefenseModules {
                                         resourceLocation,
                                         properties,
                                         ModuleCategory.DEFENSE,
-                                        SHIELD_PROTECTION_SIZE
+                                        SMALL_SIZE
                                 )
                                 .energy(new EnergyProperties(
                                         energyConsumption,
@@ -491,10 +431,134 @@ final class ModDefenseModules {
         );
     }
 
+    static void registerAttributeModules(EquipmentRegistry<ModuleDefinition, ModuleItem> registry) {
+        registerAttributeModule(
+                registry,
+                "civilian_armor_plating",
+                EquipmentTier.CIVILIAN,
+                Rarity.UNCOMMON,
+                15,
+                Map.ofEntries(Map.entry(ARMOR, addValue(3.0D)))
+        );
+        registerAttributeModule(
+                registry,
+                "military_reinforced_plating",
+                EquipmentTier.MILITARY,
+                Rarity.RARE,
+                35,
+                Map.ofEntries(
+                        Map.entry(ARMOR, addValue(6.0D)),
+                        Map.entry(ARMOR_TOUGHNESS, addValue(2.0D))
+                )
+        );
+
+        registry.register("military_reactive_armor",
+                new EquipmentProperties(EquipmentTier.MILITARY, Rarity.RARE),
+                (resourceLocation, properties) ->
+                        ModuleDefinition.builder(
+                                        resourceLocation,
+                                        properties,
+                                        ModuleCategory.DEFENSE,
+                                        LARGE_SIZE)
+                                .energy(new EnergyProperties(30, PROTECTION_PRIORITY))
+                                .attributes(new AttributeProperties(Map.of(ARMOR, addValue(2.0D))))
+                                .conditionalAttributes(new ConditionalAttributeProperties(
+                                        List.of(new AttributeCondition(
+                                                AttributeCondition.Type.HEALTH_BELOW, Optional.of(0.30D))),
+                                        new AttributeProperties(Map.ofEntries(
+                                                Map.entry(ARMOR, addValue(5.0D)),
+                                                Map.entry(ARMOR_TOUGHNESS, addValue(3.0D))
+                                        )))
+                                )
+                                .build());
+
+        registerAttributeModule(
+                registry,
+                "impact_protection_system",
+                EquipmentTier.ENGINEERING,
+                Rarity.RARE,
+                30,
+                Map.ofEntries(
+                        Map.entry(SAFE_FALL_DISTANCE, addValue(3.0D)),
+                        Map.entry(FALL_DAMAGE_MULTIPLIER, multipliedBase(-0.25D))
+                )
+        );
+        registerAttributeModule(
+                registry,
+                "kinetic_stabilization",
+                EquipmentTier.MILITARY,
+                Rarity.RARE,
+                30,
+                Map.ofEntries(
+                        Map.entry(KNOCKBACK_RESISTANCE, multipliedBase(0.25D)),
+                        Map.entry(EXPLOSION_KNOCKBACK_RESISTANCE, multipliedBase(0.25D)),
+                        Map.entry(FALL_DAMAGE_MULTIPLIER, multipliedBase(-0.5D))
+                )
+        );
+
+        if (ModList.get() != null && ModList.get().isLoaded("apothic_attributes")) {
+            registerAttributeModule(
+                    registry,
+                    "evasion_system",
+                    EquipmentTier.MILITARY,
+                    Rarity.RARE,
+                    40,
+                    Map.ofEntries(
+                            Map.entry(DODGE_CHANCE, multipliedBase(0.05D))
+                    )
+            );
+        }
+    }
+
     private static ResourceLocation minecraftTag(String path) {
         return ResourceLocation.fromNamespaceAndPath(
                 "minecraft",
                 path
+        );
+    }
+
+    private static void registerAttributeModule(
+            EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
+            String id,
+            EquipmentTier tier,
+            Rarity rarity,
+            int energyConsumption,
+            Map<ResourceLocation, AttributeModifierProperties> entries
+    ) {
+        registry.register(
+                id,
+                new EquipmentProperties(tier, rarity),
+                (resourceLocation, properties) ->
+                        ModuleDefinition.builder(
+                                        resourceLocation,
+                                        properties,
+                                        ModuleCategory.DEFENSE,
+                                        ModDefenseModules.MEDIUM_SIZE
+                                )
+                                .energy(new EnergyProperties(
+                                        energyConsumption,
+                                        PROTECTION_PRIORITY
+                                ))
+                                .attributes(new AttributeProperties(entries))
+                                .build()
+        );
+    }
+
+    private static AttributeModifierProperties multipliedBase(
+            double amount
+    ) {
+        return new AttributeModifierProperties(
+                amount,
+                AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+        );
+    }
+
+    private static AttributeModifierProperties addValue(
+            double amount
+    ) {
+        return new AttributeModifierProperties(
+                amount,
+                AttributeModifier.Operation.ADD_VALUE
         );
     }
 }

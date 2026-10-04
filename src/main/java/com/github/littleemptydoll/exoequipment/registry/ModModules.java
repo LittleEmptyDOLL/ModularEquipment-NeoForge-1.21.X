@@ -43,7 +43,6 @@ public final class ModModules {
         ModThermalModules.register(REGISTRY);
         ModCombatModules.register(REGISTRY);
         ModUtilityModules.register(REGISTRY);
-        ModAttributeModules.register(REGISTRY);
     }
 
     static void registerTransientDefinition(ModuleDefinition definition) {

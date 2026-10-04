@@ -79,7 +79,6 @@ final class ModSensorModules {
                 30,
                 12.0D,
                 false,
-                true,
                 true
         );
         registerEntitySensor(
@@ -90,7 +89,6 @@ final class ModSensorModules {
                 30,
                 40,
                 20.0D,
-                true,
                 true,
                 true
         );
@@ -103,8 +101,7 @@ final class ModSensorModules {
                 50,
                 28.0D,
                 true,
-                false,
-                true
+                false
         );
         registerEntitySensor(
                 registry,
@@ -114,7 +111,6 @@ final class ModSensorModules {
                 40,
                 70,
                 40.0D,
-                true,
                 true,
                 true
         );
@@ -168,8 +164,7 @@ final class ModSensorModules {
             int activeConsumption,
             double range,
             boolean players,
-            boolean mobs,
-            boolean hostile
+            boolean mobs
     ) {
         registry.register(
                 id,
@@ -189,7 +184,7 @@ final class ModSensorModules {
                                         range,
                                         players,
                                         mobs,
-                                        hostile,
+                                        true,
                                         activeConsumption
                                 ))
                                 .build()

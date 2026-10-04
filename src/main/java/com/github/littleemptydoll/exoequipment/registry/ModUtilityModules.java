@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Rarity;
+import net.neoforged.fml.ModList;
 
 import java.util.Map;
 
@@ -80,15 +81,17 @@ final class ModUtilityModules {
                 Map.ofEntries(Map.entry(LUCK, addValue(1.0D)))
         );
 
-        registerAttributeModule(
-                registry,
-                "ancient_knowledge",
-                EquipmentTier.ENGINEERING,
-                Rarity.RARE,
-                SMALL_SIZE,
-                20,
-                Map.ofEntries(Map.entry(EXPERIENCE_GAINED, multipliedBase(0.2D)))
-        );
+        if (ModList.get() != null && ModList.get().isLoaded("apothic_attributes")) {
+            registerAttributeModule(
+                    registry,
+                    "ancient_knowledge",
+                    EquipmentTier.ENGINEERING,
+                    Rarity.RARE,
+                    SMALL_SIZE,
+                    20,
+                    Map.ofEntries(Map.entry(EXPERIENCE_GAINED, multipliedBase(0.2D)))
+            );
+        }
     }
 
     private static void registerMagnet(

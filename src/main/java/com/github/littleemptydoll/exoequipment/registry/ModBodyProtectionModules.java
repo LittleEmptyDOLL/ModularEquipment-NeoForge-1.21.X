@@ -38,32 +38,34 @@ final class ModBodyProtectionModules {
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry
     ) {
         registerGeneralSeries(registry);
-        registerSpecializedSeries(
+
+        register(
                 registry,
-                "vital_body_protection",
-                VITAL_PARTS
+                "military_vital_protection",
+                EquipmentTier.MILITARY,
+                Rarity.RARE,
+                SPECIALIZED_SIZE,
+                VITAL_PARTS,
+                0.20D,
+                0.50D,
+                70
         );
-        registerSpecializedSeries(
+        register(
                 registry,
-                "limb_body_protection",
-                LIMB_PARTS
+                "military_limb_protection",
+                EquipmentTier.MILITARY,
+                Rarity.RARE,
+                SPECIALIZED_SIZE,
+                LIMB_PARTS,
+                0.20D,
+                0.50D,
+                70
         );
     }
 
     private static void registerGeneralSeries(
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry
     ) {
-        register(
-                registry,
-                "civilian_body_protection",
-                EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON,
-                GENERAL_SIZE,
-                Set.of(),
-                0.05D,
-                0.10D,
-                15
-        );
         register(
                 registry,
                 "engineering_body_protection",
@@ -77,75 +79,13 @@ final class ModBodyProtectionModules {
         );
         register(
                 registry,
-                "military_body_protection",
-                EquipmentTier.MILITARY,
-                Rarity.RARE,
-                GENERAL_SIZE,
-                Set.of(),
-                0.15D,
-                0.30D,
-                50
-        );
-        register(
-                registry,
                 "experimental_body_protection",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
                 GENERAL_SIZE,
                 Set.of(),
-                0.20D,
-                0.40D,
-                80
-        );
-    }
-
-    private static void registerSpecializedSeries(
-            EquipmentRegistry<ModuleDefinition, ModuleItem> registry,
-            String suffix,
-            Set<BodyPart> bodyParts
-    ) {
-        register(
-                registry,
-                "civilian_" + suffix,
-                EquipmentTier.CIVILIAN,
-                Rarity.UNCOMMON,
-                SPECIALIZED_SIZE,
-                bodyParts,
-                0.10D,
-                0.20D,
-                20
-        );
-        register(
-                registry,
-                "engineering_" + suffix,
-                EquipmentTier.ENGINEERING,
-                Rarity.RARE,
-                SPECIALIZED_SIZE,
-                bodyParts,
-                0.15D,
-                0.35D,
-                40
-        );
-        register(
-                registry,
-                "military_" + suffix,
-                EquipmentTier.MILITARY,
-                Rarity.RARE,
-                SPECIALIZED_SIZE,
-                bodyParts,
-                0.20D,
-                0.50D,
-                65
-        );
-        register(
-                registry,
-                "experimental_" + suffix,
-                EquipmentTier.EXPERIMENTAL,
-                Rarity.EPIC,
-                SPECIALIZED_SIZE,
-                bodyParts,
                 0.30D,
-                0.65D,
+                0.60D,
                 100
         );
     }

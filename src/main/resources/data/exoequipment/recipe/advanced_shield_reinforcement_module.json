@@ -15,26 +15,26 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:electronic_component"
+        "item": "minecraft:diamond"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "minecraft:gold_ingot"
+        "item": "minecraft:netherite_scrap"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "exoequipment:experimental_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:civilian_shield_module",
+    "id": "exoequipment:advanced_shield_reinforcement_module",
     "count": 1
   },
-  "energy": 40000
+  "energy": 250000
 }

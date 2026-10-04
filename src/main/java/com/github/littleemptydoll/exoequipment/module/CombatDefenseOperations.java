@@ -126,19 +126,15 @@ public final class CombatDefenseOperations {
     private static List<LivingEntity> candidates(ServerPlayer owner, LivingEntity source,
                                                   double range, Predicate<LivingEntity> eligible,
                                                   Set<UUID> excluded, Set<UUID> claimed) {
-        List<LivingEntity> found = owner.level().getEntitiesOfClass(LivingEntity.class,
+        return owner.level().getEntitiesOfClass(LivingEntity.class,
                         new AABB(source.blockPosition()).inflate(range), entity ->
                                 !excluded.contains(entity.getUUID()) && eligible.test(entity)
                                         && source.distanceToSqr(entity) <= range * range
                                         && source.hasLineOfSight(entity))
-                .stream().sorted(Comparator.comparingDouble(source::distanceToSqr)).toList();
-        // Prefer a different target for each installed module. If the area is
-        // crowded with modules but has few enemies, focus fire is allowed.
-        List<LivingEntity> unused = found.stream().filter(e -> !claimed.contains(e.getUUID())).toList();
-        if (unused.isEmpty()) return found;
-        java.util.ArrayList<LivingEntity> ordered = new java.util.ArrayList<>(unused);
-        found.stream().filter(e -> claimed.contains(e.getUUID())).forEach(ordered::add);
-        return ordered;
+                .stream().sorted(Comparator
+                        .comparingInt((LivingEntity e) -> CombatTargeting.trainingDummy(e) ? 1 : 0)
+                        .thenComparingInt(e -> claimed.contains(e.getUUID()) ? 1 : 0)
+                        .thenComparingDouble(source::distanceToSqr)).toList();
     }
 
     private static boolean hit(ServerPlayer owner, LivingEntity target, float damage) {

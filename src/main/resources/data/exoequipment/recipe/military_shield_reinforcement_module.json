@@ -3,13 +3,19 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:structural_component"
+        "item": "exoequipment:shield_emitter"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "exoequipment:energy_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:titanium_ingot"
       },
       "count": 2
     },
@@ -21,14 +27,14 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:thermal_regulator"
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_emergency_shield_module",
+    "id": "exoequipment:military_shield_reinforcement_module",
     "count": 1
   },
-  "energy": 1550
+  "energy": 100000
 }

@@ -1,5 +1,7 @@
 package com.github.littleemptydoll.exoequipment.module;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -13,6 +15,8 @@ import java.util.UUID;
 
 final class CombatTargeting {
     private static final FtbTeamsAccess FTB_TEAMS = FtbTeamsAccess.create();
+    private static final ResourceLocation TARGET_DUMMY =
+            ResourceLocation.fromNamespaceAndPath("dummmmmmy", "target_dummy");
 
     private CombatTargeting() {}
 
@@ -20,12 +24,17 @@ final class CombatTargeting {
                             boolean players, boolean hostile, boolean aggressive) {
         if (target == owner || !target.isAlive() || target.isSpectator()
                 || owner.isAlliedTo(target)) return false;
+        if (trainingDummy(target)) return true;
         if (target instanceof Player other) {
             return players && other instanceof ServerPlayer serverPlayer
                     && owner.canHarmPlayer(other) && !FTB_TEAMS.allied(owner, serverPlayer);
         }
         return (hostile && target instanceof Enemy)
                 || (aggressive && target instanceof Mob mob && mob.getTarget() == owner);
+    }
+
+    static boolean trainingDummy(LivingEntity target) {
+        return TARGET_DUMMY.equals(BuiltInRegistries.ENTITY_TYPE.getKey(target.getType()));
     }
 
     /** Access the optional 1.21.1 FTB Teams API without requiring it in standalone packs. */

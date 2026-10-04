@@ -3,13 +3,19 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_shield_protection_module"
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "minecraft:gold_ingot"
       },
       "count": 2
     },
@@ -21,14 +27,14 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:thermal_regulator"
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_shield_protection_module",
+    "id": "exoequipment:engineering_shield_reinforcement_module",
     "count": 1
   },
-  "energy": 1400
+  "energy": 75000
 }

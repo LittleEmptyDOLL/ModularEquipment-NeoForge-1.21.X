@@ -55,10 +55,10 @@ final class ModDefenseModules {
             EquipmentRegistry<ModuleDefinition, ModuleItem> registry
     ) {
         registerShields(registry);
-        registerDamageProtection(registry);
-        registerImmunities(registry);
         registerEmergencyShields(registry);
         registerShieldProtection(registry);
+        registerDamageProtection(registry);
+        registerImmunities(registry);
         registerAttributeModules(registry);
     }
 

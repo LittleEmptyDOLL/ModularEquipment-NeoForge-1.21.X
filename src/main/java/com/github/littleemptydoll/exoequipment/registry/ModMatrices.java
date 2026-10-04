@@ -93,7 +93,7 @@ public final class ModMatrices {
                             id,
                             properties,
                             7,
-                            8
+                            7
                     )
     );
 

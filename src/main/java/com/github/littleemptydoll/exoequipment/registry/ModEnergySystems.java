@@ -76,7 +76,7 @@ public final class ModEnergySystems {
                     2_000,
                     3_000,
                     1.0,
-                    20_000
+                    30_000
             )
     );
 
@@ -95,7 +95,7 @@ public final class ModEnergySystems {
                     3_000,
                     2_000,
                     1.0,
-                    25_000
+                    15_000
             )
     );
 
@@ -113,7 +113,7 @@ public final class ModEnergySystems {
                     properties,
                     8_000,
                     8_000,
-                    1.1,
+                    1.0,
                     100_000
             )
     );

@@ -34,15 +34,15 @@ public final class ModModules {
 
     static {
         ModEnergyModules.register(REGISTRY);
+        ModThermalModules.register(REGISTRY);
         ModDefenseModules.register(REGISTRY);
         ModStatusProtectionModules.register(REGISTRY);
         ModBodyProtectionModules.register(REGISTRY);
-        ModMobilityModules.register(REGISTRY);
         ModSurvivalModules.register(REGISTRY);
-        ModSensorModules.register(REGISTRY);
-        ModThermalModules.register(REGISTRY);
         ModCombatModules.register(REGISTRY);
+        ModMobilityModules.register(REGISTRY);
         ModUtilityModules.register(REGISTRY);
+        ModSensorModules.register(REGISTRY);
     }
 
     static void registerTransientDefinition(ModuleDefinition definition) {

@@ -1,0 +1,52 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:sensor_array"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:enchanted_golden_apple"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:ghast_tear"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:experimental_component"
+      },
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "exoequipment:predator_system_module",
+    "count": 1
+  },
+  "energy": 500000,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "apothic_attributes"
+    }
+  ]
+}

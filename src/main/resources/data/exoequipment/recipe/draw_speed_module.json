@@ -5,28 +5,36 @@
       "ingredient": {
         "item": "exoequipment:mechanical_component"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
         "item": "exoequipment:electronic_component"
       },
       "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:string"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:engineering_component"
+      },
+      "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:civilian_armor_pierce_module",
+    "id": "exoequipment:draw_speed_module",
     "count": 1
   },
-  "energy": 650,
+  "energy": 60000,
   "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "apothic_attributes"
-    },
-    {
-      "type": "neoforge:item_exists",
-      "item": "exoequipment:civilian_armor_pierce_module"
     }
   ]
 }

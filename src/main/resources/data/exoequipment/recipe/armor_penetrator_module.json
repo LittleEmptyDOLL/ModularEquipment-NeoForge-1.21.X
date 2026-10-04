@@ -3,42 +3,44 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_crit_chance_module"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
         "item": "exoequipment:mechanical_component"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "exoequipment:titanium_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:diamond"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:thermal_regulator"
+        "item": "exoequipment:energy_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_crit_chance_module",
+    "id": "exoequipment:armor_penetrator_module",
     "count": 1
   },
-  "energy": 1400,
+  "energy": 125000,
   "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "apothic_attributes"
-    },
-    {
-      "type": "neoforge:item_exists",
-      "item": "exoequipment:engineering_crit_chance_module"
     }
   ]
 }

@@ -3,42 +3,44 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_crit_damage_module"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:mechanical_component"
+        "item": "exoequipment:electronic_component"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "exoequipment:energy_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:golden_apple"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "minecraft:ghast_tear"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:military_crit_damage_module",
+    "id": "exoequipment:combat_recovery_module",
     "count": 1
   },
-  "energy": 1400,
+  "energy": 150000,
   "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "apothic_attributes"
-    },
-    {
-      "type": "neoforge:item_exists",
-      "item": "exoequipment:military_crit_damage_module"
     }
   ]
 }

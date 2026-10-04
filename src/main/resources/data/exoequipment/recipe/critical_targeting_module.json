@@ -3,42 +3,44 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:engineering_life_steal_module"
+        "item": "exoequipment:sensor_array"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:military_life_steal_module"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:experimental_component"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:mechanical_component"
+        "item": "exoequipment:electronic_component"
       },
       "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:diamond"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:military_component"
+      },
+      "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:experimental_life_steal_module",
+    "id": "exoequipment:critical_targeting_module",
     "count": 1
   },
-  "energy": 3700,
+  "energy": 100000,
   "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "apothic_attributes"
-    },
-    {
-      "type": "neoforge:item_exists",
-      "item": "exoequipment:experimental_life_steal_module"
     }
   ]
 }

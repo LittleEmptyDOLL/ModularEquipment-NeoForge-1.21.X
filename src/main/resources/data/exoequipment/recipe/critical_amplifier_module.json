@@ -3,9 +3,9 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_adrenaline_module"
+        "item": "exoequipment:energy_component"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
@@ -15,20 +15,26 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "minecraft:diamond"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:thermal_regulator"
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_adrenaline_module",
+    "id": "exoequipment:critical_amplifier_module",
     "count": 1
   },
-  "energy": 1400
+  "energy": 100000,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "apothic_attributes"
+    }
+  ]
 }

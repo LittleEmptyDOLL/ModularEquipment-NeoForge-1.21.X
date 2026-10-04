@@ -1,0 +1,46 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:sensor_array"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:golden_apple"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:ghast_tear"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:military_component"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "exoequipment:adrenaline_module",
+    "count": 1
+  },
+  "energy": 125000
+}

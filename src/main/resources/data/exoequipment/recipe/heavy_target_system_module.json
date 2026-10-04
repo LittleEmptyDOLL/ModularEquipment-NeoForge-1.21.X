@@ -3,42 +3,44 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_armor_pierce_module"
+        "item": "exoequipment:sensor_array"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:mechanical_component"
+        "item": "exoequipment:electronic_component"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "exoequipment:energy_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:diamond"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:thermal_regulator"
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_armor_pierce_module",
+    "id": "exoequipment:heavy_target_system_module",
     "count": 1
   },
-  "energy": 1400,
+  "energy": 125000,
   "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "apothic_attributes"
-    },
-    {
-      "type": "neoforge:item_exists",
-      "item": "exoequipment:engineering_armor_pierce_module"
     }
   ]
 }

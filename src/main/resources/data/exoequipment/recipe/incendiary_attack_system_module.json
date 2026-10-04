@@ -1,0 +1,52 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:thermal_regulator"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:blaze_powder"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:magma_cream"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:military_component"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "exoequipment:incendiary_attack_system_module",
+    "count": 1
+  },
+  "energy": 125000,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "apothic_attributes"
+    }
+  ]
+}

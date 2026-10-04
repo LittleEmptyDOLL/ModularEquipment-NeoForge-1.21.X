@@ -5,7 +5,7 @@
       "ingredient": {
         "item": "exoequipment:sensor_array"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
@@ -15,20 +15,26 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:structural_component"
+        "item": "minecraft:diamond"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:thermal_regulator"
+        "item": "minecraft:spyglass"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:engineering_ore_scanner_module",
+    "id": "exoequipment:threat_sensor_module",
     "count": 1
   },
-  "energy": 1400
+  "energy": 110000
 }

@@ -11,24 +11,36 @@
       "ingredient": {
         "item": "exoequipment:electronic_component"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
-        "item": "minecraft:gold_ingot"
+        "item": "minecraft:quartz"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:amethyst_shard"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:diamond"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "minecraft:golden_carrot"
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:night_vision_module",
+    "id": "exoequipment:resource_scanner_module",
     "count": 1
   },
-  "energy": 25000
+  "energy": 100000
 }

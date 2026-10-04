@@ -3,32 +3,32 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:engineering_ore_scanner_module"
+        "item": "exoequipment:sensor_array"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:military_ore_scanner_module"
+        "item": "exoequipment:electronic_component"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:experimental_component"
+        "item": "minecraft:quartz"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:energy_component"
+        "item": "minecraft:redstone"
       },
-      "count": 2
+      "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:experimental_ore_scanner_module",
+    "id": "exoequipment:basic_entity_sensor_module",
     "count": 1
   },
-  "energy": 3700
+  "energy": 30000
 }

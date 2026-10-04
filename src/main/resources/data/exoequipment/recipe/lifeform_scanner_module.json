@@ -5,7 +5,7 @@
       "ingredient": {
         "item": "exoequipment:sensor_array"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
@@ -15,20 +15,26 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:structural_component"
+        "item": "minecraft:amethyst_shard"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:quartz"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:military_ore_scanner_module",
+    "id": "exoequipment:lifeform_scanner_module",
     "count": 1
   },
-  "energy": 1400
+  "energy": 90000
 }

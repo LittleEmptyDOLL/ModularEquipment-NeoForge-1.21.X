@@ -3,15 +3,9 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_matrix"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
         "item": "exoequipment:electronic_component"
       },
-      "count": 3
+      "count": 2
     },
     {
       "ingredient": {
@@ -21,13 +15,19 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:sensor_array"
+        "item": "exoequipment:titanium_ingot"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
         "item": "exoequipment:composite"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
@@ -36,5 +36,5 @@
     "id": "exoequipment:military_matrix",
     "count": 1
   },
-  "energy": 1200
+  "energy": 125000
 }

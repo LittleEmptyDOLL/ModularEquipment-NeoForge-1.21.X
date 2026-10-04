@@ -3,7 +3,13 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:mechanical_component"
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
       },
       "count": 1
     },
@@ -15,14 +21,20 @@
     },
     {
       "ingredient": {
-        "item": "minecraft:snowball"
+        "item": "minecraft:quartz"
       },
-      "count": 4
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
+      },
+      "count": 1
     }
   ],
   "result": {
     "id": "exoequipment:thermal_regulator",
     "count": 1
   },
-  "energy": 600
+  "energy": 20000
 }

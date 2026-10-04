@@ -3,22 +3,34 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:carbon_fiber"
+        "item": "exoequipment:structural_component"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
         "tag": "c:ingots/steel"
       },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:carbon_fiber"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
+      },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:composite",
+    "id": "exoequipment:civilian_frame",
     "count": 1
   },
-  "energy": 7500,
+  "energy": 15000,
   "neoforge:conditions": [
     {
       "type": "neoforge:not",

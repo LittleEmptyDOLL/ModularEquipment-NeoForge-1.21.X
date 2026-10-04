@@ -9,20 +9,20 @@
     },
     {
       "ingredient": {
-        "item": "minecraft:redstone"
+        "item": "minecraft:gold_ingot"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
-        "item": "minecraft:glowstone_dust"
+        "item": "minecraft:redstone"
       },
-      "count": 1
+      "count": 2
     }
   ],
   "result": {
     "id": "exoequipment:energy_component",
-    "count": 2
+    "count": 1
   },
-  "energy": 300
+  "energy": 7500
 }

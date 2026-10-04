@@ -3,20 +3,26 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "minecraft:iron_ingot"
       },
-      "count": 1
+      "count": 3
     },
     {
       "ingredient": {
-        "item": "minecraft:iron_ingot"
+        "item": "exoequipment:carbon_fiber"
       },
-      "count": 2
+      "count": 1
     }
   ],
   "result": {
     "id": "exoequipment:structural_component",
-    "count": 2
+    "count": 1
   },
-  "energy": 300
+  "energy": 5000,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:tag_empty",
+      "tag": "c:ingots/steel"
+    }
+  ]
 }

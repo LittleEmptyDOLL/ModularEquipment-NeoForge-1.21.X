@@ -72,7 +72,10 @@ public final class ModItems {
                 || item == ELECTRONIC_COMPONENT.get() || item == MECHANICAL_COMPONENT.get()
                 || item == ENERGY_COMPONENT.get() || item == STRUCTURAL_COMPONENT.get()
                 || item == SHIELD_EMITTER.get() || item == THRUSTER.get()
-                || item == SENSOR_ARRAY.get() || item == THERMAL_REGULATOR.get();
+                || item == SENSOR_ARRAY.get() || item == THERMAL_REGULATOR.get()
+                || item == MILITARY_FABRICATOR_UPGRADE.get()
+                || item == ENGINEERING_FABRICATOR_UPGRADE.get()
+                || item == EXPERIMENTAL_FABRICATOR_UPGRADE.get();
     }
 
     public static void register(IEventBus eventBus) {

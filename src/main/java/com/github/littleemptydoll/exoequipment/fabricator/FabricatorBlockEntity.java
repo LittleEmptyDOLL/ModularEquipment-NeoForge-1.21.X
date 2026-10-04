@@ -18,9 +18,8 @@ import net.neoforged.neoforge.energy.EnergyStorage;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 public final class FabricatorBlockEntity extends BlockEntity implements MenuProvider {
-    // Initial machine limits; energy costs belong to individual recipes.
-    public static final int CAPACITY = 100_000;
-    public static final int MAX_RECEIVE = 2_000;
+    public static final int CAPACITY = 1_000_000;
+    public static final int MAX_RECEIVE = 20_000;
 
     private final ItemStackHandler upgrades = new ItemStackHandler(FabricatorUnlocks.UPGRADE_SLOT_COUNT) {
         @Override

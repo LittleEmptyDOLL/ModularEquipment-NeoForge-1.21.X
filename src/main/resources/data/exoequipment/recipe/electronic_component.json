@@ -15,6 +15,12 @@
     },
     {
       "ingredient": {
+        "item": "minecraft:gold_ingot"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
         "item": "minecraft:quartz"
       },
       "count": 1
@@ -22,7 +28,7 @@
   ],
   "result": {
     "id": "exoequipment:electronic_component",
-    "count": 2
+    "count": 1
   },
-  "energy": 250
+  "energy": 5000
 }

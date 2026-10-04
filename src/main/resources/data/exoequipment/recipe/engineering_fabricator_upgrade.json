@@ -1,23 +1,40 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "IRI",
-    "RCR",
-    "IRI"
-  ],
-  "key": {
-    "I": {
-      "item": "exoequipment:electronic_component"
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:engineering_component"
+      },
+      "count": 2
     },
-    "R": {
-      "item": "minecraft:redstone"
+    {
+      "ingredient": {
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 2
     },
-    "C": {
-      "item": "exoequipment:engineering_component"
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:gold_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:diamond"
+      },
+      "count": 1
     }
-  },
+  ],
   "result": {
     "id": "exoequipment:engineering_fabricator_upgrade",
     "count": 1
-  }
+  },
+  "energy": 150000
 }

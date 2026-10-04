@@ -3,15 +3,21 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_controller"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
         "item": "exoequipment:electronic_component"
       },
-      "count": 4
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:gold_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:quartz"
+      },
+      "count": 2
     },
     {
       "ingredient": {
@@ -21,13 +27,7 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:mechanical_component"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:sensor_array"
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
@@ -36,5 +36,5 @@
     "id": "exoequipment:engineering_controller",
     "count": 1
   },
-  "energy": 1200
+  "energy": 100000
 }

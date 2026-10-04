@@ -9,7 +9,19 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:mechanical_component"
+        "item": "minecraft:redstone"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:gold_ingot"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:quartz"
       },
       "count": 1
     }
@@ -18,5 +30,5 @@
     "id": "exoequipment:civilian_controller",
     "count": 1
   },
-  "energy": 750
+  "energy": 15000
 }

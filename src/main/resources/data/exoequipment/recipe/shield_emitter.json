@@ -3,19 +3,31 @@
   "ingredients": [
     {
       "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
         "item": "exoequipment:electronic_component"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:energy_component"
+        "item": "minecraft:gold_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:diamond"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "minecraft:amethyst_shard"
+        "item": "exoequipment:composite"
       },
       "count": 1
     }
@@ -24,5 +36,5 @@
     "id": "exoequipment:shield_emitter",
     "count": 1
   },
-  "energy": 800
+  "energy": 25000
 }

@@ -3,13 +3,7 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:military_matrix"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:engineering_matrix"
+        "item": "minecraft:netherite_scrap"
       },
       "count": 1
     },
@@ -17,24 +11,36 @@
       "ingredient": {
         "item": "exoequipment:experimental_component"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:energy_component"
+        "item": "exoequipment:electronic_component"
       },
       "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:structural_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:titanium_ingot"
+      },
+      "count": 2
     },
     {
       "ingredient": {
         "item": "exoequipment:composite"
       },
-      "count": 3
+      "count": 2
     }
   ],
   "result": {
     "id": "exoequipment:experimental_matrix",
     "count": 1
   },
-  "energy": 3400
+  "energy": 400000
 }

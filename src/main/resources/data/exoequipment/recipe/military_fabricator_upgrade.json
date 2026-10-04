@@ -1,23 +1,40 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "IRI",
-    "RCR",
-    "IRI"
-  ],
-  "key": {
-    "I": {
-      "item": "exoequipment:structural_component"
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:military_component"
+      },
+      "count": 2
     },
-    "R": {
-      "item": "minecraft:redstone"
+    {
+      "ingredient": {
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 2
     },
-    "C": {
-      "item": "exoequipment:military_component"
+    {
+      "ingredient": {
+        "item": "exoequipment:mechanical_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:titanium_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:diamond"
+      },
+      "count": 1
     }
-  },
+  ],
   "result": {
     "id": "exoequipment:military_fabricator_upgrade",
     "count": 1
-  }
+  },
+  "energy": 150000
 }

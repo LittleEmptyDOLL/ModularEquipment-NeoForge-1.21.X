@@ -23,9 +23,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import com.mojang.math.Axis;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -445,18 +443,7 @@ public class MatrixScreen extends AbstractContainerScreen<MatrixMenu> {
         ItemStack stack = createModuleStack(module);
         if (stack.isEmpty()) return;
 
-        List<Component> tooltip = new ArrayList<>();
-        tooltip.add(stack.getHoverName());
-        if (stack.getItem() instanceof ModuleItem moduleItem) {
-            moduleItem.appendHoverTextWithTemperature(
-                    stack,
-                    tooltip,
-                    menu.getTemperature()
-            );
-            guiGraphics.renderTooltip(font, tooltip, Optional.empty(), mouseX, mouseY);
-        } else {
-            guiGraphics.renderTooltip(font, stack, mouseX, mouseY);
-        }
+        guiGraphics.renderTooltip(font, stack, mouseX, mouseY);
     }
 
     private InstalledModule getModuleAtMouse(int mouseX, int mouseY) {

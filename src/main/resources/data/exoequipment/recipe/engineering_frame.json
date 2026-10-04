@@ -3,31 +3,31 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_frame"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:structural_component"
-      },
-      "count": 4
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:composite"
-      },
-      "count": 3
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:mechanical_component"
+        "item": "exoequipment:titanium_ingot"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:thermal_regulator"
+        "item": "exoequipment:carbon_fiber"
+      },
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:structural_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
@@ -36,5 +36,5 @@
     "id": "exoequipment:engineering_frame",
     "count": 1
   },
-  "energy": 1200
+  "energy": 100000
 }

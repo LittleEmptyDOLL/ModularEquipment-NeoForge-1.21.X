@@ -11,12 +11,24 @@
       "ingredient": {
         "item": "minecraft:copper_ingot"
       },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:redstone"
+      },
       "count": 1
     }
   ],
   "result": {
     "id": "exoequipment:mechanical_component",
-    "count": 2
+    "count": 1
   },
-  "energy": 250
+  "energy": 4000,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:tag_empty",
+      "tag": "c:ingots/steel"
+    }
+  ]
 }

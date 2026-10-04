@@ -3,7 +3,7 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:energy_component"
+        "tag": "c:ingots/steel"
       },
       "count": 2
     },
@@ -15,20 +15,23 @@
     },
     {
       "ingredient": {
-        "item": "minecraft:gold_ingot"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:electronic_component"
+        "item": "minecraft:redstone"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:civilian_energy_system",
+    "id": "exoequipment:mechanical_component",
     "count": 1
   },
-  "energy": 20000
+  "energy": 4000,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/steel"
+      }
+    }
+  ]
 }

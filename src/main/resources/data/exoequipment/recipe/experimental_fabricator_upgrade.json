@@ -1,23 +1,52 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "IRI",
-    "RCR",
-    "IRI"
-  ],
-  "key": {
-    "I": {
-      "item": "exoequipment:composite"
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:experimental_component"
+      },
+      "count": 2
     },
-    "R": {
-      "item": "minecraft:redstone"
+    {
+      "ingredient": {
+        "item": "exoequipment:military_component"
+      },
+      "count": 1
     },
-    "C": {
-      "item": "exoequipment:experimental_component"
+    {
+      "ingredient": {
+        "item": "exoequipment:engineering_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:netherite_scrap"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:diamond"
+      },
+      "count": 2
     }
-  },
+  ],
   "result": {
     "id": "exoequipment:experimental_fabricator_upgrade",
     "count": 1
-  }
+  },
+  "energy": 750000
 }

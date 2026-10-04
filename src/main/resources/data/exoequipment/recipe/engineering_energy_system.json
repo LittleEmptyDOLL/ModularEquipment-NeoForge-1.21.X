@@ -3,15 +3,9 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_energy_system"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
         "item": "exoequipment:energy_component"
       },
-      "count": 4
+      "count": 3
     },
     {
       "ingredient": {
@@ -21,13 +15,19 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "minecraft:copper_ingot"
+      },
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:gold_ingot"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:thermal_regulator"
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
@@ -36,5 +36,5 @@
     "id": "exoequipment:engineering_energy_system",
     "count": 1
   },
-  "energy": 1700
+  "energy": 150000
 }

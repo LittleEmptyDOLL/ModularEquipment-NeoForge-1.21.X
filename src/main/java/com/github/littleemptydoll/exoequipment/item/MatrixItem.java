@@ -68,14 +68,7 @@ public class MatrixItem extends EquipmentItem<MatrixDefinition> {
         ItemStack stack = player.getItemInHand(hand);
 
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
-            int inventorySlot = hand == InteractionHand.MAIN_HAND
-                    ? player.getInventory().selected
-                    : 40;
-
-            MatrixMenuProvider.openFromHand(
-                    serverPlayer,
-                    inventorySlot
-            );
+            MatrixMenuProvider.openFromHand(serverPlayer, hand);
         }
 
         return InteractionResultHolder.sidedSuccess(

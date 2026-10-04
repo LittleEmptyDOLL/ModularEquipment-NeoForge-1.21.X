@@ -3,15 +3,9 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_controller"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
         "item": "exoequipment:electronic_component"
       },
-      "count": 4
+      "count": 2
     },
     {
       "ingredient": {
@@ -21,13 +15,19 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:mechanical_component"
+        "item": "minecraft:gold_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:diamond"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
@@ -36,5 +36,5 @@
     "id": "exoequipment:military_controller",
     "count": 1
   },
-  "energy": 1200
+  "energy": 100000
 }

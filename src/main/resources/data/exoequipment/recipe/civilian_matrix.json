@@ -5,11 +5,23 @@
       "ingredient": {
         "item": "exoequipment:electronic_component"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
         "item": "exoequipment:structural_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:gold_ingot"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
       },
       "count": 1
     }
@@ -18,5 +30,5 @@
     "id": "exoequipment:civilian_matrix",
     "count": 1
   },
-  "energy": 500
+  "energy": 20000
 }

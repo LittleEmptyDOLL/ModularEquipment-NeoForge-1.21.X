@@ -1,28 +1,28 @@
 {
   "type": "exoequipment:fabricator",
-  "neoforge:conditions": [
-    {
-      "type": "neoforge:tag_empty",
-      "tag": "c:ingots/steel"
-    }
-  ],
   "ingredients": [
     {
       "ingredient": {
         "item": "exoequipment:carbon_fiber"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
         "item": "minecraft:iron_ingot"
       },
-      "count": 2
+      "count": 1
     }
   ],
   "result": {
     "id": "exoequipment:composite",
-    "count": 2
+    "count": 1
   },
-  "energy": 300
+  "energy": 7500,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:tag_empty",
+      "tag": "c:ingots/steel"
+    }
+  ]
 }

@@ -5,17 +5,23 @@
       "ingredient": {
         "item": "exoequipment:electronic_component"
       },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "minecraft:glass_pane"
-      },
       "count": 2
     },
     {
       "ingredient": {
         "item": "minecraft:quartz"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:gold_ingot"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:amethyst_shard"
       },
       "count": 1
     }
@@ -24,5 +30,5 @@
     "id": "exoequipment:sensor_array",
     "count": 1
   },
-  "energy": 600
+  "energy": 20000
 }

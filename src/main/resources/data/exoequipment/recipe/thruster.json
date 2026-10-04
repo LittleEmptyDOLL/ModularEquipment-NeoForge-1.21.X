@@ -15,6 +15,18 @@
     },
     {
       "ingredient": {
+        "item": "exoequipment:titanium_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
         "item": "minecraft:blaze_powder"
       },
       "count": 1
@@ -24,5 +36,5 @@
     "id": "exoequipment:thruster",
     "count": 1
   },
-  "energy": 800
+  "energy": 25000
 }

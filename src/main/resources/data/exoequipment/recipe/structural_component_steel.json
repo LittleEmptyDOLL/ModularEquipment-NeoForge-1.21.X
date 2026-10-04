@@ -3,22 +3,22 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:carbon_fiber"
+        "tag": "c:ingots/steel"
       },
-      "count": 1
+      "count": 3
     },
     {
       "ingredient": {
-        "tag": "c:ingots/steel"
+        "item": "exoequipment:carbon_fiber"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:composite",
+    "id": "exoequipment:structural_component",
     "count": 1
   },
-  "energy": 7500,
+  "energy": 5000,
   "neoforge:conditions": [
     {
       "type": "neoforge:not",

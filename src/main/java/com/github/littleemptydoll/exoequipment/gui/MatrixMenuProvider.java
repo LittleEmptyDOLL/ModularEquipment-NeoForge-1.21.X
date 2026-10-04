@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.item.MatrixItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.extensions.IPlayerExtension;
 
@@ -11,12 +12,14 @@ public final class MatrixMenuProvider {
 
     private MatrixMenuProvider() {}
 
-    public static void openFromHand(ServerPlayer player, int inventorySlot) {
+    public static void openFromHand(ServerPlayer player, InteractionHand hand) {
+        int inventorySlot = hand == InteractionHand.MAIN_HAND
+                ? player.getInventory().selected : 40;
         if (inventorySlot < 0 || inventorySlot >= player.getInventory().getContainerSize()) {
             return;
         }
 
-        ItemStack stack = player.getInventory().getItem(inventorySlot);
+        ItemStack stack = player.getItemInHand(hand);
         if (!(stack.getItem() instanceof MatrixItem)) {
             return;
         }

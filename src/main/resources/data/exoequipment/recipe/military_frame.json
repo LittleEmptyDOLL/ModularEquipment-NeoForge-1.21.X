@@ -3,31 +3,25 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_frame"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:structural_component"
-      },
-      "count": 4
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "exoequipment:titanium_ingot"
       },
       "count": 3
     },
     {
       "ingredient": {
-        "item": "exoequipment:mechanical_component"
+        "item": "exoequipment:composite"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "exoequipment:structural_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
@@ -36,5 +30,5 @@
     "id": "exoequipment:military_frame",
     "count": 1
   },
-  "energy": 1200
+  "energy": 100000
 }

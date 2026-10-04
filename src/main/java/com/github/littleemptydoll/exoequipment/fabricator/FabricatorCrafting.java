@@ -43,6 +43,13 @@ public final class FabricatorCrafting {
         } else {
             return 0;
         }
+        if (output == ModItems.EXPERIMENTAL_FABRICATOR_UPGRADE.get()
+                && (!machine.upgrades().getStackInSlot(FabricatorUnlocks.MILITARY_SLOT)
+                        .is(ModItems.MILITARY_FABRICATOR_UPGRADE.get())
+                || !machine.upgrades().getStackInSlot(FabricatorUnlocks.ENGINEERING_SLOT)
+                        .is(ModItems.ENGINEERING_FABRICATOR_UPGRADE.get()))) {
+            return 0;
+        }
 
         Inventory inventory = player.getInventory();
         List<ItemStack> current = new ArrayList<>(PLAYER_SLOTS);

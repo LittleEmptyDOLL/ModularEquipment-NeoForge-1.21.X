@@ -9,26 +9,32 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:electronic_component"
+        "item": "exoequipment:energy_component"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "exoequipment:electronic_component"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "minecraft:diamond"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:military_cloaking_module",
+    "id": "exoequipment:advanced_mining_assist_module",
     "count": 1
   },
-  "energy": 1550
+  "energy": 90000
 }

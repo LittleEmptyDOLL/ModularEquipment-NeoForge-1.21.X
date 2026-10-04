@@ -11,13 +11,13 @@
       "ingredient": {
         "item": "exoequipment:electronic_component"
       },
-      "count": 3
+      "count": 2
     },
     {
       "ingredient": {
         "item": "exoequipment:energy_component"
       },
-      "count": 3
+      "count": 2
     },
     {
       "ingredient": {
@@ -29,30 +29,18 @@
       "ingredient": {
         "item": "minecraft:ender_pearl"
       },
-      "count": 2
-    },
-    {
-      "ingredient": {
-        "item": "minecraft:echo_shard"
-      },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "minecraft:netherite_scrap"
+        "item": "exoequipment:military_component"
       },
       "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:experimental_component"
-      },
-      "count": 2
     }
   ],
   "result": {
-    "id": "exoequipment:experimental_cloaking_module",
+    "id": "exoequipment:cloaking_system_module",
     "count": 1
   },
-  "energy": 500000
+  "energy": 175000
 }

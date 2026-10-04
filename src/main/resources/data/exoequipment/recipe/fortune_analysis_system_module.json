@@ -1,0 +1,46 @@
+{
+  "type": "exoequipment:fabricator",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "exoequipment:sensor_array"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:gold_ingot"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:lapis_lazuli"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:amethyst_shard"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:engineering_component"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "exoequipment:fortune_analysis_system_module",
+    "count": 1
+  },
+  "energy": 75000
+}

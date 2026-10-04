@@ -3,25 +3,37 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:engineering_jetpack_module"
+        "item": "exoequipment:thruster"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:titanium_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:thermal_regulator"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:military_jetpack_module"
+        "item": "minecraft:netherite_ingot"
       },
       "count": 1
     },
     {
       "ingredient": {
         "item": "exoequipment:experimental_component"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:thruster"
       },
       "count": 2
     }
@@ -30,5 +42,5 @@
     "id": "exoequipment:experimental_jetpack_module",
     "count": 1
   },
-  "energy": 3700
+  "energy": 500000
 }

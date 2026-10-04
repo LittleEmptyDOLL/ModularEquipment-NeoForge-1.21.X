@@ -3,7 +3,13 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:thruster"
+        "item": "minecraft:ender_pearl"
+      },
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
       },
       "count": 2
     },
@@ -15,13 +21,13 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:energy_component"
+        "item": "exoequipment:titanium_ingot"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
@@ -30,5 +36,5 @@
     "id": "exoequipment:military_blink_module",
     "count": 1
   },
-  "energy": 1900
+  "energy": 125000
 }

@@ -15,15 +15,15 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "exoequipment:energy_component"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
-        "item": "minecraft:slime_ball"
+        "item": "exoequipment:composite"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
@@ -36,5 +36,5 @@
     "id": "exoequipment:engineering_mobility_control_module",
     "count": 1
   },
-  "energy": 75000
+  "energy": 80000
 }

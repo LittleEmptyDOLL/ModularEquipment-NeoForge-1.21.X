@@ -5,11 +5,29 @@
       "ingredient": {
         "item": "exoequipment:thruster"
       },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
       "count": 1
     },
     {
       "ingredient": {
         "item": "exoequipment:mechanical_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:iron_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
       },
       "count": 1
     }
@@ -18,5 +36,11 @@
     "id": "exoequipment:civilian_jetpack_module",
     "count": 1
   },
-  "energy": 650
+  "energy": 40000,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:tag_empty",
+      "tag": "c:ingots/steel"
+    }
+  ]
 }

@@ -3,25 +3,31 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_jetpack_module"
+        "item": "exoequipment:thruster"
       },
-      "count": 1
+      "count": 3
     },
     {
       "ingredient": {
-        "item": "exoequipment:thruster"
+        "item": "exoequipment:energy_component"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "exoequipment:titanium_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:thermal_regulator"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:shield_emitter"
+        "item": "exoequipment:military_component"
       },
       "count": 1
     }
@@ -30,5 +36,5 @@
     "id": "exoequipment:military_jetpack_module",
     "count": 1
   },
-  "energy": 1400
+  "energy": 175000
 }

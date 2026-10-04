@@ -3,7 +3,7 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:mechanical_component"
+        "item": "exoequipment:thruster"
       },
       "count": 2
     },
@@ -15,26 +15,35 @@
     },
     {
       "ingredient": {
-        "item": "minecraft:iron_ingot"
+        "item": "exoequipment:mechanical_component"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "tag": "c:ingots/steel"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "minecraft:slime_ball"
+        "item": "exoequipment:composite"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:civilian_leg_assist_module",
+    "id": "exoequipment:civilian_jetpack_module",
     "count": 1
   },
-  "energy": 20000,
+  "energy": 40000,
   "neoforge:conditions": [
     {
-      "type": "neoforge:tag_empty",
-      "tag": "c:ingots/steel"
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/steel"
+      }
     }
   ]
 }

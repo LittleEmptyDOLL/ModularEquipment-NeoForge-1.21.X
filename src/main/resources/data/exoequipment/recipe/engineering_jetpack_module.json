@@ -3,13 +3,19 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:civilian_jetpack_module"
+        "item": "exoequipment:thruster"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:thruster"
+        "item": "exoequipment:energy_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:electronic_component"
       },
       "count": 2
     },
@@ -17,11 +23,17 @@
       "ingredient": {
         "item": "exoequipment:composite"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
         "item": "exoequipment:thermal_regulator"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
@@ -30,5 +42,5 @@
     "id": "exoequipment:engineering_jetpack_module",
     "count": 1
   },
-  "energy": 1400
+  "energy": 150000
 }

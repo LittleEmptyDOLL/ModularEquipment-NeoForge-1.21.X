@@ -3,21 +3,9 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "minecraft:ender_pearl"
-      },
-      "count": 4
-    },
-    {
-      "ingredient": {
-        "item": "minecraft:end_crystal"
+        "item": "minecraft:elytra"
       },
       "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:energy_component"
-      },
-      "count": 2
     },
     {
       "ingredient": {
@@ -27,20 +15,32 @@
     },
     {
       "ingredient": {
-        "item": "minecraft:netherite_scrap"
+        "item": "exoequipment:mechanical_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:composite"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:sensor_array"
       },
       "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:experimental_component"
+        "item": "exoequipment:engineering_component"
       },
-      "count": 2
+      "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:experimental_blink_module",
+    "id": "exoequipment:engineering_elytra_system_module",
     "count": 1
   },
-  "energy": 400000
+  "energy": 175000
 }

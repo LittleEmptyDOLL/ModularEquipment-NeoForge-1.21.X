@@ -3,19 +3,7 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:titanium_ingot"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
         "item": "exoequipment:mechanical_component"
-      },
-      "count": 3
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:composite"
       },
       "count": 2
     },
@@ -23,7 +11,13 @@
       "ingredient": {
         "item": "exoequipment:energy_component"
       },
-      "count": 1
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:titanium_ingot"
+      },
+      "count": 2
     },
     {
       "ingredient": {
@@ -36,5 +30,5 @@
     "id": "exoequipment:military_high_power_actuator_module",
     "count": 1
   },
-  "energy": 125000
+  "energy": 90000
 }

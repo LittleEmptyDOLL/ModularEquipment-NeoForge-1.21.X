@@ -3,12 +3,6 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:titanium_ingot"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
         "item": "exoequipment:mechanical_component"
       },
       "count": 2
@@ -27,7 +21,7 @@
     },
     {
       "ingredient": {
-        "item": "minecraft:diamond"
+        "item": "exoequipment:titanium_ingot"
       },
       "count": 1
     },
@@ -42,5 +36,5 @@
     "id": "exoequipment:experimental_mobility_control_module",
     "count": 1
   },
-  "energy": 350000
+  "energy": 225000
 }

@@ -3,27 +3,21 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:titanium_ingot"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
         "item": "exoequipment:mechanical_component"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "exoequipment:energy_component"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "exoequipment:sensor_array"
+        "item": "exoequipment:titanium_ingot"
       },
-      "count": 1
+      "count": 2
     },
     {
       "ingredient": {
@@ -42,5 +36,5 @@
     "id": "exoequipment:military_swim_assist_module",
     "count": 1
   },
-  "energy": 125000
+  "energy": 100000
 }

@@ -15,26 +15,29 @@
     },
     {
       "ingredient": {
-        "item": "minecraft:iron_ingot"
+        "tag": "c:ingots/steel"
       },
       "count": 2
     },
     {
       "ingredient": {
-        "item": "minecraft:slime_ball"
+        "item": "minecraft:redstone"
       },
       "count": 1
     }
   ],
   "result": {
-    "id": "exoequipment:civilian_leg_assist_module",
+    "id": "exoequipment:civilian_movement_actuator_module",
     "count": 1
   },
   "energy": 20000,
   "neoforge:conditions": [
     {
-      "type": "neoforge:tag_empty",
-      "tag": "c:ingots/steel"
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/steel"
+      }
     }
   ]
 }

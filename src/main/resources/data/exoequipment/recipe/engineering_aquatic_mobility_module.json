@@ -9,13 +9,13 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:composite"
+        "item": "exoequipment:electronic_component"
       },
-      "count": 2
+      "count": 1
     },
     {
       "ingredient": {
-        "item": "exoequipment:sensor_array"
+        "item": "exoequipment:composite"
       },
       "count": 1
     },

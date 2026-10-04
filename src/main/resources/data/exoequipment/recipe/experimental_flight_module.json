@@ -3,25 +3,43 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:engineering_jetpack_module"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:military_jetpack_module"
-      },
-      "count": 1
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:experimental_component"
+        "item": "minecraft:nether_star"
       },
       "count": 1
     },
     {
       "ingredient": {
         "item": "exoequipment:thruster"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:titanium_ingot"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:netherite_ingot"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:experimental_component"
       },
       "count": 2
     }
@@ -30,5 +48,5 @@
     "id": "exoequipment:experimental_flight_module",
     "count": 1
   },
-  "energy": 3700
+  "energy": 1000000
 }

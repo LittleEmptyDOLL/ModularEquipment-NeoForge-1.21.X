@@ -3,9 +3,21 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "exoequipment:thruster"
+        "item": "minecraft:ender_pearl"
       },
       "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:electronic_component"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "exoequipment:energy_component"
+      },
+      "count": 1
     },
     {
       "ingredient": {
@@ -15,13 +27,7 @@
     },
     {
       "ingredient": {
-        "item": "exoequipment:energy_component"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
-        "item": "exoequipment:thermal_regulator"
+        "item": "exoequipment:engineering_component"
       },
       "count": 1
     }
@@ -30,5 +36,5 @@
     "id": "exoequipment:engineering_blink_module",
     "count": 1
   },
-  "energy": 1900
+  "energy": 100000
 }

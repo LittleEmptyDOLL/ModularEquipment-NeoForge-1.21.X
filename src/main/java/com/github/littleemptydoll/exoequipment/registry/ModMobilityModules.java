@@ -11,13 +11,10 @@ import java.util.Map;
 import java.util.Optional;
 
 final class ModMobilityModules {
-    private static final ModuleSize SPEED_SIZE = new ModuleSize(1, 2);
-    private static final ModuleSize JUMP_SIZE = new ModuleSize(1, 2);
-    private static final ModuleSize SWIM_SIZE = new ModuleSize(1, 2);
-    private static final ModuleSize ELYTRA_SIZE = new ModuleSize(2, 2);
-    private static final ModuleSize JETPACK_SIZE = new ModuleSize(2, 3);
-    private static final ModuleSize BLINK_SIZE = new ModuleSize(2, 2);
-    private static final ModuleSize FLIGHT_SIZE = new ModuleSize(3, 3);
+    private static final ModuleSize SMALL_SIZE = new ModuleSize(1, 2);
+    private static final ModuleSize MEDIUM_SIZE = new ModuleSize(2, 2);
+    private static final ModuleSize LARGE_SIZE = new ModuleSize(2, 3);
+    private static final ModuleSize HUGE_SIZE = new ModuleSize(3, 3);
 
     // Mobility should yield to defensive and survival-critical systems when
     // the energy bus cannot power every installed module.
@@ -56,7 +53,7 @@ final class ModMobilityModules {
                 "civilian_movement_actuator",
                 EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON,
-                SPEED_SIZE,
+                SMALL_SIZE,
                 10,
                 Map.ofEntries(Map.entry(MOVEMENT_SPEED, multipliedBase(0.10D)))
         );
@@ -65,7 +62,7 @@ final class ModMobilityModules {
                 "military_high_power_actuator",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
-                SPEED_SIZE,
+                SMALL_SIZE,
                 25,
                 Map.ofEntries(Map.entry(MOVEMENT_SPEED, multipliedBase(0.25D)))
         );
@@ -74,7 +71,7 @@ final class ModMobilityModules {
                 "experimental_actuator",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
-                SPEED_SIZE,
+                SMALL_SIZE,
                 40,
                 Map.ofEntries(Map.entry(MOVEMENT_SPEED, multipliedBase(0.35D)))
         );
@@ -88,7 +85,7 @@ final class ModMobilityModules {
                 "civilian_leg_assist",
                 EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON,
-                JUMP_SIZE,
+                SMALL_SIZE,
                 15,
                 Map.ofEntries(
                         Map.entry(JUMP_STRENGTH, multipliedBase(0.10D)),
@@ -100,7 +97,7 @@ final class ModMobilityModules {
                 "engineering_mobility_control",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
-                JUMP_SIZE,
+                SMALL_SIZE,
                 25,
                 Map.ofEntries(
                         Map.entry(JUMP_STRENGTH, multipliedBase(0.20D)),
@@ -112,7 +109,7 @@ final class ModMobilityModules {
                 "experimental_mobility_control",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
-                JUMP_SIZE,
+                SMALL_SIZE,
                 40,
                 Map.ofEntries(
                         Map.entry(JUMP_STRENGTH, multipliedBase(0.30D)),
@@ -129,7 +126,7 @@ final class ModMobilityModules {
                 "engineering_aquatic_mobility",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
-                SWIM_SIZE,
+                SMALL_SIZE,
                 15,
                 Map.ofEntries(Map.entry(WATER_MOVEMENT_EFFICIENCY, addValue(0.25D)))
         );
@@ -138,7 +135,7 @@ final class ModMobilityModules {
                 "military_swim_assist",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
-                SWIM_SIZE,
+                SMALL_SIZE,
                 25,
                 Map.ofEntries(Map.entry(WATER_MOVEMENT_EFFICIENCY, addValue(0.50D)))
         );
@@ -152,6 +149,7 @@ final class ModMobilityModules {
                 "civilian_jetpack",
                 EquipmentTier.CIVILIAN,
                 Rarity.UNCOMMON,
+                MEDIUM_SIZE,
                 15,
                 0.25D,
                 0.20D,
@@ -164,6 +162,7 @@ final class ModMobilityModules {
                 "engineering_jetpack",
                 EquipmentTier.ENGINEERING,
                 Rarity.RARE,
+                LARGE_SIZE,
                 25,
                 0.35D,
                 0.30D,
@@ -179,6 +178,7 @@ final class ModMobilityModules {
                 "military_jetpack",
                 EquipmentTier.MILITARY,
                 Rarity.RARE,
+                LARGE_SIZE,
                 35,
                 0.45D,
                 0.45D,
@@ -194,6 +194,7 @@ final class ModMobilityModules {
                 "experimental_jetpack",
                 EquipmentTier.EXPERIMENTAL,
                 Rarity.EPIC,
+                LARGE_SIZE,
                 50,
                 0.60D,
                 0.65D,
@@ -246,7 +247,7 @@ final class ModMobilityModules {
                 "engineering_elytra_system",
                 EquipmentTier.ENGINEERING,
                 Rarity.EPIC,
-                ELYTRA_SIZE,
+                MEDIUM_SIZE,
                 30,
                 Map.ofEntries(
                         Map.entry(ELYTRA_FLIGHT, addValue(1.0D))
@@ -271,7 +272,7 @@ final class ModMobilityModules {
                                         resourceLocation,
                                         properties,
                                         ModuleCategory.MOBILITY,
-                                        FLIGHT_SIZE
+                                        HUGE_SIZE
                                 )
                                 .energy(new EnergyProperties(
                                         40,
@@ -315,6 +316,7 @@ final class ModMobilityModules {
             String id,
             EquipmentTier tier,
             Rarity rarity,
+            ModuleSize size,
             int passiveConsumption,
             double verticalThrust,
             double horizontalSpeed,
@@ -330,7 +332,7 @@ final class ModMobilityModules {
                                         resourceLocation,
                                         properties,
                                         ModuleCategory.MOBILITY,
-                                        JETPACK_SIZE
+                                        size
                                 )
                                 .energy(new EnergyProperties(
                                         passiveConsumption,
@@ -364,7 +366,7 @@ final class ModMobilityModules {
                                         resourceLocation,
                                         properties,
                                         ModuleCategory.MOBILITY,
-                                        BLINK_SIZE
+                                        MEDIUM_SIZE
                                 )
                                 .blink(new BlinkProperties(
                                         distance,

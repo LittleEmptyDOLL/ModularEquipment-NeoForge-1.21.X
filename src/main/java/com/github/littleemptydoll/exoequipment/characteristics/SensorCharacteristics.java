@@ -3,6 +3,8 @@ package com.github.littleemptydoll.exoequipment.characteristics;
 import com.github.littleemptydoll.exoequipment.module.EntityDetectionProperties;
 
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 final class SensorCharacteristics {
     private SensorCharacteristics() {}
@@ -20,6 +22,7 @@ final class SensorCharacteristics {
         double blockRange = 0.0D;
         boolean blockActive = false;
         int blockConsumption = 0;
+        Set<Integer> blockColors = new TreeSet<>();
         boolean thermalInstalled = false;
         int thermalConsumption = 0;
         boolean thermalActive = false;
@@ -51,6 +54,7 @@ final class SensorCharacteristics {
             if (definition.blockScanner().isPresent()) {
                 blockActive |= activeModule.module().active();
                 blockConsumption += definition.blockScanner().get().activeConsumption();
+                blockColors.add(definition.blockScanner().get().color());
                 blockRange =
                         Math.max(
                                 blockRange,
@@ -103,6 +107,10 @@ final class SensorCharacteristics {
         }
 
         if (blockRange > 0.0D) {
+            for (int color : blockColors) {
+                result.add(new Characteristic(CharacteristicCategory.SENSOR,
+                        "block_scanner.color", CharacteristicType.STATIC, color));
+            }
             addState(result, "block_scanner.active", blockActive);
             result.add(new Characteristic(
                     CharacteristicCategory.SENSOR,

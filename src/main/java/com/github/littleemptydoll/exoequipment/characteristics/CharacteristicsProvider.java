@@ -23,6 +23,7 @@ public final class CharacteristicsProvider {
         EffectsCharacteristics.add(result, context);
         MobilityCharacteristics.add(result, context);
         SensorCharacteristics.add(result, context);
+        CombatCharacteristics.add(result, context);
         UtilityCharacteristics.add(result, context);
 
         result.sort(

@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.item;
 
 import com.github.littleemptydoll.exoequipment.client.TooltipHelper;
+import com.github.littleemptydoll.exoequipment.util.NumberFormatter;
 import com.github.littleemptydoll.exoequipment.energy.EnergySystemDefinition;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import net.minecraft.network.chat.Component;
@@ -59,7 +60,7 @@ public class EnergySystemItem extends EquipmentItem<EnergySystemDefinition> {
         );
 
         tooltip.add(Component.translatable("tooltip.exoequipment.buffer_capacity",
-                definition.bufferCapacity()));
+                NumberFormatter.format(definition.bufferCapacity())));
 
         tooltip.add(
                 TooltipHelper.efficiency(

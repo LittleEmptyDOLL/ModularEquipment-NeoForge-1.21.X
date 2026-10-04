@@ -8,6 +8,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.SystemStatus;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.network.OpenMatrixPayload;
 import com.github.littleemptydoll.exoequipment.network.OpenProfilePayload;
+import com.github.littleemptydoll.exoequipment.util.NumberFormatter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -267,7 +268,7 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     }
 
     private String formatTemperature(double temperature) {
-        return String.format(java.util.Locale.ROOT, "%.1f°C", temperature);
+        return NumberFormatter.format(temperature) + "°C";
     }
 
     private String getProfileText() {
@@ -276,36 +277,9 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
 
     private String formatEnergy(int stored, int capacity) {
         return truncate(
-                formatEnergyValue(stored) + "/" + formatEnergyValue(capacity) + " FE",
+                NumberFormatter.format(stored) + "/" + NumberFormatter.format(capacity) + " FE",
                 PROFILE_MAX_WIDTH
         );
-    }
-
-    private String formatEnergyValue(int value) {
-        if (value < 1_000) {
-            return Integer.toString(value);
-        }
-        if (value < 1_000_000) {
-            return compactValue(value, 1_000, "K");
-        }
-        if (value < 1_000_000_000) {
-            return compactValue(value, 1_000_000, "M");
-        }
-        return compactValue(value, 1_000_000_000, "B");
-    }
-
-    private String compactValue(int value, int divisor, String suffix) {
-        int whole = value / divisor;
-        int remainder = value % divisor;
-        if (remainder == 0) {
-            return whole + suffix;
-        }
-
-        int decimal = (remainder * 10) / divisor;
-        if (decimal == 0) {
-            return whole + suffix;
-        }
-        return whole + "." + decimal + suffix;
     }
 
     private void drawStatusValue(GuiGraphics guiGraphics, String text, int y) {
@@ -363,9 +337,9 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
                 PROFILE_MAX_WIDTH, 12)) {
             guiGraphics.renderComponentTooltip(font, List.of(
                     Component.translatable("gui.exoequipment.energy.battery",
-                            menu.getEnergyStored(), menu.getEnergyCapacity()),
+                            NumberFormatter.format(menu.getEnergyStored()), NumberFormatter.format(menu.getEnergyCapacity())),
                     Component.translatable("gui.exoequipment.energy.buffer",
-                            menu.getBufferStored(), menu.getBufferCapacity())), mouseX, mouseY);
+                            NumberFormatter.format(menu.getBufferStored()), NumberFormatter.format(menu.getBufferCapacity()))), mouseX, mouseY);
             return;
         }
 

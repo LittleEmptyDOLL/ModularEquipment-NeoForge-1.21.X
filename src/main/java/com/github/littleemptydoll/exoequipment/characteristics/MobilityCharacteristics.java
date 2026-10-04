@@ -13,6 +13,8 @@ final class MobilityCharacteristics {
             CharacteristicsContext context
     ) {
         boolean flight = false;
+        int flightConsumption = 0;
+        int jetpackConsumption = 0;
         double jetpackThrust = 0.0D;
         double jetpackSpeed = 0.0D;
         double elytraAcceleration = 0.0D;
@@ -30,12 +32,15 @@ final class MobilityCharacteristics {
 
             flight |= definition.flight()
                     .isPresent();
+            flightConsumption = Math.max(flightConsumption,
+                    definition.flight().map(f -> f.activeConsumption()).orElse(0));
 
             JetpackProperties jetpack =
                     definition.jetpack()
                             .orElse(null);
 
             if (jetpack != null) {
+                jetpackConsumption = Math.max(jetpackConsumption, jetpack.energyConsumption());
                 jetpackThrust =
                         Math.max(
                                 jetpackThrust,
@@ -89,6 +94,8 @@ final class MobilityCharacteristics {
         }
 
         if (jetpackThrust > 0.0D) {
+            result.add(new Characteristic(CharacteristicCategory.JETPACK,
+                    "jetpack.energy_consumption", CharacteristicType.STATIC, jetpackConsumption));
             result.add(
                     new Characteristic(
                             CharacteristicCategory.JETPACK,
@@ -154,6 +161,8 @@ final class MobilityCharacteristics {
         }
 
         if (flight) {
+            result.add(new Characteristic(CharacteristicCategory.FLIGHT,
+                    "flight.active_consumption", CharacteristicType.STATIC, flightConsumption));
             result.add(
                     new Characteristic(
                             CharacteristicCategory.FLIGHT,

@@ -17,7 +17,8 @@ final class AttributeCharacteristics {
             "minecraft:generic.water_movement_efficiency",
             "minecraft:generic.movement_efficiency",
             "minecraft:generic.gravity",
-            "minecraft:generic.fall_damage_multiplier"
+            "minecraft:generic.fall_damage_multiplier",
+            "apothic_attributes:elytra_flight"
     );
 
     private static final Set<String> COMBAT = Set.of(
@@ -31,6 +32,8 @@ final class AttributeCharacteristics {
             "apothic_attributes:armor_shred",
             "apothic_attributes:prot_pierce",
             "apothic_attributes:prot_shred",
+            "apothic_attributes:protection_pierce",
+            "apothic_attributes:protection_shred",
             "apothic_attributes:current_hp_damage",
             "apothic_attributes:life_steal",
             "apothic_attributes:overheal",

@@ -93,6 +93,7 @@ final class SurvivalCharacteristics {
         double revivalRestore = 0.0D;
         int revivalCooldown =
                 Integer.MAX_VALUE;
+        int revivalInvulnerability = 0;
         double thirst = 0.0D;
 
         for (var activeModule
@@ -117,6 +118,7 @@ final class SurvivalCharacteristics {
                                 revivalCooldown,
                                 revival.cooldown()
                         );
+                revivalInvulnerability = Math.max(revivalInvulnerability, revival.invulnerabilityTicks());
             }
 
             if (definition.thirst().isPresent()) {
@@ -147,6 +149,8 @@ final class SurvivalCharacteristics {
                             revivalCooldown
                     )
             );
+            result.add(new Characteristic(CharacteristicCategory.SURVIVAL,
+                    "revival.invulnerability", CharacteristicType.STATIC, revivalInvulnerability));
         }
 
         if (thirst > 0.0D) {

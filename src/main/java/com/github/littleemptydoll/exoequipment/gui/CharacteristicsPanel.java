@@ -6,6 +6,8 @@ import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicCat
 import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicType;
 import com.github.littleemptydoll.exoequipment.util.AttributeNameUtils;
 import com.github.littleemptydoll.exoequipment.util.NameUtils;
+import com.github.littleemptydoll.exoequipment.util.NumberFormatter;
+import com.github.littleemptydoll.exoequipment.util.AttributeValueFormatter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -52,29 +54,6 @@ public final class CharacteristicsPanel {
     private static final String STATUS_PROTECTION_PREFIX = "status_protection.";
     private static final String STATUS_PROTECTION_SUFFIX = ".reduction";
     private static final String DAMAGE_REDUCTION_PREFIX = "damage_reduction.";
-
-    private static final Set<String> PERCENT_ADD_VALUE_ATTRIBUTES = Set.of(
-            "minecraft:generic.attack_knockback",
-            "minecraft:generic.knockback_resistance",
-            "minecraft:generic.explosion_knockback_resistance",
-            "minecraft:generic.water_movement_efficiency",
-            "minecraft:generic.movement_efficiency",
-            "minecraft:generic.fall_damage_multiplier",
-            "apothic_attributes:crit_chance",
-            "apothic_attributes:crit_damage",
-            "apothic_attributes:armor_shred",
-            "apothic_attributes:prot_shred",
-            "apothic_attributes:current_hp_damage",
-            "apothic_attributes:life_steal",
-            "apothic_attributes:overheal",
-            "apothic_attributes:projectile_damage",
-            "apothic_attributes:arrow_damage",
-            "apothic_attributes:arrow_velocity",
-            "apothic_attributes:draw_speed",
-            "apothic_attributes:experience_gained",
-            "apothic_attributes:healing_received",
-            "apothic_attributes:dodge_chance"
-    );
 
     private final Supplier<List<Characteristic>> characteristicsSupplier;
     private final Supplier<?> revisionSupplier;
@@ -493,10 +472,12 @@ public final class CharacteristicsPanel {
             case "consumption", "generation", "storage_input", "storage_output",
                     "max_input", "max_output", "cloaking.active_consumption",
                     "entity_detection.active_consumption", "block_scanner.active_consumption",
-                    "thermal_vision.active_consumption" ->
+                    "thermal_vision.active_consumption", "flight.active_consumption",
+                    "jetpack.energy_consumption" ->
                     formatNumber(value) + " FE/t";
-            case "storage_capacity", "stored_energy", "blink.activation_energy",
-                    "cloaking.activation_energy" ->
+            case "storage_capacity", "stored_energy", "buffer_stored", "buffer_capacity",
+                    "blink.activation_energy", "cloaking.activation_energy",
+                    "laser.energy_cost", "discharge.energy_cost" ->
                     formatNumber(value) + " FE";
             case "heat_generation", "cooling" ->
                     formatNumber(value) + " °C";
@@ -514,14 +495,19 @@ public final class CharacteristicsPanel {
             case "elytra.acceleration" ->
                     formatNumber(value * TICKS_PER_SECOND * TICKS_PER_SECOND) + " b/s²";
             case "blink.distance", "entity_detection.range", "block_scanner.range",
-                    "pickup_magnet.radius" ->
+                    "pickup_magnet.radius", "laser.range", "discharge.range",
+                    "discharge.jump_range" ->
                     formatNumber(value) + " b";
+            case "discharge.falloff" -> formatPercent(value);
+            case "block_scanner.color" -> String.format(Locale.ROOT, "#%06X", (int) value);
+            case "revival.invulnerability" -> formatTicks(value);
+            case "laser.damage", "discharge.damage" -> formatNumber(value) + " HP";
             default -> formatGenericValue(key, value);
         };
     }
 
     private String formatGenericValue(String key, double value) {
-        if (key.endsWith("cooldown")) {
+        if (key.endsWith("cooldown") || key.endsWith("recharge_delay")) {
             return formatTicks(value);
         }
         if (key.startsWith(DAMAGE_REDUCTION_PREFIX)
@@ -537,7 +523,7 @@ public final class CharacteristicsPanel {
 
     private String formatAttributeValue(AttributeKey key, double value) {
         return switch (key.operation()) {
-            case "add_value" -> PERCENT_ADD_VALUE_ATTRIBUTES.contains(key.attributeId())
+            case "add_value" -> AttributeValueFormatter.isPercentAddValue(key.attributeId())
                     ? formatSignedPercent(value)
                     : formatSignedNumber(value);
             case "add_multiplied_base", "add_multiplied_total" ->
@@ -605,21 +591,7 @@ public final class CharacteristicsPanel {
     }
 
     private String formatNumber(double value) {
-        if (Math.rint(value) == value) {
-            return Long.toString((long) value);
-        }
-
-        String formatted = String.format(Locale.ROOT, "%.2f", value);
-        int end = formatted.length();
-
-        while (end > 0 && formatted.charAt(end - 1) == '0') {
-            end--;
-        }
-        if (end > 0 && formatted.charAt(end - 1) == '.') {
-            end--;
-        }
-
-        return formatted.substring(0, end);
+        return NumberFormatter.format(value);
     }
 
     private AttributeKey parseAttributeKey(String key) {

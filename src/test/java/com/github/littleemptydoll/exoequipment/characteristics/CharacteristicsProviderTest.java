@@ -25,6 +25,20 @@ class CharacteristicsProviderTest {
     private static final double EPSILON = 0.000001D;
 
     @Test
+    void automatedDefenseCharacteristicsIncludeEnabledCountAndBurstCost() {
+        ResourceLocation laser = TestModules.TEST_LASER_DEFENSE.getDefinition().id();
+        ExoskeletonData data = data(matrix("combat", module(laser).withActive(true), module(laser)), null);
+
+        Map<String, Double> values = CharacteristicsProvider.collect(
+                CharacteristicsContext.matrix(data, null, Set.of(), 0)).stream()
+                .collect(Collectors.toMap(Characteristic::key, Characteristic::value));
+
+        assertEquals(2.0D, values.get("laser.modules"), EPSILON);
+        assertEquals(1.0D, values.get("laser.active_modules"), EPSILON);
+        assertEquals(350.0D, values.get("laser.energy_cost"), EPSILON);
+    }
+
+    @Test
     void matrixScopeShowsCharacteristicsFromThatMatrix() {
         ExoskeletonData data = data(
                 matrix(

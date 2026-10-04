@@ -3,10 +3,13 @@ package com.github.littleemptydoll.exoequipment.client;
 import com.github.littleemptydoll.exoequipment.module.ModuleCategory;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import com.github.littleemptydoll.exoequipment.util.NameUtils;
+import com.github.littleemptydoll.exoequipment.util.NumberFormatter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import java.util.Locale;
 
 public final class TooltipHelper {
     private TooltipHelper() {}
@@ -16,7 +19,7 @@ public final class TooltipHelper {
     }
 
     private static Component styledValue(int value, double efficiency) {
-        Component valueComponent = Component.literal(String.valueOf(value));
+        Component valueComponent = Component.literal(NumberFormatter.format(value));
 
         if (efficiency > 1.0D) {
             valueComponent = valueComponent.copy().withStyle(ChatFormatting.GREEN);
@@ -28,7 +31,9 @@ public final class TooltipHelper {
     }
 
     public static Component tier(EquipmentTier tier) {
-        return Component.translatable("tooltip.exoequipment.tier", NameUtils.toDisplayName(tier.name()));
+        String key = "gui.exoequipment.fabricator." + tier.name().toLowerCase(Locale.ROOT);
+        return Component.translatable("tooltip.exoequipment.tier",
+                I18n.exists(key) ? Component.translatable(key) : NameUtils.toDisplayName(tier.name()));
     }
 
     public static Component size(int width, int height) {
@@ -36,7 +41,7 @@ public final class TooltipHelper {
     }
 
     public static Component input(int value) {
-        return Component.translatable("tooltip.exoequipment.input", value);
+        return Component.translatable("tooltip.exoequipment.input", NumberFormatter.format(value));
     }
 
     public static Component input(int value, double efficiency) {
@@ -44,7 +49,7 @@ public final class TooltipHelper {
     }
 
     public static Component output(int value) {
-        return Component.translatable("tooltip.exoequipment.output", value);
+        return Component.translatable("tooltip.exoequipment.output", NumberFormatter.format(value));
     }
 
     public static Component output(int value, double efficiency) {
@@ -52,7 +57,7 @@ public final class TooltipHelper {
     }
 
     public static Component efficiency(double value) {
-        return Component.translatable("tooltip.exoequipment.efficiency", Math.round(value * 100));
+        return Component.translatable("tooltip.exoequipment.efficiency", NumberFormatter.format(value * 100));
     }
 
     public static Component matrices(int size, int maxMatrices) {
@@ -112,11 +117,13 @@ public final class TooltipHelper {
     }
 
     public static Component category(ModuleCategory category) {
-        return Component.translatable("tooltip.exoequipment.category", NameUtils.toDisplayName(category.name()));
+        return Component.translatable("tooltip.exoequipment.category",
+                Component.translatable("gui.exoequipment.fabricator.module_category."
+                        + category.name().toLowerCase(Locale.ROOT)));
     }
 
     public static Component energyConsumption(int consumption) {
-        return Component.translatable("tooltip.exoequipment.consumption", consumption);
+        return Component.translatable("tooltip.exoequipment.consumption", NumberFormatter.format(consumption));
     }
 
     public static Component energyConsumption(int consumption, double efficiency) {
@@ -124,7 +131,7 @@ public final class TooltipHelper {
     }
 
     public static Component energyGeneration(int generation) {
-        return Component.translatable("tooltip.exoequipment.generation", generation);
+        return Component.translatable("tooltip.exoequipment.generation", NumberFormatter.format(generation));
     }
 
     public static Component energyGeneration(int generation, double efficiency) {
@@ -132,15 +139,15 @@ public final class TooltipHelper {
     }
 
     public static Component capacity(int stored, int capacity) {
-        return Component.translatable("tooltip.exoequipment.capacity", stored, capacity);
+        return Component.translatable("tooltip.exoequipment.capacity", NumberFormatter.format(stored), NumberFormatter.format(capacity));
     }
 
     public static Component capacity(int stored, int capacity, double efficiency) {
-        return Component.translatable("tooltip.exoequipment.capacity", stored, styledValue(capacity, efficiency));
+        return Component.translatable("tooltip.exoequipment.capacity", NumberFormatter.format(stored), styledValue(capacity, efficiency));
     }
 
     public static Component cooling(int cooling) {
-        return Component.translatable("tooltip.exoequipment.cooling", cooling);
+        return Component.translatable("tooltip.exoequipment.cooling", NumberFormatter.format(cooling));
     }
 
     public static Component cooling(int cooling, double efficiency) {
@@ -148,7 +155,7 @@ public final class TooltipHelper {
     }
 
     public static Component heatGeneration(int heatGeneration) {
-        return Component.translatable("tooltip.exoequipment.heat_generation", heatGeneration);
+        return Component.translatable("tooltip.exoequipment.heat_generation", NumberFormatter.format(heatGeneration));
     }
 
     public static Component heatGeneration(int heatGeneration, double efficiency) {
@@ -156,18 +163,24 @@ public final class TooltipHelper {
     }
 
     public static Component property(String name, Object value) {
-        return Component.literal(NameUtils.toDisplayName(name) + ": " + value);
+        String displayed = value instanceof Number number ? NumberFormatter.format(number.doubleValue()) : String.valueOf(value);
+        if (value instanceof Boolean state) {
+            displayed = Component.translatable(state ? "gui.exoequipment.yes" : "gui.exoequipment.no").getString();
+        }
+        return property(name, Component.literal(displayed));
     }
 
     public static Component property(String name, Component value) {
-        return Component.literal(NameUtils.toDisplayName(name) + ": ").append(value);
+        String key = "tooltip.exoequipment.property." + name.toLowerCase(Locale.ROOT).replace(' ', '_');
+        Component label = I18n.exists(key) ? Component.translatable(key) : Component.literal(NameUtils.toDisplayName(name));
+        return label.copy().append(": ").append(value);
     }
 
     public static Component temperature(double min, double max) {
-        return Component.translatable("tooltip.exoequipment.temperature", min, max);
+        return Component.translatable("tooltip.exoequipment.temperature", NumberFormatter.format(min), NumberFormatter.format(max));
     }
 
     public static Component temperature_bonus(double min, double max) {
-        return Component.translatable("tooltip.exoequipment.temperature_bonus", min, max);
+        return Component.translatable("tooltip.exoequipment.temperature_bonus", NumberFormatter.format(min), NumberFormatter.format(max));
     }
 }

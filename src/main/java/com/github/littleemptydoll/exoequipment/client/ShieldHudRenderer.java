@@ -1,5 +1,6 @@
 package com.github.littleemptydoll.exoequipment.client;
 
+import com.github.littleemptydoll.exoequipment.util.NumberFormatter;
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
@@ -186,9 +187,9 @@ public final class ShieldHudRenderer {
             ShieldOperations.ShieldStatus status
     ) {
         Component value = Component.literal(
-                Math.round(status.currentEnergy())
+                NumberFormatter.format(Math.round(status.currentEnergy()))
                         + "/"
-                        + status.capacity()
+                        + NumberFormatter.format(status.capacity())
         );
 
         graphics.drawString(

@@ -6,6 +6,7 @@ import com.github.littleemptydoll.exoequipment.network.FabricatorCraftPayload;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModFabricatorRecipes;
 import com.github.littleemptydoll.exoequipment.registry.ModItems;
+import com.github.littleemptydoll.exoequipment.util.NumberFormatter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -211,7 +212,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
                 graphics.drawString(font, "<", 293, 47, TEXT, false);
             }
             graphics.drawString(font, Component.translatable("gui.exoequipment.fabricator.cost",
-                    recipe.energyCost()), 163, 65, TEXT, false);
+                    NumberFormatter.format(recipe.energyCost())), 163, 65, TEXT, false);
             if (recipe.requirements().size() > 4) {
                 graphics.drawString(font, (ingredientScroll * 2 + 1) + "-"
                         + Math.min(recipe.requirements().size(), ingredientScroll * 2 + 4)
@@ -232,7 +233,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
                         if (entry.ingredient().test(held)) available += held.getCount();
                     }
                 }
-                graphics.drawString(font, available + "/" + entry.count(), ix + 19, iy + 4,
+                graphics.drawString(font, NumberFormatter.format(available) + "/" + NumberFormatter.format(entry.count()), ix + 19, iy + 4,
                         available >= entry.count() ? TEXT : 0xFFFF9999, false);
             }
         }
@@ -254,7 +255,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         if (x >= ENERGY_X - 2 && x < ENERGY_X + 13
                 && y >= ENERGY_Y - 2 && y < ENERGY_Y + ENERGY_HEIGHT + 2) {
             graphics.renderTooltip(font, Component.translatable("gui.exoequipment.fabricator.energy",
-                    menu.energy(), FabricatorBlockEntity.CAPACITY), mouseX, mouseY);
+                    NumberFormatter.format(menu.energy()), NumberFormatter.format(FabricatorBlockEntity.CAPACITY)), mouseX, mouseY);
             return;
         }
         for (int i = 0; i < FabricatorUnlocks.UPGRADE_SLOT_COUNT; i++) {

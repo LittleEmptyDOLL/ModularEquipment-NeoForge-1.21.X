@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.characteristics;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonState;
+import com.github.littleemptydoll.exoequipment.exoskeleton.TemperatureOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.module.BodyDamageProtectionOperations;
 import com.github.littleemptydoll.exoequipment.module.BodyPart;
@@ -376,5 +377,21 @@ final class DefenseCharacteristics {
                         status.capacity()
                 )
         );
+
+        double recharge = 0;
+        int shortestDelay = Integer.MAX_VALUE;
+        for (var module : CharacteristicsSupport.runtimeModules(context)) {
+            var shield = module.definition().shield().orElse(null);
+            if (shield == null) continue;
+            recharge += shield.rechargeRate() * TemperatureOperations.calculateModuleEfficiency(
+                    module.definition(), context.data().temperature());
+            shortestDelay = Math.min(shortestDelay, shield.rechargeDelay());
+        }
+        if (recharge > 0) {
+            result.add(new Characteristic(CharacteristicCategory.SHIELD,
+                    "recharge_rate", CharacteristicType.STATIC, recharge));
+            result.add(new Characteristic(CharacteristicCategory.SHIELD,
+                    "recharge_delay", CharacteristicType.STATIC, shortestDelay));
+        }
     }
 }

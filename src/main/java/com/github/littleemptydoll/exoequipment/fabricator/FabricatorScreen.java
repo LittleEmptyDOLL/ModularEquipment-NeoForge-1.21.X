@@ -32,7 +32,8 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
     private static final int TAB_X = 94, TAB_Y = 6, TAB_STEP = 21;
     private static final int CATEGORY_X = 6, CATEGORY_Y = 32, CATEGORY_STEP = 13, CATEGORY_VISIBLE = 7;
     private static final int ITEM_Y = 35, ROW_STEP = 17, VISIBLE = 5;
-    private static final int RESOURCE_X = 163, ENERGY_X = 229, ENERGY_Y = 36, ENERGY_HEIGHT = 85;
+    private static final int RESOURCE_X = 163, RESOURCE_Y = 35;
+    private static final int ENERGY_X = 229, ENERGY_Y = 36, ENERGY_HEIGHT = 85;
     private static final int CRAFT_X = 164, CRAFT_Y = 130;
     private static final int MODULE_SCROLL = 1, ITEM_SCROLL = 2, RESOURCE_SCROLL = 3;
     private FabricatorCategory category = FabricatorCategory.COMPONENTS;
@@ -251,10 +252,6 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         if (filled > 0) blit(graphics, ENERGY_X, ENERGY_Y + ENERGY_HEIGHT - filled,
                 84, 237 + ENERGY_HEIGHT - filled, 9, filled);
         if (chosen == null) return;
-        if (focusedRecipe != null && inside(x, y, 147, 129, 16, 16)) {
-            graphics.renderTooltip(font, chosen.value().result(), mouseX, mouseY);
-            return;
-        }
         int costHeight = Math.max(2, (int) Math.ceil((double) chosen.value().energyCost() * ENERGY_HEIGHT
                 / FabricatorBlockEntity.CAPACITY));
         int top = ENERGY_Y + ENERGY_HEIGHT - filled;
@@ -322,6 +319,10 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
             return;
         }
         if (chosen == null) return;
+        if (focusedRecipe != null && inside(x, y, 147, 129, 16, 16)) {
+            graphics.renderTooltip(font, chosen.value().result(), mouseX, mouseY);
+            return;
+        }
         if (inside(x, y, CRAFT_X, CRAFT_Y, 50, 14) && Screen.hasShiftDown()) {
             graphics.renderTooltip(font, Component.translatable("gui.exoequipment.fabricator.craft_stack"), mouseX, mouseY);
             return;

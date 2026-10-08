@@ -8,6 +8,7 @@ import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModFabricatorRecipes;
 import com.github.littleemptydoll.exoequipment.registry.ModItems;
 import com.github.littleemptydoll.exoequipment.util.NumberFormatter;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -31,10 +32,10 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
     private static final int ATLAS = 350, TEXT = 0xFFDEE6E9;
     private static final int TAB_X = 94, TAB_Y = 6, TAB_STEP = 21;
     private static final int CATEGORY_X = 6, CATEGORY_Y = 32, CATEGORY_STEP = 13, CATEGORY_VISIBLE = 7;
-    private static final int ITEM_Y = 35, ROW_STEP = 17, VISIBLE = 5;
+    private static final int ITEM_Y = 35, ROW_STEP = 17, VISIBLE = 5, RESOURCE_VISIBLE = 4;
     private static final int RESOURCE_X = 163, RESOURCE_Y = 35;
     private static final int ENERGY_X = 229, ENERGY_Y = 36, ENERGY_HEIGHT = 85;
-    private static final int CRAFT_X = 164, CRAFT_Y = 130;
+    private static final int CRAFT_X = 163, CRAFT_Y = 107;
     private static final int MODULE_SCROLL = 1, ITEM_SCROLL = 2, RESOURCE_SCROLL = 3;
     private FabricatorCategory category = FabricatorCategory.COMPONENTS;
     private int subcategory = -1, categoryScroll, scroll, selection, ingredientScroll, dragging;
@@ -68,7 +69,17 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
                     && module.getDefinition().category() != ModuleCategory.values()[subcategory]) continue;
             list.add(holder);
         }
-        list.sort(Comparator.comparing(holder -> holder.id().toString()));
+        list.sort(Comparator
+                .comparingInt((RecipeHolder<FabricatorRecipe> holder) -> {
+                    Item item = holder.value().result().getItem();
+                    return item instanceof ModuleItem module ? module.getDefinition().category().ordinal() : -1;
+                })
+                .thenComparingInt(holder -> {
+                    Item item = holder.value().result().getItem();
+                    return item instanceof EquipmentItem<?> equipment ? equipment.getDefinition().tier().ordinal() : -1;
+                })
+                .thenComparing(holder -> BuiltInRegistries.ITEM.getKey(holder.value().result().getItem()).toString())
+                .thenComparing(holder -> holder.id().toString()));
         return list;
     }
 
@@ -141,7 +152,9 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
     }
 
     private void frame(GuiGraphics graphics, int x, int y, boolean selected, boolean hovered) {
-        blit(graphics, x, y, selected ? 43 : 25, selected ? 279 : hovered ? 297 : 279, 18, 18);
+        blit(graphics, x, y, 25, 279, 18, 18);
+        if (hovered) blit(graphics, x, y, 25, 297, 18, 18);
+        if (selected) blit(graphics, x, y, 43, 279, 18, 18);
     }
 
     private void scrollbar(GuiGraphics graphics, int x, int offset, int max) {
@@ -155,7 +168,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         blit(graphics, 0, 0, 0, 0, imageWidth, imageHeight);
-        blit(graphics, 3, 151, 93, 237, 25, 64);
+        blit(graphics, -25, 26, 93, 237, 25, 64);
         int mx = mouseX - leftPos, my = mouseY - topPos;
         FabricatorCategory[] tabs = FabricatorCategory.values();
         for (int i = 0; i < tabs.length; i++) {
@@ -186,16 +199,18 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         scrollbar(graphics, 151, scroll, maxScroll(ITEM_SCROLL));
         RecipeHolder<FabricatorRecipe> chosen = selected();
         int count = chosen == null ? 0 : chosen.value().requirements().size();
-        ingredientScroll = Math.min(ingredientScroll, Math.max(0, count - VISIBLE));
+        ingredientScroll = Math.min(ingredientScroll, Math.max(0, count - RESOURCE_VISIBLE));
         if (chosen != null) {
-            for (int row = 0; row < VISIBLE && ingredientScroll + row < count; row++) {
+            for (int row = 0; row < RESOURCE_VISIBLE && ingredientScroll + row < count; row++) {
                 drawIngredientRow(graphics, row, chosen.value().requirements().get(ingredientScroll + row));
             }
         }
-        scrollbar(graphics, 218, ingredientScroll, Math.max(0, count - VISIBLE));
+        scrollbar(graphics, 218, ingredientScroll, Math.max(0, count - RESOURCE_VISIBLE));
         drawEnergy(graphics, chosen, partialTick);
         boolean enabled = chosen != null && menu.energy() >= chosen.value().energyCost();
-        blit(graphics, CRAFT_X, CRAFT_Y, 25, enabled && inside(mx, my, CRAFT_X, CRAFT_Y, 50, 14) ? 251 : 265, 50, 14);
+        blit(graphics, CRAFT_X, CRAFT_Y, 25, 265, 50, 14);
+        if (enabled && inside(mx, my, CRAFT_X, CRAFT_Y, 50, 14))
+            blit(graphics, CRAFT_X, CRAFT_Y, 25, 251, 50, 14);
         graphics.drawString(font, Component.translatable("gui.exoequipment.fabricator.craft"),
                 leftPos + CRAFT_X + 5, topPos + CRAFT_Y + 3, enabled ? TEXT : 0xFF80888E, false);
         if (!recipeHistory.isEmpty()) graphics.drawString(font, "<", leftPos + 137, topPos + 133, TEXT, false);
@@ -206,8 +221,10 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
 
     private void drawCategory(GuiGraphics graphics, int mx, int my, int row, int value) {
         int y = CATEGORY_Y + row * CATEGORY_STEP;
-        int spriteY = value == subcategory ? 237 : inside(mx, my, CATEGORY_X, y, 50, CATEGORY_STEP) ? 251 : 265;
-        blit(graphics, CATEGORY_X, y, 25, spriteY, 50, 14);
+        blit(graphics, CATEGORY_X, y, 25, 265, 50, 14);
+        if (inside(mx, my, CATEGORY_X, y, 50, CATEGORY_STEP))
+            blit(graphics, CATEGORY_X, y, 25, 251, 50, 14);
+        if (value == subcategory) blit(graphics, CATEGORY_X, y, 25, 237, 50, 14);
         graphics.drawString(font, font.plainSubstrByWidth(moduleCategoryName(value).getString(), 44),
                 leftPos + CATEGORY_X + 3, topPos + y + 4, TEXT, false);
     }
@@ -258,6 +275,8 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         int overlayTop = energy >= chosen.value().energyCost() ? top : Math.max(ENERGY_Y, top - costHeight);
         int overlayBottom = energy >= chosen.value().energyCost()
                 ? Math.min(ENERGY_Y + ENERGY_HEIGHT, top + costHeight) : Math.max(top, overlayTop + 2);
+        overlayTop = Math.max(ENERGY_Y + 1, Math.min(ENERGY_Y + ENERGY_HEIGHT - 2, overlayTop));
+        overlayBottom = Math.max(overlayTop + 1, Math.min(ENERGY_Y + ENERGY_HEIGHT - 1, overlayBottom));
         float time = minecraft == null || minecraft.level == null ? 0 : minecraft.level.getGameTime() + partialTick;
         int alpha = 35 + (int) (125 * (0.5 + 0.5 * Math.sin(time * Math.PI / 20)));
         graphics.fill(leftPos + ENERGY_X + 1, topPos + overlayTop,
@@ -289,7 +308,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
             return;
         }
         for (int i = 0; i < FabricatorUnlocks.UPGRADE_SLOT_COUNT; i++) {
-            if (inside(x, y, 6, 154 + i * 20, 18, 18) && !menu.slots.get(i).hasItem()) {
+            if (inside(x, y, -19, 32 + i * 20, 18, 18) && !menu.slots.get(i).hasItem()) {
                 String tier = switch (i) {
                     case FabricatorUnlocks.MILITARY_SLOT -> "military";
                     case FabricatorUnlocks.ENGINEERING_SLOT -> "engineering";
@@ -331,9 +350,9 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
             graphics.renderTooltip(font, Component.translatable("gui.exoequipment.back"), mouseX, mouseY);
             return;
         }
-        if (inside(x, y, RESOURCE_X, RESOURCE_Y, 18, 86)) {
+        if (inside(x, y, RESOURCE_X, RESOURCE_Y, 18, RESOURCE_VISIBLE * ROW_STEP + 1)) {
             int row = (y - RESOURCE_Y) / ROW_STEP, index = ingredientScroll + row;
-            if (row < VISIBLE && index < chosen.value().requirements().size()) {
+            if (row < RESOURCE_VISIBLE && index < chosen.value().requirements().size()) {
                 ItemStack[] alternatives = chosen.value().requirements().get(index).ingredient().getItems();
                 if (alternatives.length > 0) graphics.renderTooltip(font, alternatives[0], mouseX, mouseY);
             }
@@ -346,7 +365,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
             case ITEM_SCROLL -> Math.max(0, recipes().size() - VISIBLE);
             case RESOURCE_SCROLL -> {
                 RecipeHolder<FabricatorRecipe> chosen = selected();
-                yield chosen == null ? 0 : Math.max(0, chosen.value().requirements().size() - VISIBLE);
+                yield chosen == null ? 0 : Math.max(0, chosen.value().requirements().size() - RESOURCE_VISIBLE);
             }
             default -> 0;
         };
@@ -428,9 +447,9 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
                 return true;
             }
             RecipeHolder<FabricatorRecipe> chosen = selected();
-            if (chosen != null && inside(x, y, RESOURCE_X, RESOURCE_Y, 18, 86)) {
+            if (chosen != null && inside(x, y, RESOURCE_X, RESOURCE_Y, 18, RESOURCE_VISIBLE * ROW_STEP + 1)) {
                 int row = (y - RESOURCE_Y) / ROW_STEP, index = ingredientScroll + row;
-                if (row < VISIBLE && index < chosen.value().requirements().size()) {
+                if (row < RESOURCE_VISIBLE && index < chosen.value().requirements().size()) {
                     ItemStack[] alternatives = chosen.value().requirements().get(index).ingredient().getItems();
                     if (alternatives.length > 0) openPart(alternatives[0]);
                 }
@@ -471,7 +490,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
                 setScroll(ITEM_SCROLL, scroll + delta);
                 return true;
             }
-            if (inside(x, y, RESOURCE_X, RESOURCE_Y, 58, 86)) {
+            if (inside(x, y, RESOURCE_X, RESOURCE_Y, 58, RESOURCE_VISIBLE * ROW_STEP + 1)) {
                 setScroll(RESOURCE_SCROLL, ingredientScroll + delta);
                 return true;
             }

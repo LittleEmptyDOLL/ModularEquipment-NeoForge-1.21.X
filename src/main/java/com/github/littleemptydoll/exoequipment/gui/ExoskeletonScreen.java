@@ -9,6 +9,7 @@ import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.network.OpenMatrixPayload;
 import com.github.littleemptydoll.exoequipment.network.OpenProfilePayload;
 import com.github.littleemptydoll.exoequipment.util.NumberFormatter;
+import com.github.littleemptydoll.exoequipment.util.TextFormatter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -272,11 +273,11 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
     }
 
     private String getProfileText() {
-        return truncate(menu.getActiveProfileName(), PROFILE_MAX_WIDTH);
+        return TextFormatter.truncate(font, menu.getActiveProfileName(), PROFILE_MAX_WIDTH);
     }
 
     private String formatEnergy(int stored, int capacity) {
-        return truncate(
+        return TextFormatter.truncate(font,
                 NumberFormatter.format(stored) + "/" + NumberFormatter.format(capacity) + " FE",
                 PROFILE_MAX_WIDTH
         );
@@ -284,24 +285,6 @@ public class ExoskeletonScreen extends AbstractContainerScreen<ExoskeletonMenu> 
 
     private void drawStatusValue(GuiGraphics guiGraphics, String text, int y) {
         guiGraphics.drawString(font, text, STATUS_VALUE_X, y, STATUS_TEXT_COLOR, false);
-    }
-
-    private String truncate(String text, int maxWidth) {
-        if (font.width(text) <= maxWidth) {
-            return text;
-        }
-
-        String ellipsis = "...";
-        if (font.width(ellipsis) > maxWidth) {
-            return "";
-        }
-
-        String result = text;
-        while (!result.isEmpty() && font.width(result + ellipsis) > maxWidth) {
-            result = result.substring(0, result.length() - 1);
-        }
-
-        return result + ellipsis;
     }
 
     @Override

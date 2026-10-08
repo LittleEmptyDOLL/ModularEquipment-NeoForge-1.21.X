@@ -1,6 +1,7 @@
 package com.github.littleemptydoll.exoequipment.gui;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.util.TextFormatter;
 import com.github.littleemptydoll.exoequipment.network.OpenExoskeletonPayload;
 import com.github.littleemptydoll.exoequipment.network.ProfileActionPayload;
 import net.minecraft.Util;
@@ -139,8 +140,7 @@ public class ExoskeletonProfilesScreen extends AbstractContainerScreen<Exoskelet
     }
 
     private void drawText(GuiGraphics graphics, String text, int x, int y, int maxWidth, int color) {
-        if (font.width(text) > maxWidth) text = font.plainSubstrByWidth(text, Math.max(0, maxWidth - font.width("..."))) + "...";
-        graphics.drawString(font, text, x, y, color, false);
+        graphics.drawString(font, TextFormatter.truncate(font, text, maxWidth), x, y, color, false);
     }
 
     private void drawText(GuiGraphics graphics, Component text, int x, int y, int maxWidth, int color) {

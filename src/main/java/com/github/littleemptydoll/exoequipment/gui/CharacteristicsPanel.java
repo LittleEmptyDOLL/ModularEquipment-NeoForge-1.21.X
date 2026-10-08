@@ -7,6 +7,7 @@ import com.github.littleemptydoll.exoequipment.characteristics.CharacteristicTyp
 import com.github.littleemptydoll.exoequipment.util.AttributeNameUtils;
 import com.github.littleemptydoll.exoequipment.util.NameUtils;
 import com.github.littleemptydoll.exoequipment.util.NumberFormatter;
+import com.github.littleemptydoll.exoequipment.util.TextFormatter;
 import com.github.littleemptydoll.exoequipment.util.AttributeValueFormatter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
@@ -179,7 +180,7 @@ public final class CharacteristicsPanel {
         int valueX = left + CONTENT_X + CONTENT_WIDTH - font.width(value);
         int labelRight = Math.max(left + CONTENT_X + 4, valueX - 4);
         int labelWidth = labelRight - (left + CONTENT_X + 4);
-        label = truncate(font, label, labelWidth);
+        label = TextFormatter.truncate(font, label, labelWidth);
 
         graphics.drawString(
                 font,
@@ -619,20 +620,6 @@ public final class CharacteristicsPanel {
                 remainder.substring(operationSeparator + 1),
                 conditional
         );
-    }
-
-    private String truncate(net.minecraft.client.gui.Font font, String text, int maxWidth) {
-        if (maxWidth <= 0) {
-            return "";
-        }
-        if (font.width(text) <= maxWidth) {
-            return text;
-        }
-        String ellipsis = "...";
-        while (!text.isEmpty() && font.width(text + ellipsis) > maxWidth) {
-            text = text.substring(0, text.length() - 1);
-        }
-        return text + ellipsis;
     }
 
     private static boolean isInside(double mouseX, double mouseY, int x, int y, int width, int height) {

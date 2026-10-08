@@ -2,6 +2,9 @@ package com.github.littleemptydoll.exoequipment.fabricator;
 
 import com.github.littleemptydoll.exoequipment.registry.ModBlocks;
 import com.github.littleemptydoll.exoequipment.registry.ModMenus;
+import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
+import com.github.littleemptydoll.exoequipment.registry.ModItems;
+import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -87,6 +90,25 @@ public final class FabricatorMenu extends AbstractContainerMenu {
 
     public int energy() {
         return blockEntity == null ? (syncedEnergyHigh << 16) | syncedEnergyLow : blockEntity.storedEnergy();
+    }
+
+    public boolean isUnlocked(ItemStack result) {
+        var item = result.getItem();
+        EquipmentTier tier;
+        if (item instanceof EquipmentItem<?> equipment) {
+            tier = equipment.getDefinition().tier();
+        } else if (ModItems.isFabricatorPart(item)) {
+            tier = EquipmentTier.CIVILIAN;
+        } else {
+            return false;
+        }
+        ItemStack military = slots.get(FabricatorUnlocks.MILITARY_SLOT).getItem();
+        ItemStack engineering = slots.get(FabricatorUnlocks.ENGINEERING_SLOT).getItem();
+        ItemStack experimental = slots.get(FabricatorUnlocks.EXPERIMENTAL_SLOT).getItem();
+        if (item == ModItems.EXPERIMENTAL_FABRICATOR_UPGRADE.get()
+                && (!military.is(ModItems.MILITARY_FABRICATOR_UPGRADE.get())
+                || !engineering.is(ModItems.ENGINEERING_FABRICATOR_UPGRADE.get()))) return false;
+        return FabricatorUnlocks.unlocked(tier, military, engineering, experimental);
     }
 
     @Override

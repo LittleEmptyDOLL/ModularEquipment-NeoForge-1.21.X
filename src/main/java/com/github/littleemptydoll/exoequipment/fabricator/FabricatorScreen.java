@@ -8,6 +8,7 @@ import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModFabricatorRecipes;
 import com.github.littleemptydoll.exoequipment.registry.ModItems;
 import com.github.littleemptydoll.exoequipment.util.NumberFormatter;
+import com.github.littleemptydoll.exoequipment.util.TextFormatter;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -29,7 +30,7 @@ import java.util.Locale;
 public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMenu> {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(
             ExoEquipment.MODID, "textures/gui/fabricator.png");
-    private static final int ATLAS = 350, TEXT = 0xFFDEE6E9;
+    private static final int ATLAS = 350, TEXT = 0xFFDEE6E9, DISABLED_TEXT = 0xFF858C93;
     private static final int TAB_X = 94, TAB_Y = 6, TAB_STEP = 21;
     private static final int CATEGORY_X = 6, CATEGORY_Y = 32, CATEGORY_STEP = 13, CATEGORY_VISIBLE = 7;
     private static final int ITEM_Y = 35, ROW_STEP = 17, VISIBLE = 5, RESOURCE_VISIBLE = 4;
@@ -128,9 +129,14 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
 
     private void craft() {
         RecipeHolder<FabricatorRecipe> chosen = selected();
-        if (chosen != null && menu.energy() >= chosen.value().energyCost()) {
+        if (canCraft(chosen)) {
             PacketDistributor.sendToServer(new FabricatorCraftPayload(chosen.id(), Screen.hasShiftDown() ? 64 : 1));
         }
+    }
+
+    private boolean canCraft(RecipeHolder<FabricatorRecipe> chosen) {
+        return chosen != null && menu.isUnlocked(chosen.value().result())
+                && menu.energy() >= chosen.value().energyCost();
     }
 
     private int listLeft() {
@@ -217,12 +223,12 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         }
         scrollbar(graphics, 218, ingredientScroll, Math.max(0, count - RESOURCE_VISIBLE));
         drawEnergy(graphics, chosen, partialTick);
-        boolean enabled = chosen != null && menu.energy() >= chosen.value().energyCost();
+        boolean enabled = canCraft(chosen);
         blit(graphics, CRAFT_X, CRAFT_Y, 25, 265, 50, 14);
         if (enabled && inside(mx, my, CRAFT_X, CRAFT_Y, 50, 14))
             blit(graphics, CRAFT_X, CRAFT_Y, 25, 251, 50, 14);
         graphics.drawString(font, Component.translatable("gui.exoequipment.fabricator.craft"),
-                leftPos + CRAFT_X + 5, topPos + CRAFT_Y + 3, enabled ? TEXT : 0xFF80888E, false);
+                leftPos + CRAFT_X + 5, topPos + CRAFT_Y + 3, enabled ? TEXT : DISABLED_TEXT, false);
         if (!recipeHistory.isEmpty()) graphics.drawString(font, "<", leftPos + 137, topPos + 133, TEXT, false);
         if (focusedRecipe != null && chosen != null) {
             graphics.renderItem(chosen.value().result(), leftPos + 147, topPos + 129);
@@ -235,7 +241,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         if (inside(mx, my, CATEGORY_X, y, 50, CATEGORY_STEP))
             blit(graphics, CATEGORY_X, y, 25, 251, 50, 14);
         if (value == subcategory) blit(graphics, CATEGORY_X, y, 25, 237, 50, 14);
-        graphics.drawString(font, font.plainSubstrByWidth(moduleCategoryName(value).getString(), 44),
+        graphics.drawString(font, TextFormatter.truncate(font, moduleCategoryName(value).getString(), 44),
                 leftPos + CATEGORY_X + 3, topPos + y + 4, TEXT, false);
     }
 
@@ -245,9 +251,11 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         frame(graphics, x, y, chosen, inside(mx, my, x, y, 18, ROW_STEP));
         ItemStack stack = holder.value().result();
         graphics.renderItem(stack, leftPos + x + 1, topPos + y + 1);
-        graphics.drawString(font, font.plainSubstrByWidth(stack.getHoverName().getString(),
+        boolean unlocked = menu.isUnlocked(stack);
+        if (!unlocked) graphics.fill(leftPos + x, topPos + y, leftPos + x + 18, topPos + y + 18, 0x66000000);
+        graphics.drawString(font, TextFormatter.truncate(font, stack.getHoverName().getString(),
                         category == FabricatorCategory.MODULE ? 57 : 120),
-                leftPos + x + 21, topPos + y + 8, TEXT, false);
+                leftPos + x + 21, topPos + y + 8, unlocked ? TEXT : DISABLED_TEXT, false);
     }
 
     private void drawIngredientRow(GuiGraphics graphics, int row, FabricatorIngredient entry) {
@@ -352,7 +360,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
             graphics.renderTooltip(font, chosen.value().result(), mouseX, mouseY);
             return;
         }
-        if (inside(x, y, CRAFT_X, CRAFT_Y, 50, 14) && Screen.hasShiftDown()) {
+        if (canCraft(chosen) && inside(x, y, CRAFT_X, CRAFT_Y, 50, 14) && Screen.hasShiftDown()) {
             graphics.renderTooltip(font, Component.translatable("gui.exoequipment.fabricator.craft_stack"), mouseX, mouseY);
             return;
         }

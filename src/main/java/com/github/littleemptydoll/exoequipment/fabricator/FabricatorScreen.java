@@ -174,7 +174,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         blit(graphics, 0, 0, 0, 0, imageWidth, imageHeight);
-        blit(graphics, -26, 26, 93, 237, 25, 64);
+        blit(graphics, -26, 26, 93, 237, 24, 66);
         int mx = mouseX - leftPos, my = mouseY - topPos;
         FabricatorCategory[] tabs = FabricatorCategory.values();
         for (int i = 0; i < tabs.length; i++) {
@@ -252,7 +252,6 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         ItemStack stack = holder.value().result();
         graphics.renderItem(stack, leftPos + x + 1, topPos + y + 1);
         boolean unlocked = menu.isUnlocked(stack);
-        if (!unlocked) graphics.fill(leftPos + x, topPos + y, leftPos + x + 18, topPos + y + 18, 0x66000000);
         graphics.drawString(font, TextFormatter.truncate(font, stack.getHoverName().getString(),
                         category == FabricatorCategory.MODULE ? 57 : 120),
                 leftPos + x + 21, topPos + y + 8, unlocked ? TEXT : DISABLED_TEXT, false);

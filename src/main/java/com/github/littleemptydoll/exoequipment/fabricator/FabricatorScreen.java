@@ -21,7 +21,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -40,8 +39,6 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
     private static final int MODULE_SCROLL = 1, ITEM_SCROLL = 2, RESOURCE_SCROLL = 3;
     private FabricatorCategory category = FabricatorCategory.COMPONENTS;
     private int subcategory = -1, categoryScroll, scroll, selection, ingredientScroll, dragging;
-    private ResourceLocation focusedRecipe;
-    private final ArrayDeque<ResourceLocation> recipeHistory = new ArrayDeque<>();
     private final ItemStack[] tabIcons = new ItemStack[FabricatorCategory.values().length];
 
     public FabricatorScreen(FabricatorMenu menu, Inventory inventory, Component title) {
@@ -97,34 +94,27 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
     }
 
     private RecipeHolder<FabricatorRecipe> selected() {
-        if (focusedRecipe != null && minecraft != null && minecraft.level != null) {
-            for (var holder : minecraft.level.getRecipeManager().getAllRecipesFor(ModFabricatorRecipes.TYPE.get())) {
-                if (holder.id().equals(focusedRecipe)) return holder;
-            }
-            return null;
-        }
         List<RecipeHolder<FabricatorRecipe>> list = recipes();
         return selection >= 0 && selection < list.size() ? list.get(selection) : null;
     }
 
     private void openPart(ItemStack stack) {
         if (!ModItems.isFabricatorPart(stack.getItem()) || minecraft == null || minecraft.level == null) return;
-        RecipeHolder<FabricatorRecipe> current = selected();
-        if (current == null) return;
-        for (var holder : minecraft.level.getRecipeManager().getAllRecipesFor(ModFabricatorRecipes.TYPE.get())) {
-            if (holder.value().result().is(stack.getItem())) {
-                recipeHistory.push(current.id());
-                focusedRecipe = holder.id();
-                ingredientScroll = 0;
+        FabricatorCategory previousCategory = category;
+        int previousSubcategory = subcategory;
+        category = FabricatorCategory.COMPONENTS;
+        subcategory = -1;
+        List<RecipeHolder<FabricatorRecipe>> components = recipes();
+        for (int i = 0; i < components.size(); i++) {
+            if (components.get(i).value().result().is(stack.getItem())) {
+                selection = i;
+                scroll = Math.min(i, Math.max(0, components.size() - VISIBLE));
+                categoryScroll = ingredientScroll = 0;
                 return;
             }
         }
-    }
-
-    private void resetPartNavigation() {
-        focusedRecipe = null;
-        recipeHistory.clear();
-        ingredientScroll = 0;
+        category = previousCategory;
+        subcategory = previousSubcategory;
     }
 
     private void craft() {
@@ -174,7 +164,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         blit(graphics, 0, 0, 0, 0, imageWidth, imageHeight);
-        blit(graphics, -26, 26, 93, 237, 24, 66);
+        blit(graphics, -26, 26, 93, 237, 26, 66);
         int mx = mouseX - leftPos, my = mouseY - topPos;
         FabricatorCategory[] tabs = FabricatorCategory.values();
         for (int i = 0; i < tabs.length; i++) {
@@ -229,10 +219,6 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
             blit(graphics, CRAFT_X, CRAFT_Y, 25, 251, 50, 14);
         graphics.drawString(font, Component.translatable("gui.exoequipment.fabricator.craft"),
                 leftPos + CRAFT_X + 5, topPos + CRAFT_Y + 3, enabled ? TEXT : DISABLED_TEXT, false);
-        if (!recipeHistory.isEmpty()) graphics.drawString(font, "<", leftPos + 137, topPos + 133, TEXT, false);
-        if (focusedRecipe != null && chosen != null) {
-            graphics.renderItem(chosen.value().result(), leftPos + 147, topPos + 129);
-        }
     }
 
     private void drawCategory(GuiGraphics graphics, int mx, int my, int row, int value) {
@@ -355,16 +341,8 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
             return;
         }
         if (chosen == null) return;
-        if (focusedRecipe != null && inside(x, y, 147, 129, 16, 16)) {
-            graphics.renderTooltip(font, chosen.value().result(), mouseX, mouseY);
-            return;
-        }
         if (canCraft(chosen) && inside(x, y, CRAFT_X, CRAFT_Y, 50, 14) && Screen.hasShiftDown()) {
             graphics.renderTooltip(font, Component.translatable("gui.exoequipment.fabricator.craft_stack"), mouseX, mouseY);
-            return;
-        }
-        if (!recipeHistory.isEmpty() && inside(x, y, 133, 130, 15, 16)) {
-            graphics.renderTooltip(font, Component.translatable("gui.exoequipment.back"), mouseX, mouseY);
             return;
         }
         if (inside(x, y, RESOURCE_X, RESOURCE_Y, 18, RESOURCE_VISIBLE * ROW_STEP + 1)) {
@@ -429,7 +407,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
                     category = FabricatorCategory.values()[i];
                     subcategory = -1;
                     categoryScroll = scroll = selection = 0;
-                    resetPartNavigation();
+                    ingredientScroll = 0;
                     return true;
                 }
             }
@@ -441,7 +419,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
                 if (row < CATEGORY_VISIBLE && index < ModuleCategory.values().length) {
                     subcategory = index;
                     selection = scroll = 0;
-                    resetPartNavigation();
+                    ingredientScroll = 0;
                 }
                 return true;
             }
@@ -449,14 +427,8 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
                 int row = (y - ITEM_Y) / ROW_STEP;
                 if (row < VISIBLE && scroll + row < recipes().size()) {
                     selection = scroll + row;
-                    resetPartNavigation();
+                    ingredientScroll = 0;
                 }
-                return true;
-            }
-            if (!recipeHistory.isEmpty() && inside(x, y, 133, 130, 15, 16)) {
-                ResourceLocation parent = recipeHistory.pop();
-                focusedRecipe = recipeHistory.isEmpty() ? null : parent;
-                ingredientScroll = 0;
                 return true;
             }
             if (inside(x, y, CRAFT_X, CRAFT_Y, 50, 14)) {

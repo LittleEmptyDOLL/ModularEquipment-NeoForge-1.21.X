@@ -168,7 +168,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         blit(graphics, 0, 0, 0, 0, imageWidth, imageHeight);
-        blit(graphics, -25, 26, 93, 237, 25, 64);
+        blit(graphics, -26, 26, 93, 237, 25, 64);
         int mx = mouseX - leftPos, my = mouseY - topPos;
         FabricatorCategory[] tabs = FabricatorCategory.values();
         for (int i = 0; i < tabs.length; i++) {
@@ -180,21 +180,31 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         if (category == FabricatorCategory.MODULE) {
             blit(graphics, 57, 27, 0, 237, 16, 102);
             categoryScroll = Math.min(categoryScroll, maxScroll(MODULE_SCROLL));
-            for (int pass = 0; pass < 2; pass++) {
-                for (int row = 0; row < CATEGORY_VISIBLE && categoryScroll + row <= ModuleCategory.values().length; row++) {
-                    int value = categoryScroll + row - 1;
-                    if ((value == subcategory) == (pass == 1)) drawCategory(graphics, mx, my, row, value);
-                }
+            for (int row = 0; row < CATEGORY_VISIBLE && categoryScroll + row <= ModuleCategory.values().length; row++) {
+                drawCategory(graphics, mx, my, row, categoryScroll + row - 1);
+            }
+            int selectedRow = subcategory + 1 - categoryScroll;
+            if (selectedRow >= 0 && selectedRow < CATEGORY_VISIBLE)
+                drawCategory(graphics, mx, my, selectedRow, subcategory);
+            if (inside(mx, my, CATEGORY_X, CATEGORY_Y, 50, CATEGORY_VISIBLE * CATEGORY_STEP + 1)) {
+                int hoveredRow = (my - CATEGORY_Y) / CATEGORY_STEP;
+                if (hoveredRow < CATEGORY_VISIBLE && categoryScroll + hoveredRow <= ModuleCategory.values().length)
+                    drawCategory(graphics, mx, my, hoveredRow, categoryScroll + hoveredRow - 1);
             }
             scrollbar(graphics, 58, categoryScroll, maxScroll(MODULE_SCROLL));
         }
         List<RecipeHolder<FabricatorRecipe>> list = recipes();
         scroll = Math.min(scroll, maxScroll(ITEM_SCROLL));
-        for (int pass = 0; pass < 2; pass++) {
-            for (int row = 0; row < VISIBLE && scroll + row < list.size(); row++) {
-                boolean chosen = scroll + row == selection;
-                if (chosen == (pass == 1)) drawItemRow(graphics, mx, my, row, list.get(scroll + row), chosen);
-            }
+        for (int row = 0; row < VISIBLE && scroll + row < list.size(); row++)
+            drawItemRow(graphics, mx, my, row, list.get(scroll + row), scroll + row == selection);
+        int selectedRow = selection - scroll;
+        if (selectedRow >= 0 && selectedRow < VISIBLE && selection < list.size())
+            drawItemRow(graphics, mx, my, selectedRow, list.get(selection), true);
+        if (inside(mx, my, listLeft(), ITEM_Y, 18, VISIBLE * ROW_STEP + 1)) {
+            int hoveredRow = (my - ITEM_Y) / ROW_STEP;
+            if (hoveredRow < VISIBLE && scroll + hoveredRow < list.size())
+                drawItemRow(graphics, mx, my, hoveredRow, list.get(scroll + hoveredRow),
+                        scroll + hoveredRow == selection);
         }
         scrollbar(graphics, 151, scroll, maxScroll(ITEM_SCROLL));
         RecipeHolder<FabricatorRecipe> chosen = selected();
@@ -308,7 +318,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
             return;
         }
         for (int i = 0; i < FabricatorUnlocks.UPGRADE_SLOT_COUNT; i++) {
-            if (inside(x, y, -19, 32 + i * 20, 18, 18) && !menu.slots.get(i).hasItem()) {
+            if (inside(x, y, -20, 32 + i * 18, 18, 18) && !menu.slots.get(i).hasItem()) {
                 String tier = switch (i) {
                     case FabricatorUnlocks.MILITARY_SLOT -> "military";
                     case FabricatorUnlocks.ENGINEERING_SLOT -> "engineering";

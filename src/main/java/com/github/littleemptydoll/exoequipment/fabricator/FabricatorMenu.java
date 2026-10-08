@@ -41,7 +41,7 @@ public final class FabricatorMenu extends AbstractContainerMenu {
 
         for (int index = 0; index < FabricatorUnlocks.UPGRADE_SLOT_COUNT; index++) {
             final int slot = index;
-            addSlot(new SlotItemHandler(handler, index, -18, 33 + index * 20) {
+            addSlot(new SlotItemHandler(handler, index, -19, 33 + index * 18) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return FabricatorUnlocks.accepts(slot, stack);

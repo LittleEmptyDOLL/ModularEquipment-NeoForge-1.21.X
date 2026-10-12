@@ -11,16 +11,16 @@ import org.joml.Matrix4f;
 /**
  * Client-side holder for the shield field shader.
  *
- * This intentionally mirrors Draconic Evolution's chestpiece shield pipeline:
- * each shield body part is rendered from local-space vertices with its own
- * ModelMat uniform, while Time, Activation and BaseColor are supplied immediately
- * before that part is flushed.
+ * ModelMat is the normal render transform. FieldMat is the same humanoid-part
+ * transform expressed relative to the render-layer root, so the wave can be
+ * evaluated in entity-local space and cannot inherit camera movement.
  */
 public final class ShieldFieldShader {
     private static ShaderInstance shader;
     private static float renderTime;
     private static float activation;
     private static final Matrix4f modelMat = new Matrix4f();
+    private static final Matrix4f fieldMat = new Matrix4f();
 
     private static final RenderType FIELD_TYPE = createFieldType();
 
@@ -37,11 +37,13 @@ public final class ShieldFieldShader {
     public static RenderType fieldType(
             float time,
             float shieldActivation,
-            Matrix4f partModelMat
+            Matrix4f partModelMat,
+            Matrix4f partFieldMat
     ) {
         renderTime = time;
         activation = Math.max(0.0F, Math.min(1.0F, shieldActivation));
         modelMat.set(partModelMat);
+        fieldMat.set(partFieldMat);
         return FIELD_TYPE;
     }
 
@@ -52,7 +54,7 @@ public final class ShieldFieldShader {
 
         Uniform time = shader.getUniform("Time");
         if (time != null) {
-            // Draconic Evolution uses render time / 20 with no extra speed scale.
+            // Same speed as the original Draconic Evolution shield shader.
             time.set(renderTime / 20.0F);
         }
 
@@ -70,6 +72,11 @@ public final class ShieldFieldShader {
         if (modelMatUniform != null) {
             modelMatUniform.set(modelMat);
         }
+
+        Uniform fieldMatUniform = shader.getUniform("FieldMat");
+        if (fieldMatUniform != null) {
+            fieldMatUniform.set(fieldMat);
+        }
     }
 
     private static RenderType createFieldType() {
@@ -86,9 +93,6 @@ public final class ShieldFieldShader {
                 .setWriteMaskState(RenderStateShard.COLOR_DEPTH_WRITE)
                 .setLightmapState(RenderStateShard.LIGHTMAP)
                 .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
-                // DE calls backfacedCopy() on each shield CCModel. With a shader
-                // that does not depend on face normal, disabling culling is the
-                // equivalent result without duplicating every triangle.
                 .setCullState(RenderStateShard.NO_CULL)
                 .createCompositeState(false);
 

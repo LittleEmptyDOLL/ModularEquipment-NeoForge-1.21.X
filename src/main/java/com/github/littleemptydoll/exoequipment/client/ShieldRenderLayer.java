@@ -25,12 +25,10 @@ public final class ShieldRenderLayer
 
     private static final int SHELL_COLOR = 0x6638E8FF;
     private static final int OUTER_COLOR = 0xFF68F2FF;
-    private static final int PATTERN_COLOR_PRIMARY = 0xFFD7FCFF;
-    private static final int PATTERN_COLOR_SECONDARY = 0xFF56DFFF;
+    private static final int FIELD_COLOR = 0xFF62E8FF;
 
     private static final float SHELL_DEFORMATION = 0.12F;
-    private static final float PATTERN_DEFORMATION_PRIMARY = 0.135F;
-    private static final float PATTERN_DEFORMATION_SECONDARY = 0.142F;
+    private static final float FIELD_DEFORMATION = 0.138F;
     private static final float OUTER_DEFORMATION = 0.155F;
 
     /*
@@ -50,15 +48,8 @@ public final class ShieldRenderLayer
                     "textures/misc/white.png"
             );
 
-    private static final ResourceLocation ENERGY_PATTERN_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(
-                    "exoequipment",
-                    "textures/entity/shield_energy_pattern.png"
-            );
-
     private final PlayerModel<AbstractClientPlayer> shieldModel;
-    private final PlayerModel<AbstractClientPlayer> primaryPatternModel;
-    private final PlayerModel<AbstractClientPlayer> secondaryPatternModel;
+    private final PlayerModel<AbstractClientPlayer> fieldModel;
     private final PlayerModel<AbstractClientPlayer> outerModel;
 
     private final Map<AbstractClientPlayer, VisualState> visualStates =
@@ -70,8 +61,7 @@ public final class ShieldRenderLayer
     ) {
         super(parent);
         this.shieldModel = createModel(slim, SHELL_DEFORMATION);
-        this.primaryPatternModel = createModel(slim, PATTERN_DEFORMATION_PRIMARY);
-        this.secondaryPatternModel = createModel(slim, PATTERN_DEFORMATION_SECONDARY);
+        this.fieldModel = createModel(slim, FIELD_DEFORMATION);
         this.outerModel = createModel(slim, OUTER_DEFORMATION);
     }
 
@@ -133,10 +123,6 @@ public final class ShieldRenderLayer
 
         float energy = state.visualEnergy();
 
-        /*
-         * Once the client has received that the shield module itself is gone,
-         * there is no reason to keep the old visual state around.
-         */
         if (!status.hasShields() && energy <= MIN_VISIBLE_ENERGY) {
             visualStates.remove(player);
             return;
@@ -149,8 +135,7 @@ public final class ShieldRenderLayer
         PlayerModel<AbstractClientPlayer> sourceModel = getParentModel();
 
         prepareModel(sourceModel, shieldModel);
-        prepareModel(sourceModel, primaryPatternModel);
-        prepareModel(sourceModel, secondaryPatternModel);
+        prepareModel(sourceModel, fieldModel);
         prepareModel(sourceModel, outerModel);
 
         float time = player.tickCount + partialTick;
@@ -159,7 +144,6 @@ public final class ShieldRenderLayer
         float shellAlpha = calculateShellAlpha(energy) * pulse;
         float outerAlpha = calculateOuterAlpha(energy)
                 * (1.0F + (1.0F - pulse) * 1.5F);
-        float patternAlpha = calculatePatternAlpha(energy);
 
         renderSolidShell(
                 poseStack,
@@ -177,24 +161,12 @@ public final class ShieldRenderLayer
                 shellAlpha
         );
 
-        renderEnergyPattern(
+        renderProceduralField(
                 poseStack,
                 bufferSource,
-                primaryPatternModel,
-                PATTERN_COLOR_PRIMARY,
-                patternAlpha,
-                wrap01(-time * 0.0060F),
-                wrap01(time * 0.0035F)
-        );
-
-        renderEnergyPattern(
-                poseStack,
-                bufferSource,
-                secondaryPatternModel,
-                PATTERN_COLOR_SECONDARY,
-                patternAlpha * 0.60F,
-                wrap01(time * 0.0040F),
-                wrap01(-time * 0.0050F)
+                fieldModel,
+                energy,
+                time
         );
     }
 
@@ -211,29 +183,11 @@ public final class ShieldRenderLayer
     }
 
     private static float calculateShellAlpha(float energy) {
-        /*
-         * Keep a readable cyan body at high energy while allowing the shell to
-         * become very faint near depletion.
-         */
-        return 0.06F + 0.28F * smoothStep(energy);
+        return 0.045F + 0.23F * smoothStep(energy);
     }
 
     private static float calculateOuterAlpha(float energy) {
-        /*
-         * The outer layer is deliberately very subtle. It softens the hard
-         * cube boundary of the player-shaped shell without looking like a
-         * second piece of armor.
-         */
-        return 0.015F + 0.045F * smoothStep(energy);
-    }
-
-    private static float calculatePatternAlpha(float energy) {
-        /*
-         * The custom texture has its own transparency, so the animated lattice
-         * can stay more visible than the solid shell while still fading with
-         * shield energy.
-         */
-        return 0.16F + 0.46F * smoothStep(energy);
+        return 0.010F + 0.035F * smoothStep(energy);
     }
 
     private static void prepareModel(
@@ -266,30 +220,33 @@ public final class ShieldRenderLayer
         );
     }
 
-    private static void renderEnergyPattern(
+    private static void renderProceduralField(
             PoseStack poseStack,
             MultiBufferSource bufferSource,
             PlayerModel<AbstractClientPlayer> model,
-            int color,
-            float alpha,
-            float u,
-            float v
+            float energy,
+            float time
     ) {
+        if (ShieldFieldShader.getShader() == null) {
+            return;
+        }
+
         VertexConsumer buffer =
                 bufferSource.getBuffer(
-                        RenderType.energySwirl(
-                                ENERGY_PATTERN_TEXTURE,
-                                u,
-                                v
-                        )
+                        ShieldFieldShader.fieldType(time)
                 );
 
+        /*
+         * The shader reads alpha as the per-player shield-energy value. Keeping
+         * energy in vertex data instead of a global uniform means players with
+         * different shield levels can share the same batched RenderType safely.
+         */
         model.renderToBuffer(
                 poseStack,
                 buffer,
                 LightTexture.FULL_BRIGHT,
                 OverlayTexture.NO_OVERLAY,
-                withAlpha(color, alpha)
+                withAlpha(FIELD_COLOR, energy)
         );
     }
 
@@ -357,10 +314,6 @@ public final class ShieldRenderLayer
         target.leftSleeve.visible = source.leftSleeve.visible;
         target.rightPants.visible = source.rightPants.visible;
         target.leftPants.visible = source.leftPants.visible;
-    }
-
-    private static float wrap01(float value) {
-        return value - (float) Math.floor(value);
     }
 
     private static float clamp01(float value) {

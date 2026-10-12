@@ -33,6 +33,20 @@ float valueNoise(vec2 p) {
     return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
 }
 
+float fbm(vec2 p) {
+    float result = 0.0;
+    float amplitude = 0.5;
+    float frequency = 1.0;
+
+    for (int i = 0; i < 5; i++) {
+        result += (valueNoise(p * frequency) - 0.5) * 2.0 * amplitude;
+        frequency *= 2.0;
+        amplitude *= 0.5;
+    }
+
+    return result;
+}
+
 float hexDistance(vec2 p) {
     p = abs(p);
     return max(dot(p, normalize(vec2(1.0, 1.7320508))), p.x);
@@ -51,11 +65,6 @@ float hexLines(vec2 p) {
     return 1.0 - smoothstep(0.020, 0.020 + aa, edgeDistance);
 }
 
-float wrappedDistance(float a, float b, float period) {
-    float d = abs(a - b);
-    return min(d, period - d);
-}
-
 void main() {
     float energy = clamp(vertexColor.a, 0.0, 1.0);
     if (energy <= 0.01) {
@@ -64,49 +73,66 @@ void main() {
 
     vec2 uv = texCoord0;
 
-    // The wave is intentionally based only on UV coordinates and time.
-    // Camera/view-space data does not participate, so rotating the camera can
-    // no longer drag the energy front around the player.
-    const float cycleLength = 5.8;
-    float noise = (valueNoise(uv * 7.0 + vec2(0.0, Time * 0.018)) - 0.5) * 0.24;
-    float waveCoord = uv.y * 5.15 + uv.x * 0.38 + noise;
+    // Draconic Evolution-inspired field geometry: distance from a UV-space
+    // emitter point produces curved concentric fronts instead of a flat scan line.
+    const vec2 waveCenter = vec2(0.5, 0.34375);
+    float radial = distance(uv, waveCenter) * 5.0;
 
-    // One slow primary front instead of several equally strong repeating waves.
-    // At 0.28 units/second a full cycle takes a little over twenty seconds.
-    float phase = mod(Time * 0.28, cycleLength);
-    float distanceToWave = wrappedDistance(waveCoord, phase, cycleLength);
+    // Five octaves gently deform the radius. The noise itself evolves very
+    // slowly so the front feels like a living energy field rather than water.
+    vec2 noiseDrift = vec2(Time * 0.0030, -Time * 0.0022);
+    float noise = fbm(uv * 8.0 + noiseDrift) * 0.34;
+    float warpedRadial = radial + noise;
 
-    // A broad body and a soft inner crest make this read as a heavy energy pulse
-    // instead of concentric water ripples.
-    float waveBody = 1.0 - smoothstep(0.16, 0.78, distanceToWave);
-    float waveCrest = 1.0 - smoothstep(0.045, 0.22, distanceToWave);
-    float waveCore = 1.0 - smoothstep(0.020, 0.105, distanceToWave);
+    // Same three-offset-front idea as Draconic Evolution, but slowed down to the
+    // pace that worked better for this shield. A complete cycle is ~21 seconds.
+    float slowTime = Time * 0.28;
+    float front0 = -1.0 + mod(slowTime, 6.0);
+    float front1 = -1.0 + mod(slowTime + 2.0, 6.0);
+    float front2 = -1.0 + mod(slowTime + 4.0, 6.0);
 
-    // Keep the user's preferred cell size. The wave only changes it slightly,
-    // creating a subtle compression effect as the front passes.
-    float hexScale = mix(20.0, 21.6, waveCrest);
+    float d0 = abs(warpedRadial - front0);
+    float d1 = abs(warpedRadial - front1);
+    float d2 = abs(warpedRadial - front2);
+
+    // Secondary fronts are slightly softer so the field has one dominant pulse
+    // instead of reading as several equally strong water ripples.
+    float body0 = 1.0 - smoothstep(0.10, 0.58, d0);
+    float body1 = (1.0 - smoothstep(0.10, 0.52, d1)) * 0.72;
+    float body2 = (1.0 - smoothstep(0.10, 0.48, d2)) * 0.48;
+
+    float crest0 = 1.0 - smoothstep(0.025, 0.16, d0);
+    float crest1 = (1.0 - smoothstep(0.025, 0.145, d1)) * 0.72;
+    float crest2 = (1.0 - smoothstep(0.025, 0.135, d2)) * 0.48;
+
+    float waveBody = max(body0, max(body1, body2));
+    float waveCrest = max(crest0, max(crest1, crest2));
+
+    // Preserve the current preferred hex size. Cells expand only a little at
+    // the crest; outside the wave the lattice remains essentially dormant.
+    float hexScale = mix(20.0, 21.5, waveCrest);
     float hex = hexLines(uv * hexScale);
 
-    // The lattice is dormant outside the pulse. A patch mask keeps the revealed
-    // area from becoming a uniform chain-mail sheet while preserving hex size.
+    // Patch masking avoids turning the revealed area into a continuous chainmail
+    // sheet while still allowing the curved wave shape to read clearly.
     vec2 patchCell = floor(uv * 18.0);
     float patchSeed = hash21(patchCell + vec2(7.2, 19.4));
-    float patchMask = smoothstep(0.24, 0.60, patchSeed);
-    float revealedHex = hex * waveBody * mix(0.20, 1.0, patchMask);
+    float patchMask = smoothstep(0.22, 0.62, patchSeed);
+    float revealedHex = hex * waveBody * mix(0.18, 1.0, patchMask);
 
-    // Sparse nodes only appear near the strongest part of the front.
+    // Sparse node flashes sit on the strongest part of the wave.
     vec2 nodeUv = uv * 42.0;
     vec2 nodeCell = floor(nodeUv);
     vec2 nodeLocal = fract(nodeUv) - 0.5;
     float nodeSeed = hash21(nodeCell + vec2(31.7, 11.3));
     float nodeShape = 1.0 - smoothstep(0.045, 0.115, length(nodeLocal));
-    float nodes = nodeShape * step(0.90, nodeSeed) * waveCrest;
+    float nodes = nodeShape * step(0.91, nodeSeed) * waveCrest;
 
     float smoothEnergy = energy * energy * (3.0 - 2.0 * energy);
     float lowEnergy = 1.0 - energy;
 
-    // At low charge, parts of the wave drop out rather than the whole field
-    // simply becoming uniformly transparent.
+    // Low charge removes local pieces from the revealed wave instead of dimming
+    // the whole shield uniformly.
     float flickerSeed = hash21(patchCell + floor(Time * 3.0));
     float stability = mix(
             1.0,
@@ -114,15 +140,14 @@ void main() {
             lowEnergy * lowEnergy * 0.72
     );
 
-    // Idle state is nearly invisible. The wave itself is the main visual event.
-    float idleAlpha = 0.004 * mix(0.25, 1.0, smoothEnergy);
-    float bodyAlpha = waveBody * 0.018 * mix(0.18, 1.0, smoothEnergy);
+    float idleAlpha = 0.0035 * mix(0.25, 1.0, smoothEnergy);
+    float bodyAlpha = waveBody * 0.016 * mix(0.18, 1.0, smoothEnergy);
     float hexAlpha = revealedHex
-            * (0.08 + waveCrest * 0.34 + waveCore * 0.10)
+            * (0.075 + waveCrest * 0.38)
             * mix(0.16, 1.0, smoothEnergy)
             * stability;
     float nodeAlpha = nodes
-            * (0.18 + waveCore * 0.30)
+            * 0.46
             * mix(0.20, 1.0, smoothEnergy)
             * stability;
 
@@ -138,9 +163,9 @@ void main() {
 
     vec3 baseColor = vertexColor.rgb * ColorModulator.rgb;
     float highlight = clamp(
-            waveBody * 0.08
+            waveBody * 0.07
             + revealedHex * 0.22
-            + waveCrest * revealedHex * 0.18
+            + waveCrest * revealedHex * 0.20
             + nodes * 0.36,
             0.0,
             0.58

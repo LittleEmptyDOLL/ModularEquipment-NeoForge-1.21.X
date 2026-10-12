@@ -31,14 +31,6 @@ public final class ShieldRenderLayer
     private static final float FIELD_DEFORMATION = 0.138F;
     private static final float OUTER_DEFORMATION = 0.155F;
 
-    /*
-     * Shield data is synchronized through the Curios ItemStack and can arrive
-     * on the client in discrete updates. We therefore do not treat every
-     * 0 <-> 0 transition as a visual state transition. Instead, the renderer
-     * interpolates a client-side visual energy value toward the latest
-     * synchronized value. This prevents flicker when the server changes or
-     * recharges the shield.
-     */
     private static final float VISUAL_RESPONSE = 0.35F;
     private static final float MIN_VISIBLE_ENERGY = 0.01F;
 
@@ -231,16 +223,12 @@ public final class ShieldRenderLayer
             return;
         }
 
-        VertexConsumer buffer =
-                bufferSource.getBuffer(
-                        ShieldFieldShader.fieldType(time)
-                );
+        RenderType fieldType = ShieldFieldShader.fieldType(
+                time,
+                poseStack.last().pose()
+        );
+        VertexConsumer buffer = bufferSource.getBuffer(fieldType);
 
-        /*
-         * The shader reads alpha as the per-player shield-energy value. Keeping
-         * energy in vertex data instead of a global uniform means players with
-         * different shield levels can share the same batched RenderType safely.
-         */
         model.renderToBuffer(
                 poseStack,
                 buffer,
@@ -248,6 +236,15 @@ public final class ShieldRenderLayer
                 OverlayTexture.NO_OVERLAY,
                 withAlpha(FIELD_COLOR, energy)
         );
+
+        /*
+         * Time and inverse-pose are per-player values. Flush this one RenderType
+         * immediately so another player cannot replace those uniforms before the
+         * buffered shield vertices are drawn.
+         */
+        if (bufferSource instanceof MultiBufferSource.BufferSource immediate) {
+            immediate.endBatch(fieldType);
+        }
     }
 
     private static int withAlpha(int color, float alpha) {

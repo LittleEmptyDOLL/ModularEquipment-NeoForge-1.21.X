@@ -45,9 +45,9 @@ public final class ShieldFieldShader {
 
         Uniform time = shader.getUniform("Time");
         if (time != null) {
-            // Keep the slower pace already preferred during visual testing while
-            // retaining Draconic Evolution's original wave formula.
-            time.set((renderTime / 20.0F) * 0.28F);
+            // Still slower than Draconic Evolution itself, but about 1.5x the
+            // previous test speed so the wave remains readable without feeling idle.
+            time.set((renderTime / 20.0F) * 0.42F);
         }
 
         Uniform activationUniform = shader.getUniform("Activation");

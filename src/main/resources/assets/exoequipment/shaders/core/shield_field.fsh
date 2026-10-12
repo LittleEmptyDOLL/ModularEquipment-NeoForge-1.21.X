@@ -1,7 +1,5 @@
 #version 150
 
-#moj_import <minecraft:fog.glsl>
-
 /*
  * Wave core adapted from Draconic Evolution 1.21
  *   assets/draconicevolution/shaders/core/tools/chestpiece_shield.fsh
@@ -14,15 +12,10 @@
  */
 
 uniform vec4 ColorModulator;
-uniform float FogStart;
-uniform float FogEnd;
-uniform vec4 FogColor;
-
 uniform vec4 BaseColor;
 uniform float Activation;
 uniform float Time;
 
-in float vertexDistance;
 in vec4 vertexColor;
 in vec2 texCoord0;
 
@@ -82,8 +75,7 @@ void main() {
     /*
      * CodeChickenLib's OBJParser flips the OBJ V coordinate before creating
      * the CCModel used by Draconic Evolution. ShieldFieldMesh stores the raw
-     * OBJ vt values, so reproduce that parser step here. Without this flip the
-     * geometry matches DE but the wave sees a vertically mirrored UV atlas.
+     * OBJ vt values, so reproduce that parser step here.
      */
     vec2 shieldUv = vec2(texCoord0.x, 1.0 - texCoord0.y);
     vec3 coord = vec3(shieldUv, 0.0);
@@ -118,8 +110,6 @@ void main() {
 
     float value = waveDistance + level;
 
-    // Preserve the original DE-style visible field. The hex lattice is not the
-    // field itself; it only wakes up close to one of the traveling wave crests.
     float deAlpha = max(0.1, 1.0 - pow(value, 0.3))
         * (1.0 - level)
         * BaseColor.a;
@@ -127,7 +117,6 @@ void main() {
     float waveReveal = (1.0 - smoothstep(0.08, 0.62, waveDistance))
         * clamp(1.0 - level, 0.0, 1.0);
 
-    // Keep the cell size from the earlier preferred shield iteration.
     float hex = hexLines(shieldUv * 20.0);
     float hexReveal = hex * waveReveal;
 
@@ -143,11 +132,11 @@ void main() {
     vec4 colour = vec4(colourRgb, finalAlpha);
     colour *= vertexColor * ColorModulator;
 
-    fragColor = linear_fog(
-        colour,
-        vertexDistance,
-        FogStart,
-        FogEnd,
-        FogColor
-    );
+    /*
+     * Keep the field itself camera-independent. The original DE shader applies
+     * fog here, but that path relies on CodeChickenLib's shader globals. With a
+     * vanilla ShaderInstance the fog term was the only fragment-stage input
+     * that could vary with camera pitch and visually shift the translucent wave.
+     */
+    fragColor = colour;
 }

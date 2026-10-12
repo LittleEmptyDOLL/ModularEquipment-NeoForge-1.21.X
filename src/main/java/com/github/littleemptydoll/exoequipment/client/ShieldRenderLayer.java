@@ -9,6 +9,7 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import org.joml.Matrix4f;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -16,12 +17,10 @@ import java.util.WeakHashMap;
 /**
  * Player shield render layer.
  *
- * The visible field now follows Draconic Evolution's rendering architecture as
- * closely as possible without depending on Brandon's Core / CodeChickenLib:
- * dedicated shield meshes, local-space vertices, a ModelMat per humanoid part,
- * and an immediate draw for each part. The old translucent PlayerModel shell
- * layers are intentionally not rendered because DE's chestpiece shield is a
- * shader-driven field rather than several overlapping skin-shaped shells.
+ * The field keeps Draconic Evolution's dedicated per-part mesh/render path,
+ * while the animated wave itself is evaluated in entity-local space. This
+ * prevents a change in the visible UV face or camera pitch from changing the
+ * phase/location of the energy front.
  */
 public final class ShieldRenderLayer
         extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
@@ -87,11 +86,6 @@ public final class ShieldRenderLayer
             return;
         }
 
-        /*
-         * Draconic Evolution drives this effect from a global client render time,
-         * not from each entity's age. World game time + partial tick gives the
-         * same global phase behaviour here and keeps all shield parts synchronized.
-         */
         float time;
         if (Minecraft.getInstance().level != null) {
             time = Minecraft.getInstance().level.getGameTime() + partialTick;
@@ -99,8 +93,17 @@ public final class ShieldRenderLayer
             time = player.tickCount + partialTick;
         }
 
+        /*
+         * Capture the render-layer root before individual head/body/limb
+         * transforms are applied. ShieldFieldPartConsumer removes this root
+         * from each part matrix and supplies the resulting entity-local matrix
+         * separately to the shader. Camera/entity placement therefore affects
+         * gl_Position, but never the coordinates used to calculate the wave.
+         */
+        Matrix4f rootModelMat = new Matrix4f(poseStack.last().pose());
+
         ShieldFieldPartConsumer consumer =
-                new ShieldFieldPartConsumer(immediate, time, energy);
+                new ShieldFieldPartConsumer(immediate, time, energy, rootModelMat);
 
         ShieldFieldMesh.render(
                 poseStack,

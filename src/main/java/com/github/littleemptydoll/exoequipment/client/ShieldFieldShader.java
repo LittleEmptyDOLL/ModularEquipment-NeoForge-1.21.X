@@ -89,11 +89,14 @@ public final class ShieldFieldShader {
         RenderType.CompositeState state = RenderType.CompositeState.builder()
                 .setShaderState(shaderState)
                 .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                .setOutputState(RenderStateShard.ITEM_ENTITY_TARGET)
+                // Route the field through the translucent scene target instead of
+                // the item/entity target. With colour-only writes this lets normal
+                // entities finish rendering first, then the shield participates in
+                // the later transparency composite together with water/glass.
+                .setOutputState(RenderStateShard.TRANSLUCENT_TARGET)
                 // Keep testing against existing scene depth, but do not write the
-                // translucent shield itself into the depth buffer. This avoids
-                // hiding water, translucent blocks and later-rendered entity
-                // layers behind the field while preserving wall occlusion.
+                // translucent shield itself into the depth buffer. This preserves
+                // visibility of water and other translucent content behind it.
                 .setWriteMaskState(RenderStateShard.COLOR_WRITE)
                 .setLightmapState(RenderStateShard.LIGHTMAP)
                 .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)

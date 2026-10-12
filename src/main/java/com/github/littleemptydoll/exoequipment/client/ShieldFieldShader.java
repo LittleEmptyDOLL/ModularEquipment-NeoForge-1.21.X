@@ -90,7 +90,11 @@ public final class ShieldFieldShader {
                 .setShaderState(shaderState)
                 .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                 .setOutputState(RenderStateShard.ITEM_ENTITY_TARGET)
-                .setWriteMaskState(RenderStateShard.COLOR_DEPTH_WRITE)
+                // Keep testing against existing scene depth, but do not write the
+                // translucent shield itself into the depth buffer. This avoids
+                // hiding water, translucent blocks and later-rendered entity
+                // layers behind the field while preserving wall occlusion.
+                .setWriteMaskState(RenderStateShard.COLOR_WRITE)
                 .setLightmapState(RenderStateShard.LIGHTMAP)
                 .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
                 .setCullState(RenderStateShard.NO_CULL)

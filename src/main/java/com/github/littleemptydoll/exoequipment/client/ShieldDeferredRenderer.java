@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.RenderType;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -126,7 +125,12 @@ public final class ShieldDeferredRenderer {
                 break;
             }
 
-            float[] center = sampleUvInsidePart(part, impact.seed());
+            float[] center = sampleUvInsidePart(
+                    part,
+                    impact.seed(),
+                    impact.directionX(),
+                    impact.directionZ()
+            );
             int offset = slot * DAMAGE_COMPONENTS;
             data[offset] = center[0];
             data[offset + 1] = center[1];
@@ -140,11 +144,32 @@ public final class ShieldDeferredRenderer {
 
     private static float[] sampleUvInsidePart(
             PartBatch part,
-            int seed
+            int seed,
+            float directionX,
+            float directionZ
     ) {
         List<VertexData> vertices = part.vertices();
         int triangleCount = vertices.size() / 3;
-        int triangle = Math.floorMod(seed, triangleCount);
+        int triangle;
+
+        float directionLength = (float) Math.sqrt(
+                (directionX * directionX)
+                        + (directionZ * directionZ)
+        );
+
+        if (directionLength <= 0.0001F) {
+            triangle = Math.floorMod(seed, triangleCount);
+        } else {
+            directionX /= directionLength;
+            directionZ /= directionLength;
+            triangle = selectFacingTriangle(
+                    part,
+                    directionX,
+                    directionZ,
+                    seed
+            );
+        }
+
         int first = triangle * 3;
 
         VertexData a = vertices.get(first);
@@ -154,8 +179,9 @@ public final class ShieldDeferredRenderer {
         float randomA = unitFloat(mixSeed(seed ^ 0x68BC21EB));
         float randomB = unitFloat(mixSeed(seed ^ 0x02E5BE93));
 
-        // Uniform barycentric sampling keeps the impact center on the actual UV
-        // triangle instead of occasionally landing in an unused atlas region.
+        // Uniform barycentric sampling keeps the impact center on the selected
+        // real UV triangle rather than in an unused atlas region. The selected
+        // triangle now belongs to the shield face pointing toward the source.
         float root = (float) Math.sqrt(randomA);
         float weightA = 1.0F - root;
         float weightB = root * (1.0F - randomB);
@@ -174,6 +200,66 @@ public final class ShieldDeferredRenderer {
         return new float[] { rawU, 1.0F - rawV };
     }
 
+    private static int selectFacingTriangle(
+            PartBatch part,
+            float directionX,
+            float directionZ,
+            int seed
+    ) {
+        List<VertexData> vertices = part.vertices();
+        Matrix4f fieldMat = part.fieldMat();
+        int triangleCount = vertices.size() / 3;
+        int bestTriangle = Math.floorMod(seed, triangleCount);
+        float bestScore = -Float.MAX_VALUE;
+
+        for (int triangle = 0; triangle < triangleCount; triangle++) {
+            VertexData vertex = vertices.get(triangle * 3);
+
+            // Vertex normals are in the local coordinates of the animated body
+            // part. FieldMat transforms the direction into the player's root
+            // body space without introducing camera rotation or translation.
+            float normalX = vertex.normalX();
+            float normalY = vertex.normalY();
+            float normalZ = vertex.normalZ();
+
+            float rootNormalX = (fieldMat.m00() * normalX)
+                    + (fieldMat.m10() * normalY)
+                    + (fieldMat.m20() * normalZ);
+            float rootNormalZ = (fieldMat.m02() * normalX)
+                    + (fieldMat.m12() * normalY)
+                    + (fieldMat.m22() * normalZ);
+
+            float horizontalNormalLength = (float) Math.sqrt(
+                    (rootNormalX * rootNormalX)
+                            + (rootNormalZ * rootNormalZ)
+            );
+
+            // Top/bottom faces have no meaningful horizontal facing direction
+            // for the current hit payload, so prefer one of the side surfaces.
+            float score = -2.0F;
+            if (horizontalNormalLength > 0.0001F) {
+                score = ((rootNormalX * directionX)
+                        + (rootNormalZ * directionZ))
+                        / horizontalNormalLength;
+            }
+
+            // Both triangles of one rectangular face normally have identical
+            // normals. A tiny deterministic jitter chooses between them without
+            // ever overpowering the actual face-direction score.
+            float jitter = unitFloat(mixSeed(
+                    seed ^ (triangle * 0x632BE5AB)
+            )) * 0.002F;
+            score += jitter;
+
+            if (score > bestScore) {
+                bestScore = score;
+                bestTriangle = triangle;
+            }
+        }
+
+        return bestTriangle;
+    }
+
     private static float unitFloat(int value) {
         return (value & 0x00FFFFFF) / 16777216.0F;
     }
@@ -190,12 +276,15 @@ public final class ShieldDeferredRenderer {
     /**
      * A transient local break in the shield lattice. Radius is expressed in
      * hex-grid cells; strength decays from 1 to 0 while the field repairs.
+     * directionX/directionZ point toward the damage source in root body space.
      */
     public record DamageImpact(
             int partIndex,
             int seed,
             float radius,
-            float strength
+            float strength,
+            float directionX,
+            float directionZ
     ) {}
 
     private record QueuedShield(

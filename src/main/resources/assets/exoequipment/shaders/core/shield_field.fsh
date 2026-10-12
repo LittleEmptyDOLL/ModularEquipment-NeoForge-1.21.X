@@ -11,8 +11,6 @@ uniform float Time;
 in float vertexDistance;
 in vec4 vertexColor;
 in vec2 texCoord0;
-in vec3 viewPositionOut;
-in vec3 viewNormalOut;
 
 out vec4 fragColor;
 
@@ -53,9 +51,9 @@ float hexLines(vec2 p) {
     return 1.0 - smoothstep(0.020, 0.020 + aa, edgeDistance);
 }
 
-float thinBand(float value, float center, float width) {
-    float d = abs(fract(value) - center);
-    return 1.0 - smoothstep(width * 0.45, width, d);
+float wrappedDistance(float a, float b, float period) {
+    float d = abs(a - b);
+    return min(d, period - d);
 }
 
 void main() {
@@ -66,92 +64,72 @@ void main() {
 
     vec2 uv = texCoord0;
 
-    // Keep a very weak silhouette glow while the shield is idle. The field's
-    // actual surface pattern is driven by the moving wave below.
-    vec3 normal = normalize(viewNormalOut);
-    vec3 viewDir = normalize(-viewPositionOut);
-    float facing = clamp(abs(dot(normal, viewDir)), 0.0, 1.0);
-    float fresnel = pow(1.0 - facing, 2.8);
+    // The wave is intentionally based only on UV coordinates and time.
+    // Camera/view-space data does not participate, so rotating the camera can
+    // no longer drag the energy front around the player.
+    const float cycleLength = 5.8;
+    float noise = (valueNoise(uv * 7.0 + vec2(0.0, Time * 0.018)) - 0.5) * 0.24;
+    float waveCoord = uv.y * 5.15 + uv.x * 0.38 + noise;
 
-    // Draconic-style expanding fronts. Mild noise bends the wave so it does not
-    // look like a perfectly mathematical ring sweeping over the UV islands.
-    vec2 centeredUv = (uv - vec2(0.5, 0.46)) * vec2(1.0, 0.78);
-    float radial = length(centeredUv) * 6.2;
-    float noise = (valueNoise(uv * 9.0 + vec2(Time * 0.07, -Time * 0.05)) - 0.5) * 0.42;
-    float waveCoord = radial + noise;
+    // One slow primary front instead of several equally strong repeating waves.
+    // At 0.28 units/second a full cycle takes a little over twenty seconds.
+    float phase = mod(Time * 0.28, cycleLength);
+    float distanceToWave = wrappedDistance(waveCoord, phase, cycleLength);
 
-    float phase0 = mod(Time * 0.72, 5.4);
-    float phase1 = mod(Time * 0.72 + 1.8, 5.4);
-    float phase2 = mod(Time * 0.72 + 3.6, 5.4);
+    // A broad body and a soft inner crest make this read as a heavy energy pulse
+    // instead of concentric water ripples.
+    float waveBody = 1.0 - smoothstep(0.16, 0.78, distanceToWave);
+    float waveCrest = 1.0 - smoothstep(0.045, 0.22, distanceToWave);
+    float waveCore = 1.0 - smoothstep(0.020, 0.105, distanceToWave);
 
-    float distanceToWave = min(
-            abs(waveCoord - phase0),
-            min(abs(waveCoord - phase1), abs(waveCoord - phase2))
-    );
-
-    // Broad halo gives the front some body; the narrow crest is the bright edge.
-    float waveHalo = 1.0 - smoothstep(0.08, 0.46, distanceToWave);
-    float waveCrest = 1.0 - smoothstep(0.018, 0.115, distanceToWave);
-
-    // Hex cells are completely dormant outside the wave. As the crest reaches
-    // them their scale increases slightly, which makes the cells visually
-    // contract and then relax as the front passes.
-    float hexScale = mix(20.0, 24.0, waveCrest);
+    // Keep the user's preferred cell size. The wave only changes it slightly,
+    // creating a subtle compression effect as the front passes.
+    float hexScale = mix(20.0, 21.6, waveCrest);
     float hex = hexLines(uv * hexScale);
 
-    // Break up the honeycomb so the wave reveals patches rather than a solid
-    // chain-mail sheet. The broad halo can still hint at neighbouring cells.
+    // The lattice is dormant outside the pulse. A patch mask keeps the revealed
+    // area from becoming a uniform chain-mail sheet while preserving hex size.
     vec2 patchCell = floor(uv * 18.0);
     float patchSeed = hash21(patchCell + vec2(7.2, 19.4));
-    float patchMask = smoothstep(0.30, 0.58, patchSeed);
-    float revealedHex = hex * waveHalo * mix(0.24, 1.0, patchMask);
+    float patchMask = smoothstep(0.24, 0.60, patchSeed);
+    float revealedHex = hex * waveBody * mix(0.20, 1.0, patchMask);
 
-    // Fast tracer lines run through the active band. They provide obvious motion
-    // even though the hex geometry itself remains attached to the shield surface.
-    float tracerA = thinBand(uv.y * 3.1 + uv.x * 1.25 - Time * 0.78, 0.50, 0.055);
-    float tracerB = thinBand(uv.y * 4.4 - uv.x * 0.85 - Time * 1.06, 0.50, 0.040);
-    float tracerC = thinBand(uv.x * 5.2 + Time * 1.32, 0.50, 0.032);
-    float tracers = max(tracerA, max(tracerB * 0.75, tracerC * 0.55)) * waveHalo;
-
-    // A few bright nodes flash where the moving crest intersects the field.
+    // Sparse nodes only appear near the strongest part of the front.
     vec2 nodeUv = uv * 42.0;
     vec2 nodeCell = floor(nodeUv);
     vec2 nodeLocal = fract(nodeUv) - 0.5;
     float nodeSeed = hash21(nodeCell + vec2(31.7, 11.3));
     float nodeShape = 1.0 - smoothstep(0.045, 0.115, length(nodeLocal));
-    float nodes = nodeShape * step(0.88, nodeSeed) * waveCrest;
+    float nodes = nodeShape * step(0.90, nodeSeed) * waveCrest;
 
     float smoothEnergy = energy * energy * (3.0 - 2.0 * energy);
     float lowEnergy = 1.0 - energy;
 
-    // Depleted shields lose pieces of the traveling pattern rather than simply
-    // dimming uniformly.
-    float flickerSeed = hash21(patchCell + floor(Time * 5.0));
+    // At low charge, parts of the wave drop out rather than the whole field
+    // simply becoming uniformly transparent.
+    float flickerSeed = hash21(patchCell + floor(Time * 3.0));
     float stability = mix(
             1.0,
-            mix(0.30, 1.0, flickerSeed),
-            lowEnergy * lowEnergy * 0.80
+            mix(0.38, 1.0, flickerSeed),
+            lowEnergy * lowEnergy * 0.72
     );
 
-    float rimAlpha = fresnel * 0.075 * mix(0.30, 1.0, smoothEnergy);
-    float haloAlpha = waveHalo * 0.020 * mix(0.18, 1.0, smoothEnergy);
+    // Idle state is nearly invisible. The wave itself is the main visual event.
+    float idleAlpha = 0.004 * mix(0.25, 1.0, smoothEnergy);
+    float bodyAlpha = waveBody * 0.018 * mix(0.18, 1.0, smoothEnergy);
     float hexAlpha = revealedHex
-            * (0.16 + waveCrest * 0.30)
+            * (0.08 + waveCrest * 0.34 + waveCore * 0.10)
             * mix(0.16, 1.0, smoothEnergy)
             * stability;
-    float tracerAlpha = tracers
-            * (0.16 + waveCrest * 0.34)
-            * mix(0.18, 1.0, smoothEnergy)
-            * stability;
     float nodeAlpha = nodes
-            * 0.50
+            * (0.18 + waveCore * 0.30)
             * mix(0.20, 1.0, smoothEnergy)
             * stability;
 
     float alpha = clamp(
-            rimAlpha + haloAlpha + hexAlpha + tracerAlpha + nodeAlpha,
+            idleAlpha + bodyAlpha + hexAlpha + nodeAlpha,
             0.0,
-            0.58
+            0.54
     );
 
     if (alpha <= 0.003) {
@@ -160,13 +138,12 @@ void main() {
 
     vec3 baseColor = vertexColor.rgb * ColorModulator.rgb;
     float highlight = clamp(
-            fresnel * 0.12
-            + waveHalo * 0.10
-            + revealedHex * 0.20
-            + tracers * 0.32
-            + nodes * 0.42,
+            waveBody * 0.08
+            + revealedHex * 0.22
+            + waveCrest * revealedHex * 0.18
+            + nodes * 0.36,
             0.0,
-            0.66
+            0.58
     );
     vec3 color = mix(baseColor, vec3(0.90, 1.0, 1.0), highlight);
 

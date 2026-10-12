@@ -23,10 +23,15 @@ import java.util.WeakHashMap;
 public final class ShieldRenderLayer
         extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 
-    private static final int COLOR = 0x6638E8FF;
+    private static final int SHELL_COLOR = 0x6638E8FF;
+    private static final int OUTER_COLOR = 0xFF68F2FF;
+    private static final int PATTERN_COLOR_PRIMARY = 0xFFD7FCFF;
+    private static final int PATTERN_COLOR_SECONDARY = 0xFF56DFFF;
 
-    private static final float DEFORMATION = 0.12F;
-    private static final float GLINT_DEFORMATION = 0.135F;
+    private static final float SHELL_DEFORMATION = 0.12F;
+    private static final float PATTERN_DEFORMATION_PRIMARY = 0.135F;
+    private static final float PATTERN_DEFORMATION_SECONDARY = 0.142F;
+    private static final float OUTER_DEFORMATION = 0.155F;
 
     /*
      * Shield data is synchronized through the Curios ItemStack and can arrive
@@ -45,14 +50,16 @@ public final class ShieldRenderLayer
                     "textures/misc/white.png"
             );
 
-    private static final ResourceLocation GLINT_TEXTURE =
+    private static final ResourceLocation ENERGY_PATTERN_TEXTURE =
             ResourceLocation.fromNamespaceAndPath(
-                    "minecraft",
-                    "textures/misc/enchanted_glint_entity.png"
+                    "exoequipment",
+                    "textures/entity/shield_energy_pattern.png"
             );
 
     private final PlayerModel<AbstractClientPlayer> shieldModel;
-    private final PlayerModel<AbstractClientPlayer> glintModel;
+    private final PlayerModel<AbstractClientPlayer> primaryPatternModel;
+    private final PlayerModel<AbstractClientPlayer> secondaryPatternModel;
+    private final PlayerModel<AbstractClientPlayer> outerModel;
 
     private final Map<AbstractClientPlayer, VisualState> visualStates =
             new WeakHashMap<>();
@@ -62,8 +69,10 @@ public final class ShieldRenderLayer
             boolean slim
     ) {
         super(parent);
-        this.shieldModel = createModel(slim, DEFORMATION);
-        this.glintModel = createModel(slim, GLINT_DEFORMATION);
+        this.shieldModel = createModel(slim, SHELL_DEFORMATION);
+        this.primaryPatternModel = createModel(slim, PATTERN_DEFORMATION_PRIMARY);
+        this.secondaryPatternModel = createModel(slim, PATTERN_DEFORMATION_SECONDARY);
+        this.outerModel = createModel(slim, OUTER_DEFORMATION);
     }
 
     private static PlayerModel<AbstractClientPlayer> createModel(
@@ -140,25 +149,52 @@ public final class ShieldRenderLayer
         PlayerModel<AbstractClientPlayer> sourceModel = getParentModel();
 
         prepareModel(sourceModel, shieldModel);
-        prepareModel(sourceModel, glintModel);
+        prepareModel(sourceModel, primaryPatternModel);
+        prepareModel(sourceModel, secondaryPatternModel);
+        prepareModel(sourceModel, outerModel);
 
-        float shieldAlpha = calculateAlpha(energy);
-        float glintAlpha = calculateGlintAlpha(energy);
+        float time = player.tickCount + partialTick;
+        float pulse = 0.96F + 0.04F * (float) Math.sin(time * 0.22F);
 
-        renderShield(
+        float shellAlpha = calculateShellAlpha(energy) * pulse;
+        float outerAlpha = calculateOuterAlpha(energy)
+                * (1.0F + (1.0F - pulse) * 1.5F);
+        float patternAlpha = calculatePatternAlpha(energy);
+
+        renderSolidShell(
+                poseStack,
+                bufferSource,
+                outerModel,
+                OUTER_COLOR,
+                outerAlpha
+        );
+
+        renderSolidShell(
                 poseStack,
                 bufferSource,
                 shieldModel,
-                shieldAlpha
+                SHELL_COLOR,
+                shellAlpha
         );
 
-        renderGlint(
+        renderEnergyPattern(
                 poseStack,
                 bufferSource,
-                glintModel,
-                glintAlpha,
-                player.tickCount,
-                partialTick
+                primaryPatternModel,
+                PATTERN_COLOR_PRIMARY,
+                patternAlpha,
+                wrap01(-time * 0.0060F),
+                wrap01(time * 0.0035F)
+        );
+
+        renderEnergyPattern(
+                poseStack,
+                bufferSource,
+                secondaryPatternModel,
+                PATTERN_COLOR_SECONDARY,
+                patternAlpha * 0.60F,
+                wrap01(time * 0.0040F),
+                wrap01(-time * 0.0050F)
         );
     }
 
@@ -174,22 +210,30 @@ public final class ShieldRenderLayer
         );
     }
 
-    private static float calculateAlpha(float energy) {
+    private static float calculateShellAlpha(float energy) {
         /*
-         * Keep the shield readable even when partially depleted while still
-         * making a nearly empty shield fade naturally.
+         * Keep a readable cyan body at high energy while allowing the shell to
+         * become very faint near depletion.
          */
-        return 0.06F + 0.30F * smoothStep(energy);
+        return 0.06F + 0.28F * smoothStep(energy);
     }
 
-    private static float calculateGlintAlpha(float energy) {
+    private static float calculateOuterAlpha(float energy) {
         /*
-         * The energy swirl texture contains transparent pixels of its own, so
-         * using the shield alpha directly makes the glint become visually
-         * unreadable too early. Give the glint a stronger, but still continuous,
-         * fade based on the same visual energy value.
+         * The outer layer is deliberately very subtle. It softens the hard
+         * cube boundary of the player-shaped shell without looking like a
+         * second piece of armor.
          */
-        return 0.10F + 0.50F * smoothStep(energy);
+        return 0.015F + 0.045F * smoothStep(energy);
+    }
+
+    private static float calculatePatternAlpha(float energy) {
+        /*
+         * The custom texture has its own transparency, so the animated lattice
+         * can stay more visible than the solid shell while still fading with
+         * shield energy.
+         */
+        return 0.16F + 0.46F * smoothStep(energy);
     }
 
     private static void prepareModel(
@@ -201,10 +245,11 @@ public final class ShieldRenderLayer
         copyVisibility(source, target);
     }
 
-    private static void renderShield(
+    private static void renderSolidShell(
             PoseStack poseStack,
             MultiBufferSource bufferSource,
             PlayerModel<AbstractClientPlayer> model,
+            int color,
             float alpha
     ) {
         VertexConsumer buffer =
@@ -217,32 +262,23 @@ public final class ShieldRenderLayer
                 buffer,
                 LightTexture.FULL_BRIGHT,
                 OverlayTexture.NO_OVERLAY,
-                withAlpha(COLOR, alpha)
+                withAlpha(color, alpha)
         );
     }
 
-    private static void renderGlint(
+    private static void renderEnergyPattern(
             PoseStack poseStack,
             MultiBufferSource bufferSource,
             PlayerModel<AbstractClientPlayer> model,
+            int color,
             float alpha,
-            int tickCount,
-            float partialTick
+            float u,
+            float v
     ) {
-        /*
-         * energy_swirl applies a texture-matrix offset supplied by
-         * RenderType.energySwirl(). It does not scroll the texture on its own.
-         * Use entity time plus partial tick so the motion is smooth between
-         * game ticks, and wrap the offsets to keep the texture matrix stable.
-         */
-        float time = (tickCount + partialTick) * 0.01F;
-        float u = -(time % 1.0F);
-        float v = (time * 0.7F) % 1.0F;
-
         VertexConsumer buffer =
                 bufferSource.getBuffer(
                         RenderType.energySwirl(
-                                GLINT_TEXTURE,
+                                ENERGY_PATTERN_TEXTURE,
                                 u,
                                 v
                         )
@@ -253,7 +289,7 @@ public final class ShieldRenderLayer
                 buffer,
                 LightTexture.FULL_BRIGHT,
                 OverlayTexture.NO_OVERLAY,
-                withAlpha(0xFFFFFFFF, alpha)
+                withAlpha(color, alpha)
         );
     }
 
@@ -321,6 +357,10 @@ public final class ShieldRenderLayer
         target.leftSleeve.visible = source.leftSleeve.visible;
         target.rightPants.visible = source.rightPants.visible;
         target.leftPants.visible = source.leftPants.visible;
+    }
+
+    private static float wrap01(float value) {
+        return value - (float) Math.floor(value);
     }
 
     private static float clamp01(float value) {

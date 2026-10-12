@@ -8,6 +8,9 @@
  * and Brandon's Core math.glsl (snoise helper).
  * Both projects explicitly allow copying portions of their code under their
  * "Don't Be a Jerk" license. This project keeps its source publicly visible.
+ *
+ * The hex overlay below is Modular Equipment-specific and is intentionally
+ * secondary: it is only revealed around the traveling DE-style wave front.
  */
 
 uniform vec4 ColorModulator;
@@ -57,6 +60,24 @@ float snoise(vec3 uv, float res) {
     return mix(r0, r1, f.z) * 2.0 - 1.0;
 }
 
+float hexDistance(vec2 p) {
+    p = abs(p);
+    return max(dot(p, normalize(vec2(1.0, 1.7320508))), p.x);
+}
+
+float hexLines(vec2 p) {
+    const vec2 spacing = vec2(1.0, 1.7320508);
+    vec2 halfSpacing = spacing * 0.5;
+
+    vec2 a = mod(p, spacing) - halfSpacing;
+    vec2 b = mod(p - halfSpacing, spacing) - halfSpacing;
+    vec2 cell = dot(a, a) < dot(b, b) ? a : b;
+
+    float edgeDistance = 0.5 - hexDistance(cell);
+    float aa = max(fwidth(edgeDistance) * 1.25, 0.004);
+    return 1.0 - smoothstep(0.020, 0.020 + aa, edgeDistance);
+}
+
 void main() {
     vec3 coord = vec3(texCoord0, 0.0);
 
@@ -83,19 +104,36 @@ void main() {
     float t2 = -1.0 + mod(Time + 2.0, 6.0) + noise;
     float t3 = -1.0 + mod(Time + 4.0, 6.0) + noise;
 
-    float value = min(
+    float waveDistance = min(
         min(abs(rad - t1), abs(rad - t2)),
         abs(rad - t3)
     );
-    value += level;
 
-    vec4 colour = vec4(
+    float value = waveDistance + level;
+
+    // Preserve the original DE-style visible field. The hex lattice is not the
+    // field itself; it only wakes up close to one of the traveling wave crests.
+    float deAlpha = max(0.1, 1.0 - pow(value, 0.3))
+        * (1.0 - level)
+        * BaseColor.a;
+
+    float waveReveal = (1.0 - smoothstep(0.08, 0.62, waveDistance))
+        * clamp(1.0 - level, 0.0, 1.0);
+
+    // Keep the cell size from the earlier preferred shield iteration.
+    float hex = hexLines(texCoord0 * 20.0);
+    float hexReveal = hex * waveReveal;
+
+    float hexAlpha = hexReveal * 0.30 * BaseColor.a;
+    float finalAlpha = clamp(deAlpha + hexAlpha, 0.0, 1.0);
+
+    vec3 colourRgb = mix(
         BaseColor.rgb,
-        max(0.1, 1.0 - pow(value, 0.3))
-            * (1.0 - level)
-            * BaseColor.a
+        vec3(0.90, 1.0, 1.0),
+        clamp(hexReveal * 0.55, 0.0, 0.55)
     );
 
+    vec4 colour = vec4(colourRgb, finalAlpha);
     colour *= vertexColor * ColorModulator;
 
     fragColor = linear_fog(

@@ -4,23 +4,23 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import org.joml.Vector3f;
+import org.joml.Matrix4f;
 
 /**
  * Adapter that makes the dedicated shield mesh follow Draconic Evolution's
  * per-part draw path without requiring CodeChickenLib's VBORenderType.
  *
- * ShieldFieldMesh still supplies the exact local vertices/UVs. This consumer
- * intercepts the PoseStack overloads so those vertices stay local, uploads the
- * part pose as ModelMat, and flushes every humanoid part before the next matrix
- * can replace its uniforms.
+ * ShieldFieldMesh supplies local vertices/UVs. This consumer keeps those
+ * vertices local, uploads the current humanoid-part pose as ModelMat, and
+ * flushes a part before a different ModelMat is used.
  */
 public final class ShieldFieldPartConsumer implements VertexConsumer {
     private final MultiBufferSource.BufferSource buffers;
     private final float time;
     private final float activation;
+    private final Matrix4f currentModelMat = new Matrix4f();
 
-    private PoseStack.Pose currentPose;
+    private boolean hasCurrentModelMat;
     private RenderType currentType;
     private VertexConsumer delegate;
 
@@ -86,20 +86,31 @@ public final class ShieldFieldPartConsumer implements VertexConsumer {
 
     public void finish() {
         flushCurrent();
-        currentPose = null;
+        hasCurrentModelMat = false;
         delegate = null;
         currentType = null;
     }
 
     private void ensurePart(PoseStack.Pose pose) {
-        if (pose == currentPose) {
+        Matrix4f nextModelMat = pose.pose();
+
+        /*
+         * Do not compare PoseStack.Pose object identity here. Modern PoseStack
+         * implementations may reuse a Pose object when repeatedly pushing and
+         * popping at the same depth. In that case head/body/arm/leg renders can
+         * arrive through the same Pose instance with different matrix contents.
+         * If the head matrix is accidentally kept, camera/player pitch rotates
+         * the entire procedural field and looks exactly like a camera-bound wave.
+         */
+        if (hasCurrentModelMat && currentModelMat.equals(nextModelMat)) {
             return;
         }
 
         flushCurrent();
 
-        currentPose = pose;
-        currentType = ShieldFieldShader.fieldType(time, activation, pose.pose());
+        currentModelMat.set(nextModelMat);
+        hasCurrentModelMat = true;
+        currentType = ShieldFieldShader.fieldType(time, activation, currentModelMat);
         delegate = buffers.getBuffer(currentType);
     }
 

@@ -12,6 +12,7 @@ in vec3 Normal;
 uniform mat4 ModelViewMat;
 uniform mat4 ProjMat;
 uniform mat4 ModelMat;
+uniform mat3 IViewRotMat;
 uniform int FogShape;
 
 out float vertexDistance;
@@ -22,7 +23,10 @@ void main() {
     vec4 viewPosition = ModelViewMat * ModelMat * vec4(Position, 1.0);
     gl_Position = ProjMat * viewPosition;
 
-    vertexDistance = fog_distance(viewPosition.xyz, FogShape);
+    // Match Draconic Evolution's tool_base.vsh. In particular, do not feed
+    // the model/view transformed position into fog_distance: with cylindrical
+    // fog that makes the field brightness vary strongly with camera pitch.
+    vertexDistance = fog_distance(IViewRotMat * Position, FogShape);
     vertexColor = Color;
     texCoord0 = UV0;
 }

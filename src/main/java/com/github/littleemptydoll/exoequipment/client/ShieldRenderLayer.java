@@ -27,7 +27,6 @@ public final class ShieldRenderLayer
     private static final int OUTER_COLOR = 0xFF68F2FF;
 
     private static final float SHELL_DEFORMATION = 0.12F;
-    private static final float FIELD_DEFORMATION = 0.138F;
     private static final float OUTER_DEFORMATION = 0.155F;
 
     private static final float VISUAL_RESPONSE = 0.35F;
@@ -40,7 +39,6 @@ public final class ShieldRenderLayer
             );
 
     private final PlayerModel<AbstractClientPlayer> shieldModel;
-    private final PlayerModel<AbstractClientPlayer> fieldModel;
     private final PlayerModel<AbstractClientPlayer> outerModel;
 
     private final Map<AbstractClientPlayer, VisualState> visualStates =
@@ -52,7 +50,6 @@ public final class ShieldRenderLayer
     ) {
         super(parent);
         this.shieldModel = createModel(slim, SHELL_DEFORMATION);
-        this.fieldModel = createModel(slim, FIELD_DEFORMATION);
         this.outerModel = createModel(slim, OUTER_DEFORMATION);
     }
 
@@ -111,7 +108,6 @@ public final class ShieldRenderLayer
                 );
 
         state.update(targetEnergy);
-
         float energy = state.visualEnergy();
 
         if (!status.hasShields() && energy <= MIN_VISIBLE_ENERGY) {
@@ -126,7 +122,6 @@ public final class ShieldRenderLayer
         PlayerModel<AbstractClientPlayer> sourceModel = getParentModel();
 
         prepareModel(sourceModel, shieldModel);
-        prepareModel(sourceModel, fieldModel);
         prepareModel(sourceModel, outerModel);
 
         float time = player.tickCount + partialTick;
@@ -155,7 +150,7 @@ public final class ShieldRenderLayer
         renderProceduralField(
                 poseStack,
                 bufferSource,
-                fieldModel,
+                sourceModel,
                 energy,
                 time
         );
@@ -214,7 +209,7 @@ public final class ShieldRenderLayer
     private static void renderProceduralField(
             PoseStack poseStack,
             MultiBufferSource bufferSource,
-            PlayerModel<AbstractClientPlayer> model,
+            PlayerModel<AbstractClientPlayer> sourceModel,
             float energy,
             float time
     ) {
@@ -226,22 +221,18 @@ public final class ShieldRenderLayer
         VertexConsumer buffer = bufferSource.getBuffer(fieldType);
 
         /*
-         * Draconic Evolution passes shield state through an Activation uniform
-         * and keeps the vertex colour neutral. Do the same here so the ported
-         * shader receives the same style of inputs.
+         * Do not render the procedural field through PlayerModel skin cubes.
+         * Draconic Evolution uses six dedicated shield meshes with their own UVs
+         * and applies the matching humanoid part transform to each one. The
+         * dedicated ShieldFieldMesh mirrors that architecture without requiring
+         * CodeChickenLib/VBO wrappers.
          */
-        model.renderToBuffer(
-                poseStack,
-                buffer,
-                LightTexture.FULL_BRIGHT,
-                OverlayTexture.NO_OVERLAY,
-                0xFFFFFFFF
-        );
+        ShieldFieldMesh.render(poseStack, buffer, sourceModel);
 
         /*
-         * Time/Activation are per-player uniforms. Flush this RenderType now,
-         * equivalent to Draconic Evolution's per-part VBO callback draw, so a
-         * second player cannot overwrite the values before this field is drawn.
+         * Time/Activation are per-player shader values. Flush this RenderType
+         * immediately, matching the effective lifetime of DE's per-part VBO
+         * callback values and preventing another player from replacing them.
          */
         if (bufferSource instanceof MultiBufferSource.BufferSource immediate) {
             immediate.endBatch(fieldType);
@@ -306,15 +297,6 @@ public final class ShieldRenderLayer
         target.rightLeg.visible = source.rightLeg.visible;
         target.leftLeg.visible = source.leftLeg.visible;
 
-        /*
-         * PlayerModel also contains the second skin layer (hat/jacket/sleeves/
-         * pants). Rendering those nearly coincident cubes as part of a
-         * translucent shield creates a second field with different skin UVs.
-         * The two layers blend differently as the camera turns, making the wave
-         * appear camera-bound. A shield pass should contain only one surface per
-         * body part; the dedicated outerModel already provides the intentional
-         * second physical shell where needed.
-         */
         target.hat.visible = false;
         target.jacket.visible = false;
         target.rightSleeve.visible = false;

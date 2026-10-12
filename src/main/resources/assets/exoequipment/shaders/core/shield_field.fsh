@@ -8,12 +8,21 @@
  * The wave is evaluated from the dedicated shield mesh UVs, like the original
  * Draconic Evolution effect. Limb pose transforms only move the shield geometry;
  * they do not alter the phase or speed of the procedural field.
+ *
+ * The hex damage layer is specific to Modular Equipment. Damage is quantized to
+ * whole lattice cells so impacts look like broken field elements rather than a
+ * smooth circular alpha mask.
  */
 
 uniform vec4 ColorModulator;
 uniform vec4 BaseColor;
 uniform float Activation;
+uniform float Opacity;
 uniform float Time;
+uniform vec4 Damage0;
+uniform vec4 Damage1;
+uniform vec4 Damage2;
+uniform vec4 Damage3;
 
 in vec4 vertexColor;
 in vec2 texCoord0;
@@ -58,6 +67,16 @@ float hexDistance(vec2 p) {
     return max(dot(p, normalize(vec2(1.0, 1.7320508))), p.x);
 }
 
+vec2 nearestHexCenter(vec2 p) {
+    const vec2 spacing = vec2(1.0, 1.7320508);
+    vec2 halfSpacing = spacing * 0.5;
+
+    vec2 a = mod(p, spacing) - halfSpacing;
+    vec2 b = mod(p - halfSpacing, spacing) - halfSpacing;
+    vec2 cell = dot(a, a) < dot(b, b) ? a : b;
+    return p - cell;
+}
+
 float hexLines(vec2 p) {
     const vec2 spacing = vec2(1.0, 1.7320508);
     vec2 halfSpacing = spacing * 0.5;
@@ -71,6 +90,49 @@ float hexLines(vec2 p) {
     return 1.0 - smoothstep(0.020, 0.020 + aa, edgeDistance);
 }
 
+float cellHash(vec2 cell) {
+    vec3 p3 = fract(vec3(cell.xyx) * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
+}
+
+void applyDamage(
+        vec4 damage,
+        vec2 cellCenter,
+        float hex,
+        inout float broken,
+        inout float fracture
+) {
+    if (damage.z <= 0.001 || damage.w <= 0.001) {
+        return;
+    }
+
+    float strength = clamp(damage.w, 0.0, 1.0);
+    vec2 damageCenter = damage.xy * 20.0;
+    float distanceToImpact = distance(cellCenter, damageCenter);
+
+    // Every cell gets a stable local variation. The impact is still clustered,
+    // but its border is made from missing cells instead of a perfect circle.
+    float random = cellHash(cellCenter + floor(damageCenter) * 0.173);
+    float effectiveRadius = damage.z * mix(0.24, 1.0, strength);
+    float breakRadius = effectiveRadius * mix(0.80, 1.18, random);
+
+    // Cells snap back from the outside inward as strength approaches zero.
+    float active = smoothstep(0.08, 0.22, strength);
+    float brokenCell = step(distanceToImpact, breakRadius) * active;
+    broken = max(broken, brokenCell);
+
+    // Existing hex edges around the irregular break become an unstable bright
+    // fracture rim. It remains visible independently of the travelling wave.
+    float edgeDistance = abs(distanceToImpact - breakRadius);
+    float edgeBand = 1.0 - smoothstep(0.14, 0.82, edgeDistance);
+    float flicker = 0.68 + 0.32 * sin(Time * 31.0 + random * 23.0);
+    fracture = max(
+        fracture,
+        edgeBand * hex * strength * flicker
+    );
+}
+
 void main() {
     /*
      * CodeChickenLib's OBJParser flips V before building the CCModel. Our mesh
@@ -79,8 +141,8 @@ void main() {
     vec2 shieldUv = vec2(texCoord0.x, 1.0 - texCoord0.y);
     vec3 coord = vec3(shieldUv, 0.0);
 
-    // Original Draconic Evolution UV-radial field. Because coord is independent
-    // from ModelMat / FieldMat, rotating an arm or leg cannot move the wave.
+    // Original Draconic Evolution UV-radial field. Activation now remains 1.0
+    // while the shield exists; remaining charge no longer shrinks this envelope.
     float rad = distance(coord.xy, vec2(0.5, 0.34375)) * 5.0;
     float level = max(0.0, (rad - (Activation * 5.0)) * 1024.0);
 
@@ -119,16 +181,30 @@ void main() {
     float waveReveal = (1.0 - smoothstep(0.08, 0.62, waveDistance))
         * clamp(1.0 - level, 0.0, 1.0);
 
-    float hex = hexLines(shieldUv * 20.0);
+    vec2 hexPosition = shieldUv * 20.0;
+    float hex = hexLines(hexPosition);
     float hexReveal = hex * waveReveal;
 
-    float hexAlpha = hexReveal * 0.30 * BaseColor.a;
-    float finalAlpha = clamp(deAlpha + hexAlpha, 0.0, 1.0);
+    float broken = 0.0;
+    float fracture = 0.0;
+    vec2 cellCenter = nearestHexCenter(hexPosition);
+    applyDamage(Damage0, cellCenter, hex, broken, fracture);
+    applyDamage(Damage1, cellCenter, hex, broken, fracture);
+    applyDamage(Damage2, cellCenter, hex, broken, fracture);
+    applyDamage(Damage3, cellCenter, hex, broken, fracture);
 
+    float hexAlpha = hexReveal * 0.30 * BaseColor.a;
+    float intactAlpha = clamp(deAlpha + hexAlpha, 0.0, 1.0)
+        * (1.0 - broken);
+    float fractureAlpha = fracture * 0.82 * BaseColor.a;
+    float finalAlpha = clamp(intactAlpha + fractureAlpha, 0.0, 1.0)
+        * clamp(Opacity, 0.0, 1.0);
+
+    float damageGlow = clamp(fracture * 0.90, 0.0, 0.90);
     vec3 colourRgb = mix(
         BaseColor.rgb,
-        vec3(0.90, 1.0, 1.0),
-        clamp(hexReveal * 0.55, 0.0, 0.55)
+        vec3(0.94, 1.0, 1.0),
+        clamp((hexReveal * 0.55) + damageGlow, 0.0, 0.92)
     );
 
     vec4 colour = vec4(colourRgb, finalAlpha);

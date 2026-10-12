@@ -46,10 +46,10 @@ public final class ShieldRenderLayer
             AbstractClientPlayer player,
             float limbSwing,
             float limbSwingAmount,
+            float partialTick,
             float ageInTicks,
             float netHeadYaw,
-            float headPitch,
-            float partialTick
+            float headPitch
     ) {
         if (player.isInvisible() || player.isSpectator()) {
             return;

@@ -86,6 +86,10 @@ public final class ShieldFieldShader {
                 .setWriteMaskState(RenderStateShard.COLOR_DEPTH_WRITE)
                 .setLightmapState(RenderStateShard.LIGHTMAP)
                 .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
+                // DE calls backfacedCopy() on each shield CCModel. With a shader
+                // that does not depend on face normal, disabling culling is the
+                // equivalent result without duplicating every triangle.
+                .setCullState(RenderStateShard.NO_CULL)
                 .createCompositeState(false);
 
         return RenderType.create(

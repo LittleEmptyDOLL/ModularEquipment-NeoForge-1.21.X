@@ -11,9 +11,9 @@ import net.minecraft.client.renderer.ShaderInstance;
  * Client-side holder for the shield field shader.
  *
  * The rendering setup intentionally mirrors the shield path used by Draconic
- * Evolution 1.21: translucent blending, normal culling and color+depth writes.
- * Per-player values are uploaded immediately before the field RenderType is
- * flushed by ShieldRenderLayer.
+ * Evolution 1.21: translucent blending, normal culling, triangle geometry and
+ * color+depth writes. Per-player values are uploaded immediately before the
+ * field RenderType is flushed by ShieldRenderLayer.
  */
 public final class ShieldFieldShader {
     private static ShaderInstance shader;
@@ -45,8 +45,6 @@ public final class ShieldFieldShader {
 
         Uniform time = shader.getUniform("Time");
         if (time != null) {
-            // Still slower than Draconic Evolution itself, but about 1.5x the
-            // previous test speed so the wave remains readable without feeling idle.
             time.set((renderTime / 20.0F) * 0.42F);
         }
 
@@ -80,7 +78,7 @@ public final class ShieldFieldShader {
         return RenderType.create(
                 "exoequipment_shield_field",
                 DefaultVertexFormat.NEW_ENTITY,
-                VertexFormat.Mode.QUADS,
+                VertexFormat.Mode.TRIANGLES,
                 1536,
                 false,
                 false,

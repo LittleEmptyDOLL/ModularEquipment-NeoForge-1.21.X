@@ -23,9 +23,9 @@ import java.util.WeakHashMap;
  * ShieldDeferredRenderer; the field is actually drawn after every normal
  * entity has rendered so translucent blending has the correct entity order.
  *
- * Shield charge no longer controls the radial size of the field. A loss of
- * charge is instead converted into short-lived local damage impulses which the
- * fragment shader uses to break individual cells of the hex lattice.
+ * Shield charge no longer controls the radial size of the field. Server-side
+ * shield-hit events create short-lived local damage impulses which the fragment
+ * shader uses to break individual cells of the hex lattice.
  */
 public final class ShieldRenderLayer
         extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
@@ -37,10 +37,9 @@ public final class ShieldRenderLayer
     private static final int MAX_DAMAGE_IMPACTS = 4;
 
     /*
+     * Fallback weights used only for damage sources without spatial context.
      * ShieldFieldMesh renders parts in this order:
      *   0 head, 1 body, 2 right arm, 3 left arm, 4 right leg, 5 left leg.
-     * Weight the larger torso/head surfaces slightly more heavily than each
-     * individual limb while still allowing damage anywhere on the field.
      */
     private static final int[] DAMAGE_PART_WEIGHTS = {
             0, 0,
@@ -102,11 +101,16 @@ public final class ShieldRenderLayer
                 ignored -> new VisualState(targetEnergy)
         );
 
-        state.update(
-                targetEnergy,
-                time,
-                player.getUUID().hashCode()
-        );
+        for (ShieldHitClientState.Hit hit
+                : ShieldHitClientState.drain(player.getId())) {
+            state.spawnImpact(
+                    hit,
+                    time,
+                    player.getUUID().hashCode()
+            );
+        }
+
+        state.update(targetEnergy, time);
         float energy = state.visualEnergy();
 
         if (!status.hasShields() && energy <= MIN_VISIBLE_ENERGY) {
@@ -153,28 +157,18 @@ public final class ShieldRenderLayer
     private static final class VisualState {
         private final List<ImpactState> impacts = new ArrayList<>();
         private float visualEnergy;
-        private float lastTargetEnergy;
-        private int impactSerial;
 
         private VisualState(float initialEnergy) {
             this.visualEnergy = initialEnergy;
-            this.lastTargetEnergy = initialEnergy;
         }
 
         private void update(
                 float targetEnergy,
-                float time,
-                int playerSeed
+                float time
         ) {
             impacts.removeIf(impact ->
                     time - impact.startTime() >= DAMAGE_LIFETIME_TICKS
             );
-
-            float lostEnergy = lastTargetEnergy - targetEnergy;
-            if (lostEnergy > 0.000001F) {
-                spawnImpact(lostEnergy, time, playerSeed);
-            }
-            lastTargetEnergy = targetEnergy;
 
             visualEnergy +=
                     (targetEnergy - visualEnergy) * VISUAL_RESPONSE;
@@ -187,24 +181,40 @@ public final class ShieldRenderLayer
         }
 
         private void spawnImpact(
-                float lostEnergy,
+                ShieldHitClientState.Hit hit,
                 float time,
                 int playerSeed
         ) {
-            int serial = ++impactSerial;
-            int seed = mixSeed(
-                    playerSeed
-                            ^ Integer.rotateLeft(serial * 0x9E3779B9, serial & 15)
-                            ^ Float.floatToIntBits(lastTargetEnergy)
-            );
+            int seed = mixSeed(hit.seed() ^ playerSeed);
+            int partIndex = hit.partIndex();
 
-            int weightedPart = Math.floorMod(seed, DAMAGE_PART_WEIGHTS.length);
-            int partIndex = DAMAGE_PART_WEIGHTS[weightedPart];
+            if (partIndex < 0 || partIndex > 5) {
+                int weightedPart = Math.floorMod(
+                        seed,
+                        DAMAGE_PART_WEIGHTS.length
+                );
+                partIndex = DAMAGE_PART_WEIGHTS[weightedPart];
+            }
 
-            // Radius is measured in hex-grid cells. Small hits remove a tight
-            // cluster; large hits can punch out several neighbouring cells.
-            float severity = clamp01(lostEnergy * 8.0F);
+            // Radius is measured in hex-grid cells. Preserve the scale of the
+            // original energy-delta effect, but drive it from the exact amount
+            // absorbed by the shield on the server.
+            float severity = clamp01(hit.energyLoss() * 8.0F);
             float radius = 1.35F + (1.65F * (float) Math.sqrt(severity));
+
+            float directionX = hit.directionX();
+            float directionZ = hit.directionZ();
+            float directionLength = (float) Math.sqrt(
+                    (directionX * directionX)
+                            + (directionZ * directionZ)
+            );
+            if (directionLength > 0.0001F) {
+                directionX /= directionLength;
+                directionZ /= directionLength;
+            } else {
+                directionX = 0.0F;
+                directionZ = 0.0F;
+            }
 
             if (impacts.size() >= MAX_DAMAGE_IMPACTS) {
                 impacts.remove(0);
@@ -214,6 +224,8 @@ public final class ShieldRenderLayer
                     partIndex,
                     seed,
                     radius,
+                    directionX,
+                    directionZ,
                     time
             ));
         }
@@ -243,7 +255,9 @@ public final class ShieldRenderLayer
                             impact.partIndex(),
                             impact.seed(),
                             impact.radius(),
-                            strength
+                            strength,
+                            impact.directionX(),
+                            impact.directionZ()
                     ));
                 }
             }
@@ -269,6 +283,8 @@ public final class ShieldRenderLayer
             int partIndex,
             int seed,
             float radius,
+            float directionX,
+            float directionZ,
             float startTime
     ) {}
 }

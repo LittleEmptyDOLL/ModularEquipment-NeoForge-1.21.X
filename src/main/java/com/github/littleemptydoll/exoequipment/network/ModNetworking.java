@@ -37,6 +37,25 @@ public final class ModNetworking {
                         )
         );
 
+        registrar.playToClient(
+                ShieldHitPayload.TYPE,
+                ShieldHitPayload.STREAM_CODEC,
+                (payload, context) ->
+                        context.enqueueWork(() ->
+                                com.github.littleemptydoll
+                                        .exoequipment.client
+                                        .ShieldHitClientState
+                                        .add(
+                                                payload.entityId(),
+                                                payload.seed(),
+                                                payload.partIndex(),
+                                                payload.directionX(),
+                                                payload.directionZ(),
+                                                payload.energyLoss()
+                                        )
+                        )
+        );
+
         registrar.playToServer(
                 FabricatorCraftPayload.TYPE,
                 FabricatorCraftPayload.STREAM_CODEC,

@@ -13,13 +13,20 @@ import org.joml.Matrix4f;
  *
  * ModelMat is the normal render transform. FieldMat is retained for the
  * dedicated shield pipeline even though the current wave phase is UV-driven.
+ * Damage0..Damage3 contain per-part local hex damage in the form
+ * (centerU, centerV, radiusInCells, strength).
  */
 public final class ShieldFieldShader {
+    private static final int DAMAGE_SLOTS = 4;
+    private static final int DAMAGE_COMPONENTS = 4;
+
     private static ShaderInstance shader;
     private static float renderTime;
-    private static float activation;
+    private static float opacity;
     private static final Matrix4f modelMat = new Matrix4f();
     private static final Matrix4f fieldMat = new Matrix4f();
+    private static final float[] damageData =
+            new float[DAMAGE_SLOTS * DAMAGE_COMPONENTS];
 
     private static final RenderType FIELD_TYPE = createFieldType();
 
@@ -35,14 +42,22 @@ public final class ShieldFieldShader {
 
     public static RenderType fieldType(
             float time,
-            float shieldActivation,
+            float shieldOpacity,
             Matrix4f partModelMat,
-            Matrix4f partFieldMat
+            Matrix4f partFieldMat,
+            float[] partDamageData
     ) {
         renderTime = time;
-        activation = Math.max(0.0F, Math.min(1.0F, shieldActivation));
+        opacity = Math.max(0.0F, Math.min(1.0F, shieldOpacity));
         modelMat.set(partModelMat);
         fieldMat.set(partFieldMat);
+
+        for (int i = 0; i < damageData.length; i++) {
+            damageData[i] = i < partDamageData.length
+                    ? partDamageData[i]
+                    : 0.0F;
+        }
+
         return FIELD_TYPE;
     }
 
@@ -59,7 +74,14 @@ public final class ShieldFieldShader {
 
         Uniform activationUniform = shader.getUniform("Activation");
         if (activationUniform != null) {
-            activationUniform.set(activation);
+            // Remaining charge must not shrink the shield envelope. Local hex
+            // damage communicates hits instead; Activation is kept fully open.
+            activationUniform.set(1.0F);
+        }
+
+        Uniform opacityUniform = shader.getUniform("Opacity");
+        if (opacityUniform != null) {
+            opacityUniform.set(opacity);
         }
 
         Uniform baseColor = shader.getUniform("BaseColor");
@@ -75,6 +97,21 @@ public final class ShieldFieldShader {
         Uniform fieldMatUniform = shader.getUniform("FieldMat");
         if (fieldMatUniform != null) {
             fieldMatUniform.set(fieldMat);
+        }
+
+        for (int slot = 0; slot < DAMAGE_SLOTS; slot++) {
+            Uniform damageUniform = shader.getUniform("Damage" + slot);
+            if (damageUniform == null) {
+                continue;
+            }
+
+            int offset = slot * DAMAGE_COMPONENTS;
+            damageUniform.set(
+                    damageData[offset],
+                    damageData[offset + 1],
+                    damageData[offset + 2],
+                    damageData[offset + 3]
+            );
         }
     }
 

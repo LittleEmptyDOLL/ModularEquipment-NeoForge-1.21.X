@@ -79,7 +79,14 @@ float hexLines(vec2 p) {
 }
 
 void main() {
-    vec3 coord = vec3(texCoord0, 0.0);
+    /*
+     * CodeChickenLib's OBJParser flips the OBJ V coordinate before creating
+     * the CCModel used by Draconic Evolution. ShieldFieldMesh stores the raw
+     * OBJ vt values, so reproduce that parser step here. Without this flip the
+     * geometry matches DE but the wave sees a vertically mirrored UV atlas.
+     */
+    vec2 shieldUv = vec2(texCoord0.x, 1.0 - texCoord0.y);
+    vec3 coord = vec3(shieldUv, 0.0);
 
     float rad = distance(coord.xy, vec2(0.5, 0.34375)) * 5.0;
     float level = max(0.0, (rad - (Activation * 5.0)) * 1024.0);
@@ -121,7 +128,7 @@ void main() {
         * clamp(1.0 - level, 0.0, 1.0);
 
     // Keep the cell size from the earlier preferred shield iteration.
-    float hex = hexLines(texCoord0 * 20.0);
+    float hex = hexLines(shieldUv * 20.0);
     float hexReveal = hex * waveReveal;
 
     float hexAlpha = hexReveal * 0.30 * BaseColor.a;

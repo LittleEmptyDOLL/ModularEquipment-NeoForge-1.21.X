@@ -11,9 +11,8 @@ import org.joml.Matrix4f;
 /**
  * Client-side holder for the shield field shader.
  *
- * ModelMat is the normal render transform. FieldMat is the same humanoid-part
- * transform expressed relative to the render-layer root, so the wave can be
- * evaluated in entity-local space and cannot inherit camera movement.
+ * ModelMat is the normal render transform. FieldMat is retained for the
+ * dedicated shield pipeline even though the current wave phase is UV-driven.
  */
 public final class ShieldFieldShader {
     private static ShaderInstance shader;
@@ -89,14 +88,11 @@ public final class ShieldFieldShader {
         RenderType.CompositeState state = RenderType.CompositeState.builder()
                 .setShaderState(shaderState)
                 .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                // Route the field through the translucent scene target instead of
-                // the item/entity target. With colour-only writes this lets normal
-                // entities finish rendering first, then the shield participates in
-                // the later transparency composite together with water/glass.
-                .setOutputState(RenderStateShard.TRANSLUCENT_TARGET)
-                // Keep testing against existing scene depth, but do not write the
-                // translucent shield itself into the depth buffer. This preserves
-                // visibility of water and other translucent content behind it.
+                // The draw itself is deferred until AFTER_ENTITIES. Keeping the
+                // item/entity target preserves the water/translucent behaviour
+                // that worked with colour-only writes, while the deferred stage
+                // fixes ordering against other entities.
+                .setOutputState(RenderStateShard.ITEM_ENTITY_TARGET)
                 .setWriteMaskState(RenderStateShard.COLOR_WRITE)
                 .setLightmapState(RenderStateShard.LIGHTMAP)
                 .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)

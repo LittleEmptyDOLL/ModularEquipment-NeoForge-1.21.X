@@ -6,16 +6,19 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
+import org.joml.Matrix4f;
 
 /**
  * Client-side holder and render type for the procedural exoskeleton shield field.
  *
- * Per-player energy is passed through the vertex colour alpha by ShieldRenderLayer,
- * which keeps batching safe. Only time is uploaded as a shared shader uniform.
+ * Per-player energy is passed through the vertex colour alpha. Time and the
+ * inverse root pose are uploaded immediately before this RenderType is flushed,
+ * so the wave can be evaluated in player/model space instead of camera space.
  */
 public final class ShieldFieldShader {
     private static ShaderInstance shader;
     private static float renderTime;
+    private static final Matrix4f inversePose = new Matrix4f();
 
     private static final RenderType FIELD_TYPE = createFieldType();
 
@@ -29,8 +32,9 @@ public final class ShieldFieldShader {
         return shader;
     }
 
-    public static RenderType fieldType(float time) {
+    public static RenderType fieldType(float time, Matrix4f poseMatrix) {
         renderTime = time;
+        inversePose.set(poseMatrix).invert();
         return FIELD_TYPE;
     }
 
@@ -42,6 +46,11 @@ public final class ShieldFieldShader {
         Uniform time = shader.getUniform("Time");
         if (time != null) {
             time.set(renderTime / 20.0F);
+        }
+
+        Uniform inversePoseUniform = shader.getUniform("InversePoseMat");
+        if (inversePoseUniform != null) {
+            inversePoseUniform.set(inversePose);
         }
     }
 

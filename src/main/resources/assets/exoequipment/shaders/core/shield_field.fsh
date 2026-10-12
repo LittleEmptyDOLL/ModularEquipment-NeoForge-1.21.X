@@ -1,14 +1,14 @@
 #version 150
 
 /*
- * Wave core adapted from Draconic Evolution 1.21
+ * Wave timing/noise/alpha are adapted from Draconic Evolution 1.21
  *   assets/draconicevolution/shaders/core/tools/chestpiece_shield.fsh
  * and Brandon's Core math.glsl (snoise helper).
- * Both projects explicitly allow copying portions of their code under their
- * "Don't Be a Jerk" license. This project keeps its source publicly visible.
  *
- * The hex overlay below is Modular Equipment-specific and is intentionally
- * secondary: it is only revealed around the traveling DE-style wave front.
+ * Unlike the original UV-radial implementation, the wave radius below is
+ * evaluated from entity-local 3D coordinates. That preserves the DE-style
+ * distorted traveling fronts while preventing camera angle / visible UV island
+ * changes from moving the wave across the shield.
  */
 
 uniform vec4 ColorModulator;
@@ -18,6 +18,7 @@ uniform float Time;
 
 in vec4 vertexColor;
 in vec2 texCoord0;
+in vec3 fieldPos;
 
 out vec4 fragColor;
 
@@ -73,15 +74,24 @@ float hexLines(vec2 p) {
 
 void main() {
     /*
-     * CodeChickenLib's OBJParser flips the OBJ V coordinate before creating
-     * the CCModel used by Draconic Evolution. ShieldFieldMesh stores the raw
-     * OBJ vt values, so reproduce that parser step here.
+     * FieldMat already removed the render-layer root/camera placement. These
+     * coordinates therefore describe the actual humanoid shield in a stable
+     * local space: head above zero, torso around 0..0.75, legs down to ~1.5.
+     * The anisotropic scale shapes the radial front around that humanoid volume
+     * while keeping the original DE 0..5 wave domain.
      */
-    vec2 shieldUv = vec2(texCoord0.x, 1.0 - texCoord0.y);
-    vec3 coord = vec3(shieldUv, 0.0);
-
-    float rad = distance(coord.xy, vec2(0.5, 0.34375)) * 5.0;
+    vec3 radialPos = vec3(
+        fieldPos.x * 1.75,
+        (fieldPos.y - 0.50) * 1.15,
+        fieldPos.z * 1.75
+    );
+    float rad = length(radialPos) * 3.20;
     float level = max(0.0, (rad - (Activation * 5.0)) * 1024.0);
+
+    // Keep DE's multi-octave distortion, but sample it from stable model-space
+    // coordinates rather than a face-dependent UV island.
+    vec3 coord = fieldPos * vec3(0.80, 0.55, 0.80)
+        + vec3(0.50, 0.25, 0.50);
 
     float density = 8.0;
     float noise = 0.0;
@@ -99,6 +109,7 @@ void main() {
 
     noise *= 0.5;
 
+    // Original Draconic Evolution cadence and three offset fronts.
     float t1 = -1.0 + mod(Time, 6.0) + noise;
     float t2 = -1.0 + mod(Time + 2.0, 6.0) + noise;
     float t3 = -1.0 + mod(Time + 4.0, 6.0) + noise;
@@ -117,6 +128,12 @@ void main() {
     float waveReveal = (1.0 - smoothstep(0.08, 0.62, waveDistance))
         * clamp(1.0 - level, 0.0, 1.0);
 
+    /*
+     * CodeChickenLib flips OBJ V on import. The mesh stores raw vt values, so
+     * keep the same orientation here for the hex overlay. UV affects only the
+     * decorative lattice now; it no longer controls wave position or phase.
+     */
+    vec2 shieldUv = vec2(texCoord0.x, 1.0 - texCoord0.y);
     float hex = hexLines(shieldUv * 20.0);
     float hexReveal = hex * waveReveal;
 
@@ -132,11 +149,7 @@ void main() {
     vec4 colour = vec4(colourRgb, finalAlpha);
     colour *= vertexColor * ColorModulator;
 
-    /*
-     * Keep the field itself camera-independent. The original DE shader applies
-     * fog here, but that path relies on CodeChickenLib's shader globals. With a
-     * vanilla ShaderInstance the fog term was the only fragment-stage input
-     * that could vary with camera pitch and visually shift the translucent wave.
-     */
+    // Deliberately no fog term: the field colour/alpha has no camera-dependent
+    // fragment input. Camera matrices are used only to project the geometry.
     fragColor = colour;
 }

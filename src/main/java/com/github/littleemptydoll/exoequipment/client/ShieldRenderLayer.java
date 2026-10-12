@@ -25,7 +25,6 @@ public final class ShieldRenderLayer
 
     private static final int SHELL_COLOR = 0x6638E8FF;
     private static final int OUTER_COLOR = 0xFF68F2FF;
-    private static final int FIELD_COLOR = 0xFF62E8FF;
 
     private static final float SHELL_DEFORMATION = 0.12F;
     private static final float FIELD_DEFORMATION = 0.138F;
@@ -223,24 +222,26 @@ public final class ShieldRenderLayer
             return;
         }
 
-        RenderType fieldType = ShieldFieldShader.fieldType(
-                time,
-                poseStack.last().pose()
-        );
+        RenderType fieldType = ShieldFieldShader.fieldType(time, energy);
         VertexConsumer buffer = bufferSource.getBuffer(fieldType);
 
+        /*
+         * Draconic Evolution passes shield state through an Activation uniform
+         * and keeps the vertex colour neutral. Do the same here so the ported
+         * shader receives the same style of inputs.
+         */
         model.renderToBuffer(
                 poseStack,
                 buffer,
                 LightTexture.FULL_BRIGHT,
                 OverlayTexture.NO_OVERLAY,
-                withAlpha(FIELD_COLOR, energy)
+                0xFFFFFFFF
         );
 
         /*
-         * Time and inverse-pose are per-player values. Flush this one RenderType
-         * immediately so another player cannot replace those uniforms before the
-         * buffered shield vertices are drawn.
+         * Time/Activation are per-player uniforms. Flush this RenderType now,
+         * equivalent to Draconic Evolution's per-part VBO callback draw, so a
+         * second player cannot overwrite the values before this field is drawn.
          */
         if (bufferSource instanceof MultiBufferSource.BufferSource immediate) {
             immediate.endBatch(fieldType);

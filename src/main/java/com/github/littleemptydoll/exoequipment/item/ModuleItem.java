@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ModuleItem extends EquipmentItem<ModuleDefinition> {
@@ -75,10 +76,20 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
 
         if (!TooltipHelper.isShiftDown()) {
             appendSummary(definition, stack, tooltip, efficiency);
-            tooltip.add(Component.translatable("tooltip.exoequipment.more_details"));
+            List<Component> details = new ArrayList<>();
+            appendDetails(definition, stack, details, efficiency);
+            if (details.stream().anyMatch(detail -> tooltip.stream()
+                    .noneMatch(summary -> summary.getString().equals(detail.getString())))) {
+                tooltip.add(Component.translatable("tooltip.exoequipment.more_details"));
+            }
             return;
         }
 
+        appendDetails(definition, stack, tooltip, efficiency);
+    }
+
+    private static void appendDetails(ModuleDefinition definition, ItemStack stack,
+                                      List<Component> tooltip, double efficiency) {
         if (definition.energy().isPresent()) {
             var energy = definition.energy().get();
             if (energy.consumption() > 0) {
@@ -148,7 +159,7 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
 
         definition.shield().ifPresent(value -> {
             tooltip.add(TooltipHelper.property("shield capacity", NumberFormatter.format(applyEfficiency(value.capacity(), efficiency))));
-            tooltip.add(TooltipHelper.property("shield recharge rate", NumberFormatter.format(applyEfficiency(value.rechargeRate(), efficiency)) + "/t"));
+            tooltip.add(TooltipHelper.property("shield recharge rate", NumberFormatter.format(applyEfficiency(value.rechargeRate(), efficiency) * 20) + "/s"));
             tooltip.add(TooltipHelper.property("shield recharge delay", formatTicks(value.rechargeDelay())));
         });
 
@@ -174,18 +185,19 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
         });
 
         definition.blink().ifPresent(value -> {
-            tooltip.add(TooltipHelper.property("blink distance", value.distance()));
+            tooltip.add(TooltipHelper.property("blink distance", NumberFormatter.format(value.distance()) + " b"));
             tooltip.add(TooltipHelper.property("blink activation energy", NumberFormatter.format(value.activationEnergy()) + " FE"));
             tooltip.add(TooltipHelper.property("blink cooldown", formatTicks(value.cooldown())));
         });
 
-        definition.flight().ifPresent(value ->
-                tooltip.add(TooltipHelper.property("flight active consumption", NumberFormatter.format(value.activeConsumption()) + " FE/t"))
-        );
+        definition.flight().ifPresent(value -> {
+            tooltip.add(Component.translatable("tooltip.exoequipment.module.flight"));
+            tooltip.add(TooltipHelper.property("flight active consumption", NumberFormatter.format(value.activeConsumption()) + " FE/t"));
+        });
 
         definition.jetpack().ifPresent(value -> {
-            tooltip.add(TooltipHelper.property("vertical thrust", value.verticalThrust()));
-            tooltip.add(TooltipHelper.property("horizontal speed", value.horizontalSpeed()));
+            tooltip.add(TooltipHelper.property("vertical thrust", NumberFormatter.format(value.verticalThrust() * 20) + " b/s"));
+            tooltip.add(TooltipHelper.property("horizontal speed", NumberFormatter.format(value.horizontalSpeed() * 20) + " b/s"));
             tooltip.add(TooltipHelper.property("jetpack energy consumption", NumberFormatter.format(value.energyConsumption()) + " FE/t"));
             value.elytra().ifPresent(elytra -> {
                 tooltip.add(TooltipHelper.property("elytra acceleration", elytra.acceleration()));
@@ -282,10 +294,10 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
         });
 
         definition.temperatureModifier().ifPresent(value -> {
-            tooltip.add(TooltipHelper.property("temperature", value.temperature()));
-            tooltip.add(TooltipHelper.property("heat resistance", value.heatResistance()));
-            tooltip.add(TooltipHelper.property("cold resistance", value.coldResistance()));
-            tooltip.add(TooltipHelper.property("thermal resistance", value.thermalResistance()));
+            if (value.temperature() != 0) tooltip.add(TooltipHelper.property("temperature", value.temperature()));
+            if (value.heatResistance() != 0) tooltip.add(TooltipHelper.property("heat resistance", value.heatResistance()));
+            if (value.coldResistance() != 0) tooltip.add(TooltipHelper.property("cold resistance", value.coldResistance()));
+            if (value.thermalResistance() != 0) tooltip.add(TooltipHelper.property("thermal resistance", value.thermalResistance()));
         });
 
         definition.temperatureImpact().ifPresent(value ->
@@ -326,7 +338,9 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
 
         definition.blockScanner().ifPresent(value -> {
             tooltip.add(TooltipHelper.property("scanner range", value.range()));
-            tooltip.add(TooltipHelper.property("scanner color", String.format(java.util.Locale.ROOT, "#%06X", value.color())));
+            tooltip.add(TooltipHelper.property("scanner color", Component.literal(
+                    String.format(java.util.Locale.ROOT, "#%06X", value.color()))
+                    .withStyle(style -> style.withColor(value.color()))));
             tooltip.add(TooltipHelper.property("block scanner active consumption", NumberFormatter.format(value.activeConsumption()) + " FE/t"));
             if (!value.blocks().isEmpty()) {
                 tooltip.add(TooltipHelper.property("scanner blocks", value.blocks().stream()
@@ -487,7 +501,7 @@ public class ModuleItem extends EquipmentItem<ModuleDefinition> {
                                          com.github.littleemptydoll.exoequipment.module.AttributeModifierProperties modifier,
                                          double efficiency) {
         String value = AttributeValueFormatter.format(id, modifier, efficiency);
-        return modifier.operation() == net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE
+        return modifier.operation() != net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
                 ? value
                 : value + " (" + Component.translatable("tooltip.exoequipment.attribute_operation."
                         + modifier.operation().name().toLowerCase(java.util.Locale.ROOT)).getString() + ")";

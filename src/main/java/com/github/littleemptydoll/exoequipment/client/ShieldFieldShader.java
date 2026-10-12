@@ -19,6 +19,8 @@ import org.joml.Matrix4f;
 public final class ShieldFieldShader {
     private static final int DAMAGE_SLOTS = 4;
     private static final int DAMAGE_COMPONENTS = 4;
+    private static final float[] NO_DAMAGE =
+            new float[DAMAGE_SLOTS * DAMAGE_COMPONENTS];
 
     private static ShaderInstance shader;
     private static float renderTime;
@@ -38,6 +40,25 @@ public final class ShieldFieldShader {
 
     public static ShaderInstance getShader() {
         return shader;
+    }
+
+    /**
+     * Compatibility overload for the older immediate per-part consumer. The
+     * active player renderer uses the deferred overload below with damage data.
+     */
+    public static RenderType fieldType(
+            float time,
+            float shieldOpacity,
+            Matrix4f partModelMat,
+            Matrix4f partFieldMat
+    ) {
+        return fieldType(
+                time,
+                shieldOpacity,
+                partModelMat,
+                partFieldMat,
+                NO_DAMAGE
+        );
     }
 
     public static RenderType fieldType(

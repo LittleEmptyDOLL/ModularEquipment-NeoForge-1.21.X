@@ -5,10 +5,9 @@
  *   assets/draconicevolution/shaders/core/tools/chestpiece_shield.fsh
  * and Brandon's Core math.glsl (snoise helper).
  *
- * Unlike the original UV-radial implementation, the wave radius below is
- * evaluated from entity-local 3D coordinates. That preserves the DE-style
- * distorted traveling fronts while preventing camera angle / visible UV island
- * changes from moving the wave across the shield.
+ * The wave is evaluated from the dedicated shield mesh UVs, like the original
+ * Draconic Evolution effect. Limb pose transforms only move the shield geometry;
+ * they do not alter the phase or speed of the procedural field.
  */
 
 uniform vec4 ColorModulator;
@@ -74,24 +73,16 @@ float hexLines(vec2 p) {
 
 void main() {
     /*
-     * FieldMat already removed the render-layer root/camera placement. These
-     * coordinates therefore describe the actual humanoid shield in a stable
-     * local space: head above zero, torso around 0..0.75, legs down to ~1.5.
-     * The anisotropic scale shapes the radial front around that humanoid volume
-     * while keeping the original DE 0..5 wave domain.
+     * CodeChickenLib's OBJParser flips V before building the CCModel. Our mesh
+     * stores the raw OBJ vt coordinates, so reproduce that import transform.
      */
-    vec3 radialPos = vec3(
-        fieldPos.x * 1.75,
-        (fieldPos.y - 0.50) * 1.15,
-        fieldPos.z * 1.75
-    );
-    float rad = length(radialPos) * 3.20;
-    float level = max(0.0, (rad - (Activation * 5.0)) * 1024.0);
+    vec2 shieldUv = vec2(texCoord0.x, 1.0 - texCoord0.y);
+    vec3 coord = vec3(shieldUv, 0.0);
 
-    // Keep DE's multi-octave distortion, but sample it from stable model-space
-    // coordinates rather than a face-dependent UV island.
-    vec3 coord = fieldPos * vec3(0.80, 0.55, 0.80)
-        + vec3(0.50, 0.25, 0.50);
+    // Original Draconic Evolution UV-radial field. Because coord is independent
+    // from ModelMat / FieldMat, rotating an arm or leg cannot move the wave.
+    float rad = distance(coord.xy, vec2(0.5, 0.34375)) * 5.0;
+    float level = max(0.0, (rad - (Activation * 5.0)) * 1024.0);
 
     float density = 8.0;
     float noise = 0.0;
@@ -128,12 +119,6 @@ void main() {
     float waveReveal = (1.0 - smoothstep(0.08, 0.62, waveDistance))
         * clamp(1.0 - level, 0.0, 1.0);
 
-    /*
-     * CodeChickenLib flips OBJ V on import. The mesh stores raw vt values, so
-     * keep the same orientation here for the hex overlay. UV affects only the
-     * decorative lattice now; it no longer controls wave position or phase.
-     */
-    vec2 shieldUv = vec2(texCoord0.x, 1.0 - texCoord0.y);
     float hex = hexLines(shieldUv * 20.0);
     float hexReveal = hex * waveReveal;
 
@@ -149,7 +134,6 @@ void main() {
     vec4 colour = vec4(colourRgb, finalAlpha);
     colour *= vertexColor * ColorModulator;
 
-    // Deliberately no fog term: the field colour/alpha has no camera-dependent
-    // fragment input. Camera matrices are used only to project the geometry.
+    // Keep the field independent of camera fog. Projection affects geometry only.
     fragColor = colour;
 }

@@ -6,19 +6,19 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
-import org.joml.Matrix4f;
 
 /**
- * Client-side holder and render type for the procedural exoskeleton shield field.
+ * Client-side holder for the shield field shader.
  *
- * Per-player energy is passed through the vertex colour alpha. Time and the
- * inverse root pose are uploaded immediately before this RenderType is flushed,
- * so the wave can be evaluated in player/model space instead of camera space.
+ * The rendering setup intentionally mirrors the shield path used by Draconic
+ * Evolution 1.21: translucent blending, normal culling and color+depth writes.
+ * Per-player values are uploaded immediately before the field RenderType is
+ * flushed by ShieldRenderLayer.
  */
 public final class ShieldFieldShader {
     private static ShaderInstance shader;
     private static float renderTime;
-    private static final Matrix4f inversePose = new Matrix4f();
+    private static float activation;
 
     private static final RenderType FIELD_TYPE = createFieldType();
 
@@ -32,9 +32,9 @@ public final class ShieldFieldShader {
         return shader;
     }
 
-    public static RenderType fieldType(float time, Matrix4f poseMatrix) {
+    public static RenderType fieldType(float time, float shieldActivation) {
         renderTime = time;
-        inversePose.set(poseMatrix).invert();
+        activation = Math.max(0.0F, Math.min(1.0F, shieldActivation));
         return FIELD_TYPE;
     }
 
@@ -45,12 +45,19 @@ public final class ShieldFieldShader {
 
         Uniform time = shader.getUniform("Time");
         if (time != null) {
-            time.set(renderTime / 20.0F);
+            // Keep the slower pace already preferred during visual testing while
+            // retaining Draconic Evolution's original wave formula.
+            time.set((renderTime / 20.0F) * 0.28F);
         }
 
-        Uniform inversePoseUniform = shader.getUniform("InversePoseMat");
-        if (inversePoseUniform != null) {
-            inversePoseUniform.set(inversePose);
+        Uniform activationUniform = shader.getUniform("Activation");
+        if (activationUniform != null) {
+            activationUniform.set(activation);
+        }
+
+        Uniform baseColor = shader.getUniform("BaseColor");
+        if (baseColor != null) {
+            baseColor.set(0.384F, 0.910F, 1.000F, 0.82F);
         }
     }
 
@@ -64,10 +71,9 @@ public final class ShieldFieldShader {
         RenderType.CompositeState state = RenderType.CompositeState.builder()
                 .setShaderState(shaderState)
                 .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                .setCullState(RenderStateShard.NO_CULL)
-                .setLightmapState(RenderStateShard.NO_LIGHTMAP)
-                .setOverlayState(RenderStateShard.NO_OVERLAY)
-                .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                .setOutputState(RenderStateShard.ITEM_ENTITY_TARGET)
+                .setWriteMaskState(RenderStateShard.COLOR_DEPTH_WRITE)
+                .setLightmapState(RenderStateShard.LIGHTMAP)
                 .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
                 .createCompositeState(false);
 
@@ -77,7 +83,7 @@ public final class ShieldFieldShader {
                 VertexFormat.Mode.QUADS,
                 1536,
                 false,
-                true,
+                false,
                 state
         );
     }

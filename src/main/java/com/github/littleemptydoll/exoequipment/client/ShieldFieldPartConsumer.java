@@ -10,15 +10,18 @@ import org.joml.Matrix4f;
  * Adapter that makes the dedicated shield mesh follow Draconic Evolution's
  * per-part draw path without requiring CodeChickenLib's VBORenderType.
  *
- * ShieldFieldMesh supplies local vertices/UVs. This consumer keeps those
- * vertices local, uploads the current humanoid-part pose as ModelMat, and
- * flushes a part before a different ModelMat is used.
+ * The normal ModelMat still places each part in the rendered world. A second
+ * FieldMat strips the render-layer root transform and leaves only the
+ * humanoid-part transform, giving the fragment shader camera-independent
+ * entity-local coordinates for the animated wave.
  */
 public final class ShieldFieldPartConsumer implements VertexConsumer {
     private final MultiBufferSource.BufferSource buffers;
     private final float time;
     private final float activation;
+    private final Matrix4f rootInverse = new Matrix4f();
     private final Matrix4f currentModelMat = new Matrix4f();
+    private final Matrix4f currentFieldMat = new Matrix4f();
 
     private boolean hasCurrentModelMat;
     private RenderType currentType;
@@ -27,11 +30,13 @@ public final class ShieldFieldPartConsumer implements VertexConsumer {
     public ShieldFieldPartConsumer(
             MultiBufferSource.BufferSource buffers,
             float time,
-            float activation
+            float activation,
+            Matrix4f rootModelMat
     ) {
         this.buffers = buffers;
         this.time = time;
         this.activation = activation;
+        this.rootInverse.set(rootModelMat).invert();
     }
 
     @Override
@@ -94,14 +99,6 @@ public final class ShieldFieldPartConsumer implements VertexConsumer {
     private void ensurePart(PoseStack.Pose pose) {
         Matrix4f nextModelMat = pose.pose();
 
-        /*
-         * Do not compare PoseStack.Pose object identity here. Modern PoseStack
-         * implementations may reuse a Pose object when repeatedly pushing and
-         * popping at the same depth. In that case head/body/arm/leg renders can
-         * arrive through the same Pose instance with different matrix contents.
-         * If the head matrix is accidentally kept, camera/player pitch rotates
-         * the entire procedural field and looks exactly like a camera-bound wave.
-         */
         if (hasCurrentModelMat && currentModelMat.equals(nextModelMat)) {
             return;
         }
@@ -109,8 +106,15 @@ public final class ShieldFieldPartConsumer implements VertexConsumer {
         flushCurrent();
 
         currentModelMat.set(nextModelMat);
+        currentFieldMat.set(rootInverse).mul(currentModelMat);
         hasCurrentModelMat = true;
-        currentType = ShieldFieldShader.fieldType(time, activation, currentModelMat);
+
+        currentType = ShieldFieldShader.fieldType(
+                time,
+                activation,
+                currentModelMat,
+                currentFieldMat
+        );
         delegate = buffers.getBuffer(currentType);
     }
 

@@ -300,18 +300,27 @@ public final class ShieldRenderLayer
             PlayerModel<AbstractClientPlayer> target
     ) {
         target.head.visible = source.head.visible;
-        target.hat.visible = source.hat.visible;
         target.body.visible = source.body.visible;
         target.rightArm.visible = source.rightArm.visible;
         target.leftArm.visible = source.leftArm.visible;
         target.rightLeg.visible = source.rightLeg.visible;
         target.leftLeg.visible = source.leftLeg.visible;
 
-        target.jacket.visible = source.jacket.visible;
-        target.rightSleeve.visible = source.rightSleeve.visible;
-        target.leftSleeve.visible = source.leftSleeve.visible;
-        target.rightPants.visible = source.rightPants.visible;
-        target.leftPants.visible = source.leftPants.visible;
+        /*
+         * PlayerModel also contains the second skin layer (hat/jacket/sleeves/
+         * pants). Rendering those nearly coincident cubes as part of a
+         * translucent shield creates a second field with different skin UVs.
+         * The two layers blend differently as the camera turns, making the wave
+         * appear camera-bound. A shield pass should contain only one surface per
+         * body part; the dedicated outerModel already provides the intentional
+         * second physical shell where needed.
+         */
+        target.hat.visible = false;
+        target.jacket.visible = false;
+        target.rightSleeve.visible = false;
+        target.leftSleeve.visible = false;
+        target.rightPants.visible = false;
+        target.leftPants.visible = false;
     }
 
     private static float clamp01(float value) {

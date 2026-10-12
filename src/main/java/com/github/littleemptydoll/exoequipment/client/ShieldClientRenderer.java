@@ -11,6 +11,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 import java.io.IOException;
 
@@ -49,6 +50,15 @@ public final class ShieldClientRenderer {
                         )
                 );
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void renderLevelStage(RenderLevelStageEvent event) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
+            ShieldDeferredRenderer.beginFrame();
+        } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
+            ShieldDeferredRenderer.renderQueued();
         }
     }
 }

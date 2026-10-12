@@ -22,19 +22,40 @@ float hash21(vec2 p) {
     return fract(p.x * p.y);
 }
 
-float segmentLine(vec2 p, vec2 a, vec2 b, float width) {
-    vec2 pa = p - a;
-    vec2 ba = b - a;
-    float h = clamp(dot(pa, ba) / max(dot(ba, ba), 0.0001), 0.0, 1.0);
-    float d = length(pa - ba * h);
-    float aa = max(fwidth(d) * 1.4, 0.004);
-    return 1.0 - smoothstep(width, width + aa, d);
+float valueNoise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+
+    float a = hash21(i);
+    float b = hash21(i + vec2(1.0, 0.0));
+    float c = hash21(i + vec2(0.0, 1.0));
+    float d = hash21(i + vec2(1.0, 1.0));
+
+    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
 }
 
-float nodeDot(vec2 p, vec2 center, float radius) {
-    float d = length(p - center);
-    float aa = max(fwidth(d) * 1.4, 0.004);
-    return 1.0 - smoothstep(radius, radius + aa, d);
+float hexDistance(vec2 p) {
+    p = abs(p);
+    return max(dot(p, normalize(vec2(1.0, 1.7320508))), p.x);
+}
+
+float hexLines(vec2 p) {
+    const vec2 spacing = vec2(1.0, 1.7320508);
+    vec2 halfSpacing = spacing * 0.5;
+
+    vec2 a = mod(p, spacing) - halfSpacing;
+    vec2 b = mod(p - halfSpacing, spacing) - halfSpacing;
+    vec2 cell = dot(a, a) < dot(b, b) ? a : b;
+
+    float edgeDistance = 0.5 - hexDistance(cell);
+    float aa = max(fwidth(edgeDistance) * 1.25, 0.004);
+    return 1.0 - smoothstep(0.020, 0.020 + aa, edgeDistance);
+}
+
+float thinBand(float value, float center, float width) {
+    float d = abs(fract(value) - center);
+    return 1.0 - smoothstep(width * 0.45, width, d);
 }
 
 void main() {
@@ -45,108 +66,107 @@ void main() {
 
     vec2 uv = texCoord0;
 
-    // View-space fresnel keeps the shield readable mainly around the silhouette
-    // instead of laying an equally strong pattern across the whole character.
+    // Keep a very weak silhouette glow while the shield is idle. The field's
+    // actual surface pattern is driven by the moving wave below.
     vec3 normal = normalize(viewNormalOut);
     vec3 viewDir = normalize(-viewPositionOut);
     float facing = clamp(abs(dot(normal, viewDir)), 0.0, 1.0);
-    float fresnel = pow(1.0 - facing, 2.25);
+    float fresnel = pow(1.0 - facing, 2.8);
 
-    // Sparse circuit fragments. Each UV cell can contain a short horizontal,
-    // vertical or L-shaped trace, while most cells stay completely empty.
-    vec2 circuitUv = uv * 30.0;
-    vec2 cellId = floor(circuitUv);
-    vec2 local = fract(circuitUv) - 0.5;
+    // Draconic-style expanding fronts. Mild noise bends the wave so it does not
+    // look like a perfectly mathematical ring sweeping over the UV islands.
+    vec2 centeredUv = (uv - vec2(0.5, 0.46)) * vec2(1.0, 0.78);
+    float radial = length(centeredUv) * 6.2;
+    float noise = (valueNoise(uv * 9.0 + vec2(Time * 0.07, -Time * 0.05)) - 0.5) * 0.42;
+    float waveCoord = radial + noise;
 
-    float r0 = hash21(cellId + vec2(2.7, 8.1));
-    float r1 = hash21(cellId + vec2(13.4, 1.9));
-    float r2 = hash21(cellId + vec2(6.2, 17.7));
-    float r3 = hash21(cellId + vec2(23.8, 4.4));
+    float phase0 = mod(Time * 0.72, 5.4);
+    float phase1 = mod(Time * 0.72 + 1.8, 5.4);
+    float phase2 = mod(Time * 0.72 + 3.6, 5.4);
 
-    float activeCell = step(0.69, r0);
-    float horizontal = step(0.5, r1);
-    float offset = mix(-0.18, 0.18, r2);
-    float lengthBias = mix(0.08, 0.30, r3);
-
-    vec2 hA = vec2(-0.36, offset);
-    vec2 hB = vec2(lengthBias, offset);
-    vec2 vA = vec2(offset, -0.36);
-    vec2 vB = vec2(offset, lengthBias);
-
-    float horizontalLine = segmentLine(local, hA, hB, 0.030);
-    float verticalLine = segmentLine(local, vA, vB, 0.030);
-    float primaryTrace = mix(verticalLine, horizontalLine, horizontal);
-
-    // Some active cells get a small perpendicular branch, producing a circuit
-    // motif without rebuilding a continuous mesh around the player.
-    float branchEnabled = step(0.76, hash21(cellId + vec2(31.1, 11.6)));
-    vec2 branchCenter = mix(vB, hB, horizontal);
-    float branchH = segmentLine(
-            local,
-            branchCenter,
-            branchCenter + vec2(mix(-0.20, 0.20, r2), 0.0),
-            0.026
+    float distanceToWave = min(
+            abs(waveCoord - phase0),
+            min(abs(waveCoord - phase1), abs(waveCoord - phase2))
     );
-    float branchV = segmentLine(
-            local,
-            branchCenter,
-            branchCenter + vec2(0.0, mix(-0.20, 0.20, r2)),
-            0.026
-    );
-    float branchTrace = mix(branchH, branchV, horizontal) * branchEnabled;
 
-    float trace = max(primaryTrace, branchTrace) * activeCell;
+    // Broad halo gives the front some body; the narrow crest is the bright edge.
+    float waveHalo = 1.0 - smoothstep(0.08, 0.46, distanceToWave);
+    float waveCrest = 1.0 - smoothstep(0.018, 0.115, distanceToWave);
 
-    float nodeEnabled = step(0.84, hash21(cellId + vec2(41.7, 29.3)));
-    float node = nodeDot(local, branchCenter, 0.065)
-            * activeCell
-            * nodeEnabled;
+    // Hex cells are completely dormant outside the wave. As the crest reaches
+    // them their scale increases slightly, which makes the cells visually
+    // contract and then relax as the front passes.
+    float hexScale = mix(20.0, 24.0, waveCrest);
+    float hex = hexLines(uv * hexScale);
 
-    // A soft diagonal power impulse does not move the geometry. It temporarily
-    // lights nearby fragments and can reveal a few otherwise dormant traces.
-    float sweepPhase = abs(
-            fract(uv.y * 2.1 + uv.x * 0.9 - Time * 0.23) - 0.5
-    );
-    float sweep = 1.0 - smoothstep(0.025, 0.115, sweepPhase);
+    // Break up the honeycomb so the wave reveals patches rather than a solid
+    // chain-mail sheet. The broad halo can still hint at neighbouring cells.
+    vec2 patchCell = floor(uv * 18.0);
+    float patchSeed = hash21(patchCell + vec2(7.2, 19.4));
+    float patchMask = smoothstep(0.30, 0.58, patchSeed);
+    float revealedHex = hex * waveHalo * mix(0.24, 1.0, patchMask);
 
-    float dormantReveal = (1.0 - activeCell) * sweep * step(0.88, r0);
-    float visibleTrace = max(trace, primaryTrace * dormantReveal);
+    // Fast tracer lines run through the active band. They provide obvious motion
+    // even though the hex geometry itself remains attached to the shield surface.
+    float tracerA = thinBand(uv.y * 3.1 + uv.x * 1.25 - Time * 0.78, 0.50, 0.055);
+    float tracerB = thinBand(uv.y * 4.4 - uv.x * 0.85 - Time * 1.06, 0.50, 0.040);
+    float tracerC = thinBand(uv.x * 5.2 + Time * 1.32, 0.50, 0.032);
+    float tracers = max(tracerA, max(tracerB * 0.75, tracerC * 0.55)) * waveHalo;
 
-    // Energy loss affects the small details more strongly than the silhouette,
-    // so a depleted field looks unstable instead of merely becoming uniformly dim.
-    float lowEnergy = 1.0 - energy;
-    float flickerSeed = hash21(cellId + floor(Time * 5.0));
-    float fragmentStability = mix(
-            1.0,
-            mix(0.32, 1.0, flickerSeed),
-            lowEnergy * lowEnergy * 0.82
-    );
+    // A few bright nodes flash where the moving crest intersects the field.
+    vec2 nodeUv = uv * 42.0;
+    vec2 nodeCell = floor(nodeUv);
+    vec2 nodeLocal = fract(nodeUv) - 0.5;
+    float nodeSeed = hash21(nodeCell + vec2(31.7, 11.3));
+    float nodeShape = 1.0 - smoothstep(0.045, 0.115, length(nodeLocal));
+    float nodes = nodeShape * step(0.88, nodeSeed) * waveCrest;
 
     float smoothEnergy = energy * energy * (3.0 - 2.0 * energy);
+    float lowEnergy = 1.0 - energy;
 
-    float rimAlpha = (0.012 + fresnel * 0.16) * mix(0.28, 1.0, smoothEnergy);
-    float traceAlpha = visibleTrace
-            * (0.15 + sweep * 0.30)
-            * mix(0.18, 1.0, smoothEnergy)
-            * fragmentStability;
-    float nodeAlpha = node
-            * (0.20 + sweep * 0.34)
-            * mix(0.20, 1.0, smoothEnergy)
-            * fragmentStability;
-
-    // Very subtle breathing prevents the idle field from feeling completely static.
-    float breathing = 0.96 + 0.04 * sin(Time * 1.7);
-    float alpha = clamp(
-            (rimAlpha + traceAlpha + nodeAlpha) * breathing,
-            0.0,
-            0.52
+    // Depleted shields lose pieces of the traveling pattern rather than simply
+    // dimming uniformly.
+    float flickerSeed = hash21(patchCell + floor(Time * 5.0));
+    float stability = mix(
+            1.0,
+            mix(0.30, 1.0, flickerSeed),
+            lowEnergy * lowEnergy * 0.80
     );
+
+    float rimAlpha = fresnel * 0.075 * mix(0.30, 1.0, smoothEnergy);
+    float haloAlpha = waveHalo * 0.020 * mix(0.18, 1.0, smoothEnergy);
+    float hexAlpha = revealedHex
+            * (0.16 + waveCrest * 0.30)
+            * mix(0.16, 1.0, smoothEnergy)
+            * stability;
+    float tracerAlpha = tracers
+            * (0.16 + waveCrest * 0.34)
+            * mix(0.18, 1.0, smoothEnergy)
+            * stability;
+    float nodeAlpha = nodes
+            * 0.50
+            * mix(0.20, 1.0, smoothEnergy)
+            * stability;
+
+    float alpha = clamp(
+            rimAlpha + haloAlpha + hexAlpha + tracerAlpha + nodeAlpha,
+            0.0,
+            0.58
+    );
+
+    if (alpha <= 0.003) {
+        discard;
+    }
 
     vec3 baseColor = vertexColor.rgb * ColorModulator.rgb;
     float highlight = clamp(
-            fresnel * 0.22 + visibleTrace * 0.22 + sweep * visibleTrace * 0.28 + node * 0.30,
+            fresnel * 0.12
+            + waveHalo * 0.10
+            + revealedHex * 0.20
+            + tracers * 0.32
+            + nodes * 0.42,
             0.0,
-            0.62
+            0.66
     );
     vec3 color = mix(baseColor, vec3(0.90, 1.0, 1.0), highlight);
 

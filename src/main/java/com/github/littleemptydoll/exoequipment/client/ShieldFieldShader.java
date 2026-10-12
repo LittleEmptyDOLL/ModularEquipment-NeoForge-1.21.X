@@ -6,19 +6,21 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
+import org.joml.Matrix4f;
 
 /**
  * Client-side holder for the shield field shader.
  *
- * The rendering setup intentionally mirrors the shield path used by Draconic
- * Evolution 1.21: translucent blending, normal culling, triangle geometry and
- * color+depth writes. Per-player values are uploaded immediately before the
- * field RenderType is flushed by ShieldRenderLayer.
+ * This intentionally mirrors Draconic Evolution's chestpiece shield pipeline:
+ * each shield body part is rendered from local-space vertices with its own
+ * ModelMat uniform, while Time, Activation and BaseColor are supplied immediately
+ * before that part is flushed.
  */
 public final class ShieldFieldShader {
     private static ShaderInstance shader;
     private static float renderTime;
     private static float activation;
+    private static final Matrix4f modelMat = new Matrix4f();
 
     private static final RenderType FIELD_TYPE = createFieldType();
 
@@ -32,9 +34,14 @@ public final class ShieldFieldShader {
         return shader;
     }
 
-    public static RenderType fieldType(float time, float shieldActivation) {
+    public static RenderType fieldType(
+            float time,
+            float shieldActivation,
+            Matrix4f partModelMat
+    ) {
         renderTime = time;
         activation = Math.max(0.0F, Math.min(1.0F, shieldActivation));
+        modelMat.set(partModelMat);
         return FIELD_TYPE;
     }
 
@@ -45,7 +52,8 @@ public final class ShieldFieldShader {
 
         Uniform time = shader.getUniform("Time");
         if (time != null) {
-            time.set((renderTime / 20.0F) * 0.42F);
+            // Draconic Evolution uses render time / 20 with no extra speed scale.
+            time.set(renderTime / 20.0F);
         }
 
         Uniform activationUniform = shader.getUniform("Activation");
@@ -56,6 +64,11 @@ public final class ShieldFieldShader {
         Uniform baseColor = shader.getUniform("BaseColor");
         if (baseColor != null) {
             baseColor.set(0.384F, 0.910F, 1.000F, 0.82F);
+        }
+
+        Uniform modelMatUniform = shader.getUniform("ModelMat");
+        if (modelMatUniform != null) {
+            modelMatUniform.set(modelMat);
         }
     }
 

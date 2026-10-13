@@ -18,6 +18,7 @@ uniform vec4 ColorModulator;
 uniform vec4 BaseColor;
 uniform float Activation;
 uniform float Opacity;
+uniform float BreakProgress;
 uniform float Time;
 uniform vec4 Damage0;
 uniform vec4 Damage1;
@@ -193,20 +194,30 @@ void main() {
     applyDamage(Damage2, cellCenter, hex, broken, fracture);
     applyDamage(Damage3, cellCenter, hex, broken, fracture);
 
+    // On depletion the entire lattice fails in a staggered, cell-by-cell
+    // cascade. Stable per-cell thresholds prevent a smooth spherical fade.
+    float cellFailure = cellHash(cellCenter + vec2(11.73, 5.91));
+    float collapse = smoothstep(0.0, 0.88, BreakProgress);
+    float failed = step(cellFailure, collapse);
+    float collapseEdge = (1.0 - smoothstep(0.025, 0.15,
+            abs(cellFailure - collapse))) * (1.0 - failed);
+
     float hexAlpha = hexReveal * 0.30 * BaseColor.a;
     float intactAlpha = clamp(deAlpha + hexAlpha, 0.0, 1.0)
-        * (1.0 - broken);
+        * (1.0 - broken) * (1.0 - failed);
 
     // Give the freshly broken perimeter a distinct hot core. The normal field
     // remains unchanged; only the fracture rim becomes brighter and more solid.
     float fractureCore = smoothstep(0.38, 0.92, fracture);
     float fractureAlpha = (fracture * 1.08 + fractureCore * 0.34)
         * BaseColor.a;
-    float finalAlpha = clamp(intactAlpha + fractureAlpha, 0.0, 1.0)
+    float collapseFlash = collapseEdge * hex * (1.0 - BreakProgress) * 1.5;
+    float finalAlpha = clamp(intactAlpha + fractureAlpha * (1.0 - failed)
+            + collapseFlash, 0.0, 1.0)
         * clamp(Opacity, 0.0, 1.0);
 
     float damageGlow = clamp(
-        fracture * 1.18 + fractureCore * 0.48,
+        fracture * 1.18 + fractureCore * 0.48 + collapseFlash,
         0.0,
         1.0
     );

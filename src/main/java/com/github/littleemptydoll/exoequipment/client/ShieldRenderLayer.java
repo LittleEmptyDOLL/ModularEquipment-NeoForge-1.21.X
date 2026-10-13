@@ -33,6 +33,7 @@ public final class ShieldRenderLayer
     private static final float VISUAL_RESPONSE = 0.35F;
     private static final float MIN_VISIBLE_ENERGY = 0.01F;
     private static final float DAMAGE_LIFETIME_TICKS = 52.0F;
+    private static final float BREAK_DURATION_TICKS = 16.0F;
     private static final float DAMAGE_HOLD_TICKS = 5.0F;
     private static final int MAX_DAMAGE_IMPACTS = 4;
 
@@ -118,7 +119,8 @@ public final class ShieldRenderLayer
             return;
         }
 
-        if (energy <= MIN_VISIBLE_ENERGY || ShieldFieldShader.getShader() == null) {
+        if ((energy <= MIN_VISIBLE_ENERGY && !state.isBreaking(time))
+                || ShieldFieldShader.getShader() == null) {
             return;
         }
 
@@ -126,7 +128,8 @@ public final class ShieldRenderLayer
                 poseStack,
                 getParentModel(),
                 time,
-                fieldOpacity(energy),
+                state.isBreaking(time) ? 1.0F : fieldOpacity(energy),
+                state.breakProgress(time),
                 state.damageImpacts(time)
         );
     }
@@ -157,15 +160,25 @@ public final class ShieldRenderLayer
     private static final class VisualState {
         private final List<ImpactState> impacts = new ArrayList<>();
         private float visualEnergy;
+        private float breakStart = -10000.0F;
+        private float lastTargetEnergy;
 
         private VisualState(float initialEnergy) {
             this.visualEnergy = initialEnergy;
+            this.lastTargetEnergy = initialEnergy;
         }
 
         private void update(
                 float targetEnergy,
                 float time
         ) {
+            // Trigger once on depletion, not continuously while empty. Preserve a
+            // short draw window even after energy reaches zero.
+            if (lastTargetEnergy > MIN_VISIBLE_ENERGY
+                    && targetEnergy <= MIN_VISIBLE_ENERGY) {
+                breakStart = time;
+            }
+            lastTargetEnergy = targetEnergy;
             impacts.removeIf(impact ->
                     time - impact.startTime() >= DAMAGE_LIFETIME_TICKS
             );
@@ -263,6 +276,17 @@ public final class ShieldRenderLayer
             }
 
             return List.copyOf(result);
+        }
+
+        private boolean isBreaking(float time) {
+            return time >= breakStart && time - breakStart < BREAK_DURATION_TICKS
+                    && lastTargetEnergy <= MIN_VISIBLE_ENERGY;
+        }
+
+        private float breakProgress(float time) {
+            return isBreaking(time)
+                    ? clamp01((time - breakStart) / BREAK_DURATION_TICKS)
+                    : 0.0F;
         }
 
         private float visualEnergy() {

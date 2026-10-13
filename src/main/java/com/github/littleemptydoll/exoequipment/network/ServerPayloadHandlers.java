@@ -19,7 +19,10 @@ import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.module.JetpackInputState;
 import com.github.littleemptydoll.exoequipment.module.SensorToggleOperations;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import com.github.littleemptydoll.exoequipment.registry.ModSounds;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
@@ -42,6 +45,12 @@ final class ServerPayloadHandlers {
                         exoskeleton.set(
                                 ModDataComponents.EXOSKELETON_DATA.get(),
                                 result.data()
+                        );
+                        playModuleSound(
+                                player,
+                                ModSounds.BLINK_ACTIVATE.get(),
+                                0.8F,
+                                1.0F
                         );
                     }
                 });
@@ -98,6 +107,21 @@ final class ServerPayloadHandlers {
                     var updated = SensorToggleOperations.toggle(data, kind);
                     if (updated != data) {
                         exoskeleton.set(ModDataComponents.EXOSKELETON_DATA.get(), updated);
+
+                        boolean enabled = SensorToggleOperations.isActive(updated, kind);
+                        float pitch = switch (kind) {
+                            case ENTITY -> 0.96F;
+                            case BLOCK -> 1.05F;
+                            case THERMAL -> 1.14F;
+                        };
+                        playModuleSound(
+                                player,
+                                enabled
+                                        ? ModSounds.VISOR_ON.get()
+                                        : ModSounds.VISOR_OFF.get(),
+                                0.72F,
+                                pitch
+                        );
                     }
                 });
     }
@@ -114,6 +138,17 @@ final class ServerPayloadHandlers {
             var updated = CombatToggleOperations.toggle(data, kind);
             if (updated != data) {
                 exoskeleton.set(ModDataComponents.EXOSKELETON_DATA.get(), updated);
+
+                boolean enabled = CombatToggleOperations.isActive(updated, kind);
+                SoundEvent sound = switch (kind) {
+                    case LASER -> enabled
+                            ? ModSounds.LASER_DEFENSE_ON.get()
+                            : ModSounds.LASER_DEFENSE_OFF.get();
+                    case DISCHARGE -> enabled
+                            ? ModSounds.DISCHARGE_DEFENSE_ON.get()
+                            : ModSounds.DISCHARGE_DEFENSE_OFF.get();
+                };
+                playModuleSound(player, sound, 0.82F, 1.0F);
             }
         });
     }
@@ -217,6 +252,24 @@ final class ServerPayloadHandlers {
         }
 
         return List.copyOf(references);
+    }
+
+    private static void playModuleSound(
+            ServerPlayer player,
+            SoundEvent sound,
+            float volume,
+            float pitch
+    ) {
+        player.level().playSound(
+                null,
+                player.getX(),
+                player.getY(),
+                player.getZ(),
+                sound,
+                SoundSource.PLAYERS,
+                volume,
+                pitch
+        );
     }
 
     static void handleOpenExoskeleton(

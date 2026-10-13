@@ -2,6 +2,7 @@ package com.github.littleemptydoll.exoequipment.client;
 
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonAccess;
 import com.github.littleemptydoll.exoequipment.module.ShieldOperations;
+import com.github.littleemptydoll.exoequipment.registry.ModSounds;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
@@ -9,6 +10,7 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.sounds.SoundSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,10 @@ public final class ShieldRenderLayer
     private static final float REACTIVATION_DURATION_TICKS = 20.0F;
     private static final float DAMAGE_HOLD_TICKS = 5.0F;
     private static final int MAX_DAMAGE_IMPACTS = 4;
+
+    private static final int TRANSITION_NONE = 0;
+    private static final int TRANSITION_BREAK = -1;
+    private static final int TRANSITION_REACTIVATE = 1;
 
     /*
      * Fallback weights used only for damage sources without spatial context.
@@ -112,7 +118,9 @@ public final class ShieldRenderLayer
             );
         }
 
-        state.update(targetEnergy, time);
+        int transition = state.update(targetEnergy, time);
+        playTransitionSound(player, transition);
+
         float energy = state.visualEnergy();
         boolean transitionActive =
                 state.isBreaking(time) || state.isReactivating(time);
@@ -134,6 +142,29 @@ public final class ShieldRenderLayer
                 transitionActive ? 1.0F : fieldOpacity(energy),
                 state.fieldTransition(time),
                 state.damageImpacts(time)
+        );
+    }
+
+    private static void playTransitionSound(
+            AbstractClientPlayer player,
+            int transition
+    ) {
+        if (transition == TRANSITION_NONE
+                || Minecraft.getInstance().level == null) {
+            return;
+        }
+
+        Minecraft.getInstance().level.playLocalSound(
+                player.getX(),
+                player.getY(),
+                player.getZ(),
+                transition == TRANSITION_BREAK
+                        ? ModSounds.SHIELD_BREAK.get()
+                        : ModSounds.SHIELD_REACTIVATE.get(),
+                SoundSource.PLAYERS,
+                1.0F,
+                1.0F,
+                false
         );
     }
 
@@ -172,20 +203,24 @@ public final class ShieldRenderLayer
             this.lastTargetEnergy = initialEnergy;
         }
 
-        private void update(
+        private int update(
                 float targetEnergy,
                 float time
         ) {
+            int transition = TRANSITION_NONE;
+
             // Trigger transitions only on an actual zero/non-zero crossing. A
             // newly observed already-charged shield therefore appears normally.
             if (lastTargetEnergy > MIN_VISIBLE_ENERGY
                     && targetEnergy <= MIN_VISIBLE_ENERGY) {
                 breakStart = time;
                 reactivationStart = -10000.0F;
+                transition = TRANSITION_BREAK;
             } else if (lastTargetEnergy <= MIN_VISIBLE_ENERGY
                     && targetEnergy > MIN_VISIBLE_ENERGY) {
                 reactivationStart = time;
                 breakStart = -10000.0F;
+                transition = TRANSITION_REACTIVATE;
             }
             lastTargetEnergy = targetEnergy;
 
@@ -201,6 +236,7 @@ public final class ShieldRenderLayer
             }
 
             visualEnergy = clamp01(visualEnergy);
+            return transition;
         }
 
         private void spawnImpact(

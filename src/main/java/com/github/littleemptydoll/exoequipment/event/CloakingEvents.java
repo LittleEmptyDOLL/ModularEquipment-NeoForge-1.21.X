@@ -7,8 +7,10 @@ import com.github.littleemptydoll.exoequipment.module.CloakingOperations;
 import com.github.littleemptydoll.exoequipment.module.InstalledModuleReference;
 import com.github.littleemptydoll.exoequipment.network.CloakingStatePayload;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import com.github.littleemptydoll.exoequipment.registry.ModSounds;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -121,8 +123,10 @@ public final class CloakingEvents {
     public static void markActive(Player player) {
         CompoundTag persistentData =
                 player.getPersistentData();
+        boolean alreadyActive =
+                persistentData.getBoolean(CLOAKING_MARKER);
 
-        if (!persistentData.getBoolean(CLOAKING_MARKER)) {
+        if (!alreadyActive) {
             persistentData.putBoolean(
                     PREVIOUS_INVISIBLE,
                     player.isInvisible()
@@ -151,6 +155,19 @@ public final class CloakingEvents {
                         true
                 )
         );
+
+        if (!alreadyActive && !player.level().isClientSide()) {
+            player.level().playSound(
+                    null,
+                    player.getX(),
+                    player.getY(),
+                    player.getZ(),
+                    ModSounds.CLOAKING_ON.get(),
+                    SoundSource.PLAYERS,
+                    0.8F,
+                    1.0F
+            );
+        }
     }
 
     public static boolean isCloakingActive(Player player) {
@@ -180,6 +197,19 @@ public final class CloakingEvents {
                         false
                 )
         );
+
+        if (!player.level().isClientSide()) {
+            player.level().playSound(
+                    null,
+                    player.getX(),
+                    player.getY(),
+                    player.getZ(),
+                    ModSounds.CLOAKING_OFF.get(),
+                    SoundSource.PLAYERS,
+                    0.8F,
+                    1.0F
+            );
+        }
     }
 
     @SubscribeEvent

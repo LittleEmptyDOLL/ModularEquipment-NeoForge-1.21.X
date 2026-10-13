@@ -23,6 +23,10 @@ public final class ModSounds {
                             )
                     )
             );
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHIELD_BREAK =
+            register("shield_break");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHIELD_REACTIVATE =
+            register("shield_reactivate");
 
     public static final DeferredHolder<SoundEvent, SoundEvent> VISOR_ON =
             register("visor_on");

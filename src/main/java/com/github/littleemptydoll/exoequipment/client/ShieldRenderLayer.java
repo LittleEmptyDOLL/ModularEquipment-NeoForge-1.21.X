@@ -34,6 +34,7 @@ public final class ShieldRenderLayer
     private static final float MIN_VISIBLE_ENERGY = 0.01F;
     private static final float DAMAGE_LIFETIME_TICKS = 52.0F;
     private static final float BREAK_DURATION_TICKS = 16.0F;
+    private static final float REACTIVATION_DURATION_TICKS = 20.0F;
     private static final float DAMAGE_HOLD_TICKS = 5.0F;
     private static final int MAX_DAMAGE_IMPACTS = 4;
 
@@ -113,13 +114,15 @@ public final class ShieldRenderLayer
 
         state.update(targetEnergy, time);
         float energy = state.visualEnergy();
+        boolean transitionActive =
+                state.isBreaking(time) || state.isReactivating(time);
 
         if (!status.hasShields() && energy <= MIN_VISIBLE_ENERGY) {
             visualStates.remove(player);
             return;
         }
 
-        if ((energy <= MIN_VISIBLE_ENERGY && !state.isBreaking(time))
+        if ((energy <= MIN_VISIBLE_ENERGY && !transitionActive)
                 || ShieldFieldShader.getShader() == null) {
             return;
         }
@@ -128,8 +131,8 @@ public final class ShieldRenderLayer
                 poseStack,
                 getParentModel(),
                 time,
-                state.isBreaking(time) ? 1.0F : fieldOpacity(energy),
-                state.breakProgress(time),
+                transitionActive ? 1.0F : fieldOpacity(energy),
+                state.fieldTransition(time),
                 state.damageImpacts(time)
         );
     }
@@ -161,6 +164,7 @@ public final class ShieldRenderLayer
         private final List<ImpactState> impacts = new ArrayList<>();
         private float visualEnergy;
         private float breakStart = -10000.0F;
+        private float reactivationStart = -10000.0F;
         private float lastTargetEnergy;
 
         private VisualState(float initialEnergy) {
@@ -172,13 +176,19 @@ public final class ShieldRenderLayer
                 float targetEnergy,
                 float time
         ) {
-            // Trigger once on depletion, not continuously while empty. Preserve a
-            // short draw window even after energy reaches zero.
+            // Trigger transitions only on an actual zero/non-zero crossing. A
+            // newly observed already-charged shield therefore appears normally.
             if (lastTargetEnergy > MIN_VISIBLE_ENERGY
                     && targetEnergy <= MIN_VISIBLE_ENERGY) {
                 breakStart = time;
+                reactivationStart = -10000.0F;
+            } else if (lastTargetEnergy <= MIN_VISIBLE_ENERGY
+                    && targetEnergy > MIN_VISIBLE_ENERGY) {
+                reactivationStart = time;
+                breakStart = -10000.0F;
             }
             lastTargetEnergy = targetEnergy;
+
             impacts.removeIf(impact ->
                     time - impact.startTime() >= DAMAGE_LIFETIME_TICKS
             );
@@ -283,10 +293,32 @@ public final class ShieldRenderLayer
                     && lastTargetEnergy <= MIN_VISIBLE_ENERGY;
         }
 
-        private float breakProgress(float time) {
-            return isBreaking(time)
-                    ? clamp01((time - breakStart) / BREAK_DURATION_TICKS)
-                    : 0.0F;
+        private boolean isReactivating(float time) {
+            return time >= reactivationStart
+                    && time - reactivationStart < REACTIVATION_DURATION_TICKS
+                    && lastTargetEnergy > MIN_VISIBLE_ENERGY;
+        }
+
+        /**
+         * Positive values encode shield destruction, negative values encode
+         * shield reconstruction. Zero means no full-field transition.
+         */
+        private float fieldTransition(float time) {
+            if (isBreaking(time)) {
+                return clamp01((time - breakStart) / BREAK_DURATION_TICKS);
+            }
+
+            if (isReactivating(time)) {
+                float progress = clamp01(
+                        (time - reactivationStart)
+                                / REACTIVATION_DURATION_TICKS
+                );
+                // Reserve exactly zero for the inactive state so the first
+                // activation frame cannot briefly draw a complete shield.
+                return -(0.001F + (progress * 0.999F));
+            }
+
+            return 0.0F;
         }
 
         private float visualEnergy() {

@@ -73,7 +73,8 @@ public final class ShieldFieldShader {
     ) {
         renderTime = time;
         opacity = Math.max(0.0F, Math.min(1.0F, shieldOpacity));
-        breakProgress = Math.max(0.0F, Math.min(1.0F, shieldBreakProgress));
+        // Positive values are destruction, negative values reconstruction.
+        breakProgress = Math.max(-1.0F, Math.min(1.0F, shieldBreakProgress));
         modelMat.set(partModelMat);
         fieldMat.set(partFieldMat);
 

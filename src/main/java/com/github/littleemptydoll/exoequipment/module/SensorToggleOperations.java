@@ -37,6 +37,17 @@ public final class SensorToggleOperations {
         return updated;
     }
 
+    public static boolean isActive(ExoskeletonData data, Kind kind) {
+        for (int slot = 0; slot < data.matrices().size(); slot++) {
+            for (var module : ExoskeletonModules.supportedInMatrix(data, slot)) {
+                if (matches(module.definition(), kind) && module.module().active()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private static boolean matches(ModuleDefinition definition, Kind kind) {
         return switch (kind) {
             case ENTITY -> definition.entityDetection().isPresent();

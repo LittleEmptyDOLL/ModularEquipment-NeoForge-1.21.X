@@ -40,5 +40,95 @@
         "stream": true
       }
     ]
+  },
+  "blink_activate": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.enderman.teleport",
+        "type": "event",
+        "volume": 0.55,
+        "pitch": 1.30
+      }
+    ]
+  },
+  "cloaking_on": {
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.activate",
+        "type": "event",
+        "volume": 0.42,
+        "pitch": 1.38
+      }
+    ]
+  },
+  "cloaking_off": {
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.deactivate",
+        "type": "event",
+        "volume": 0.42,
+        "pitch": 1.26
+      }
+    ]
+  },
+  "flight_on": {
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.activate",
+        "type": "event",
+        "volume": 0.55,
+        "pitch": 0.92
+      }
+    ]
+  },
+  "flight_off": {
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.deactivate",
+        "type": "event",
+        "volume": 0.50,
+        "pitch": 0.88
+      }
+    ]
+  },
+  "laser_defense_on": {
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.pling",
+        "type": "event",
+        "volume": 0.45,
+        "pitch": 1.35
+      }
+    ]
+  },
+  "laser_defense_off": {
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.pling",
+        "type": "event",
+        "volume": 0.36,
+        "pitch": 0.78
+      }
+    ]
+  },
+  "discharge_defense_on": {
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.pling",
+        "type": "event",
+        "volume": 0.52,
+        "pitch": 0.72
+      }
+    ]
+  },
+  "discharge_defense_off": {
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.pling",
+        "type": "event",
+        "volume": 0.38,
+        "pitch": 0.52
+      }
+    ]
   }
 }

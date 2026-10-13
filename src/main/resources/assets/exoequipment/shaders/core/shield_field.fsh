@@ -126,7 +126,7 @@ void applyDamage(
     // fracture rim. It remains visible independently of the travelling wave.
     float edgeDistance = abs(distanceToImpact - breakRadius);
     float edgeBand = 1.0 - smoothstep(0.14, 0.82, edgeDistance);
-    float flicker = 0.68 + 0.32 * sin(Time * 31.0 + random * 23.0);
+    float flicker = 0.82 + 0.18 * sin(Time * 31.0 + random * 23.0);
     fracture = max(
         fracture,
         edgeBand * hex * strength * flicker
@@ -196,15 +196,24 @@ void main() {
     float hexAlpha = hexReveal * 0.30 * BaseColor.a;
     float intactAlpha = clamp(deAlpha + hexAlpha, 0.0, 1.0)
         * (1.0 - broken);
-    float fractureAlpha = fracture * 0.82 * BaseColor.a;
+
+    // Give the freshly broken perimeter a distinct hot core. The normal field
+    // remains unchanged; only the fracture rim becomes brighter and more solid.
+    float fractureCore = smoothstep(0.38, 0.92, fracture);
+    float fractureAlpha = (fracture * 1.08 + fractureCore * 0.34)
+        * BaseColor.a;
     float finalAlpha = clamp(intactAlpha + fractureAlpha, 0.0, 1.0)
         * clamp(Opacity, 0.0, 1.0);
 
-    float damageGlow = clamp(fracture * 0.90, 0.0, 0.90);
+    float damageGlow = clamp(
+        fracture * 1.18 + fractureCore * 0.48,
+        0.0,
+        1.0
+    );
     vec3 colourRgb = mix(
         BaseColor.rgb,
-        vec3(0.94, 1.0, 1.0),
-        clamp((hexReveal * 0.55) + damageGlow, 0.0, 0.92)
+        vec3(0.985, 1.0, 1.0),
+        clamp((hexReveal * 0.55) + damageGlow, 0.0, 1.0)
     );
 
     vec4 colour = vec4(colourRgb, finalAlpha);

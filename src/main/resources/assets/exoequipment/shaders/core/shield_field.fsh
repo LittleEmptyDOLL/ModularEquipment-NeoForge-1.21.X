@@ -18,6 +18,7 @@ uniform vec4 ColorModulator;
 uniform vec4 BaseColor;
 uniform float Activation;
 uniform float Opacity;
+// Positive values destroy the lattice; negative values rebuild it.
 uniform float BreakProgress;
 uniform float Time;
 uniform vec4 Damage0;
@@ -194,31 +195,78 @@ void main() {
     applyDamage(Damage2, cellCenter, hex, broken, fracture);
     applyDamage(Damage3, cellCenter, hex, broken, fracture);
 
-    // On depletion the entire lattice fails in a staggered, cell-by-cell
-    // cascade. Stable per-cell thresholds prevent a smooth spherical fade.
-    float breakActive = step(0.0001, BreakProgress);
+    // Positive transition values destroy the entire lattice in a staggered,
+    // cell-by-cell cascade. Stable hashes prevent a smooth spherical fade.
+    float breakProgress = max(BreakProgress, 0.0);
+    float breakActive = step(0.0001, breakProgress);
     float cellFailure = cellHash(cellCenter + vec2(11.73, 5.91));
-    float collapse = smoothstep(0.0, 0.88, BreakProgress);
+    float collapse = smoothstep(0.0, 0.88, breakProgress);
     float failed = step(cellFailure, collapse) * breakActive;
     float collapseEdge = (1.0 - smoothstep(0.025, 0.15,
             abs(cellFailure - collapse))) * (1.0 - failed) * breakActive;
 
+    // Negative transition values rebuild the lattice. The same stable cell
+    // order is deliberately offset from destruction so reactivation feels like
+    // a fresh field being synthesized instead of the break animation reversed.
+    float reactivationProgress = max(-BreakProgress, 0.0);
+    float reactivationActive = step(0.0001, reactivationProgress);
+    float cellAssembly = cellHash(cellCenter + vec2(4.17, 19.31));
+    float assembly = smoothstep(0.0, 0.84, reactivationProgress);
+    float assembledDuringTransition = step(cellAssembly, assembly);
+    float assembled = mix(
+        1.0,
+        assembledDuringTransition,
+        reactivationActive
+    );
+
+    // Highlight only the cells on the current reconstruction front. Because it
+    // is gated by reactivationActive, no random bright cells survive afterwards.
+    float assemblyEdge = (1.0 - smoothstep(
+            0.025,
+            0.13,
+            abs(cellAssembly - assembly)
+    )) * reactivationActive;
+    float assemblyFlash = assemblyEdge * hex
+        * (0.85 + 0.15 * sin(Time * 27.0 + cellAssembly * 19.0));
+
+    // In the final third of reconstruction send one strong radial activation
+    // impulse through the almost-complete field.
+    float wavePhase = smoothstep(0.58, 0.98, reactivationProgress);
+    float activationWaveCenter = wavePhase * 5.25;
+    float activationWave = (1.0 - smoothstep(
+            0.10,
+            0.48,
+            abs(rad - activationWaveCenter)
+    )) * smoothstep(0.52, 0.68, reactivationProgress)
+        * reactivationActive;
+
     float hexAlpha = hexReveal * 0.30 * BaseColor.a;
     float intactAlpha = clamp(deAlpha + hexAlpha, 0.0, 1.0)
-        * (1.0 - broken) * (1.0 - failed);
+        * (1.0 - broken) * (1.0 - failed) * assembled;
 
     // Give the freshly broken perimeter a distinct hot core. The normal field
     // remains unchanged; only the fracture rim becomes brighter and more solid.
     float fractureCore = smoothstep(0.38, 0.92, fracture);
     float fractureAlpha = (fracture * 1.08 + fractureCore * 0.34)
         * BaseColor.a;
-    float collapseFlash = collapseEdge * hex * (1.0 - BreakProgress) * 1.5;
-    float finalAlpha = clamp(intactAlpha + fractureAlpha * (1.0 - failed)
-            + collapseFlash, 0.0, 1.0)
-        * clamp(Opacity, 0.0, 1.0);
+    float collapseFlash = collapseEdge * hex * (1.0 - breakProgress) * 1.5;
+    float reactivationGlow = (assemblyFlash * 1.22)
+        + (activationWave * (0.34 + hex * 0.66));
+
+    float finalAlpha = clamp(
+        intactAlpha
+            + fractureAlpha * (1.0 - failed) * assembled
+            + collapseFlash
+            + reactivationGlow * BaseColor.a,
+        0.0,
+        1.0
+    ) * clamp(Opacity, 0.0, 1.0);
 
     float damageGlow = clamp(
-        fracture * 1.18 + fractureCore * 0.48 + collapseFlash,
+        fracture * 1.18
+            + fractureCore * 0.48
+            + collapseFlash
+            + reactivationGlow,
         0.0,
         1.0
     );

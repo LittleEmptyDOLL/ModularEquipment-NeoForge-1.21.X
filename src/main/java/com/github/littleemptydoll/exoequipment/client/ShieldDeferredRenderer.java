@@ -40,6 +40,7 @@ public final class ShieldDeferredRenderer {
             PlayerModel<AbstractClientPlayer> source,
             float time,
             float opacity,
+            float breakProgress,
             List<DamageImpact> damageImpacts
     ) {
         if (!collecting) {
@@ -56,6 +57,7 @@ public final class ShieldDeferredRenderer {
             QUEUE.add(new QueuedShield(
                     time,
                     opacity,
+                    breakProgress,
                     List.copyOf(damageImpacts),
                     parts
             ));
@@ -83,6 +85,7 @@ public final class ShieldDeferredRenderer {
                 RenderType type = ShieldFieldShader.fieldType(
                         shield.time(),
                         shield.opacity(),
+                        shield.breakProgress(),
                         part.modelMat(),
                         part.fieldMat(),
                         damageData
@@ -290,6 +293,7 @@ public final class ShieldDeferredRenderer {
     private record QueuedShield(
             float time,
             float opacity,
+            float breakProgress,
             List<DamageImpact> damageImpacts,
             List<PartBatch> parts
     ) {}

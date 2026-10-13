@@ -15,8 +15,7 @@ public final class CombatToggleOperations {
         List<ExoskeletonModules.ActiveModule> modules = new ArrayList<>();
         for (int slot = 0; slot < data.matrices().size(); slot++) {
             for (var module : ExoskeletonModules.supportedInMatrix(data, slot)) {
-                if (kind == Kind.LASER ? module.definition().laserDefense().isPresent()
-                        : module.definition().dischargeDefense().isPresent()) {
+                if (matches(module.definition(), kind)) {
                     modules.add(module);
                 }
             }
@@ -30,5 +29,22 @@ public final class CombatToggleOperations {
                     module.module().withActive(enable));
         }
         return updated;
+    }
+
+    public static boolean isActive(ExoskeletonData data, Kind kind) {
+        for (int slot = 0; slot < data.matrices().size(); slot++) {
+            for (var module : ExoskeletonModules.supportedInMatrix(data, slot)) {
+                if (matches(module.definition(), kind) && module.module().active()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean matches(ModuleDefinition definition, Kind kind) {
+        return kind == Kind.LASER
+                ? definition.laserDefense().isPresent()
+                : definition.dischargeDefense().isPresent();
     }
 }

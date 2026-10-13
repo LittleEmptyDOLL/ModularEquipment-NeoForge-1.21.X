@@ -7,6 +7,26 @@
       }
     ]
   },
+  "shield_break": {
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.deactivate",
+        "type": "event",
+        "volume": 0.90,
+        "pitch": 0.82
+      }
+    ]
+  },
+  "shield_reactivate": {
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.activate",
+        "type": "event",
+        "volume": 0.85,
+        "pitch": 1.12
+      }
+    ]
+  },
   "visor_on": {
     "sounds": ["exoequipment:visor_on"]
   },

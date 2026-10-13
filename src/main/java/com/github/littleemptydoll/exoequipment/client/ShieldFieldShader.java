@@ -25,6 +25,7 @@ public final class ShieldFieldShader {
     private static ShaderInstance shader;
     private static float renderTime;
     private static float opacity;
+    private static float breakProgress;
     private static final Matrix4f modelMat = new Matrix4f();
     private static final Matrix4f fieldMat = new Matrix4f();
     private static final float[] damageData =
@@ -55,6 +56,7 @@ public final class ShieldFieldShader {
         return fieldType(
                 time,
                 shieldOpacity,
+                0.0F,
                 partModelMat,
                 partFieldMat,
                 NO_DAMAGE
@@ -64,12 +66,14 @@ public final class ShieldFieldShader {
     public static RenderType fieldType(
             float time,
             float shieldOpacity,
+            float shieldBreakProgress,
             Matrix4f partModelMat,
             Matrix4f partFieldMat,
             float[] partDamageData
     ) {
         renderTime = time;
         opacity = Math.max(0.0F, Math.min(1.0F, shieldOpacity));
+        breakProgress = Math.max(0.0F, Math.min(1.0F, shieldBreakProgress));
         modelMat.set(partModelMat);
         fieldMat.set(partFieldMat);
 
@@ -103,6 +107,11 @@ public final class ShieldFieldShader {
         Uniform opacityUniform = shader.getUniform("Opacity");
         if (opacityUniform != null) {
             opacityUniform.set(opacity);
+        }
+
+        Uniform breakUniform = shader.getUniform("BreakProgress");
+        if (breakUniform != null) {
+            breakUniform.set(breakProgress);
         }
 
         Uniform baseColor = shader.getUniform("BaseColor");

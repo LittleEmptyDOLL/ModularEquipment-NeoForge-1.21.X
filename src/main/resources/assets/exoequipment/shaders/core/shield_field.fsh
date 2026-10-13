@@ -196,11 +196,12 @@ void main() {
 
     // On depletion the entire lattice fails in a staggered, cell-by-cell
     // cascade. Stable per-cell thresholds prevent a smooth spherical fade.
+    float breakActive = step(0.0001, BreakProgress);
     float cellFailure = cellHash(cellCenter + vec2(11.73, 5.91));
     float collapse = smoothstep(0.0, 0.88, BreakProgress);
-    float failed = step(cellFailure, collapse);
+    float failed = step(cellFailure, collapse) * breakActive;
     float collapseEdge = (1.0 - smoothstep(0.025, 0.15,
-            abs(cellFailure - collapse))) * (1.0 - failed);
+            abs(cellFailure - collapse))) * (1.0 - failed) * breakActive;
 
     float hexAlpha = hexReveal * 0.30 * BaseColor.a;
     float intactAlpha = clamp(deAlpha + hexAlpha, 0.0, 1.0)

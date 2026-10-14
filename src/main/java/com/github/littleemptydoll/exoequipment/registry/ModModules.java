@@ -2,12 +2,14 @@ package com.github.littleemptydoll.exoequipment.registry;
 
 import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.item.ModuleItem;
+import com.github.littleemptydoll.exoequipment.module.GeneratedModuleData;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public final class ModModules {
     private ModModules() {}
@@ -30,6 +32,8 @@ public final class ModModules {
 
     private static final Map<ResourceLocation, ModuleDefinition>
             TRANSIENT_DEFINITIONS = new HashMap<>();
+    private static final Map<ResourceLocation, GeneratedModuleData>
+            GENERATED_DATA = new HashMap<>();
 
     static {
         ModGeneratedModules.register(REGISTRY);
@@ -47,6 +51,17 @@ public final class ModModules {
 
     public static void registerTransientDefinition(ModuleDefinition definition) {
         TRANSIENT_DEFINITIONS.put(definition.id(), definition);
+    }
+
+    public static void registerGeneratedData(GeneratedModuleData generated) {
+        GENERATED_DATA.put(generated.definition().id(), generated);
+        registerTransientDefinition(generated.definition());
+    }
+
+    public static Optional<GeneratedModuleData> getGeneratedData(
+            ResourceLocation id
+    ) {
+        return Optional.ofNullable(GENERATED_DATA.get(id));
     }
 
     public static ModuleDefinition getDefinition(

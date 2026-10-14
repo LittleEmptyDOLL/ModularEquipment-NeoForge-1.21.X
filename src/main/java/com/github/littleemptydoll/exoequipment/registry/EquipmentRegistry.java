@@ -12,7 +12,7 @@ import java.util.function.BiFunction;
 
 public final class EquipmentRegistry<
         D extends EquipmentDefinition,
-        I extends  EquipmentItem<D>
+        I extends EquipmentItem<D>
 > {
 
     private final DeferredRegister<D> definitions;
@@ -55,6 +55,28 @@ public final class EquipmentRegistry<
                     D
             > definitionFactory
     ) {
+        return register(
+                id,
+                properties,
+                definitionFactory,
+                itemFactory
+        );
+    }
+
+    public EquipmentEntry<D, I> register(
+            String id,
+            EquipmentProperties properties,
+            BiFunction<
+                    ResourceLocation,
+                    EquipmentProperties,
+                    D
+            > definitionFactory,
+            BiFunction<
+                    DeferredHolder<D, D>,
+                    Item.Properties,
+                    I
+            > entryItemFactory
+    ) {
         ResourceLocation resourceLocation =
                 ResourceLocation.fromNamespaceAndPath(
                         ExoEquipment.MODID,
@@ -78,7 +100,7 @@ public final class EquipmentRegistry<
         DeferredHolder<Item, I> item =
                 items.register(
                         id + itemSuffix,
-                        () -> itemFactory.apply(
+                        () -> entryItemFactory.apply(
                                 definition,
                                 itemProperties
                         )

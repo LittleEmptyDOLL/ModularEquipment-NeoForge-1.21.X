@@ -9,7 +9,6 @@ import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.util.EquipmentItemUtils;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -112,9 +111,7 @@ public class MatrixItem extends EquipmentItem<MatrixDefinition> {
             for (InstalledModule module : data.modules()) {
                 tooltip.add(
                         TooltipHelper.moduleEntry(
-                                EquipmentItemUtils.moduleName(
-                                        module.id()
-                                )
+                                EquipmentItemUtils.moduleName(module)
                         )
                 );
             }

@@ -8,6 +8,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonRuntimeState;
 import com.github.littleemptydoll.exoequipment.frame.Frame;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
+import com.github.littleemptydoll.exoequipment.module.GeneratedModuleData;
 import com.github.littleemptydoll.exoequipment.module.Module;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -70,6 +71,12 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType(
                     "module",
                     builder -> builder.persistent(Module.CODEC)
+            );
+
+    public static final Supplier<DataComponentType<GeneratedModuleData>> GENERATED_MODULE_DATA =
+            COMPONENTS.registerComponentType(
+                    "generated_module_data",
+                    builder -> builder.persistent(GeneratedModuleData.CODEC)
             );
 
     public static final Supplier<DataComponentType<Integer>> MODULE_STORED_ENERGY =

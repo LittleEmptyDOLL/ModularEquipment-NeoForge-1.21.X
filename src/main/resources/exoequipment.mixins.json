@@ -6,7 +6,8 @@
   "client": [
     "ThermalLightTextureMixin",
     "ThermalGameRendererMixin",
-    "ThermalDragonRendererMixin"
+    "ThermalDragonRendererMixin",
+    "MatrixScreenGeneratedModuleMixin"
   ],
   "injectors": {
     "defaultRequire": 1

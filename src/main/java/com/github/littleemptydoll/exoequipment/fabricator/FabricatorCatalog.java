@@ -1,5 +1,6 @@
 package com.github.littleemptydoll.exoequipment.fabricator;
 
+import com.github.littleemptydoll.exoequipment.item.GeneratedModuleItem;
 import com.github.littleemptydoll.exoequipment.item.ModuleItem;
 import com.github.littleemptydoll.exoequipment.module.ModuleCategory;
 import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
@@ -18,6 +19,9 @@ public final class FabricatorCatalog {
         List<Item> result = new ArrayList<>();
         for (var holder : ModItems.ITEMS.getEntries()) {
             Item item = holder.get();
+            if (item instanceof GeneratedModuleItem) {
+                continue;
+            }
             if ((category == FabricatorCategory.COMPONENTS && ModItems.isFabricatorPart(item))
                     || (item instanceof EquipmentItem<?> equipment
                     && equipment.getDefinition().tier() != EquipmentTier.CREATIVE

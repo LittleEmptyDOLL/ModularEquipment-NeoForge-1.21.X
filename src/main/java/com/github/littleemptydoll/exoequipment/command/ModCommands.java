@@ -10,12 +10,17 @@ import com.github.littleemptydoll.exoequipment.item.ControllerItem;
 import com.github.littleemptydoll.exoequipment.item.EnergySystemItem;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
 import com.github.littleemptydoll.exoequipment.item.FrameItem;
+import com.github.littleemptydoll.exoequipment.item.GeneratedModuleItem;
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
 import com.github.littleemptydoll.exoequipment.item.ModuleItem;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixOperations;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixState;
+import com.github.littleemptydoll.exoequipment.module.GeneratedModuleData;
+import com.github.littleemptydoll.exoequipment.module.GeneratedModuleGenerator;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
+import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -52,8 +57,65 @@ public final class ModCommands {
                                                                 )
                                                         )
                                         )
+                                        .then(
+                                                Commands.literal("generated")
+                                                        .then(
+                                                                Commands.literal("military")
+                                                                        .executes(context -> giveGeneratedModule(
+                                                                                context.getSource(),
+                                                                                EquipmentTier.MILITARY
+                                                                        ))
+                                                        )
+                                                        .then(
+                                                                Commands.literal("engineering")
+                                                                        .executes(context -> giveGeneratedModule(
+                                                                                context.getSource(),
+                                                                                EquipmentTier.ENGINEERING
+                                                                        ))
+                                                        )
+                                                        .then(
+                                                                Commands.literal("experimental")
+                                                                        .executes(context -> giveGeneratedModule(
+                                                                                context.getSource(),
+                                                                                EquipmentTier.EXPERIMENTAL
+                                                                        ))
+                                                        )
+                                        )
                         )
         );
+    }
+
+    private static int giveGeneratedModule(
+            CommandSourceStack source,
+            EquipmentTier tier
+    ) {
+        ServerPlayer player = requirePlayer(source);
+        if (player == null) {
+            return 0;
+        }
+
+        long seed = player.getRandom().nextLong();
+        ItemStack stack = GeneratedModuleGenerator.createStack(tier, seed);
+        GeneratedModuleData generated = stack.get(
+                ModDataComponents.GENERATED_MODULE_DATA.get()
+        );
+
+        if (!player.addItem(stack)) {
+            player.drop(stack, false);
+        }
+
+        if (generated != null) {
+            ModuleDefinition definition = generated.definition();
+            sendLine(
+                    source,
+                    "Generated " + generated.modelCode()
+                            + " [" + definition.size().width()
+                            + "x" + definition.size().height()
+                            + "] seed=" + Long.toUnsignedString(seed)
+            );
+        }
+
+        return 1;
     }
 
     private static int showHeldEquipment(
@@ -93,6 +155,7 @@ public final class ModCommands {
         if (stack.getItem() instanceof ModuleItem moduleItem) {
             return showModule(
                     source,
+                    stack,
                     moduleItem
             );
         }
@@ -283,9 +346,12 @@ public final class ModCommands {
 
     private static int showModule(
             CommandSourceStack source,
+            ItemStack stack,
             ModuleItem item
     ) {
-        ModuleDefinition definition = item.getDefinition();
+        ModuleDefinition definition = item instanceof GeneratedModuleItem generatedItem
+                ? generatedItem.getDefinition(stack)
+                : item.getDefinition();
 
         sendHeader(source, "Module");
         sendLine(source, "ID: " + definition.id());
@@ -298,6 +364,14 @@ public final class ModCommands {
                         + "x"
                         + definition.size().height()
         );
+
+        GeneratedModuleData generated = stack.get(
+                ModDataComponents.GENERATED_MODULE_DATA.get()
+        );
+        if (generated != null) {
+            sendLine(source, "Model: " + generated.modelCode());
+            sendLine(source, "Seed: " + Long.toUnsignedString(generated.seed()));
+        }
 
         definition.energy().ifPresent(properties -> {
             sendLine(

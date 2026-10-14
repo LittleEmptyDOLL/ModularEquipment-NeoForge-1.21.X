@@ -35,7 +35,7 @@ public final class GeneratedModuleItem extends ModuleItem {
             return base;
         }
 
-        ModModules.registerTransientDefinition(generated.definition());
+        ModModules.registerGeneratedData(generated);
         return generated.definition();
     }
 

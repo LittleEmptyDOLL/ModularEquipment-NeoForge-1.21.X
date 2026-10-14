@@ -12,6 +12,11 @@ ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "src/main/java/com/github/littleemptydoll/exoequipment/registry"
 RECIPES = ROOT / "src/main/resources/data/exoequipment/recipe"
 NAMESPACE = "exoequipment:"
+LOOT_ONLY_MODULES = {
+    NAMESPACE + "military_prototype_module",
+    NAMESPACE + "engineering_prototype_module",
+    NAMESPACE + "experimental_prototype_module",
+}
 
 
 def source(name):
@@ -102,7 +107,8 @@ def main():
     for names in signatures.values():
         if len(names) > 1:
             errors.append(f"Duplicate recipe: {', '.join(names)}")
-    for item in sorted(modules - set(outputs) - {NAMESPACE + "creative_generator_module"}):
+    recipe_exempt_modules = LOOT_ONLY_MODULES | {NAMESPACE + "creative_generator_module"}
+    for item in sorted(modules - set(outputs) - recipe_exempt_modules):
         errors.append(f"Missing recipe for registered module {item}")
 
     if errors:

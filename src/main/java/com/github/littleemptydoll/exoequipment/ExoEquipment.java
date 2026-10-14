@@ -25,6 +25,7 @@ public class ExoEquipment {
         ModFabricatorRecipes.register(eventBus);
         ModNetworking.register(eventBus);
         ModSounds.register(eventBus);
+        ModLootModifiers.register(eventBus);
         ModCreativeTabs.register(eventBus);
         eventBus.addListener(ExoskeletonEnergyStorage::register);
 

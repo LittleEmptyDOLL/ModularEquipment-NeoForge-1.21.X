@@ -13,7 +13,8 @@ public enum ModuleCategory {
     SURVIVAL,
     SENSOR,
     COMBAT,
-    UTILITY;
+    UTILITY,
+    EXPERIMENTAL;
 
     public static final Codec<ModuleCategory> CODEC =
             Codec.STRING.comapFlatMap(

@@ -4,6 +4,7 @@ import com.github.littleemptydoll.exoequipment.exoskeleton.ExoskeletonData;
 import com.github.littleemptydoll.exoequipment.network.ExoskeletonSyncPayload;
 import com.github.littleemptydoll.exoequipment.network.MatrixActionPayload;
 import com.github.littleemptydoll.exoequipment.item.ExoskeletonItem;
+import com.github.littleemptydoll.exoequipment.item.GeneratedModuleItem;
 import com.github.littleemptydoll.exoequipment.item.MatrixItem;
 import com.github.littleemptydoll.exoequipment.item.ModuleItem;
 import com.github.littleemptydoll.exoequipment.matrix.MatrixData;
@@ -401,7 +402,15 @@ public class MatrixMenu extends AbstractContainerMenu {
                                 int x, int y, int rotation) {
         ItemStack carried = getCarried();
         if (!(carried.getItem() instanceof ModuleItem moduleItem)) return false;
-        var moduleDefinition = moduleItem.getDefinition();
+        var generated = carried.get(ModDataComponents.GENERATED_MODULE_DATA.get());
+        var moduleDefinition = moduleItem instanceof GeneratedModuleItem generatedItem
+                ? generatedItem.getDefinition(carried)
+                : moduleItem.getDefinition();
+
+        if (generated != null && !generated.definition().id().equals(moduleDefinition.id())) {
+            return false;
+        }
+
         int storedEnergy = carried.getOrDefault(
                 ModDataComponents.MODULE_STORED_ENERGY.get(),
                 0
@@ -476,6 +485,10 @@ public class MatrixMenu extends AbstractContainerMenu {
                 false,
                 abilityCooldown
         );
+        if (generated != null) {
+            module = module.withGenerated(generated);
+        }
+
         MatrixData updated = MatrixOperations.addModule(matrix, definition, module);
         applyMatrixData(player, updated);
         carried.shrink(1);
@@ -486,8 +499,18 @@ public class MatrixMenu extends AbstractContainerMenu {
     private boolean removeModule(ServerPlayer player, MatrixData matrix, int x, int y) {
         InstalledModule module = MatrixOperations.getModuleAt(matrix, x, y);
         if (module == null) return false;
-        ItemStack moduleStack = ModModules.find(module.id()).getItem().getDefaultInstance();
+
         var definition = ModModules.getDefinition(module.id());
+        var itemDefinitionId = module.generated()
+                .map(value -> value.baseDefinitionId())
+                .orElse(module.id());
+        var entry = ModModules.find(itemDefinitionId);
+        if (entry == null) return false;
+
+        ItemStack moduleStack = entry.getItem().getDefaultInstance();
+        module.generated().ifPresent(value ->
+                moduleStack.set(ModDataComponents.GENERATED_MODULE_DATA.get(), value)
+        );
 
         var storage = definition.storage();
         if (storage.isPresent() && module.storedEnergy() > 0) {
@@ -577,7 +600,25 @@ public class MatrixMenu extends AbstractContainerMenu {
     }
 
     private boolean rotateModule(ServerPlayer player, MatrixData matrix, MatrixDefinition definition, int x, int y) {
-        MatrixData updated = MatrixOperations.rotateModule(matrix, definition, x, y);
+        InstalledModule module = MatrixOperations.getModuleAt(matrix, x, y);
+        if (module == null) return false;
+
+        InstalledModule rotatedModule = new InstalledModule(
+                module.id(),
+                module.x(),
+                module.y(),
+                (module.rotation() + 90) % 360,
+                module.storedEnergy(),
+                module.shieldEnergy(),
+                module.shieldRechargeCooldown(),
+                module.revivalCooldown(),
+                module.emergencyShieldCooldown(),
+                module.active(),
+                module.abilityCooldown(),
+                module.flightActive(),
+                module.generated()
+        );
+        MatrixData updated = replaceModule(matrix, definition, module, rotatedModule);
         if (updated.equals(matrix)) return false;
         applyMatrixData(player, updated);
         return true;
@@ -599,7 +640,8 @@ public class MatrixMenu extends AbstractContainerMenu {
                 module.emergencyShieldCooldown(),
                 module.active(),
                 module.abilityCooldown(),
-                module.flightActive()
+                module.flightActive(),
+                module.generated()
         );
         MatrixData updated = replaceModule(matrix, definition, module, movedModule);
         if (updated.equals(matrix)) return false;

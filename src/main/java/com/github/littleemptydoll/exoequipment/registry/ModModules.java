@@ -5,7 +5,6 @@ import com.github.littleemptydoll.exoequipment.item.ModuleItem;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.fml.ModList;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +32,7 @@ public final class ModModules {
             TRANSIENT_DEFINITIONS = new HashMap<>();
 
     static {
+        ModGeneratedModules.register(REGISTRY);
         ModEnergyModules.register(REGISTRY);
         ModThermalModules.register(REGISTRY);
         ModDefenseModules.register(REGISTRY);
@@ -45,7 +45,7 @@ public final class ModModules {
         ModSensorModules.register(REGISTRY);
     }
 
-    static void registerTransientDefinition(ModuleDefinition definition) {
+    public static void registerTransientDefinition(ModuleDefinition definition) {
         TRANSIENT_DEFINITIONS.put(definition.id(), definition);
     }
 

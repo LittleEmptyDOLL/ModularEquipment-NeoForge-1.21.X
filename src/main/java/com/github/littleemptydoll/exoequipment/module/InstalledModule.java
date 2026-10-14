@@ -43,11 +43,13 @@ public record InstalledModule(
             );
 
     public InstalledModule(ResourceLocation id, int x, int y, int rotation) {
-        this(id, x, y, rotation, 0, 0.0D, 0, 0, 0, false, 0, false, Optional.empty());
+        this(id, x, y, rotation, 0, 0.0D, 0, 0, 0, false, 0, false,
+                ModModules.getGeneratedData(id));
     }
 
     public InstalledModule(ResourceLocation id, int x, int y, int rotation, int storedEnergy) {
-        this(id, x, y, rotation, storedEnergy, 0.0D, 0, 0, 0, false, 0, false, Optional.empty());
+        this(id, x, y, rotation, storedEnergy, 0.0D, 0, 0, 0, false, 0, false,
+                ModModules.getGeneratedData(id));
     }
 
     public InstalledModule(
@@ -76,7 +78,7 @@ public record InstalledModule(
                 active,
                 abilityCooldown,
                 false,
-                Optional.empty()
+                ModModules.getGeneratedData(id)
         );
     }
 
@@ -107,7 +109,7 @@ public record InstalledModule(
                 active,
                 abilityCooldown,
                 flightActive,
-                Optional.empty()
+                ModModules.getGeneratedData(id)
         );
     }
 
@@ -133,7 +135,7 @@ public record InstalledModule(
                         "Generated module definition id does not match installed module id"
                 );
             }
-            ModModules.registerTransientDefinition(value.definition());
+            ModModules.registerGeneratedData(value);
         });
     }
 

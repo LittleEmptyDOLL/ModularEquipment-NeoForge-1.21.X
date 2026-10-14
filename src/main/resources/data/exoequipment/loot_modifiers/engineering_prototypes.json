@@ -1,0 +1,11 @@
+{
+  "type": "exoequipment:generated_module",
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "minecraft:chests/stronghold_library"
+    }
+  ],
+  "chance": 0.12,
+  "engineering_weight": 100
+}

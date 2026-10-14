@@ -1,7 +1,12 @@
 package com.github.littleemptydoll.exoequipment.module;
 
+import com.github.littleemptydoll.exoequipment.ExoEquipment;
+import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
+import com.github.littleemptydoll.exoequipment.registry.ModModules;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +69,64 @@ public final class GeneratedModuleGenerator {
         }
 
         return new GeneratedModulePlan(tier, size, selected);
+    }
+
+    public static GeneratedModuleData generate(
+            EquipmentTier tier,
+            long seed
+    ) {
+        GeneratedModulePlan plan = plan(tier, seed);
+        ResourceLocation baseDefinitionId = prototypeDefinitionId(tier);
+        ModuleDefinition definition = GeneratedModuleDefinitionBuilder.build(plan, seed);
+        GeneratedModuleData generated = new GeneratedModuleData(
+                seed,
+                baseDefinitionId,
+                definition
+        );
+        ModModules.registerGeneratedData(generated);
+        return generated;
+    }
+
+    public static ItemStack createStack(
+            EquipmentTier tier,
+            long seed
+    ) {
+        GeneratedModuleData generated = generate(tier, seed);
+        var entry = ModModules.find(generated.baseDefinitionId());
+        if (entry == null) {
+            throw new IllegalStateException(
+                    "Missing prototype module base: " + generated.baseDefinitionId()
+            );
+        }
+
+        ItemStack stack = entry.getItem().getDefaultInstance();
+        stack.set(ModDataComponents.GENERATED_MODULE_DATA.get(), generated);
+        return stack;
+    }
+
+    public static ItemStack createStack(
+            EquipmentTier tier,
+            RandomSource random
+    ) {
+        if (random == null) {
+            throw new IllegalArgumentException("Random source cannot be null");
+        }
+        return createStack(tier, random.nextLong());
+    }
+
+    public static ResourceLocation prototypeDefinitionId(
+            EquipmentTier tier
+    ) {
+        validateTier(tier);
+        String path = switch (tier) {
+            case MILITARY -> "military_prototype";
+            case ENGINEERING -> "engineering_prototype";
+            case EXPERIMENTAL -> "experimental_prototype";
+            default -> throw new IllegalArgumentException(
+                    "Unsupported generated module tier: " + tier
+            );
+        };
+        return ResourceLocation.fromNamespaceAndPath(ExoEquipment.MODID, path);
     }
 
     public static double integrationMultiplier(int propertyCount) {

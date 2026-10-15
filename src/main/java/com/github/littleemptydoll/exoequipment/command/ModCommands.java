@@ -21,7 +21,7 @@ import com.github.littleemptydoll.exoequipment.module.GeneratedModuleGenerator;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
-import com.mojang.brigadier.arguments.LongArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -98,18 +98,39 @@ public final class ModCommands {
                                 .then(
                                         Commands.argument(
                                                         "seed",
-                                                        LongArgumentType.longArg()
+                                                        StringArgumentType.word()
                                                 )
-                                                .executes(context -> giveGeneratedModule(
+                                                .executes(context -> giveGeneratedModuleFromSeed(
                                                         context.getSource(),
                                                         tier,
-                                                        LongArgumentType.getLong(
+                                                        StringArgumentType.getString(
                                                                 context,
                                                                 "seed"
                                                         )
                                                 ))
                                 )
                 );
+    }
+
+    private static int giveGeneratedModuleFromSeed(
+            CommandSourceStack source,
+            EquipmentTier tier,
+            String seedText
+    ) {
+        try {
+            long seed;
+            try {
+                seed = Long.parseLong(seedText);
+            } catch (NumberFormatException ignored) {
+                seed = Long.parseUnsignedLong(seedText);
+            }
+            return giveGeneratedModule(source, tier, seed);
+        } catch (NumberFormatException exception) {
+            return fail(
+                    source,
+                    "Invalid seed. Use a signed or unsigned 64-bit integer."
+            );
+        }
     }
 
     private static int giveGeneratedModule(

@@ -78,6 +78,7 @@ public final class GeneratedModuleGenerator {
         GeneratedModulePlan plan = plan(tier, seed);
         ResourceLocation baseDefinitionId = prototypeDefinitionId(tier);
         ModuleDefinition definition = GeneratedModuleDefinitionBuilder.build(plan, seed);
+        definition = GeneratedModuleVariantRandomizer.apply(definition, plan, seed);
         GeneratedModuleData generated = new GeneratedModuleData(
                 seed,
                 baseDefinitionId,

@@ -21,6 +21,7 @@ import com.github.littleemptydoll.exoequipment.module.GeneratedModuleGenerator;
 import com.github.littleemptydoll.exoequipment.module.ModuleDefinition;
 import com.github.littleemptydoll.exoequipment.registry.ModDataComponents;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
+import com.mojang.brigadier.arguments.LongArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -60,29 +61,55 @@ public final class ModCommands {
                                         .then(
                                                 Commands.literal("generated")
                                                         .then(
-                                                                Commands.literal("military")
-                                                                        .executes(context -> giveGeneratedModule(
-                                                                                context.getSource(),
-                                                                                EquipmentTier.MILITARY
-                                                                        ))
+                                                                generatedTierCommand(
+                                                                        "military",
+                                                                        EquipmentTier.MILITARY
+                                                                )
                                                         )
                                                         .then(
-                                                                Commands.literal("engineering")
-                                                                        .executes(context -> giveGeneratedModule(
-                                                                                context.getSource(),
-                                                                                EquipmentTier.ENGINEERING
-                                                                        ))
+                                                                generatedTierCommand(
+                                                                        "engineering",
+                                                                        EquipmentTier.ENGINEERING
+                                                                )
                                                         )
                                                         .then(
-                                                                Commands.literal("experimental")
-                                                                        .executes(context -> giveGeneratedModule(
-                                                                                context.getSource(),
-                                                                                EquipmentTier.EXPERIMENTAL
-                                                                        ))
+                                                                generatedTierCommand(
+                                                                        "experimental",
+                                                                        EquipmentTier.EXPERIMENTAL
+                                                                )
                                                         )
                                         )
                         )
         );
+    }
+
+    private static com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack>
+    generatedTierCommand(
+            String literal,
+            EquipmentTier tier
+    ) {
+        return Commands.literal(literal)
+                .executes(context -> giveGeneratedModule(
+                        context.getSource(),
+                        tier
+                ))
+                .then(
+                        Commands.literal("seed")
+                                .then(
+                                        Commands.argument(
+                                                        "seed",
+                                                        LongArgumentType.longArg()
+                                                )
+                                                .executes(context -> giveGeneratedModule(
+                                                        context.getSource(),
+                                                        tier,
+                                                        LongArgumentType.getLong(
+                                                                context,
+                                                                "seed"
+                                                        )
+                                                ))
+                                )
+                );
     }
 
     private static int giveGeneratedModule(
@@ -94,7 +121,23 @@ public final class ModCommands {
             return 0;
         }
 
-        long seed = player.getRandom().nextLong();
+        return giveGeneratedModule(
+                source,
+                tier,
+                player.getRandom().nextLong()
+        );
+    }
+
+    private static int giveGeneratedModule(
+            CommandSourceStack source,
+            EquipmentTier tier,
+            long seed
+    ) {
+        ServerPlayer player = requirePlayer(source);
+        if (player == null) {
+            return 0;
+        }
+
         ItemStack stack = GeneratedModuleGenerator.createStack(tier, seed);
         GeneratedModuleData generated = stack.get(
                 ModDataComponents.GENERATED_MODULE_DATA.get()

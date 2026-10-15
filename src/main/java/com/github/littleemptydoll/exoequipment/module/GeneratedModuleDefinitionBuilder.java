@@ -73,6 +73,11 @@ public final class GeneratedModuleDefinitionBuilder {
         for (GeneratedPropertyType property : plan.properties()) {
             ModuleDefinition source = sourceFor(property, plan.tier(), random);
             double scale = rollEffectScale(plan.tier(), source.tier(), random);
+            scale *= rollComplexityScale(plan.properties().size(), random);
+            if (property == GeneratedPropertyType.GENERATION) {
+                // Hybrid generators are deliberately less efficient than dedicated ones.
+                scale *= 0.40D + random.nextDouble() * 0.30D;
+            }
             accumulator.apply(property, source, scale);
         }
 
@@ -264,6 +269,16 @@ public final class GeneratedModuleDefinitionBuilder {
             return roll * 2.0D;
         }
         return roll * 1.35D;
+    }
+
+    private static double rollComplexityScale(int propertyCount, RandomSource random) {
+        // Independent rolls allow a rare multi-property prototype to retain
+        // excellent values, while making uniformly overpowered rolls uncommon.
+        if (propertyCount <= 1 || random.nextDouble() >= Math.min(0.75D, (propertyCount - 1) * 0.12D)) {
+            return 1.0D;
+        }
+        double maximumPenalty = Math.min(0.25D, (propertyCount - 1) * 0.05D);
+        return 1.0D - random.nextDouble() * maximumPenalty;
     }
 
     private static ResourceLocation id(String namespace, String path) {

@@ -46,6 +46,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.exoequipment.fabricator.module_category.sensor", "Sensors");
         add("gui.exoequipment.fabricator.module_category.combat", "Combat");
         add("gui.exoequipment.fabricator.module_category.utility", "Utility");
+        add("gui.exoequipment.fabricator.module_category.experimental", "Experimental");
 
         for (DeferredHolder<Item, ? extends Item> holder : ModItems.ITEMS.getEntries()) {
             ResourceLocation id = holder.getId();

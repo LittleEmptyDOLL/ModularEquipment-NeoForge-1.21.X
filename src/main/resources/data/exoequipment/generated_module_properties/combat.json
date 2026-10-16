@@ -1,0 +1,72 @@
+{
+  "properties": {
+    "attack_damage": {"min_area":1,"tiers":{
+      "engineering":{"energy":{"min":15,"max":28,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.11,"max":0.19,"step":0.01,"distribution":"triangular"}},
+      "military":{"energy":{"min":22,"max":38,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.19,"max":0.32,"step":0.01,"distribution":"triangular"}},
+      "experimental":{"energy":{"min":42,"max":72,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.31,"max":0.50,"step":0.01,"distribution":"triangular"}}
+    }},
+    "attack_speed": {"min_area":1,"tiers":{
+      "engineering":{"energy":{"min":18,"max":32,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.14,"max":0.26,"step":0.01,"distribution":"triangular"}},
+      "experimental":{"energy":{"min":40,"max":68,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.28,"max":0.44,"step":0.01,"distribution":"triangular"}}
+    }},
+    "attack_knockback": {"min_area":1,"tiers":{"experimental":{"energy":{"min":18,"max":35,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.12,"max":0.30,"step":0.01,"distribution":"triangular"}}}},
+    "interaction_range": {"min_area":1,"tiers":{"experimental":{"energy":{"min":28,"max":52,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.75,"max":1.50,"step":0.05,"distribution":"triangular"}}}},
+    "crit_chance": {"min_area":1,"tiers":{
+      "engineering":{"energy":{"min":15,"max":28,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.07,"max":0.14,"step":0.01,"distribution":"triangular"}},
+      "military":{"energy":{"min":22,"max":38,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.11,"max":0.20,"step":0.01,"distribution":"triangular"}},
+      "experimental":{"energy":{"min":45,"max":78,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.16,"max":0.28,"step":0.01,"distribution":"triangular"}}
+    }},
+    "crit_damage": {"min_area":1,"tiers":{
+      "engineering":{"energy":{"min":18,"max":32,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.14,"max":0.27,"step":0.01,"distribution":"triangular"}},
+      "military":{"energy":{"min":26,"max":44,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.23,"max":0.38,"step":0.01,"distribution":"triangular"}},
+      "experimental":{"energy":{"min":48,"max":82,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.32,"max":0.52,"step":0.01,"distribution":"triangular"}}
+    }},
+    "current_hp_damage": {"min_area":4,"tiers":{
+      "military":{"energy":{"min":34,"max":58,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.035,"max":0.07,"step":0.0025,"distribution":"triangular"}},
+      "experimental":{"energy":{"min":55,"max":95,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.06,"max":0.11,"step":0.0025,"distribution":"triangular"}}
+    }},
+    "life_steal": {"min_area":4,"tiers":{
+      "military":{"energy":{"min":38,"max":62,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.035,"max":0.07,"step":0.0025,"distribution":"triangular"}},
+      "experimental":{"energy":{"min":65,"max":110,"step":2,"distribution":"triangular"},"priority":4,"amount":{"min":0.055,"max":0.10,"step":0.0025,"distribution":"triangular"}}
+    }},
+    "overheal": {"min_area":6,"tiers":{"experimental":{"energy":{"min":70,"max":120,"step":2,"distribution":"triangular"},"priority":4,"amount":{"min":0.075,"max":0.15,"step":0.005,"distribution":"triangular"}}}},
+    "armor_pierce": {"min_area":4,"tiers":{
+      "military":{"energy":{"min":30,"max":50,"step":1,"distribution":"triangular"},"priority":4,"armor":{"min":0.15,"max":0.26,"step":0.01,"distribution":"triangular"},"protection":{"min":0.07,"max":0.14,"step":0.01,"distribution":"triangular"}},
+      "experimental":{"energy":{"min":62,"max":105,"step":1,"distribution":"triangular"},"priority":4,"armor":{"min":0.22,"max":0.34,"step":0.01,"distribution":"triangular"},"protection":{"min":0.12,"max":0.22,"step":0.01,"distribution":"triangular"}}
+    }},
+    "armor_shred": {"min_area":4,"tiers":{
+      "engineering":{"energy":{"min":30,"max":50,"step":1,"distribution":"triangular"},"priority":4,"armor":{"min":0.11,"max":0.20,"step":0.01,"distribution":"triangular"},"protection":{"min":0.07,"max":0.14,"step":0.01,"distribution":"triangular"}},
+      "experimental":{"energy":{"min":60,"max":100,"step":1,"distribution":"triangular"},"priority":4,"armor":{"min":0.17,"max":0.30,"step":0.01,"distribution":"triangular"},"protection":{"min":0.10,"max":0.20,"step":0.01,"distribution":"triangular"}}
+    }},
+    "ranged_damage": {"min_area":4,"tiers":{
+      "engineering":{"energy":{"min":30,"max":50,"step":1,"distribution":"triangular"},"priority":4,"damage":{"min":0.11,"max":0.20,"step":0.01,"distribution":"triangular"},"velocity":{"min":0.10,"max":0.20,"step":0.01,"distribution":"triangular"}},
+      "experimental":{"energy":{"min":58,"max":98,"step":1,"distribution":"triangular"},"priority":4,"damage":{"min":0.20,"max":0.34,"step":0.01,"distribution":"triangular"},"velocity":{"min":0.18,"max":0.32,"step":0.01,"distribution":"triangular"}}
+    }},
+    "draw_speed": {"min_area":1,"tiers":{
+      "engineering":{"energy":{"min":15,"max":28,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.11,"max":0.20,"step":0.01,"distribution":"triangular"}},
+      "experimental":{"energy":{"min":28,"max":50,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.20,"max":0.34,"step":0.01,"distribution":"triangular"}}
+    }},
+    "fire_damage": {"min_area":4,"tiers":{
+      "military":{"energy":{"min":30,"max":52,"step":1,"distribution":"triangular"},"priority":4,"damage":{"min":3,"max":5.5,"step":0.25,"distribution":"triangular"},"heat":{"min":3,"max":7,"step":0.5,"distribution":"triangular"}},
+      "experimental":{"energy":{"min":60,"max":105,"step":1,"distribution":"triangular"},"priority":4,"damage":{"min":5,"max":9,"step":0.25,"distribution":"triangular"},"heat":{"min":5,"max":10,"step":0.5,"distribution":"triangular"}}
+    }},
+    "cold_damage": {"min_area":4,"tiers":{
+      "engineering":{"energy":{"min":30,"max":52,"step":1,"distribution":"triangular"},"priority":4,"damage":{"min":3,"max":5.5,"step":0.25,"distribution":"triangular"},"cooling":{"min":3,"max":7,"step":0.5,"distribution":"triangular"}},
+      "experimental":{"energy":{"min":60,"max":105,"step":1,"distribution":"triangular"},"priority":4,"damage":{"min":5,"max":9,"step":0.25,"distribution":"triangular"},"cooling":{"min":5,"max":10,"step":0.5,"distribution":"triangular"}}
+    }},
+    "adrenaline": {"min_area":4,"tiers":{
+      "military":{"energy":{"min":22,"max":40,"step":1,"distribution":"triangular"},"priority":4,"attack_damage":{"min":0.18,"max":0.32,"step":0.01,"distribution":"triangular"},"attack_speed":{"min":0.10,"max":0.20,"step":0.01,"distribution":"triangular"}},
+      "experimental":{"energy":{"min":42,"max":75,"step":1,"distribution":"triangular"},"priority":4,"attack_damage":{"min":0.30,"max":0.48,"step":0.01,"distribution":"triangular"},"attack_speed":{"min":0.18,"max":0.32,"step":0.01,"distribution":"triangular"}}
+    }},
+    "laser_defense": {"min_area":4,"tiers":{
+      "engineering":{"range":{"min":8,"max":12,"step":0.5,"distribution":"triangular"},"damage":{"min":2.2,"max":4.2,"step":0.25,"distribution":"triangular"},"cooldown":{"min":5,"max":9,"step":1,"distribution":"triangular"},"energy_cost":{"min":650,"max":1200,"step":50,"distribution":"triangular"},"target_players":false,"target_hostile":true,"target_aggressive":true},
+      "military":{"range":{"min":10,"max":17,"step":0.5,"distribution":"triangular"},"damage":{"min":4,"max":9.5,"step":0.25,"distribution":"triangular"},"cooldown":{"min":9,"max":20,"step":1,"distribution":"triangular"},"energy_cost":{"min":1200,"max":3800,"step":100,"distribution":"triangular"},"target_players":false,"target_hostile":true,"target_aggressive":true},
+      "experimental":{"range":{"min":16,"max":24,"step":0.5,"distribution":"triangular"},"damage":{"min":6,"max":11,"step":0.25,"distribution":"triangular"},"cooldown":{"min":6,"max":12,"step":1,"distribution":"triangular"},"energy_cost":{"min":2200,"max":4200,"step":100,"distribution":"triangular"},"target_players":false,"target_hostile":true,"target_aggressive":true}
+    }},
+    "discharge_defense": {"min_area":6,"tiers":{
+      "engineering":{"range":{"min":4,"max":6,"step":0.25,"distribution":"triangular"},"jump_range":{"min":3,"max":5,"step":0.25,"distribution":"triangular"},"damage":{"min":4,"max":6.5,"step":0.25,"distribution":"triangular"},"falloff":{"min":0.62,"max":0.78,"step":0.01,"distribution":"triangular"},"targets":{"min":1,"max":3,"step":1,"distribution":"triangular"},"bounces":{"min":2,"max":4,"step":1,"distribution":"triangular"},"cooldown":{"min":42,"max":62,"step":1,"distribution":"triangular"},"energy_cost":{"min":7000,"max":12000,"step":250,"distribution":"triangular"},"target_players":false,"target_hostile":true,"target_aggressive":true},
+      "military":{"range":{"min":5,"max":7,"step":0.25,"distribution":"triangular"},"jump_range":{"min":4,"max":6,"step":0.25,"distribution":"triangular"},"damage":{"min":6,"max":10,"step":0.25,"distribution":"triangular"},"falloff":{"min":0.68,"max":0.82,"step":0.01,"distribution":"triangular"},"targets":{"min":1,"max":2,"step":1,"distribution":"triangular"},"bounces":{"min":2,"max":4,"step":1,"distribution":"triangular"},"cooldown":{"min":48,"max":70,"step":1,"distribution":"triangular"},"energy_cost":{"min":6000,"max":11000,"step":250,"distribution":"triangular"},"target_players":false,"target_hostile":true,"target_aggressive":true},
+      "experimental":{"range":{"min":6,"max":9,"step":0.25,"distribution":"triangular"},"jump_range":{"min":5,"max":8,"step":0.25,"distribution":"triangular"},"damage":{"min":8,"max":13,"step":0.25,"distribution":"triangular"},"falloff":{"min":0.74,"max":0.88,"step":0.01,"distribution":"triangular"},"targets":{"min":2,"max":4,"step":1,"distribution":"triangular"},"bounces":{"min":4,"max":7,"step":1,"distribution":"triangular"},"cooldown":{"min":30,"max":52,"step":1,"distribution":"triangular"},"energy_cost":{"min":18000,"max":30000,"step":500,"distribution":"triangular"},"target_players":false,"target_hostile":true,"target_aggressive":true}
+    }}
+  }
+}

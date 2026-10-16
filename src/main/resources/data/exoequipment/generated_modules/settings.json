@@ -1,0 +1,36 @@
+{
+  "sizes": [
+    { "width": 1, "height": 1, "weight": 18 },
+    { "width": 1, "height": 2, "weight": 16 },
+    { "width": 1, "height": 3, "weight": 10 },
+    { "width": 2, "height": 2, "weight": 14 },
+    { "width": 1, "height": 4, "weight": 6 },
+    { "width": 2, "height": 3, "weight": 12 },
+    { "width": 2, "height": 4, "weight": 9 },
+    { "width": 3, "height": 3, "weight": 8 },
+    { "width": 3, "height": 4, "weight": 5 },
+    { "width": 4, "height": 4, "weight": 2 }
+  ],
+  "property_counts": [
+    { "min_area": 1, "max_area": 1, "weights": { "1": 85, "2": 15 } },
+    { "min_area": 2, "max_area": 3, "weights": { "2": 100 } },
+    { "min_area": 4, "max_area": 5, "weights": { "2": 50, "3": 50 } },
+    { "min_area": 6, "max_area": 8, "weights": { "3": 50, "4": 50 } },
+    { "min_area": 9, "max_area": 12, "weights": { "4": 50, "5": 50 } },
+    { "min_area": 13, "max_area": 16, "weights": { "5": 50, "6": 50 } }
+  ],
+  "integration_multipliers": {
+    "1": 1.0,
+    "2": 1.20,
+    "3": 1.45,
+    "4": 1.75,
+    "5": 2.15,
+    "6": 2.65
+  },
+  "complexity": {
+    "chance_per_extra_property": 0.12,
+    "max_chance": 0.75,
+    "penalty_per_extra_property": 0.05,
+    "max_penalty": 0.25
+  }
+}

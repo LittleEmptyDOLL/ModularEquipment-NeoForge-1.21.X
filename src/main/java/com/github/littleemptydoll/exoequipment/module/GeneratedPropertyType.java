@@ -78,15 +78,11 @@ public enum GeneratedPropertyType {
 
     private final boolean engineering;
     private final boolean military;
-    private final int minArea;
+    private final int legacyMinArea;
     private final Dependency dependency;
-    private final ConflictSide conflictSide;
+    private final ConflictSide legacyConflictSide;
 
-    GeneratedPropertyType(
-            boolean engineering,
-            boolean military,
-            int minArea
-    ) {
+    GeneratedPropertyType(boolean engineering, boolean military, int minArea) {
         this(engineering, military, minArea, Dependency.NONE, ConflictSide.NONE);
     }
 
@@ -117,13 +113,13 @@ public enum GeneratedPropertyType {
     ) {
         this.engineering = engineering;
         this.military = military;
-        this.minArea = minArea;
+        this.legacyMinArea = minArea;
         this.dependency = dependency;
-        this.conflictSide = conflictSide;
+        this.legacyConflictSide = conflictSide;
     }
 
     public int minArea() {
-        return minArea;
+        return GeneratedModuleRules.minArea(this, legacyMinArea);
     }
 
     public boolean isAvailableFor(EquipmentTier tier) {
@@ -131,27 +127,36 @@ public enum GeneratedPropertyType {
             return false;
         }
 
-        return switch (tier) {
+        boolean legacyAvailable = switch (tier) {
             case ENGINEERING -> engineering;
             case MILITARY -> military;
             case EXPERIMENTAL -> true;
             default -> false;
         };
+
+        return GeneratedModuleRules.isAvailableFor(this, tier, legacyAvailable);
     }
 
     public boolean conflictsWith(GeneratedPropertyType other) {
         if (other == null || other == this) {
             return false;
         }
+        return GeneratedModuleRules.conflictsWith(
+                this,
+                other,
+                legacyConflictsWith(other)
+        );
+    }
 
-        return (conflictSide == ConflictSide.HEATING
-                && other.conflictSide == ConflictSide.COOLING)
-                || (conflictSide == ConflictSide.COOLING
-                && other.conflictSide == ConflictSide.HEATING)
-                || (conflictSide == ConflictSide.JETPACK
-                && other.conflictSide == ConflictSide.FLIGHT)
-                || (conflictSide == ConflictSide.FLIGHT
-                && other.conflictSide == ConflictSide.JETPACK);
+    private boolean legacyConflictsWith(GeneratedPropertyType other) {
+        return (legacyConflictSide == ConflictSide.HEATING
+                && other.legacyConflictSide == ConflictSide.COOLING)
+                || (legacyConflictSide == ConflictSide.COOLING
+                && other.legacyConflictSide == ConflictSide.HEATING)
+                || (legacyConflictSide == ConflictSide.JETPACK
+                && other.legacyConflictSide == ConflictSide.FLIGHT)
+                || (legacyConflictSide == ConflictSide.FLIGHT
+                && other.legacyConflictSide == ConflictSide.JETPACK);
     }
 
     private enum ConflictSide {

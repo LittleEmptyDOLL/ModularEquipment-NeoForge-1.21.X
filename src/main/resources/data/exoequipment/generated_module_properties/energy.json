@@ -1,0 +1,41 @@
+{
+  "properties": {
+    "storage": {
+      "min_area": 4,
+      "tiers": {
+        "engineering": {
+          "capacity": { "min": 500000, "max": 800000, "step": 25000, "distribution": "triangular" },
+          "input": { "min": 450, "max": 750, "step": 25, "distribution": "triangular" },
+          "output": { "min": 400, "max": 650, "step": 25, "distribution": "triangular" }
+        },
+        "military": {
+          "capacity": { "min": 450000, "max": 1100000, "step": 25000, "distribution": "triangular" },
+          "input": { "min": 225, "max": 425, "step": 25, "distribution": "triangular" },
+          "output": { "min": 450, "max": 900, "step": 25, "distribution": "triangular" }
+        },
+        "experimental": {
+          "capacity": { "min": 1800000, "max": 3500000, "step": 50000, "distribution": "triangular" },
+          "input": { "min": 1400, "max": 2400, "step": 50, "distribution": "triangular" },
+          "output": { "min": 1400, "max": 2600, "step": 50, "distribution": "triangular" }
+        }
+      }
+    },
+    "generation": {
+      "min_area": 6,
+      "tiers": {
+        "engineering": {
+          "generation": { "min": 45, "max": 90, "step": 5, "distribution": "triangular" },
+          "heat": { "min": 3, "max": 7, "step": 1, "distribution": "triangular" }
+        },
+        "military": {
+          "generation": { "min": 65, "max": 125, "step": 5, "distribution": "triangular" },
+          "heat": { "min": 5, "max": 12, "step": 1, "distribution": "triangular" }
+        },
+        "experimental": {
+          "generation": { "min": 130, "max": 280, "step": 10, "distribution": "triangular" },
+          "heat": { "min": 8, "max": 18, "step": 1, "distribution": "triangular" }
+        }
+      }
+    }
+  }
+}

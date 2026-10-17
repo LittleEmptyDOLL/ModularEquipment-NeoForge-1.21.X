@@ -365,7 +365,6 @@ public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceRel
                             }
                         }
                         ruleObject.add("components", components);
-                        ruleObject.addProperty("replace_legacy", true);
 
                         String suffix = field.getKey() + "/" + (tag ? "tag/" : "")
                                 + rawId.replace(':', '/') + (variants.size() > 1 ? "/" + index : "");
@@ -413,9 +412,7 @@ public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceRel
             Set<ResourceLocation> conflicts,
             Set<String> requirements,
             Map<EquipmentTier, TierRule> tiers,
-            Optional<GeneratedPropertyType> legacyType,
             List<JsonObject> components,
-            boolean replaceLegacy,
             boolean ignoreQuality
     ) {
         static PropertyRule parse(ResourceLocation id, ResourceLocation containerId, JsonObject object) {
@@ -433,12 +430,7 @@ public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceRel
                 }
             }
 
-            Optional<GeneratedPropertyType> legacy = inferLegacy(id, object);
-            LinkedHashSet<String> requirements = new LinkedHashSet<>(parseRequirements(object));
-            legacy.ifPresent(type -> {
-                String dependency = type.requiredModId();
-                if (dependency != null) requirements.add(dependency);
-            });
+            Set<String> requirements = parseRequirements(object);
 
             EnumMap<EquipmentTier, TierRule> tiers = new EnumMap<>(EquipmentTier.class);
             JsonObject tierObject = object.getAsJsonObject("tiers");
@@ -456,9 +448,6 @@ public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceRel
                 }
             }
 
-            boolean replaceLegacy = object.has("replace_legacy")
-                    ? object.get("replace_legacy").getAsBoolean()
-                    : !components.isEmpty();
             boolean ignoreQuality = object.has("ignore_quality")
                     && object.get("ignore_quality").getAsBoolean();
 
@@ -470,9 +459,7 @@ public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceRel
                     Set.copyOf(conflicts),
                     Set.copyOf(requirements),
                     Map.copyOf(tiers),
-                    legacy,
                     List.copyOf(components),
-                    replaceLegacy,
                     ignoreQuality
             );
         }
@@ -495,17 +482,6 @@ public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceRel
             return rule;
         }
 
-        private static Optional<GeneratedPropertyType> inferLegacy(ResourceLocation id, JsonObject object) {
-            String value = object.has("implementation")
-                    ? object.get("implementation").getAsString()
-                    : id.getNamespace().equals(ExoEquipment.MODID) ? id.getPath() : null;
-            if (value == null) return Optional.empty();
-            try {
-                return Optional.of(GeneratedPropertyType.valueOf(value.toUpperCase(Locale.ROOT)));
-            } catch (IllegalArgumentException ignored) {
-                return Optional.empty();
-            }
-        }
     }
 
     public static final class TierRule {

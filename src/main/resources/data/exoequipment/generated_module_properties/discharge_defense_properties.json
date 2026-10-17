@@ -1,1 +1,183 @@
-{"container":"exoequipment:discharge_defense_properties","entries":{"discharge_defense":{"min_area":6,"tiers":{"engineering":{"range":{"min":4,"max":6,"step":0.25,"distribution":"triangular"},"jump_range":{"min":3,"max":5,"step":0.25,"distribution":"triangular"},"damage":{"min":4,"max":6.5,"step":0.25,"distribution":"triangular"},"falloff":{"min":0.62,"max":0.78,"step":0.01,"distribution":"triangular"},"targets":{"min":1,"max":3,"step":1,"distribution":"triangular"},"bounces":{"min":2,"max":4,"step":1,"distribution":"triangular"},"cooldown":{"min":42,"max":62,"step":1,"distribution":"triangular"},"energy_cost":{"min":7000,"max":12000,"step":250,"distribution":"triangular"},"target_players":false,"target_hostile":true,"target_aggressive":true},"military":{"range":{"min":5,"max":7,"step":0.25,"distribution":"triangular"},"jump_range":{"min":4,"max":6,"step":0.25,"distribution":"triangular"},"damage":{"min":6,"max":10,"step":0.25,"distribution":"triangular"},"falloff":{"min":0.68,"max":0.82,"step":0.01,"distribution":"triangular"},"targets":{"min":1,"max":2,"step":1,"distribution":"triangular"},"bounces":{"min":2,"max":4,"step":1,"distribution":"triangular"},"cooldown":{"min":48,"max":70,"step":1,"distribution":"triangular"},"energy_cost":{"min":6000,"max":11000,"step":250,"distribution":"triangular"},"target_players":false,"target_hostile":true,"target_aggressive":true},"experimental":{"range":{"min":6,"max":9,"step":0.25,"distribution":"triangular"},"jump_range":{"min":5,"max":8,"step":0.25,"distribution":"triangular"},"damage":{"min":8,"max":13,"step":0.25,"distribution":"triangular"},"falloff":{"min":0.74,"max":0.88,"step":0.01,"distribution":"triangular"},"targets":{"min":2,"max":4,"step":1,"distribution":"triangular"},"bounces":{"min":4,"max":7,"step":1,"distribution":"triangular"},"cooldown":{"min":30,"max":52,"step":1,"distribution":"triangular"},"energy_cost":{"min":18000,"max":30000,"step":500,"distribution":"triangular"},"target_players":false,"target_hostile":true,"target_aggressive":true}}}}}
+{
+  "container": "exoequipment:discharge_defense_properties",
+  "entries": {
+    "discharge_defense": {
+      "min_area": 6,
+      "tiers": {
+        "engineering": {
+          "range": {
+            "min": 4,
+            "max": 6,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "jump_range": {
+            "min": 3,
+            "max": 5,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "damage": {
+            "min": 4,
+            "max": 6.5,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "falloff": {
+            "min": 0.62,
+            "max": 0.78,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "targets": {
+            "min": 1,
+            "max": 3,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "bounces": {
+            "min": 2,
+            "max": 4,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "cooldown": {
+            "min": 42,
+            "max": 62,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "energy_cost": {
+            "min": 7000,
+            "max": 12000,
+            "step": 250,
+            "distribution": "triangular"
+          },
+          "target_players": false,
+          "target_hostile": true,
+          "target_aggressive": true
+        },
+        "military": {
+          "range": {
+            "min": 5,
+            "max": 7,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "jump_range": {
+            "min": 4,
+            "max": 6,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "damage": {
+            "min": 6,
+            "max": 10,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "falloff": {
+            "min": 0.68,
+            "max": 0.82,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "targets": {
+            "min": 1,
+            "max": 2,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "bounces": {
+            "min": 2,
+            "max": 4,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "cooldown": {
+            "min": 48,
+            "max": 70,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "energy_cost": {
+            "min": 6000,
+            "max": 11000,
+            "step": 250,
+            "distribution": "triangular"
+          },
+          "target_players": false,
+          "target_hostile": true,
+          "target_aggressive": true
+        },
+        "experimental": {
+          "range": {
+            "min": 6,
+            "max": 9,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "jump_range": {
+            "min": 5,
+            "max": 8,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "damage": {
+            "min": 8,
+            "max": 13,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "falloff": {
+            "min": 0.74,
+            "max": 0.88,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "targets": {
+            "min": 2,
+            "max": 4,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "bounces": {
+            "min": 4,
+            "max": 7,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "cooldown": {
+            "min": 30,
+            "max": 52,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "energy_cost": {
+            "min": 18000,
+            "max": 30000,
+            "step": 500,
+            "distribution": "triangular"
+          },
+          "target_players": false,
+          "target_hostile": true,
+          "target_aggressive": true
+        }
+      },
+      "components": [
+        {
+          "type": "discharge_defense",
+          "range": "range",
+          "jump_range": "jump_range",
+          "damage": "damage",
+          "falloff": "falloff",
+          "targets": "targets",
+          "bounces": "bounces",
+          "cooldown": "cooldown",
+          "energy_cost": "energy_cost"
+        }
+      ],
+      "replace_legacy": true
+    }
+  }
+}

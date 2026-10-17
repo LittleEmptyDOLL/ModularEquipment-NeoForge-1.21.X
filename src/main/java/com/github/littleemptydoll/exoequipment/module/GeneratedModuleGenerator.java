@@ -9,12 +9,14 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class GeneratedModuleGenerator {
     private GeneratedModuleGenerator() {}
 
-    /** Legacy enum plan retained for compatibility/debug code. */
+    /** Legacy enum plan retained for compatibility/debug code only. */
     public static GeneratedModulePlan plan(
             EquipmentTier tier,
             long seed
@@ -42,9 +44,7 @@ public final class GeneratedModuleGenerator {
 
             boolean conflicts = selected.stream()
                     .anyMatch(existing -> existing.conflictsWith(property));
-            if (conflicts) {
-                continue;
-            }
+            if (conflicts) continue;
 
             selected.add(property);
             candidates.removeIf(candidate ->
@@ -61,7 +61,12 @@ public final class GeneratedModuleGenerator {
         return new GeneratedModulePlan(tier, size, selected);
     }
 
-    /** ResourceLocation keyed V2 plan used for actual generated modules. */
+    /**
+     * Container-first generated-module plan used by actual prototype modules.
+     * Each requested slot rolls a ModuleDefinition properties container first,
+     * then one entry inside it. Repeatable containers (notably attributes) may
+     * therefore fill several slots while still merging into one final field.
+     */
     public static GeneratedModulePropertyPlan propertyPlan(
             EquipmentTier tier,
             long seed
@@ -73,43 +78,72 @@ public final class GeneratedModuleGenerator {
         int area = size.width() * size.height();
         int requestedProperties = rollPropertyCount(area, random);
 
-        List<GeneratedModulePropertyRegistry.PropertyRule> candidates =
-                new ArrayList<>(GeneratedModulePropertyRegistry.candidates(tier, area));
         List<ResourceLocation> selected = new ArrayList<>();
+        Map<ResourceLocation, Integer> containerUses = new HashMap<>();
 
-        while (!candidates.isEmpty() && selected.size() < requestedProperties) {
-            int totalWeight = candidates.stream()
-                    .mapToInt(GeneratedModulePropertyRegistry.PropertyRule::weight)
-                    .sum();
-            int weightRoll = random.nextInt(totalWeight);
-            GeneratedModulePropertyRegistry.PropertyRule picked = candidates.get(candidates.size() - 1);
-            for (GeneratedModulePropertyRegistry.PropertyRule candidate : candidates) {
-                weightRoll -= candidate.weight();
-                if (weightRoll < 0) {
-                    picked = candidate;
-                    break;
+        while (selected.size() < requestedProperties) {
+            List<ContainerChoice> availableContainers = new ArrayList<>();
+            for (GeneratedModulePropertyRegistry.ContainerRule container
+                    : GeneratedModulePropertyRegistry.containers()) {
+                if (!container.isAvailable()) continue;
+                int used = containerUses.getOrDefault(container.id(), 0);
+                if (used >= container.maxRolls()) continue;
+
+                List<GeneratedModulePropertyRegistry.PropertyRule> entries =
+                        container.candidates(tier, area, selected);
+                if (!entries.isEmpty()) {
+                    availableContainers.add(new ContainerChoice(container, entries));
                 }
             }
-            candidates.remove(picked);
 
-            final GeneratedModulePropertyRegistry.PropertyRule selectedRule = picked;
-            boolean conflicts = selected.stream().anyMatch(selectedRule::conflictsWith);
-            if (conflicts) continue;
+            if (availableContainers.isEmpty()) break;
 
-            selected.add(selectedRule.id());
-            candidates.removeIf(candidate ->
-                    selectedRule.conflictsWith(candidate.id())
-                            || candidate.conflictsWith(selectedRule.id()));
+            ContainerChoice containerChoice = weightedContainer(availableContainers, random);
+            GeneratedModulePropertyRegistry.PropertyRule entry =
+                    weightedEntry(containerChoice.entries(), random);
+
+            selected.add(entry.id());
+            containerUses.merge(containerChoice.container().id(), 1, Integer::sum);
         }
 
         if (selected.isEmpty()) {
             throw new IllegalStateException(
-                    "No extensible generated module properties available for "
+                    "No generated module parameter entries available for "
                             + tier + " at size " + size.width() + "x" + size.height()
             );
         }
 
         return new GeneratedModulePropertyPlan(tier, size, selected);
+    }
+
+    private static ContainerChoice weightedContainer(
+            List<ContainerChoice> choices,
+            RandomSource random
+    ) {
+        int totalWeight = choices.stream()
+                .mapToInt(choice -> choice.container().weight())
+                .sum();
+        int roll = random.nextInt(totalWeight);
+        for (ContainerChoice choice : choices) {
+            roll -= choice.container().weight();
+            if (roll < 0) return choice;
+        }
+        return choices.get(choices.size() - 1);
+    }
+
+    private static GeneratedModulePropertyRegistry.PropertyRule weightedEntry(
+            List<GeneratedModulePropertyRegistry.PropertyRule> entries,
+            RandomSource random
+    ) {
+        int totalWeight = entries.stream()
+                .mapToInt(GeneratedModulePropertyRegistry.PropertyRule::weight)
+                .sum();
+        int roll = random.nextInt(totalWeight);
+        for (GeneratedModulePropertyRegistry.PropertyRule entry : entries) {
+            roll -= entry.weight();
+            if (roll < 0) return entry;
+        }
+        return entries.get(entries.size() - 1);
     }
 
     public static GeneratedModuleData generate(
@@ -191,4 +225,9 @@ public final class GeneratedModuleGenerator {
             );
         }
     }
+
+    private record ContainerChoice(
+            GeneratedModulePropertyRegistry.ContainerRule container,
+            List<GeneratedModulePropertyRegistry.PropertyRule> entries
+    ) {}
 }

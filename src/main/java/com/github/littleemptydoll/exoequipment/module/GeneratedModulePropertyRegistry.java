@@ -4,7 +4,6 @@ import com.github.littleemptydoll.exoequipment.ExoEquipment;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
@@ -30,13 +29,13 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * V2 registry for procedurally generated module properties.
+ * Registry for procedurally generated module parameters.
  *
- * <p>Unlike {@link GeneratedPropertyType}, property identity is a ResourceLocation.
- * Any datapack namespace may contribute a property under
- * {@code generated_module_properties}. Multiple files may contribute fragments to
- * the same property; object fields are merged recursively while arrays/scalars in
- * the later fragment replace earlier values.</p>
+ * <p>The top-level unit is a {@link ModuleDefinition} properties container
+ * (for example {@code attribute_properties} or {@code shield_properties}).
+ * A generated module first rolls a container and only then an entry inside that
+ * container. Repeatable containers can therefore contribute several entries to
+ * the same final ModuleDefinition field.</p>
  */
 @EventBusSubscriber(modid = ExoEquipment.MODID)
 public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceReloadListener {
@@ -46,6 +45,7 @@ public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceRel
     private static final GeneratedModulePropertyRegistry INSTANCE = new GeneratedModulePropertyRegistry();
 
     private static volatile Map<ResourceLocation, PropertyRule> rules = Map.of();
+    private static volatile Map<ResourceLocation, ContainerRule> containers = Map.of();
 
     private GeneratedModulePropertyRegistry() {
         super(GSON, DIRECTORY);
@@ -68,22 +68,26 @@ public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceRel
                 .sorted(Comparator.comparing(entry -> entry.getKey().toString()))
                 .forEach(entry -> collect(entry.getKey(), entry.getValue(), fragments));
 
-        Map<ResourceLocation, PropertyRule> loaded = new LinkedHashMap<>();
+        Map<ResourceLocation, PropertyRule> loadedRules = new LinkedHashMap<>();
+        Map<ResourceLocation, ContainerRule> loadedContainers = new LinkedHashMap<>();
+
         fragments.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey(Comparator.comparing(ResourceLocation::toString)))
                 .forEach(entry -> {
                     try {
-                        PropertyRule rule = PropertyRule.parse(entry.getKey(), entry.getValue());
-                        if (!rule.tiers().isEmpty()) {
-                            loaded.put(entry.getKey(), rule);
-                        }
+                        ContainerRule container = ContainerRule.parse(entry.getKey(), entry.getValue(), loadedRules);
+                        loadedContainers.put(container.id(), container);
                     } catch (RuntimeException exception) {
-                        LOGGER.error("Failed to load generated property {}", entry.getKey(), exception);
+                        LOGGER.error("Failed to load generated parameter container {}", entry.getKey(), exception);
                     }
                 });
 
-        rules = Map.copyOf(loaded);
-        LOGGER.info("Loaded {} extensible generated-module properties", rules.size());
+        rules = Map.copyOf(loadedRules);
+        containers = Map.copyOf(loadedContainers);
+        LOGGER.info(
+                "Loaded {} generated-module parameter containers with {} entries",
+                containers.size(), rules.size()
+        );
     }
 
     private static void collect(
@@ -96,25 +100,19 @@ public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceRel
                 throw new IllegalArgumentException("Root must be a JSON object");
             }
             JsonObject root = element.getAsJsonObject();
-            JsonObject properties = root.has("properties")
-                    ? root.getAsJsonObject("properties")
-                    : root;
-
-            for (Map.Entry<String, JsonElement> entry : properties.entrySet()) {
-                if (!entry.getValue().isJsonObject()) {
-                    throw new IllegalArgumentException("Property " + entry.getKey() + " must be an object");
-                }
-                ResourceLocation id = parseId(sourceId.getNamespace(), entry.getKey());
-                JsonObject merged = target.computeIfAbsent(id, ignored -> new JsonObject());
-                deepMerge(merged, entry.getValue().getAsJsonObject());
-            }
+            ResourceLocation containerId = root.has("container")
+                    ? parseId(sourceId.getNamespace(), root.get("container").getAsString())
+                    : sourceId;
+            JsonObject merged = target.computeIfAbsent(containerId, ignored -> new JsonObject());
+            deepMerge(merged, root);
         } catch (RuntimeException exception) {
-            LOGGER.error("Failed to collect extensible generated properties from {}", sourceId, exception);
+            LOGGER.error("Failed to collect generated parameter container from {}", sourceId, exception);
         }
     }
 
     private static void deepMerge(JsonObject target, JsonObject patch) {
         for (Map.Entry<String, JsonElement> entry : patch.entrySet()) {
+            if (entry.getKey().equals("container")) continue;
             JsonElement existing = target.get(entry.getKey());
             JsonElement replacement = entry.getValue();
             if (existing != null && existing.isJsonObject() && replacement.isJsonObject()) {
@@ -125,6 +123,7 @@ public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceRel
         }
     }
 
+    /** Flat entry view retained for the definition builder and debugging. */
     public static List<PropertyRule> candidates(EquipmentTier tier, int area) {
         return rules.values().stream()
                 .filter(rule -> rule.isAvailableFor(tier) && rule.minArea() <= area)
@@ -132,10 +131,16 @@ public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceRel
                 .toList();
     }
 
+    public static List<ContainerRule> containers() {
+        return containers.values().stream()
+                .sorted(Comparator.comparing(container -> container.id().toString()))
+                .toList();
+    }
+
     public static PropertyRule rule(ResourceLocation id) {
         PropertyRule rule = rules.get(id);
         if (rule == null) {
-            throw new IllegalStateException("No generated-module property rule loaded for " + id);
+            throw new IllegalStateException("No generated-module entry rule loaded for " + id);
         }
         return rule;
     }
@@ -189,8 +194,84 @@ public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceRel
         return requirementsLoaded(parseRequirements(object));
     }
 
+    public record ContainerRule(
+            ResourceLocation id,
+            int weight,
+            int maxRolls,
+            boolean selectable,
+            Set<String> requirements,
+            List<ResourceLocation> entries
+    ) {
+        static ContainerRule parse(
+                ResourceLocation id,
+                JsonObject object,
+                Map<ResourceLocation, PropertyRule> loadedRules
+        ) {
+            int weight = object.has("weight") ? object.get("weight").getAsInt() : 1;
+            if (weight <= 0) throw new IllegalArgumentException(id + " weight must be positive");
+
+            boolean selectable = !object.has("selectable") || object.get("selectable").getAsBoolean();
+            int maxRolls = object.has("max_rolls") ? object.get("max_rolls").getAsInt() : 1;
+            if (maxRolls < 0 || (selectable && maxRolls == 0)) {
+                throw new IllegalArgumentException(id + " max_rolls must be positive for selectable containers");
+            }
+
+            Set<String> requirements = parseRequirements(object);
+            List<ResourceLocation> entryIds = new ArrayList<>();
+            JsonObject entries = object.getAsJsonObject("entries");
+            if (entries != null) {
+                for (Map.Entry<String, JsonElement> entry : entries.entrySet()) {
+                    if (!entry.getValue().isJsonObject()) {
+                        throw new IllegalArgumentException("Entry " + entry.getKey() + " must be an object");
+                    }
+                    ResourceLocation entryId = parseId(id.getNamespace(), entry.getKey());
+                    PropertyRule rule = PropertyRule.parse(entryId, id, entry.getValue().getAsJsonObject());
+                    if (!rule.tiers().isEmpty()) {
+                        if (loadedRules.put(entryId, rule) != null) {
+                            throw new IllegalArgumentException("Duplicate generated-module entry " + entryId);
+                        }
+                        entryIds.add(entryId);
+                    }
+                }
+            }
+
+            if (selectable && entryIds.isEmpty()) {
+                throw new IllegalArgumentException(id + " is selectable but has no entries");
+            }
+
+            return new ContainerRule(
+                    id,
+                    weight,
+                    maxRolls,
+                    selectable,
+                    requirements,
+                    List.copyOf(entryIds)
+            );
+        }
+
+        public boolean isAvailable() {
+            return selectable && requirementsLoaded(requirements);
+        }
+
+        public List<PropertyRule> candidates(
+                EquipmentTier tier,
+                int area,
+                List<ResourceLocation> selected
+        ) {
+            return entries.stream()
+                    .map(rules::get)
+                    .filter(rule -> rule != null)
+                    .filter(rule -> rule.isAvailableFor(tier) && rule.minArea() <= area)
+                    .filter(rule -> !selected.contains(rule.id()))
+                    .filter(rule -> selected.stream().noneMatch(rule::conflictsWith))
+                    .sorted(Comparator.comparing(rule -> rule.id().toString()))
+                    .toList();
+        }
+    }
+
     public record PropertyRule(
             ResourceLocation id,
+            ResourceLocation containerId,
             int minArea,
             int weight,
             Set<ResourceLocation> conflicts,
@@ -201,7 +282,7 @@ public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceRel
             boolean replaceLegacy,
             boolean ignoreQuality
     ) {
-        static PropertyRule parse(ResourceLocation id, JsonObject object) {
+        static PropertyRule parse(ResourceLocation id, ResourceLocation containerId, JsonObject object) {
             int minArea = object.has("min_area") ? object.get("min_area").getAsInt() : 1;
             if (minArea < 1 || minArea > 16) {
                 throw new IllegalArgumentException(id + " min_area must be within 1..16");
@@ -247,6 +328,7 @@ public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceRel
 
             return new PropertyRule(
                     id,
+                    containerId,
                     minArea,
                     weight,
                     Set.copyOf(conflicts),

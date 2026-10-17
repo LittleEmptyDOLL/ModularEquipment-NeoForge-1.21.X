@@ -1,6 +1,79 @@
 {
   "container": "exoequipment:storage_properties",
   "entries": {
-    "storage": {"min_area":4,"tiers":{"engineering":{"capacity":{"min":500000,"max":800000,"step":25000,"distribution":"triangular"},"input":{"min":450,"max":750,"step":25,"distribution":"triangular"},"output":{"min":400,"max":650,"step":25,"distribution":"triangular"}},"military":{"capacity":{"min":450000,"max":1100000,"step":25000,"distribution":"triangular"},"input":{"min":225,"max":425,"step":25,"distribution":"triangular"},"output":{"min":450,"max":900,"step":25,"distribution":"triangular"}},"experimental":{"capacity":{"min":1800000,"max":3500000,"step":50000,"distribution":"triangular"},"input":{"min":1400,"max":2400,"step":50,"distribution":"triangular"},"output":{"min":1400,"max":2600,"step":50,"distribution":"triangular"}}}}
+    "storage": {
+      "min_area": 4,
+      "tiers": {
+        "engineering": {
+          "capacity": {
+            "min": 500000,
+            "max": 800000,
+            "step": 25000,
+            "distribution": "triangular"
+          },
+          "input": {
+            "min": 450,
+            "max": 750,
+            "step": 25,
+            "distribution": "triangular"
+          },
+          "output": {
+            "min": 400,
+            "max": 650,
+            "step": 25,
+            "distribution": "triangular"
+          }
+        },
+        "military": {
+          "capacity": {
+            "min": 450000,
+            "max": 1100000,
+            "step": 25000,
+            "distribution": "triangular"
+          },
+          "input": {
+            "min": 225,
+            "max": 425,
+            "step": 25,
+            "distribution": "triangular"
+          },
+          "output": {
+            "min": 450,
+            "max": 900,
+            "step": 25,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "capacity": {
+            "min": 1800000,
+            "max": 3500000,
+            "step": 50000,
+            "distribution": "triangular"
+          },
+          "input": {
+            "min": 1400,
+            "max": 2400,
+            "step": 50,
+            "distribution": "triangular"
+          },
+          "output": {
+            "min": 1400,
+            "max": 2600,
+            "step": 50,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "components": [
+        {
+          "type": "storage",
+          "capacity": "capacity",
+          "input": "input",
+          "output": "output"
+        }
+      ],
+      "replace_legacy": true
+    }
   }
 }

@@ -151,13 +151,6 @@ public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceRel
         return Optional.ofNullable(rules.get(id));
     }
 
-    public static ResourceLocation builtInId(GeneratedPropertyType type) {
-        return ResourceLocation.fromNamespaceAndPath(
-                ExoEquipment.MODID,
-                type.name().toLowerCase(Locale.ROOT)
-        );
-    }
-
     static ResourceLocation parseId(String defaultNamespace, String value) {
         int separator = value.indexOf(':');
         return separator >= 0

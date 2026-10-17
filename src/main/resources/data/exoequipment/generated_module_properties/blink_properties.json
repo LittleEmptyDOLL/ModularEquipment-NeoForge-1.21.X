@@ -93,8 +93,7 @@
           "activation_energy": "activation_energy",
           "cooldown": "cooldown"
         }
-      ],
-      "replace_legacy": true
+      ]
     }
   }
 }

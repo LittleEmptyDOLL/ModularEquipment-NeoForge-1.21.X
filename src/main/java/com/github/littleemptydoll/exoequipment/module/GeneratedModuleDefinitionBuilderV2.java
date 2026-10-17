@@ -447,9 +447,9 @@ final class GeneratedModuleDefinitionBuilderV2 {
             boolean hostile = false;
             List<JsonObject> targets = expandTargets(component, rule, random);
             if (targets.size() == 1 && !targets.get(0).has("id")) {
-                players = bool(component, "players", true);
-                mobs = bool(component, "mobs", true);
-                hostile = bool(component, "hostile", true);
+                players = bool(component, "players", rule.bool("players", true));
+                mobs = bool(component, "mobs", rule.bool("mobs", true));
+                hostile = bool(component, "hostile", rule.bool("hostile", true));
             } else {
                 for (JsonObject target : targets) {
                     switch (string(target, "id", "hostile").toLowerCase(Locale.ROOT)) {

@@ -53,8 +53,7 @@
           "restore": "restore",
           "cooldown": "cooldown"
         }
-      ],
-      "replace_legacy": true
+      ]
     }
   }
 }

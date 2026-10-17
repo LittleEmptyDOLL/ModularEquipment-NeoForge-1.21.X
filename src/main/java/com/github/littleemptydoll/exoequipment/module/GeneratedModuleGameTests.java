@@ -63,4 +63,60 @@ public final class GeneratedModuleGameTests {
         helper.assertTrue(isolated > 0, "No individual generated rules were exercised");
         helper.succeed();
     }
+
+    @GameTest(template = "empty")
+    public static void directRegistryIdsResolve(GameTestHelper helper) {
+        ModuleSize size = new ModuleSize(4, 4);
+        ResourceLocation armor = id("attribute_properties/attributes/minecraft/generic.armor");
+        ResourceLocation nightVision = id("effects_properties/effects/minecraft/night_vision");
+        ResourceLocation ores = id("block_scanner_properties/scanner_targets/tag/c/ores");
+        ResourceLocation projectile = id("damage_reduction_properties/damage_reductions/tag/minecraft/is_projectile/0");
+        ResourceLocation harmful = id("status_protection_properties/status_protections/harmful");
+
+        ModuleDefinition armorModule = GeneratedModuleDefinitionBuilderV2.build(
+                new GeneratedModulePropertyPlan(EquipmentTier.MILITARY, size, List.of(armor)), 100L
+        );
+        helper.assertTrue(armorModule.attributes().isPresent()
+                        && armorModule.attributes().get().attributes().containsKey(
+                                ResourceLocation.parse("minecraft:generic.armor")),
+                "Direct armor attribute registry ID was not applied");
+
+        ModuleDefinition effectModule = GeneratedModuleDefinitionBuilderV2.build(
+                new GeneratedModulePropertyPlan(EquipmentTier.EXPERIMENTAL, size, List.of(nightVision)), 101L
+        );
+        helper.assertTrue(effectModule.effects().isPresent()
+                        && effectModule.effects().get().effects().containsKey(
+                                ResourceLocation.parse("minecraft:night_vision")),
+                "Direct night-vision effect registry ID was not applied");
+
+        ModuleDefinition scannerModule = GeneratedModuleDefinitionBuilderV2.build(
+                new GeneratedModulePropertyPlan(EquipmentTier.ENGINEERING, size, List.of(ores)), 102L
+        );
+        helper.assertTrue(scannerModule.blockScanner().isPresent()
+                        && scannerModule.blockScanner().get().tags().contains(
+                                ResourceLocation.parse("c:ores")),
+                "Direct scanner block-tag registry ID was not applied");
+
+        ModuleDefinition damageModule = GeneratedModuleDefinitionBuilderV2.build(
+                new GeneratedModulePropertyPlan(EquipmentTier.MILITARY, size, List.of(projectile)), 103L
+        );
+        helper.assertTrue(damageModule.damageReduction().isPresent()
+                        && damageModule.damageReduction().get().tagReductions().containsKey(
+                                ResourceLocation.parse("minecraft:is_projectile")),
+                "Direct damage tag registry ID was not applied");
+
+        ModuleDefinition statusModule = GeneratedModuleDefinitionBuilderV2.build(
+                new GeneratedModulePropertyPlan(EquipmentTier.ENGINEERING, size, List.of(harmful)), 104L
+        );
+        helper.assertTrue(statusModule.statusProtection().isPresent()
+                        && statusModule.statusProtection().get().harmfulProtection() > 0.0D,
+                "Direct harmful-effect protection was not applied");
+
+        helper.succeed();
+    }
+
+    private static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(ExoEquipment.MODID, path);
+    }
+
 }

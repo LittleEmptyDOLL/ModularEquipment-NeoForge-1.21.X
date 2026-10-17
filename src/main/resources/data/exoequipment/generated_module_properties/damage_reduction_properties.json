@@ -125,7 +125,8 @@
             "priority": 9,
             "reduction": 1
           }
-        }
+        },
+        "ignore_quality": true
       }
     ]
   }

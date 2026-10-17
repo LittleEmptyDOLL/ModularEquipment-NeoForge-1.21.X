@@ -1,1 +1,21 @@
-{"container":"exoequipment:effects_properties","max_rolls":2,"entries":{"night_vision":{"min_area":1,"tiers":{"experimental":{"energy":{"min":15,"max":30,"step":1,"distribution":"triangular"},"priority":4}}}}}
+{
+  "container": "exoequipment:effects_properties",
+  "max_rolls": 2,
+  "effects": {
+    "minecraft:night_vision": {
+      "min_area": 1,
+      "tiers": {
+        "experimental": {
+          "energy": {
+            "min": 15,
+            "max": 30,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4
+        }
+      },
+      "level": 1
+    }
+  }
+}

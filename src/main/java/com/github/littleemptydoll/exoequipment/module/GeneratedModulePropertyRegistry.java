@@ -356,7 +356,9 @@ public final class GeneratedModulePropertyRegistry extends SimpleJsonResourceRel
                             }
                             if (!component.has("range")) component.addProperty("range", "range");
                             if (!component.has("active_energy")) component.addProperty("active_energy", "active_energy");
-                            if (!component.has("color")) component.addProperty("color", "color");
+                            if (!component.has("color")) {
+                                component.addProperty("color", BlockScannerProperties.DEFAULT_COLOR);
+                            }
                         }
                         components.add(component);
                         if (descriptor.has("components")) {

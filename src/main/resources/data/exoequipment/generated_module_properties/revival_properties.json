@@ -66,8 +66,7 @@
           "cooldown": "cooldown",
           "invulnerability_ticks": "invulnerability_ticks"
         }
-      ],
-      "replace_legacy": true
+      ]
     }
   }
 }

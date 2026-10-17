@@ -81,22 +81,22 @@ public final class GeneratedModuleGenerator {
             int totalWeight = candidates.stream()
                     .mapToInt(GeneratedModulePropertyRegistry.PropertyRule::weight)
                     .sum();
-            int roll = random.nextInt(totalWeight);
+            int weightRoll = random.nextInt(totalWeight);
             GeneratedModulePropertyRegistry.PropertyRule picked = candidates.get(candidates.size() - 1);
             for (GeneratedModulePropertyRegistry.PropertyRule candidate : candidates) {
-                roll -= candidate.weight();
-                if (roll < 0) {
+                weightRoll -= candidate.weight();
+                if (weightRoll < 0) {
                     picked = candidate;
                     break;
                 }
             }
             candidates.remove(picked);
 
-            boolean conflicts = selected.stream().anyMatch(picked::conflictsWith);
+            final GeneratedModulePropertyRegistry.PropertyRule selectedRule = picked;
+            boolean conflicts = selected.stream().anyMatch(selectedRule::conflictsWith);
             if (conflicts) continue;
 
-            selected.add(picked.id());
-            GeneratedModulePropertyRegistry.PropertyRule selectedRule = picked;
+            selected.add(selectedRule.id());
             candidates.removeIf(candidate ->
                     selectedRule.conflictsWith(candidate.id())
                             || candidate.conflictsWith(selectedRule.id()));

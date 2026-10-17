@@ -157,8 +157,7 @@
           "elytra_max_speed": "elytra_max_speed",
           "heat": "heat"
         }
-      ],
-      "replace_legacy": true
+      ]
     }
   }
 }

@@ -66,8 +66,7 @@
           "active_energy": "active_energy",
           "cooldown": "cooldown"
         }
-      ],
-      "replace_legacy": true
+      ]
     }
   }
 }

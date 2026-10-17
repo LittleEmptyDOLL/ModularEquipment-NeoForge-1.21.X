@@ -53,8 +53,7 @@
           "amount": "generation",
           "heat": "heat"
         }
-      ],
-      "replace_legacy": true
+      ]
     }
   }
 }

@@ -75,7 +75,7 @@
           "reduction": "reduction"
         }
       ],
-      "replace_legacy": true
+      "requires": "legendarysurvivaloverhaul"
     }
   }
 }

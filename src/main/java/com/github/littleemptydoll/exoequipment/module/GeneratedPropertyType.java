@@ -9,8 +9,8 @@ public enum GeneratedPropertyType {
 
     COOLING(true, false, 4, ConflictSide.COOLING),
     HEATING(true, false, 4, ConflictSide.HEATING),
-    PERSONAL_COOLING(true, false, 4, Dependency.LSO, ConflictSide.COOLING),
-    PERSONAL_HEATING(true, false, 4, Dependency.LSO, ConflictSide.HEATING),
+    PERSONAL_COOLING(true, false, 4, Dependency.LSO, ConflictSide.PERSONAL_COOLING),
+    PERSONAL_HEATING(true, false, 4, Dependency.LSO, ConflictSide.PERSONAL_HEATING),
     THERMAL_RESISTANCE(false, true, 2, Dependency.LSO),
     TEMPERATURE_ISOLATION(true, false, 4, Dependency.LSO),
 
@@ -148,11 +148,19 @@ public enum GeneratedPropertyType {
         );
     }
 
+    String requiredModId() {
+        return dependency.modId;
+    }
+
     private boolean legacyConflictsWith(GeneratedPropertyType other) {
         return (legacyConflictSide == ConflictSide.HEATING
                 && other.legacyConflictSide == ConflictSide.COOLING)
                 || (legacyConflictSide == ConflictSide.COOLING
                 && other.legacyConflictSide == ConflictSide.HEATING)
+                || (legacyConflictSide == ConflictSide.PERSONAL_HEATING
+                && other.legacyConflictSide == ConflictSide.PERSONAL_COOLING)
+                || (legacyConflictSide == ConflictSide.PERSONAL_COOLING
+                && other.legacyConflictSide == ConflictSide.PERSONAL_HEATING)
                 || (legacyConflictSide == ConflictSide.JETPACK
                 && other.legacyConflictSide == ConflictSide.FLIGHT)
                 || (legacyConflictSide == ConflictSide.FLIGHT
@@ -163,6 +171,8 @@ public enum GeneratedPropertyType {
         NONE,
         HEATING,
         COOLING,
+        PERSONAL_HEATING,
+        PERSONAL_COOLING,
         JETPACK,
         FLIGHT
     }

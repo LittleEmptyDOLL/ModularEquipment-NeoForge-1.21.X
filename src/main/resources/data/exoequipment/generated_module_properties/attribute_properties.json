@@ -14,18 +14,6 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "armor": {
-            "min": 4.5,
-            "max": 7.5,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
-          "toughness": {
-            "min": 1.2,
-            "max": 2.8,
-            "step": 0.1,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 4.5,
             "max": 7.5,
@@ -41,18 +29,6 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "armor": {
-            "min": 6.5,
-            "max": 10,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
-          "toughness": {
-            "min": 2,
-            "max": 4,
-            "step": 0.1,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 6.5,
             "max": 10,
@@ -74,18 +50,6 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "armor": {
-            "min": 4.5,
-            "max": 7.5,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
-          "toughness": {
-            "min": 1.2,
-            "max": 2.8,
-            "step": 0.1,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 1.2,
             "max": 2.8,
@@ -101,18 +65,6 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "armor": {
-            "min": 6.5,
-            "max": 10,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
-          "toughness": {
-            "min": 2,
-            "max": 4,
-            "step": 0.1,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 2,
             "max": 4,
@@ -134,18 +86,6 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "safe_fall_distance": {
-            "min": 2,
-            "max": 4,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
-          "fall_reduction": {
-            "min": 0.18,
-            "max": 0.34,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 2,
             "max": 4,
@@ -161,18 +101,6 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "safe_fall_distance": {
-            "min": 3,
-            "max": 6,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
-          "fall_reduction": {
-            "min": 0.55,
-            "max": 0.8,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 3,
             "max": 6,
@@ -194,18 +122,6 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "safe_fall_distance": {
-            "min": 2,
-            "max": 4,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
-          "fall_reduction": {
-            "min": 0.18,
-            "max": 0.34,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.18,
             "max": 0.34,
@@ -221,12 +137,6 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "fall_reduction": {
-            "min": 0.38,
-            "max": 0.62,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.38,
             "max": 0.62,
@@ -242,18 +152,6 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "safe_fall_distance": {
-            "min": 3,
-            "max": 6,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
-          "fall_reduction": {
-            "min": 0.55,
-            "max": 0.8,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.55,
             "max": 0.8,
@@ -276,12 +174,6 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "resistance": {
-            "min": 0.18,
-            "max": 0.34,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.18,
             "max": 0.34,
@@ -297,12 +189,6 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "resistance": {
-            "min": 0.3,
-            "max": 0.5,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.3,
             "max": 0.5,
@@ -324,12 +210,6 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "resistance": {
-            "min": 0.18,
-            "max": 0.34,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.18,
             "max": 0.34,
@@ -345,12 +225,6 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "resistance": {
-            "min": 0.3,
-            "max": 0.5,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.3,
             "max": 0.5,
@@ -517,18 +391,6 @@
             "distribution": "triangular"
           },
           "priority": 5,
-          "jump": {
-            "min": 0.14,
-            "max": 0.26,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "step_height": {
-            "min": 0.35,
-            "max": 0.65,
-            "step": 0.05,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.14,
             "max": 0.26,
@@ -544,18 +406,6 @@
             "distribution": "triangular"
           },
           "priority": 5,
-          "jump": {
-            "min": 0.24,
-            "max": 0.4,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "step_height": {
-            "min": 0.45,
-            "max": 0.8,
-            "step": 0.05,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.24,
             "max": 0.4,
@@ -577,18 +427,6 @@
             "distribution": "triangular"
           },
           "priority": 5,
-          "jump": {
-            "min": 0.14,
-            "max": 0.26,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "step_height": {
-            "min": 0.35,
-            "max": 0.65,
-            "step": 0.05,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.35,
             "max": 0.65,
@@ -604,18 +442,6 @@
             "distribution": "triangular"
           },
           "priority": 5,
-          "jump": {
-            "min": 0.24,
-            "max": 0.4,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "step_height": {
-            "min": 0.45,
-            "max": 0.8,
-            "step": 0.05,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.45,
             "max": 0.8,
@@ -1042,18 +868,6 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "armor": {
-            "min": 0.15,
-            "max": 0.26,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "protection": {
-            "min": 0.07,
-            "max": 0.14,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.15,
             "max": 0.26,
@@ -1069,18 +883,6 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "armor": {
-            "min": 0.22,
-            "max": 0.34,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "protection": {
-            "min": 0.12,
-            "max": 0.22,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.22,
             "max": 0.34,
@@ -1103,18 +905,6 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "armor": {
-            "min": 0.15,
-            "max": 0.26,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "protection": {
-            "min": 0.07,
-            "max": 0.14,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.07,
             "max": 0.14,
@@ -1130,18 +920,6 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "armor": {
-            "min": 0.22,
-            "max": 0.34,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "protection": {
-            "min": 0.12,
-            "max": 0.22,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.12,
             "max": 0.22,
@@ -1164,18 +942,6 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "armor": {
-            "min": 0.11,
-            "max": 0.2,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "protection": {
-            "min": 0.07,
-            "max": 0.14,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.11,
             "max": 0.2,
@@ -1191,18 +957,6 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "armor": {
-            "min": 0.17,
-            "max": 0.3,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "protection": {
-            "min": 0.1,
-            "max": 0.2,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.17,
             "max": 0.3,
@@ -1225,18 +979,6 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "armor": {
-            "min": 0.11,
-            "max": 0.2,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "protection": {
-            "min": 0.07,
-            "max": 0.14,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.07,
             "max": 0.14,
@@ -1252,18 +994,6 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "armor": {
-            "min": 0.17,
-            "max": 0.3,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "protection": {
-            "min": 0.1,
-            "max": 0.2,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.1,
             "max": 0.2,
@@ -1286,18 +1016,6 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "damage": {
-            "min": 0.11,
-            "max": 0.2,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "velocity": {
-            "min": 0.1,
-            "max": 0.2,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.11,
             "max": 0.2,
@@ -1313,18 +1031,6 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "damage": {
-            "min": 0.2,
-            "max": 0.34,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "velocity": {
-            "min": 0.18,
-            "max": 0.32,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.2,
             "max": 0.34,
@@ -1347,18 +1053,6 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "damage": {
-            "min": 0.11,
-            "max": 0.2,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "velocity": {
-            "min": 0.1,
-            "max": 0.2,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.1,
             "max": 0.2,
@@ -1374,18 +1068,6 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "damage": {
-            "min": 0.2,
-            "max": 0.34,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "velocity": {
-            "min": 0.18,
-            "max": 0.32,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.18,
             "max": 0.32,
@@ -1445,7 +1127,7 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "damage": {
+          "amount": {
             "min": 3,
             "max": 5.5,
             "step": 0.25,
@@ -1455,12 +1137,6 @@
             "min": 3,
             "max": 7,
             "step": 0.5,
-            "distribution": "triangular"
-          },
-          "amount": {
-            "min": 3,
-            "max": 5.5,
-            "step": 0.25,
             "distribution": "triangular"
           }
         },
@@ -1472,7 +1148,7 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "damage": {
+          "amount": {
             "min": 5,
             "max": 9,
             "step": 0.25,
@@ -1482,12 +1158,6 @@
             "min": 5,
             "max": 10,
             "step": 0.5,
-            "distribution": "triangular"
-          },
-          "amount": {
-            "min": 5,
-            "max": 9,
-            "step": 0.25,
             "distribution": "triangular"
           }
         }
@@ -1513,7 +1183,7 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "damage": {
+          "amount": {
             "min": 3,
             "max": 5.5,
             "step": 0.25,
@@ -1523,12 +1193,6 @@
             "min": 3,
             "max": 7,
             "step": 0.5,
-            "distribution": "triangular"
-          },
-          "amount": {
-            "min": 3,
-            "max": 5.5,
-            "step": 0.25,
             "distribution": "triangular"
           }
         },
@@ -1540,7 +1204,7 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "damage": {
+          "amount": {
             "min": 5,
             "max": 9,
             "step": 0.25,
@@ -1550,12 +1214,6 @@
             "min": 5,
             "max": 10,
             "step": 0.5,
-            "distribution": "triangular"
-          },
-          "amount": {
-            "min": 5,
-            "max": 9,
-            "step": 0.25,
             "distribution": "triangular"
           }
         }

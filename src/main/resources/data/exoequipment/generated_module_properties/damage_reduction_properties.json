@@ -2,9 +2,131 @@
   "container": "exoequipment:damage_reduction_properties",
   "weight": 2,
   "max_rolls": 3,
-  "entries": {
-    "general_damage_reduction": {"min_area":6,"tiers":{"military":{"energy":{"min":75,"max":125,"step":5,"distribution":"triangular"},"priority":8,"reduction":{"min":0.12,"max":0.20,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":115,"max":185,"step":5,"distribution":"triangular"},"priority":8,"reduction":{"min":0.20,"max":0.34,"step":0.01,"distribution":"triangular"}}}},
-    "specialized_damage_reduction": {"min_area":4,"tiers":{"engineering":{"energy":{"min":45,"max":75,"step":5,"distribution":"triangular"},"priority":8,"reduction":{"min":0.22,"max":0.38,"step":0.01,"distribution":"triangular"}},"military":{"energy":{"min":45,"max":80,"step":5,"distribution":"triangular"},"priority":8,"reduction":{"min":0.24,"max":0.42,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":70,"max":125,"step":5,"distribution":"triangular"},"priority":8,"reduction":{"min":0.35,"max":0.58,"step":0.01,"distribution":"triangular"}}}},
-    "damage_immunity": {"min_area":6,"tiers":{"experimental":{"energy":{"min":135,"max":230,"step":5,"distribution":"triangular"},"priority":9,"reduction":1.0}}}
+  "damage_reductions": {
+    "default": {
+      "min_area": 6,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 75,
+            "max": 125,
+            "step": 5,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "reduction": {
+            "min": 0.12,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 115,
+            "max": 185,
+            "step": 5,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "reduction": {
+            "min": 0.2,
+            "max": 0.34,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "components": [
+        {
+          "type": "damage_reduction",
+          "target_type": "tag",
+          "id": "minecraft:bypasses_effects",
+          "amount": 0,
+          "scale_quality": false
+        },
+        {
+          "type": "damage_reduction",
+          "target_type": "tag",
+          "id": "minecraft:bypasses_enchantments",
+          "amount": 0,
+          "scale_quality": false
+        },
+        {
+          "type": "damage_reduction",
+          "target_type": "tag",
+          "id": "minecraft:bypasses_invulnerability",
+          "amount": 0,
+          "scale_quality": false
+        }
+      ]
+    },
+    "#minecraft:is_projectile": [
+      {
+        "min_area": 4,
+        "tiers": {
+          "engineering": {
+            "energy": {
+              "min": 45,
+              "max": 75,
+              "step": 5,
+              "distribution": "triangular"
+            },
+            "priority": 8,
+            "reduction": {
+              "min": 0.22,
+              "max": 0.38,
+              "step": 0.01,
+              "distribution": "triangular"
+            }
+          },
+          "military": {
+            "energy": {
+              "min": 45,
+              "max": 80,
+              "step": 5,
+              "distribution": "triangular"
+            },
+            "priority": 8,
+            "reduction": {
+              "min": 0.24,
+              "max": 0.42,
+              "step": 0.01,
+              "distribution": "triangular"
+            }
+          },
+          "experimental": {
+            "energy": {
+              "min": 70,
+              "max": 125,
+              "step": 5,
+              "distribution": "triangular"
+            },
+            "priority": 8,
+            "reduction": {
+              "min": 0.35,
+              "max": 0.58,
+              "step": 0.01,
+              "distribution": "triangular"
+            }
+          }
+        }
+      },
+      {
+        "min_area": 6,
+        "tiers": {
+          "experimental": {
+            "energy": {
+              "min": 135,
+              "max": 230,
+              "step": 5,
+              "distribution": "triangular"
+            },
+            "priority": 9,
+            "reduction": 1
+          }
+        }
+      }
+    ]
   }
 }

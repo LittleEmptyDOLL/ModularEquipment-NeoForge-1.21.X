@@ -44,8 +44,7 @@
           "mode": "cooling",
           "amount": "cooling"
         }
-      ],
-      "replace_legacy": true
+      ]
     },
     "heating": {
       "min_area": 4,
@@ -90,8 +89,7 @@
           "mode": "heat",
           "amount": "heat"
         }
-      ],
-      "replace_legacy": true
+      ]
     }
   }
 }

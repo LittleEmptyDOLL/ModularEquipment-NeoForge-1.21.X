@@ -93,8 +93,7 @@
           "recharge_rate": "recharge_rate",
           "recharge_delay": "recharge_delay"
         }
-      ],
-      "replace_legacy": true
+      ]
     }
   }
 }

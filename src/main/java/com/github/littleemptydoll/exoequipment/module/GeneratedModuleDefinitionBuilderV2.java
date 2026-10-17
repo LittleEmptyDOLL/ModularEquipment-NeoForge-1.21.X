@@ -593,7 +593,13 @@ final class GeneratedModuleDefinitionBuilderV2 {
                 RandomSource random,
                 double fallback
         ) {
-            return component.has(name) ? roll(component.get(name), rule, random) : fallback;
+            if (!component.has(name)) return fallback;
+            JsonElement specification = component.get(name);
+            if (specification.isJsonPrimitive() && specification.getAsJsonPrimitive().isString()
+                    && !rule.has(specification.getAsString())) {
+                return fallback;
+            }
+            return roll(specification, rule, random);
         }
 
         private void applyJetpack(

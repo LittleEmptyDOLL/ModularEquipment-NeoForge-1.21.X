@@ -1,1 +1,47 @@
-{"container":"exoequipment:thermal_vision_properties","entries":{"thermal_vision":{"min_area":6,"tiers":{"military":{"energy":{"min":15,"max":28,"step":1,"distribution":"triangular"},"priority":4,"active_energy":{"min":30,"max":52,"step":1,"distribution":"triangular"}},"experimental":{"energy":{"min":26,"max":45,"step":1,"distribution":"triangular"},"priority":4,"active_energy":{"min":48,"max":78,"step":1,"distribution":"triangular"}}}}}}
+{
+  "container": "exoequipment:thermal_vision_properties",
+  "entries": {
+    "thermal_vision": {
+      "min_area": 6,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 15,
+            "max": 28,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "active_energy": {
+            "min": 30,
+            "max": 52,
+            "step": 1,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 26,
+            "max": 45,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "active_energy": {
+            "min": 48,
+            "max": 78,
+            "step": 1,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "components": [
+        {
+          "type": "thermal_vision",
+          "active_energy": "active_energy"
+        }
+      ],
+      "replace_legacy": true
+    }
+  }
+}

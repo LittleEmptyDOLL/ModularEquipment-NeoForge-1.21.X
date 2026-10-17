@@ -2,36 +2,1754 @@
   "container": "exoequipment:attribute_properties",
   "weight": 12,
   "max_rolls": 6,
-  "entries": {
-    "armor": {"min_area":2,"tiers":{"military":{"energy":{"min":26,"max":45,"step":1,"distribution":"triangular"},"priority":8,"armor":{"min":4.5,"max":7.5,"step":0.25,"distribution":"triangular"},"toughness":{"min":1.2,"max":2.8,"step":0.1,"distribution":"triangular"}},"experimental":{"energy":{"min":42,"max":72,"step":1,"distribution":"triangular"},"priority":8,"armor":{"min":6.5,"max":10.0,"step":0.25,"distribution":"triangular"},"toughness":{"min":2.0,"max":4.0,"step":0.1,"distribution":"triangular"}}}},
-    "fall_protection": {"min_area":4,"tiers":{"engineering":{"energy":{"min":22,"max":38,"step":1,"distribution":"triangular"},"priority":8,"safe_fall_distance":{"min":2,"max":4,"step":0.25,"distribution":"triangular"},"fall_reduction":{"min":0.18,"max":0.34,"step":0.01,"distribution":"triangular"}},"military":{"energy":{"min":22,"max":42,"step":1,"distribution":"triangular"},"priority":8,"fall_reduction":{"min":0.38,"max":0.62,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":35,"max":65,"step":1,"distribution":"triangular"},"priority":8,"safe_fall_distance":{"min":3,"max":6,"step":0.25,"distribution":"triangular"},"fall_reduction":{"min":0.55,"max":0.80,"step":0.01,"distribution":"triangular"}}}},
-    "knockback_stabilization": {"min_area":4,"tiers":{"military":{"energy":{"min":22,"max":42,"step":1,"distribution":"triangular"},"priority":8,"resistance":{"min":0.18,"max":0.34,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":35,"max":65,"step":1,"distribution":"triangular"},"priority":8,"resistance":{"min":0.30,"max":0.50,"step":0.01,"distribution":"triangular"}}}},
-    "dodge": {"min_area":2,"tiers":{"military":{"energy":{"min":30,"max":50,"step":1,"distribution":"triangular"},"priority":8,"amount":{"min":0.035,"max":0.075,"step":0.0025,"distribution":"triangular"}},"experimental":{"energy":{"min":48,"max":82,"step":1,"distribution":"triangular"},"priority":8,"amount":{"min":0.06,"max":0.12,"step":0.005,"distribution":"triangular"}}}},
-    "max_health": {"min_area":2,"tiers":{"military":{"energy":{"min":18,"max":32,"step":1,"distribution":"triangular"},"priority":7,"amount":{"min":4.5,"max":7.5,"step":0.5,"distribution":"triangular"}},"experimental":{"energy":{"min":30,"max":52,"step":1,"distribution":"triangular"},"priority":7,"amount":{"min":8,"max":13,"step":0.5,"distribution":"triangular"}}}},
-    "oxygen_support": {"min_area":2,"tiers":{"engineering":{"energy":{"min":15,"max":26,"step":1,"distribution":"triangular"},"priority":7,"amount":{"min":0.18,"max":0.32,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":25,"max":45,"step":1,"distribution":"triangular"},"priority":7,"amount":{"min":0.30,"max":0.50,"step":0.01,"distribution":"triangular"}}}},
-    "movement_speed": {"min_area":1,"tiers":{"military":{"energy":{"min":18,"max":32,"step":1,"distribution":"triangular"},"priority":5,"amount":{"min":0.18,"max":0.32,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":30,"max":52,"step":1,"distribution":"triangular"},"priority":5,"amount":{"min":0.28,"max":0.45,"step":0.01,"distribution":"triangular"}}}},
-    "jump_assist": {"min_area":1,"tiers":{"engineering":{"energy":{"min":18,"max":30,"step":1,"distribution":"triangular"},"priority":5,"jump":{"min":0.14,"max":0.26,"step":0.01,"distribution":"triangular"},"step_height":{"min":0.35,"max":0.65,"step":0.05,"distribution":"triangular"}},"experimental":{"energy":{"min":30,"max":52,"step":1,"distribution":"triangular"},"priority":5,"jump":{"min":0.24,"max":0.40,"step":0.01,"distribution":"triangular"},"step_height":{"min":0.45,"max":0.80,"step":0.05,"distribution":"triangular"}}}},
-    "swim_assist": {"min_area":2,"tiers":{"engineering":{"energy":{"min":10,"max":22,"step":1,"distribution":"triangular"},"priority":5,"amount":{"min":0.18,"max":0.32,"step":0.01,"distribution":"triangular"}},"military":{"energy":{"min":18,"max":34,"step":1,"distribution":"triangular"},"priority":5,"amount":{"min":0.38,"max":0.62,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":28,"max":50,"step":1,"distribution":"triangular"},"priority":5,"amount":{"min":0.55,"max":0.82,"step":0.01,"distribution":"triangular"}}}},
-    "elytra": {"min_area":4,"tiers":{"engineering":{"energy":{"min":22,"max":38,"step":1,"distribution":"triangular"},"priority":5},"experimental":{"energy":{"min":35,"max":58,"step":1,"distribution":"triangular"},"priority":5}}},
-    "attack_damage": {"min_area":1,"tiers":{"engineering":{"energy":{"min":15,"max":28,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.11,"max":0.19,"step":0.01,"distribution":"triangular"}},"military":{"energy":{"min":22,"max":38,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.19,"max":0.32,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":42,"max":72,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.31,"max":0.50,"step":0.01,"distribution":"triangular"}}}},
-    "attack_speed": {"min_area":1,"tiers":{"engineering":{"energy":{"min":18,"max":32,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.14,"max":0.26,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":40,"max":68,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.28,"max":0.44,"step":0.01,"distribution":"triangular"}}}},
-    "attack_knockback": {"min_area":1,"tiers":{"experimental":{"energy":{"min":18,"max":35,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.12,"max":0.30,"step":0.01,"distribution":"triangular"}}}},
-    "interaction_range": {"min_area":1,"tiers":{"experimental":{"energy":{"min":28,"max":52,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.75,"max":1.50,"step":0.05,"distribution":"triangular"}}}},
-    "crit_chance": {"min_area":1,"tiers":{"engineering":{"energy":{"min":15,"max":28,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.07,"max":0.14,"step":0.01,"distribution":"triangular"}},"military":{"energy":{"min":22,"max":38,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.11,"max":0.20,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":45,"max":78,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.16,"max":0.28,"step":0.01,"distribution":"triangular"}}}},
-    "crit_damage": {"min_area":1,"tiers":{"engineering":{"energy":{"min":18,"max":32,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.14,"max":0.27,"step":0.01,"distribution":"triangular"}},"military":{"energy":{"min":26,"max":44,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.23,"max":0.38,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":48,"max":82,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.32,"max":0.52,"step":0.01,"distribution":"triangular"}}}},
-    "current_hp_damage": {"min_area":4,"tiers":{"military":{"energy":{"min":34,"max":58,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.035,"max":0.07,"step":0.0025,"distribution":"triangular"}},"experimental":{"energy":{"min":55,"max":95,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.06,"max":0.11,"step":0.0025,"distribution":"triangular"}}}},
-    "life_steal": {"min_area":4,"tiers":{"military":{"energy":{"min":38,"max":62,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.035,"max":0.07,"step":0.0025,"distribution":"triangular"}},"experimental":{"energy":{"min":65,"max":110,"step":2,"distribution":"triangular"},"priority":4,"amount":{"min":0.055,"max":0.10,"step":0.0025,"distribution":"triangular"}}}},
-    "overheal": {"min_area":6,"tiers":{"experimental":{"energy":{"min":70,"max":120,"step":2,"distribution":"triangular"},"priority":4,"amount":{"min":0.075,"max":0.15,"step":0.005,"distribution":"triangular"}}}},
-    "armor_pierce": {"min_area":4,"tiers":{"military":{"energy":{"min":30,"max":50,"step":1,"distribution":"triangular"},"priority":4,"armor":{"min":0.15,"max":0.26,"step":0.01,"distribution":"triangular"},"protection":{"min":0.07,"max":0.14,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":62,"max":105,"step":1,"distribution":"triangular"},"priority":4,"armor":{"min":0.22,"max":0.34,"step":0.01,"distribution":"triangular"},"protection":{"min":0.12,"max":0.22,"step":0.01,"distribution":"triangular"}}}},
-    "armor_shred": {"min_area":4,"tiers":{"engineering":{"energy":{"min":30,"max":50,"step":1,"distribution":"triangular"},"priority":4,"armor":{"min":0.11,"max":0.20,"step":0.01,"distribution":"triangular"},"protection":{"min":0.07,"max":0.14,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":60,"max":100,"step":1,"distribution":"triangular"},"priority":4,"armor":{"min":0.17,"max":0.30,"step":0.01,"distribution":"triangular"},"protection":{"min":0.10,"max":0.20,"step":0.01,"distribution":"triangular"}}}},
-    "ranged_damage": {"min_area":4,"tiers":{"engineering":{"energy":{"min":30,"max":50,"step":1,"distribution":"triangular"},"priority":4,"damage":{"min":0.11,"max":0.20,"step":0.01,"distribution":"triangular"},"velocity":{"min":0.10,"max":0.20,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":58,"max":98,"step":1,"distribution":"triangular"},"priority":4,"damage":{"min":0.20,"max":0.34,"step":0.01,"distribution":"triangular"},"velocity":{"min":0.18,"max":0.32,"step":0.01,"distribution":"triangular"}}}},
-    "draw_speed": {"min_area":1,"tiers":{"engineering":{"energy":{"min":15,"max":28,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.11,"max":0.20,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":28,"max":50,"step":1,"distribution":"triangular"},"priority":4,"amount":{"min":0.20,"max":0.34,"step":0.01,"distribution":"triangular"}}}},
-    "fire_damage": {"min_area":4,"tiers":{"military":{"energy":{"min":30,"max":52,"step":1,"distribution":"triangular"},"priority":4,"damage":{"min":3,"max":5.5,"step":0.25,"distribution":"triangular"},"heat":{"min":3,"max":7,"step":0.5,"distribution":"triangular"}},"experimental":{"energy":{"min":60,"max":105,"step":1,"distribution":"triangular"},"priority":4,"damage":{"min":5,"max":9,"step":0.25,"distribution":"triangular"},"heat":{"min":5,"max":10,"step":0.5,"distribution":"triangular"}}}},
-    "cold_damage": {"min_area":4,"tiers":{"engineering":{"energy":{"min":30,"max":52,"step":1,"distribution":"triangular"},"priority":4,"damage":{"min":3,"max":5.5,"step":0.25,"distribution":"triangular"},"cooling":{"min":3,"max":7,"step":0.5,"distribution":"triangular"}},"experimental":{"energy":{"min":60,"max":105,"step":1,"distribution":"triangular"},"priority":4,"damage":{"min":5,"max":9,"step":0.25,"distribution":"triangular"},"cooling":{"min":5,"max":10,"step":0.5,"distribution":"triangular"}}}},
-    "mining_speed": {"min_area":2,"tiers":{"engineering":{"energy":{"min":22,"max":38,"step":1,"distribution":"triangular"},"priority":2,"amount":{"min":0.22,"max":0.38,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":36,"max":62,"step":1,"distribution":"triangular"},"priority":2,"amount":{"min":0.36,"max":0.58,"step":0.01,"distribution":"triangular"}}}},
-    "block_reach": {"min_area":2,"tiers":{"engineering":{"energy":{"min":22,"max":38,"step":1,"distribution":"triangular"},"priority":2,"amount":{"min":0.75,"max":1.30,"step":0.05,"distribution":"triangular"}},"experimental":{"energy":{"min":36,"max":62,"step":1,"distribution":"triangular"},"priority":2,"amount":{"min":1.15,"max":1.85,"step":0.05,"distribution":"triangular"}}}},
-    "underwater_mining": {"min_area":4,"tiers":{"engineering":{"energy":{"min":18,"max":32,"step":1,"distribution":"triangular"},"priority":2,"amount":{"min":0.38,"max":0.62,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":30,"max":52,"step":1,"distribution":"triangular"},"priority":2,"amount":{"min":0.60,"max":0.90,"step":0.01,"distribution":"triangular"}}}},
-    "luck": {"min_area":1,"tiers":{"engineering":{"energy":{"min":15,"max":28,"step":1,"distribution":"triangular"},"priority":2,"amount":{"min":0.75,"max":1.35,"step":0.05,"distribution":"triangular"}},"experimental":{"energy":{"min":28,"max":48,"step":1,"distribution":"triangular"},"priority":2,"amount":{"min":1.20,"max":2.0,"step":0.05,"distribution":"triangular"}}}},
-    "experience_gain": {"min_area":1,"tiers":{"engineering":{"energy":{"min":15,"max":28,"step":1,"distribution":"triangular"},"priority":2,"amount":{"min":0.14,"max":0.27,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":28,"max":50,"step":1,"distribution":"triangular"},"priority":2,"amount":{"min":0.24,"max":0.42,"step":0.01,"distribution":"triangular"}}}}
+  "attributes": {
+    "minecraft:generic.armor": {
+      "min_area": 2,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 26,
+            "max": 45,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "armor": {
+            "min": 4.5,
+            "max": 7.5,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "toughness": {
+            "min": 1.2,
+            "max": 2.8,
+            "step": 0.1,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 4.5,
+            "max": 7.5,
+            "step": 0.25,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 42,
+            "max": 72,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "armor": {
+            "min": 6.5,
+            "max": 10,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "toughness": {
+            "min": 2,
+            "max": 4,
+            "step": 0.1,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 6.5,
+            "max": 10,
+            "step": 0.25,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_value"
+    },
+    "minecraft:generic.armor_toughness": {
+      "min_area": 2,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 26,
+            "max": 45,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "armor": {
+            "min": 4.5,
+            "max": 7.5,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "toughness": {
+            "min": 1.2,
+            "max": 2.8,
+            "step": 0.1,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 1.2,
+            "max": 2.8,
+            "step": 0.1,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 42,
+            "max": 72,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "armor": {
+            "min": 6.5,
+            "max": 10,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "toughness": {
+            "min": 2,
+            "max": 4,
+            "step": 0.1,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 2,
+            "max": 4,
+            "step": 0.1,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_value"
+    },
+    "minecraft:generic.safe_fall_distance": {
+      "min_area": 4,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 22,
+            "max": 38,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "safe_fall_distance": {
+            "min": 2,
+            "max": 4,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "fall_reduction": {
+            "min": 0.18,
+            "max": 0.34,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 2,
+            "max": 4,
+            "step": 0.25,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 35,
+            "max": 65,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "safe_fall_distance": {
+            "min": 3,
+            "max": 6,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "fall_reduction": {
+            "min": 0.55,
+            "max": 0.8,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 3,
+            "max": 6,
+            "step": 0.25,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_value"
+    },
+    "minecraft:generic.fall_damage_multiplier": {
+      "min_area": 4,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 22,
+            "max": 38,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "safe_fall_distance": {
+            "min": 2,
+            "max": 4,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "fall_reduction": {
+            "min": 0.18,
+            "max": 0.34,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.18,
+            "max": 0.34,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "military": {
+          "energy": {
+            "min": 22,
+            "max": 42,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "fall_reduction": {
+            "min": 0.38,
+            "max": 0.62,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.38,
+            "max": 0.62,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 35,
+            "max": 65,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "safe_fall_distance": {
+            "min": 3,
+            "max": 6,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "fall_reduction": {
+            "min": 0.55,
+            "max": 0.8,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.55,
+            "max": 0.8,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base",
+      "multiplier": -1
+    },
+    "minecraft:generic.knockback_resistance": {
+      "min_area": 4,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 22,
+            "max": 42,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "resistance": {
+            "min": 0.18,
+            "max": 0.34,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.18,
+            "max": 0.34,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 35,
+            "max": 65,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "resistance": {
+            "min": 0.3,
+            "max": 0.5,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.3,
+            "max": 0.5,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base"
+    },
+    "minecraft:generic.explosion_knockback_resistance": {
+      "min_area": 4,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 22,
+            "max": 42,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "resistance": {
+            "min": 0.18,
+            "max": 0.34,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.18,
+            "max": 0.34,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 35,
+            "max": 65,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "resistance": {
+            "min": 0.3,
+            "max": 0.5,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.3,
+            "max": 0.5,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base"
+    },
+    "apothic_attributes:dodge_chance": {
+      "min_area": 2,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 30,
+            "max": 50,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "amount": {
+            "min": 0.035,
+            "max": 0.075,
+            "step": 0.0025,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 48,
+            "max": 82,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "amount": {
+            "min": 0.06,
+            "max": 0.12,
+            "step": 0.005,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base",
+      "requires": "apothic_attributes"
+    },
+    "minecraft:generic.max_health": {
+      "min_area": 2,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 18,
+            "max": 32,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 7,
+          "amount": {
+            "min": 4.5,
+            "max": 7.5,
+            "step": 0.5,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 30,
+            "max": 52,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 7,
+          "amount": {
+            "min": 8,
+            "max": 13,
+            "step": 0.5,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_value"
+    },
+    "minecraft:generic.oxygen_bonus": {
+      "min_area": 2,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 15,
+            "max": 26,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 7,
+          "amount": {
+            "min": 0.18,
+            "max": 0.32,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 25,
+            "max": 45,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 7,
+          "amount": {
+            "min": 0.3,
+            "max": 0.5,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base"
+    },
+    "minecraft:generic.movement_speed": {
+      "min_area": 1,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 18,
+            "max": 32,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5,
+          "amount": {
+            "min": 0.18,
+            "max": 0.32,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 30,
+            "max": 52,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5,
+          "amount": {
+            "min": 0.28,
+            "max": 0.45,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base"
+    },
+    "minecraft:generic.jump_strength": {
+      "min_area": 1,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 18,
+            "max": 30,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5,
+          "jump": {
+            "min": 0.14,
+            "max": 0.26,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "step_height": {
+            "min": 0.35,
+            "max": 0.65,
+            "step": 0.05,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.14,
+            "max": 0.26,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 30,
+            "max": 52,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5,
+          "jump": {
+            "min": 0.24,
+            "max": 0.4,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "step_height": {
+            "min": 0.45,
+            "max": 0.8,
+            "step": 0.05,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.24,
+            "max": 0.4,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base"
+    },
+    "minecraft:generic.step_height": {
+      "min_area": 1,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 18,
+            "max": 30,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5,
+          "jump": {
+            "min": 0.14,
+            "max": 0.26,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "step_height": {
+            "min": 0.35,
+            "max": 0.65,
+            "step": 0.05,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.35,
+            "max": 0.65,
+            "step": 0.05,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 30,
+            "max": 52,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5,
+          "jump": {
+            "min": 0.24,
+            "max": 0.4,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "step_height": {
+            "min": 0.45,
+            "max": 0.8,
+            "step": 0.05,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.45,
+            "max": 0.8,
+            "step": 0.05,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_value"
+    },
+    "minecraft:generic.water_movement_efficiency": {
+      "min_area": 2,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 10,
+            "max": 22,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5,
+          "amount": {
+            "min": 0.18,
+            "max": 0.32,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "military": {
+          "energy": {
+            "min": 18,
+            "max": 34,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5,
+          "amount": {
+            "min": 0.38,
+            "max": 0.62,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 28,
+            "max": 50,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5,
+          "amount": {
+            "min": 0.55,
+            "max": 0.82,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_value"
+    },
+    "apothic_attributes:elytra_flight": {
+      "min_area": 4,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 22,
+            "max": 38,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5
+        },
+        "experimental": {
+          "energy": {
+            "min": 35,
+            "max": 58,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5
+        }
+      },
+      "operation": "boolean",
+      "requires": "apothic_attributes"
+    },
+    "minecraft:generic.attack_damage": {
+      "min_area": 1,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 15,
+            "max": 28,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.11,
+            "max": 0.19,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "military": {
+          "energy": {
+            "min": 22,
+            "max": 38,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.19,
+            "max": 0.32,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 42,
+            "max": 72,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.31,
+            "max": 0.5,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base"
+    },
+    "minecraft:generic.attack_speed": {
+      "min_area": 1,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 18,
+            "max": 32,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.14,
+            "max": 0.26,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 40,
+            "max": 68,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.28,
+            "max": 0.44,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base"
+    },
+    "minecraft:generic.attack_knockback": {
+      "min_area": 1,
+      "tiers": {
+        "experimental": {
+          "energy": {
+            "min": 18,
+            "max": 35,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.12,
+            "max": 0.3,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base"
+    },
+    "minecraft:generic.entity_interaction_range": {
+      "min_area": 1,
+      "tiers": {
+        "experimental": {
+          "energy": {
+            "min": 28,
+            "max": 52,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.75,
+            "max": 1.5,
+            "step": 0.05,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_value"
+    },
+    "apothic_attributes:crit_chance": {
+      "min_area": 1,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 15,
+            "max": 28,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.07,
+            "max": 0.14,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "military": {
+          "energy": {
+            "min": 22,
+            "max": 38,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.11,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 45,
+            "max": 78,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.16,
+            "max": 0.28,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base",
+      "requires": "apothic_attributes"
+    },
+    "apothic_attributes:crit_damage": {
+      "min_area": 1,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 18,
+            "max": 32,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.14,
+            "max": 0.27,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "military": {
+          "energy": {
+            "min": 26,
+            "max": 44,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.23,
+            "max": 0.38,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 48,
+            "max": 82,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.32,
+            "max": 0.52,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base",
+      "requires": "apothic_attributes"
+    },
+    "apothic_attributes:current_hp_damage": {
+      "min_area": 4,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 34,
+            "max": 58,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.035,
+            "max": 0.07,
+            "step": 0.0025,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 55,
+            "max": 95,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.06,
+            "max": 0.11,
+            "step": 0.0025,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base",
+      "requires": "apothic_attributes"
+    },
+    "apothic_attributes:life_steal": {
+      "min_area": 4,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 38,
+            "max": 62,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.035,
+            "max": 0.07,
+            "step": 0.0025,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 65,
+            "max": 110,
+            "step": 2,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.055,
+            "max": 0.1,
+            "step": 0.0025,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base",
+      "requires": "apothic_attributes"
+    },
+    "apothic_attributes:overheal": {
+      "min_area": 6,
+      "tiers": {
+        "experimental": {
+          "energy": {
+            "min": 70,
+            "max": 120,
+            "step": 2,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.075,
+            "max": 0.15,
+            "step": 0.005,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base",
+      "requires": "apothic_attributes"
+    },
+    "apothic_attributes:armor_pierce": {
+      "min_area": 4,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 30,
+            "max": 50,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "armor": {
+            "min": 0.15,
+            "max": 0.26,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "protection": {
+            "min": 0.07,
+            "max": 0.14,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.15,
+            "max": 0.26,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 62,
+            "max": 105,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "armor": {
+            "min": 0.22,
+            "max": 0.34,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "protection": {
+            "min": 0.12,
+            "max": 0.22,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.22,
+            "max": 0.34,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base",
+      "requires": "apothic_attributes"
+    },
+    "apothic_attributes:protection_pierce": {
+      "min_area": 4,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 30,
+            "max": 50,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "armor": {
+            "min": 0.15,
+            "max": 0.26,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "protection": {
+            "min": 0.07,
+            "max": 0.14,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.07,
+            "max": 0.14,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 62,
+            "max": 105,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "armor": {
+            "min": 0.22,
+            "max": 0.34,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "protection": {
+            "min": 0.12,
+            "max": 0.22,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.12,
+            "max": 0.22,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base",
+      "requires": "apothic_attributes"
+    },
+    "apothic_attributes:armor_shred": {
+      "min_area": 4,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 30,
+            "max": 50,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "armor": {
+            "min": 0.11,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "protection": {
+            "min": 0.07,
+            "max": 0.14,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.11,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 60,
+            "max": 100,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "armor": {
+            "min": 0.17,
+            "max": 0.3,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "protection": {
+            "min": 0.1,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.17,
+            "max": 0.3,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base",
+      "requires": "apothic_attributes"
+    },
+    "apothic_attributes:protection_shred": {
+      "min_area": 4,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 30,
+            "max": 50,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "armor": {
+            "min": 0.11,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "protection": {
+            "min": 0.07,
+            "max": 0.14,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.07,
+            "max": 0.14,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 60,
+            "max": 100,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "armor": {
+            "min": 0.17,
+            "max": 0.3,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "protection": {
+            "min": 0.1,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.1,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base",
+      "requires": "apothic_attributes"
+    },
+    "apothic_attributes:arrow_damage": {
+      "min_area": 4,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 30,
+            "max": 50,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "damage": {
+            "min": 0.11,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "velocity": {
+            "min": 0.1,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.11,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 58,
+            "max": 98,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "damage": {
+            "min": 0.2,
+            "max": 0.34,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "velocity": {
+            "min": 0.18,
+            "max": 0.32,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.2,
+            "max": 0.34,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base",
+      "requires": "apothic_attributes"
+    },
+    "apothic_attributes:arrow_velocity": {
+      "min_area": 4,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 30,
+            "max": 50,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "damage": {
+            "min": 0.11,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "velocity": {
+            "min": 0.1,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.1,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 58,
+            "max": 98,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "damage": {
+            "min": 0.2,
+            "max": 0.34,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "velocity": {
+            "min": 0.18,
+            "max": 0.32,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.18,
+            "max": 0.32,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base",
+      "requires": "apothic_attributes"
+    },
+    "apothic_attributes:draw_speed": {
+      "min_area": 1,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 15,
+            "max": 28,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.11,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 28,
+            "max": 50,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "amount": {
+            "min": 0.2,
+            "max": 0.34,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base",
+      "requires": "apothic_attributes"
+    },
+    "apothic_attributes:fire_damage": {
+      "min_area": 4,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 30,
+            "max": 52,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "damage": {
+            "min": 3,
+            "max": 5.5,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "heat": {
+            "min": 3,
+            "max": 7,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 3,
+            "max": 5.5,
+            "step": 0.25,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 60,
+            "max": 105,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "damage": {
+            "min": 5,
+            "max": 9,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "heat": {
+            "min": 5,
+            "max": 10,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 5,
+            "max": 9,
+            "step": 0.25,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_value",
+      "requires": "apothic_attributes",
+      "components": [
+        {
+          "type": "thermal",
+          "mode": "heat",
+          "amount": "heat"
+        }
+      ]
+    },
+    "apothic_attributes:cold_damage": {
+      "min_area": 4,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 30,
+            "max": 52,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "damage": {
+            "min": 3,
+            "max": 5.5,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "cooling": {
+            "min": 3,
+            "max": 7,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 3,
+            "max": 5.5,
+            "step": 0.25,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 60,
+            "max": 105,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "damage": {
+            "min": 5,
+            "max": 9,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "cooling": {
+            "min": 5,
+            "max": 10,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 5,
+            "max": 9,
+            "step": 0.25,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_value",
+      "requires": "apothic_attributes",
+      "components": [
+        {
+          "type": "thermal",
+          "mode": "cooling",
+          "amount": "cooling"
+        }
+      ]
+    },
+    "minecraft:generic.block_break_speed": {
+      "min_area": 2,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 22,
+            "max": 38,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 2,
+          "amount": {
+            "min": 0.22,
+            "max": 0.38,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 36,
+            "max": 62,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 2,
+          "amount": {
+            "min": 0.36,
+            "max": 0.58,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base"
+    },
+    "minecraft:generic.block_interaction_range": {
+      "min_area": 2,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 22,
+            "max": 38,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 2,
+          "amount": {
+            "min": 0.75,
+            "max": 1.3,
+            "step": 0.05,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 36,
+            "max": 62,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 2,
+          "amount": {
+            "min": 1.15,
+            "max": 1.85,
+            "step": 0.05,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_value"
+    },
+    "minecraft:generic.submerged_mining_speed": {
+      "min_area": 4,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 18,
+            "max": 32,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 2,
+          "amount": {
+            "min": 0.38,
+            "max": 0.62,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 30,
+            "max": 52,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 2,
+          "amount": {
+            "min": 0.6,
+            "max": 0.9,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base"
+    },
+    "minecraft:generic.luck": {
+      "min_area": 1,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 15,
+            "max": 28,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 2,
+          "amount": {
+            "min": 0.75,
+            "max": 1.35,
+            "step": 0.05,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 28,
+            "max": 48,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 2,
+          "amount": {
+            "min": 1.2,
+            "max": 2,
+            "step": 0.05,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_value"
+    },
+    "apothic_attributes:experience_gained": {
+      "min_area": 1,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 15,
+            "max": 28,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 2,
+          "amount": {
+            "min": 0.14,
+            "max": 0.27,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 28,
+            "max": 50,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 2,
+          "amount": {
+            "min": 0.24,
+            "max": 0.42,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base",
+      "requires": "apothic_attributes"
+    }
   }
 }

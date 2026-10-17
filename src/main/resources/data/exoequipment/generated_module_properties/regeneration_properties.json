@@ -55,8 +55,7 @@
           "type": "regeneration",
           "health_per_second": "health_per_second"
         }
-      ],
-      "replace_legacy": true
+      ]
     }
   }
 }

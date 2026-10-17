@@ -2,8 +2,277 @@
   "container": "exoequipment:conditional_attribute_properties",
   "weight": 2,
   "max_rolls": 2,
-  "entries": {
-    "reactive_armor": {"min_area":6,"tiers":{"military":{"energy":{"min":24,"max":42,"step":1,"distribution":"triangular"},"priority":8,"base_armor":{"min":1.5,"max":3.0,"step":0.25,"distribution":"triangular"},"conditional_armor":{"min":4,"max":7,"step":0.25,"distribution":"triangular"},"conditional_toughness":{"min":2,"max":4,"step":0.25,"distribution":"triangular"}},"experimental":{"energy":{"min":38,"max":70,"step":1,"distribution":"triangular"},"priority":8,"base_armor":{"min":2.5,"max":4.5,"step":0.25,"distribution":"triangular"},"conditional_armor":{"min":6,"max":10,"step":0.25,"distribution":"triangular"},"conditional_toughness":{"min":3,"max":6,"step":0.25,"distribution":"triangular"}}}},
-    "adrenaline": {"min_area":4,"tiers":{"military":{"energy":{"min":22,"max":40,"step":1,"distribution":"triangular"},"priority":4,"attack_damage":{"min":0.18,"max":0.32,"step":0.01,"distribution":"triangular"},"attack_speed":{"min":0.10,"max":0.20,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":42,"max":75,"step":1,"distribution":"triangular"},"priority":4,"attack_damage":{"min":0.30,"max":0.48,"step":0.01,"distribution":"triangular"},"attack_speed":{"min":0.18,"max":0.32,"step":0.01,"distribution":"triangular"}}}}
+  "conditional_attributes": {
+    "minecraft:generic.armor": {
+      "min_area": 6,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 24,
+            "max": 42,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "base_armor": {
+            "min": 1.5,
+            "max": 3,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "conditional_armor": {
+            "min": 4,
+            "max": 7,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "conditional_toughness": {
+            "min": 2,
+            "max": 4,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 4,
+            "max": 7,
+            "step": 0.25,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 38,
+            "max": 70,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "base_armor": {
+            "min": 2.5,
+            "max": 4.5,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "conditional_armor": {
+            "min": 6,
+            "max": 10,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "conditional_toughness": {
+            "min": 3,
+            "max": 6,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 6,
+            "max": 10,
+            "step": 0.25,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_value",
+      "components": [
+        {
+          "type": "attribute",
+          "id": "minecraft:generic.armor",
+          "amount": "base_armor"
+        }
+      ]
+    },
+    "minecraft:generic.armor_toughness": {
+      "min_area": 6,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 24,
+            "max": 42,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "base_armor": {
+            "min": 1.5,
+            "max": 3,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "conditional_armor": {
+            "min": 4,
+            "max": 7,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "conditional_toughness": {
+            "min": 2,
+            "max": 4,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 2,
+            "max": 4,
+            "step": 0.25,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 38,
+            "max": 70,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "base_armor": {
+            "min": 2.5,
+            "max": 4.5,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "conditional_armor": {
+            "min": 6,
+            "max": 10,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "conditional_toughness": {
+            "min": 3,
+            "max": 6,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 3,
+            "max": 6,
+            "step": 0.25,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_value"
+    },
+    "minecraft:generic.attack_damage": {
+      "min_area": 4,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 22,
+            "max": 40,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "attack_damage": {
+            "min": 0.18,
+            "max": 0.32,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "attack_speed": {
+            "min": 0.1,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.18,
+            "max": 0.32,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 42,
+            "max": 75,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "attack_damage": {
+            "min": 0.3,
+            "max": 0.48,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "attack_speed": {
+            "min": 0.18,
+            "max": 0.32,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.3,
+            "max": 0.48,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base"
+    },
+    "minecraft:generic.attack_speed": {
+      "min_area": 4,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 22,
+            "max": 40,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "attack_damage": {
+            "min": 0.18,
+            "max": 0.32,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "attack_speed": {
+            "min": 0.1,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.1,
+            "max": 0.2,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 42,
+            "max": 75,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "attack_damage": {
+            "min": 0.3,
+            "max": 0.48,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "attack_speed": {
+            "min": 0.18,
+            "max": 0.32,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "amount": {
+            "min": 0.18,
+            "max": 0.32,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "operation": "add_multiplied_base"
+    }
   }
 }

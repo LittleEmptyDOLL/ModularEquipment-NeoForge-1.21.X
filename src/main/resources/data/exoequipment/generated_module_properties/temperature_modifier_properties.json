@@ -46,7 +46,7 @@
           "temperature": "temperature"
         }
       ],
-      "replace_legacy": true
+      "requires": "legendarysurvivaloverhaul"
     },
     "personal_heating": {
       "min_area": 4,
@@ -91,7 +91,7 @@
           "temperature": "temperature"
         }
       ],
-      "replace_legacy": true
+      "requires": "legendarysurvivaloverhaul"
     },
     "thermal_resistance": {
       "min_area": 2,
@@ -133,7 +133,7 @@
           "thermal_resistance": "thermal_resistance"
         }
       ],
-      "replace_legacy": true
+      "requires": "legendarysurvivaloverhaul"
     }
   }
 }

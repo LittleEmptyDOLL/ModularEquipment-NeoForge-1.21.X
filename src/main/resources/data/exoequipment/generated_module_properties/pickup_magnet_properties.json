@@ -43,8 +43,7 @@
           "radius": "radius",
           "mode": "mode"
         }
-      ],
-      "replace_legacy": true
+      ]
     }
   }
 }

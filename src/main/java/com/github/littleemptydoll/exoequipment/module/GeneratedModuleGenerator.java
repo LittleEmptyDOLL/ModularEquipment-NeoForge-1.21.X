@@ -16,51 +16,6 @@ import java.util.Map;
 public final class GeneratedModuleGenerator {
     private GeneratedModuleGenerator() {}
 
-    /** Legacy enum plan retained for compatibility/debug code only. */
-    public static GeneratedModulePlan plan(
-            EquipmentTier tier,
-            long seed
-    ) {
-        validateTier(tier);
-
-        RandomSource random = RandomSource.create(seed);
-        ModuleSize size = rollSize(random);
-        int area = size.width() * size.height();
-        int requestedProperties = rollPropertyCount(area, random);
-
-        List<GeneratedPropertyType> candidates = new ArrayList<>();
-        for (GeneratedPropertyType property : GeneratedPropertyType.values()) {
-            if (property.isAvailableFor(tier)
-                    && property.minArea() <= area) {
-                candidates.add(property);
-            }
-        }
-
-        List<GeneratedPropertyType> selected = new ArrayList<>();
-        while (!candidates.isEmpty()
-                && selected.size() < requestedProperties) {
-            int selectedIndex = random.nextInt(candidates.size());
-            GeneratedPropertyType property = candidates.remove(selectedIndex);
-
-            boolean conflicts = selected.stream()
-                    .anyMatch(existing -> existing.conflictsWith(property));
-            if (conflicts) continue;
-
-            selected.add(property);
-            candidates.removeIf(candidate ->
-                    candidate == property || candidate.conflictsWith(property));
-        }
-
-        if (selected.isEmpty()) {
-            throw new IllegalStateException(
-                    "No generated module properties available for "
-                            + tier + " at size " + size.width() + "x" + size.height()
-            );
-        }
-
-        return new GeneratedModulePlan(tier, size, selected);
-    }
-
     /**
      * Container-first generated-module plan used by actual prototype modules.
      * Each requested slot rolls a ModuleDefinition properties container first,

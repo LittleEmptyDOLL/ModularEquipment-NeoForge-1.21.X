@@ -28,8 +28,7 @@
           "type": "flight",
           "active_energy": "active_energy"
         }
-      ],
-      "replace_legacy": true
+      ]
     }
   }
 }

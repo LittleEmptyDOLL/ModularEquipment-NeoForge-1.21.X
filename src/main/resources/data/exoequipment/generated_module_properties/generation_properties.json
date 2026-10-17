@@ -1,6 +1,60 @@
 {
   "container": "exoequipment:generation_properties",
   "entries": {
-    "generation": {"min_area":6,"tiers":{"engineering":{"generation":{"min":45,"max":90,"step":5,"distribution":"triangular"},"heat":{"min":3,"max":7,"step":1,"distribution":"triangular"}},"military":{"generation":{"min":65,"max":125,"step":5,"distribution":"triangular"},"heat":{"min":5,"max":12,"step":1,"distribution":"triangular"}},"experimental":{"generation":{"min":130,"max":280,"step":10,"distribution":"triangular"},"heat":{"min":8,"max":18,"step":1,"distribution":"triangular"}}}}
+    "generation": {
+      "min_area": 6,
+      "tiers": {
+        "engineering": {
+          "generation": {
+            "min": 45,
+            "max": 90,
+            "step": 5,
+            "distribution": "triangular"
+          },
+          "heat": {
+            "min": 3,
+            "max": 7,
+            "step": 1,
+            "distribution": "triangular"
+          }
+        },
+        "military": {
+          "generation": {
+            "min": 65,
+            "max": 125,
+            "step": 5,
+            "distribution": "triangular"
+          },
+          "heat": {
+            "min": 5,
+            "max": 12,
+            "step": 1,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "generation": {
+            "min": 130,
+            "max": 280,
+            "step": 10,
+            "distribution": "triangular"
+          },
+          "heat": {
+            "min": 8,
+            "max": 18,
+            "step": 1,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "components": [
+        {
+          "type": "generation",
+          "amount": "generation",
+          "heat": "heat"
+        }
+      ],
+      "replace_legacy": true
+    }
   }
 }

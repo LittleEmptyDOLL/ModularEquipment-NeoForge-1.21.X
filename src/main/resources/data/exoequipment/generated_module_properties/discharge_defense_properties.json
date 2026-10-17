@@ -176,8 +176,7 @@
           "cooldown": "cooldown",
           "energy_cost": "energy_cost"
         }
-      ],
-      "replace_legacy": true
+      ]
     }
   }
 }

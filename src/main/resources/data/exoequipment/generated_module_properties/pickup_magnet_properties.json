@@ -1,1 +1,50 @@
-{"container":"exoequipment:pickup_magnet_properties","entries":{"pickup_magnet":{"min_area":2,"tiers":{"engineering":{"energy":{"min":18,"max":32,"step":1,"distribution":"triangular"},"priority":2,"radius":{"min":7.5,"max":12,"step":0.5,"distribution":"triangular"},"mode":"both"},"experimental":{"energy":{"min":28,"max":50,"step":1,"distribution":"triangular"},"priority":2,"radius":{"min":11,"max":17,"step":0.5,"distribution":"triangular"},"mode":"both"}}}}}
+{
+  "container": "exoequipment:pickup_magnet_properties",
+  "entries": {
+    "pickup_magnet": {
+      "min_area": 2,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 18,
+            "max": 32,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 2,
+          "radius": {
+            "min": 7.5,
+            "max": 12,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "mode": "both"
+        },
+        "experimental": {
+          "energy": {
+            "min": 28,
+            "max": 50,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 2,
+          "radius": {
+            "min": 11,
+            "max": 17,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "mode": "both"
+        }
+      },
+      "components": [
+        {
+          "type": "pickup_magnet",
+          "radius": "radius",
+          "mode": "mode"
+        }
+      ],
+      "replace_legacy": true
+    }
+  }
+}

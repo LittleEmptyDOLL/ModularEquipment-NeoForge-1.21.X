@@ -55,8 +55,7 @@
           "type": "shield_protection",
           "transfer": "transfer"
         }
-      ],
-      "replace_legacy": true
+      ]
     }
   }
 }

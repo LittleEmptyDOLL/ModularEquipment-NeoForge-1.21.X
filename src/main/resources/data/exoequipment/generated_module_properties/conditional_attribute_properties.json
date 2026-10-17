@@ -14,27 +14,15 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "base_armor": {
-            "min": 1.5,
-            "max": 3,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
-          "conditional_armor": {
-            "min": 4,
-            "max": 7,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
-          "conditional_toughness": {
-            "min": 2,
-            "max": 4,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 4,
             "max": 7,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "base_armor": {
+            "min": 1.5,
+            "max": 3,
             "step": 0.25,
             "distribution": "triangular"
           }
@@ -47,27 +35,15 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "base_armor": {
-            "min": 2.5,
-            "max": 4.5,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
-          "conditional_armor": {
-            "min": 6,
-            "max": 10,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
-          "conditional_toughness": {
-            "min": 3,
-            "max": 6,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 6,
             "max": 10,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "base_armor": {
+            "min": 2.5,
+            "max": 4.5,
             "step": 0.25,
             "distribution": "triangular"
           }
@@ -93,27 +69,15 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "base_armor": {
-            "min": 1.5,
-            "max": 3,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
-          "conditional_armor": {
-            "min": 4,
-            "max": 7,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
-          "conditional_toughness": {
-            "min": 2,
-            "max": 4,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 2,
             "max": 4,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "base_armor": {
+            "min": 1.5,
+            "max": 3,
             "step": 0.25,
             "distribution": "triangular"
           }
@@ -126,27 +90,15 @@
             "distribution": "triangular"
           },
           "priority": 8,
-          "base_armor": {
-            "min": 2.5,
-            "max": 4.5,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
-          "conditional_armor": {
-            "min": 6,
-            "max": 10,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
-          "conditional_toughness": {
-            "min": 3,
-            "max": 6,
-            "step": 0.25,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 3,
             "max": 6,
+            "step": 0.25,
+            "distribution": "triangular"
+          },
+          "base_armor": {
+            "min": 2.5,
+            "max": 4.5,
             "step": 0.25,
             "distribution": "triangular"
           }
@@ -165,18 +117,6 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "attack_damage": {
-            "min": 0.18,
-            "max": 0.32,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "attack_speed": {
-            "min": 0.1,
-            "max": 0.2,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.18,
             "max": 0.32,
@@ -192,18 +132,6 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "attack_damage": {
-            "min": 0.3,
-            "max": 0.48,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "attack_speed": {
-            "min": 0.18,
-            "max": 0.32,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.3,
             "max": 0.48,
@@ -225,18 +153,6 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "attack_damage": {
-            "min": 0.18,
-            "max": 0.32,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "attack_speed": {
-            "min": 0.1,
-            "max": 0.2,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.1,
             "max": 0.2,
@@ -252,18 +168,6 @@
             "distribution": "triangular"
           },
           "priority": 4,
-          "attack_damage": {
-            "min": 0.3,
-            "max": 0.48,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
-          "attack_speed": {
-            "min": 0.18,
-            "max": 0.32,
-            "step": 0.01,
-            "distribution": "triangular"
-          },
           "amount": {
             "min": 0.18,
             "max": 0.32,

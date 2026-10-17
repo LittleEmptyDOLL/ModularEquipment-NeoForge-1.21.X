@@ -1,6 +1,61 @@
 {
   "container": "exoequipment:shield_protection_properties",
   "entries": {
-    "shield_reinforcement": {"min_area":2,"tiers":{"engineering":{"energy":{"min":22,"max":40,"step":1,"distribution":"triangular"},"priority":8,"transfer":{"min":0.32,"max":0.52,"step":0.01,"distribution":"triangular"}},"military":{"energy":{"min":38,"max":62,"step":1,"distribution":"triangular"},"priority":8,"transfer":{"min":0.58,"max":0.82,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":60,"max":100,"step":2,"distribution":"triangular"},"priority":8,"transfer":{"min":0.82,"max":1.0,"step":0.01,"distribution":"triangular"}}}}
+    "shield_reinforcement": {
+      "min_area": 2,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 22,
+            "max": 40,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "transfer": {
+            "min": 0.32,
+            "max": 0.52,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "military": {
+          "energy": {
+            "min": 38,
+            "max": 62,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "transfer": {
+            "min": 0.58,
+            "max": 0.82,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 60,
+            "max": 100,
+            "step": 2,
+            "distribution": "triangular"
+          },
+          "priority": 8,
+          "transfer": {
+            "min": 0.82,
+            "max": 1,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "components": [
+        {
+          "type": "shield_protection",
+          "transfer": "transfer"
+        }
+      ]
+    }
   }
 }

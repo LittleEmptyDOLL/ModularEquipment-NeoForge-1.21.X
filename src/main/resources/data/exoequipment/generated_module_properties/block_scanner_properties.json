@@ -1,1 +1,54 @@
-{"container":"exoequipment:block_scanner_properties","entries":{"block_scanner":{"min_area":4,"tiers":{"engineering":{"energy":{"min":15,"max":28,"step":1,"distribution":"triangular"},"priority":4,"range":{"min":13,"max":19,"step":0.5,"distribution":"triangular"},"active_energy":{"min":38,"max":62,"step":1,"distribution":"triangular"},"color":1763071},"experimental":{"energy":{"min":24,"max":42,"step":1,"distribution":"triangular"},"priority":4,"range":{"min":20,"max":29,"step":0.5,"distribution":"triangular"},"active_energy":{"min":55,"max":90,"step":1,"distribution":"triangular"},"color":12679935}}}}}
+{
+  "container": "exoequipment:block_scanner_properties",
+  "scanner_targets": {
+    "#c:ores": {
+      "min_area": 4,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 15,
+            "max": 28,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 13,
+            "max": 19,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 38,
+            "max": 62,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 1763071
+        },
+        "experimental": {
+          "energy": {
+            "min": 24,
+            "max": 42,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 20,
+            "max": 29,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 55,
+            "max": 90,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 12679935
+        }
+      }
+    }
+  }
+}

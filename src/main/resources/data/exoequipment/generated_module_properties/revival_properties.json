@@ -1,1 +1,72 @@
-{"container":"exoequipment:revival_properties","entries":{"revival":{"min_area":6,"tiers":{"military":{"energy":{"min":38,"max":65,"step":1,"distribution":"triangular"},"priority":10,"restore_health":{"min":3,"max":5.5,"step":0.5,"distribution":"triangular"},"cooldown":{"min":9000,"max":15000,"step":200,"distribution":"triangular"},"invulnerability_ticks":{"min":30,"max":55,"step":5,"distribution":"triangular"}},"experimental":{"energy":{"min":72,"max":125,"step":2,"distribution":"triangular"},"priority":10,"restore_health":{"min":5,"max":8,"step":0.5,"distribution":"triangular"},"cooldown":{"min":4500,"max":9000,"step":200,"distribution":"triangular"},"invulnerability_ticks":{"min":40,"max":80,"step":5,"distribution":"triangular"}}}}}}
+{
+  "container": "exoequipment:revival_properties",
+  "entries": {
+    "revival": {
+      "min_area": 6,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 38,
+            "max": 65,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 10,
+          "restore_health": {
+            "min": 3,
+            "max": 5.5,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "cooldown": {
+            "min": 9000,
+            "max": 15000,
+            "step": 200,
+            "distribution": "triangular"
+          },
+          "invulnerability_ticks": {
+            "min": 30,
+            "max": 55,
+            "step": 5,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 72,
+            "max": 125,
+            "step": 2,
+            "distribution": "triangular"
+          },
+          "priority": 10,
+          "restore_health": {
+            "min": 5,
+            "max": 8,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "cooldown": {
+            "min": 4500,
+            "max": 9000,
+            "step": 200,
+            "distribution": "triangular"
+          },
+          "invulnerability_ticks": {
+            "min": 40,
+            "max": 80,
+            "step": 5,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "components": [
+        {
+          "type": "revival",
+          "restore_health": "restore_health",
+          "cooldown": "cooldown",
+          "invulnerability_ticks": "invulnerability_ticks"
+        }
+      ]
+    }
+  }
+}

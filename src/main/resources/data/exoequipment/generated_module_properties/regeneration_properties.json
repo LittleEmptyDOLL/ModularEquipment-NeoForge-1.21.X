@@ -1,1 +1,61 @@
-{"container":"exoequipment:regeneration_properties","entries":{"regeneration":{"min_area":4,"tiers":{"engineering":{"energy":{"min":18,"max":34,"step":1,"distribution":"triangular"},"priority":7,"health_per_second":{"min":0.18,"max":0.34,"step":0.01,"distribution":"triangular"}},"military":{"energy":{"min":45,"max":75,"step":2,"distribution":"triangular"},"priority":7,"health_per_second":{"min":0.38,"max":0.65,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":72,"max":120,"step":2,"distribution":"triangular"},"priority":7,"health_per_second":{"min":0.62,"max":1.0,"step":0.02,"distribution":"triangular"}}}}}}
+{
+  "container": "exoequipment:regeneration_properties",
+  "entries": {
+    "regeneration": {
+      "min_area": 4,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 18,
+            "max": 34,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 7,
+          "health_per_second": {
+            "min": 0.18,
+            "max": 0.34,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "military": {
+          "energy": {
+            "min": 45,
+            "max": 75,
+            "step": 2,
+            "distribution": "triangular"
+          },
+          "priority": 7,
+          "health_per_second": {
+            "min": 0.38,
+            "max": 0.65,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 72,
+            "max": 120,
+            "step": 2,
+            "distribution": "triangular"
+          },
+          "priority": 7,
+          "health_per_second": {
+            "min": 0.62,
+            "max": 1,
+            "step": 0.02,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "components": [
+        {
+          "type": "regeneration",
+          "health_per_second": "health_per_second"
+        }
+      ]
+    }
+  }
+}

@@ -1,1 +1,34 @@
-{"container":"exoequipment:flight_properties","entries":{"flight":{"min_area":9,"conflicts":["jetpack"],"tiers":{"experimental":{"energy":{"min":45,"max":70,"step":1,"distribution":"triangular"},"priority":5,"active_energy":{"min":400,"max":650,"step":10,"distribution":"triangular"}}}}}}
+{
+  "container": "exoequipment:flight_properties",
+  "entries": {
+    "flight": {
+      "min_area": 9,
+      "conflicts": [
+        "jetpack"
+      ],
+      "tiers": {
+        "experimental": {
+          "energy": {
+            "min": 45,
+            "max": 70,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5,
+          "active_energy": {
+            "min": 400,
+            "max": 650,
+            "step": 10,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "components": [
+        {
+          "type": "flight",
+          "active_energy": "active_energy"
+        }
+      ]
+    }
+  }
+}

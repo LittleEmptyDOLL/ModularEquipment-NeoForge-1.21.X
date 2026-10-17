@@ -1,1 +1,47 @@
-{"container":"exoequipment:thirst_properties","entries":{"thirst_assist":{"min_area":2,"tiers":{"engineering":{"energy":{"min":18,"max":30,"step":1,"distribution":"triangular"},"priority":7,"reduction":{"min":0.18,"max":0.32,"step":0.01,"distribution":"triangular"}},"experimental":{"energy":{"min":32,"max":58,"step":1,"distribution":"triangular"},"priority":7,"reduction":{"min":0.35,"max":0.55,"step":0.01,"distribution":"triangular"}}}}}}
+{
+  "container": "exoequipment:thirst_properties",
+  "entries": {
+    "thirst_assist": {
+      "min_area": 2,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 18,
+            "max": 30,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 7,
+          "reduction": {
+            "min": 0.18,
+            "max": 0.32,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 32,
+            "max": 58,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 7,
+          "reduction": {
+            "min": 0.35,
+            "max": 0.55,
+            "step": 0.01,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "components": [
+        {
+          "type": "thirst",
+          "reduction": "reduction"
+        }
+      ],
+      "requires": "legendarysurvivaloverhaul"
+    }
+  }
+}

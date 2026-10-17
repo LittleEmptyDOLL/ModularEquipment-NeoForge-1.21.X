@@ -24,6 +24,9 @@ jobs:
       - name: Check recipe registrations and references
         run: python3 scripts/check_recipes.py
 
+      - name: Validate generated module descriptors
+        run: python3 scripts/check_generated_module_properties.py
+
       - name: Generate resources and build with Gradle
         run: |
           ./gradlew runData --stacktrace

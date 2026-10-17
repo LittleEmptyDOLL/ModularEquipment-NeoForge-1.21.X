@@ -1,1 +1,163 @@
-{"container":"exoequipment:jetpack_properties","entries":{"jetpack":{"min_area":6,"conflicts":["flight"],"tiers":{"engineering":{"energy":{"min":18,"max":32,"step":1,"distribution":"triangular"},"priority":5,"vertical_thrust":{"min":0.28,"max":0.42,"step":0.01,"distribution":"triangular"},"horizontal_speed":{"min":0.24,"max":0.37,"step":0.01,"distribution":"triangular"},"active_energy":{"min":140,"max":230,"step":5,"distribution":"triangular"},"heat":{"min":5,"max":10,"step":0.5,"distribution":"triangular"},"elytra_chance":0.70,"elytra_acceleration":{"min":0.018,"max":0.032,"step":0.001,"distribution":"triangular"},"elytra_max_speed":{"min":1.0,"max":1.5,"step":0.05,"distribution":"triangular"}},"military":{"energy":{"min":26,"max":45,"step":1,"distribution":"triangular"},"priority":5,"vertical_thrust":{"min":0.36,"max":0.55,"step":0.01,"distribution":"triangular"},"horizontal_speed":{"min":0.36,"max":0.55,"step":0.01,"distribution":"triangular"},"active_energy":{"min":240,"max":380,"step":10,"distribution":"triangular"},"heat":{"min":7,"max":13,"step":0.5,"distribution":"triangular"},"elytra_chance":0.85,"elytra_acceleration":{"min":0.03,"max":0.05,"step":0.001,"distribution":"triangular"},"elytra_max_speed":{"min":1.45,"max":2.05,"step":0.05,"distribution":"triangular"}},"experimental":{"energy":{"min":40,"max":65,"step":1,"distribution":"triangular"},"priority":5,"vertical_thrust":{"min":0.50,"max":0.75,"step":0.01,"distribution":"triangular"},"horizontal_speed":{"min":0.52,"max":0.82,"step":0.01,"distribution":"triangular"},"active_energy":{"min":450,"max":750,"step":10,"distribution":"triangular"},"heat":{"min":14,"max":25,"step":0.5,"distribution":"triangular"},"elytra_chance":1.0,"elytra_acceleration":{"min":0.045,"max":0.08,"step":0.001,"distribution":"triangular"},"elytra_max_speed":{"min":2.0,"max":3.1,"step":0.05,"distribution":"triangular"}}}}}}
+{
+  "container": "exoequipment:jetpack_properties",
+  "entries": {
+    "jetpack": {
+      "min_area": 6,
+      "conflicts": [
+        "flight"
+      ],
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 18,
+            "max": 32,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5,
+          "vertical_thrust": {
+            "min": 0.28,
+            "max": 0.42,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "horizontal_speed": {
+            "min": 0.24,
+            "max": 0.37,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 140,
+            "max": 230,
+            "step": 5,
+            "distribution": "triangular"
+          },
+          "heat": {
+            "min": 5,
+            "max": 10,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "elytra_chance": 0.7,
+          "elytra_acceleration": {
+            "min": 0.018,
+            "max": 0.032,
+            "step": 0.001,
+            "distribution": "triangular"
+          },
+          "elytra_max_speed": {
+            "min": 1,
+            "max": 1.5,
+            "step": 0.05,
+            "distribution": "triangular"
+          }
+        },
+        "military": {
+          "energy": {
+            "min": 26,
+            "max": 45,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5,
+          "vertical_thrust": {
+            "min": 0.36,
+            "max": 0.55,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "horizontal_speed": {
+            "min": 0.36,
+            "max": 0.55,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 240,
+            "max": 380,
+            "step": 10,
+            "distribution": "triangular"
+          },
+          "heat": {
+            "min": 7,
+            "max": 13,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "elytra_chance": 0.85,
+          "elytra_acceleration": {
+            "min": 0.03,
+            "max": 0.05,
+            "step": 0.001,
+            "distribution": "triangular"
+          },
+          "elytra_max_speed": {
+            "min": 1.45,
+            "max": 2.05,
+            "step": 0.05,
+            "distribution": "triangular"
+          }
+        },
+        "experimental": {
+          "energy": {
+            "min": 40,
+            "max": 65,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5,
+          "vertical_thrust": {
+            "min": 0.5,
+            "max": 0.75,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "horizontal_speed": {
+            "min": 0.52,
+            "max": 0.82,
+            "step": 0.01,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 450,
+            "max": 750,
+            "step": 10,
+            "distribution": "triangular"
+          },
+          "heat": {
+            "min": 14,
+            "max": 25,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "elytra_chance": 1,
+          "elytra_acceleration": {
+            "min": 0.045,
+            "max": 0.08,
+            "step": 0.001,
+            "distribution": "triangular"
+          },
+          "elytra_max_speed": {
+            "min": 2,
+            "max": 3.1,
+            "step": 0.05,
+            "distribution": "triangular"
+          }
+        }
+      },
+      "components": [
+        {
+          "type": "jetpack",
+          "vertical_thrust": "vertical_thrust",
+          "horizontal_speed": "horizontal_speed",
+          "active_energy": "active_energy",
+          "elytra_chance": "elytra_chance",
+          "elytra_acceleration": "elytra_acceleration",
+          "elytra_max_speed": "elytra_max_speed",
+          "heat": "heat"
+        }
+      ]
+    }
+  }
+}

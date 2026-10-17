@@ -14,6 +14,7 @@ import java.util.List;
 public final class GeneratedModuleGenerator {
     private GeneratedModuleGenerator() {}
 
+    /** Legacy enum plan retained for compatibility/debug code. */
     public static GeneratedModulePlan plan(
             EquipmentTier tier,
             long seed
@@ -60,15 +61,65 @@ public final class GeneratedModuleGenerator {
         return new GeneratedModulePlan(tier, size, selected);
     }
 
+    /** ResourceLocation keyed V2 plan used for actual generated modules. */
+    public static GeneratedModulePropertyPlan propertyPlan(
+            EquipmentTier tier,
+            long seed
+    ) {
+        validateTier(tier);
+
+        RandomSource random = RandomSource.create(seed);
+        ModuleSize size = rollSize(random);
+        int area = size.width() * size.height();
+        int requestedProperties = rollPropertyCount(area, random);
+
+        List<GeneratedModulePropertyRegistry.PropertyRule> candidates =
+                new ArrayList<>(GeneratedModulePropertyRegistry.candidates(tier, area));
+        List<ResourceLocation> selected = new ArrayList<>();
+
+        while (!candidates.isEmpty() && selected.size() < requestedProperties) {
+            int totalWeight = candidates.stream()
+                    .mapToInt(GeneratedModulePropertyRegistry.PropertyRule::weight)
+                    .sum();
+            int roll = random.nextInt(totalWeight);
+            GeneratedModulePropertyRegistry.PropertyRule picked = candidates.get(candidates.size() - 1);
+            for (GeneratedModulePropertyRegistry.PropertyRule candidate : candidates) {
+                roll -= candidate.weight();
+                if (roll < 0) {
+                    picked = candidate;
+                    break;
+                }
+            }
+            candidates.remove(picked);
+
+            boolean conflicts = selected.stream().anyMatch(picked::conflictsWith);
+            if (conflicts) continue;
+
+            selected.add(picked.id());
+            GeneratedModulePropertyRegistry.PropertyRule selectedRule = picked;
+            candidates.removeIf(candidate ->
+                    selectedRule.conflictsWith(candidate.id())
+                            || candidate.conflictsWith(selectedRule.id()));
+        }
+
+        if (selected.isEmpty()) {
+            throw new IllegalStateException(
+                    "No extensible generated module properties available for "
+                            + tier + " at size " + size.width() + "x" + size.height()
+            );
+        }
+
+        return new GeneratedModulePropertyPlan(tier, size, selected);
+    }
+
     public static GeneratedModuleData generate(
             EquipmentTier tier,
             long seed
     ) {
-        GeneratedModulePlan plan = plan(tier, seed);
+        GeneratedModulePropertyPlan plan = propertyPlan(tier, seed);
         ResourceLocation baseDefinitionId = prototypeDefinitionId(tier);
 
-        ModuleDefinition definition = DataDrivenGeneratedModuleDefinitionBuilder.build(plan, seed);
-        definition = GeneratedModuleVariantRandomizer.apply(definition, plan, seed);
+        ModuleDefinition definition = GeneratedModuleDefinitionBuilderV2.build(plan, seed);
 
         GeneratedModuleData generated = new GeneratedModuleData(
                 seed,

@@ -49,6 +49,606 @@
           "color": 12679935
         }
       }
+    },
+    "#c:ores/iron": {
+      "min_area": 4,
+      "weight": 2,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 11,
+            "max": 22,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 13,
+            "max": 19,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 27,
+            "max": 47,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 11060688
+        },
+        "experimental": {
+          "energy": {
+            "min": 20,
+            "max": 35,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 19,
+            "max": 26,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 41,
+            "max": 70,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 11060688
+        }
+      }
+    },
+    "#c:ores/copper": {
+      "min_area": 4,
+      "weight": 2,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 10,
+            "max": 21,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 13,
+            "max": 19,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 26,
+            "max": 44,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 13404250
+        },
+        "experimental": {
+          "energy": {
+            "min": 18,
+            "max": 33,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 19,
+            "max": 26,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 40,
+            "max": 65,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 13404250
+        }
+      }
+    },
+    "#c:ores/gold": {
+      "min_area": 4,
+      "weight": 2,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 15,
+            "max": 26,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 13,
+            "max": 20,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 32,
+            "max": 53,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 16041282
+        },
+        "experimental": {
+          "energy": {
+            "min": 25,
+            "max": 42,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 20,
+            "max": 27,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 48,
+            "max": 77,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 16041282
+        }
+      }
+    },
+    "#c:ores/redstone": {
+      "min_area": 4,
+      "weight": 2,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 14,
+            "max": 25,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 14,
+            "max": 21,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 32,
+            "max": 54,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 15357269
+        },
+        "experimental": {
+          "energy": {
+            "min": 24,
+            "max": 40,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 21,
+            "max": 28,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 49,
+            "max": 80,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 15357269
+        }
+      }
+    },
+    "#c:ores/diamond": {
+      "min_area": 6,
+      "weight": 1,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 28,
+            "max": 45,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 16,
+            "max": 23,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 48,
+            "max": 75,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 3792356
+        },
+        "experimental": {
+          "energy": {
+            "min": 42,
+            "max": 65,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 24,
+            "max": 30,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 69,
+            "max": 104,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 3792356
+        }
+      }
+    },
+    "#c:ores/emerald": {
+      "min_area": 6,
+      "weight": 1,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 26,
+            "max": 43,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 16,
+            "max": 23,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 44,
+            "max": 73,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 5298581
+        },
+        "experimental": {
+          "energy": {
+            "min": 40,
+            "max": 63,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 23,
+            "max": 30,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 64,
+            "max": 98,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 5298581
+        }
+      }
+    },
+    "#c:ores/netherite_scrap": {
+      "min_area": 6,
+      "weight": 1,
+      "tiers": {
+        "experimental": {
+          "energy": {
+            "min": 55,
+            "max": 86,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 20,
+            "max": 29,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 85,
+            "max": 130,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 11237520
+        }
+      }
+    },
+    "#c:chests": {
+      "min_area": 4,
+      "weight": 2,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 19,
+            "max": 34,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 11,
+            "max": 17,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 38,
+            "max": 62,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 15182930
+        },
+        "military": {
+          "energy": {
+            "min": 23,
+            "max": 39,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 14,
+            "max": 21,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 45,
+            "max": 75,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 15182930
+        },
+        "experimental": {
+          "energy": {
+            "min": 35,
+            "max": 56,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 21,
+            "max": 27,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 66,
+            "max": 98,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 15182930
+        }
+      }
+    },
+    "#c:barrels": {
+      "min_area": 4,
+      "weight": 1,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 18,
+            "max": 30,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 11,
+            "max": 18,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 33,
+            "max": 56,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 13608822
+        },
+        "experimental": {
+          "energy": {
+            "min": 30,
+            "max": 49,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 20,
+            "max": 27,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 55,
+            "max": 88,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 13608822
+        }
+      }
+    },
+    "minecraft:spawner": {
+      "min_area": 6,
+      "weight": 1,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 35,
+            "max": 58,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 16,
+            "max": 23,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 55,
+            "max": 82,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 10975986
+        },
+        "experimental": {
+          "energy": {
+            "min": 52,
+            "max": 80,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 24,
+            "max": 30,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 78,
+            "max": 115,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 10975986
+        }
+      }
+    },
+    "minecraft:trial_spawner": {
+      "min_area": 6,
+      "weight": 1,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 36,
+            "max": 59,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 14,
+            "max": 21,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 52,
+            "max": 83,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 7124735
+        },
+        "experimental": {
+          "energy": {
+            "min": 54,
+            "max": 85,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 23,
+            "max": 30,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 80,
+            "max": 120,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 7124735
+        }
+      }
+    },
+    "minecraft:vault": {
+      "min_area": 6,
+      "weight": 1,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 40,
+            "max": 65,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 13,
+            "max": 20,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 58,
+            "max": 90,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 15451487
+        },
+        "experimental": {
+          "energy": {
+            "min": 60,
+            "max": 95,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "range": {
+            "min": 21,
+            "max": 28,
+            "step": 0.5,
+            "distribution": "triangular"
+          },
+          "active_energy": {
+            "min": 85,
+            "max": 132,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "color": 15451487
+        }
+      }
     }
   }
 }

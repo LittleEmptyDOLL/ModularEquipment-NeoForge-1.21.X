@@ -16,6 +16,242 @@
         }
       },
       "level": 1
+    },
+    "minecraft:water_breathing": {
+      "min_area": 1,
+      "weight": 3,
+      "level": 1,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 18,
+            "max": 32,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4
+        },
+        "experimental": {
+          "energy": {
+            "min": 28,
+            "max": 44,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4
+        }
+      }
+    },
+    "minecraft:slow_falling": {
+      "min_area": 2,
+      "weight": 3,
+      "level": 1,
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 25,
+            "max": 42,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5
+        },
+        "experimental": {
+          "energy": {
+            "min": 36,
+            "max": 58,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5
+        }
+      }
+    },
+    "minecraft:haste": {
+      "min_area": 2,
+      "weight": 2,
+      "level": "level",
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 22,
+            "max": 40,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "level": 1
+        },
+        "experimental": {
+          "energy": {
+            "min": 44,
+            "max": 70,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 4,
+          "level": 2
+        }
+      }
+    },
+    "minecraft:jump_boost": {
+      "min_area": 2,
+      "weight": 2,
+      "level": "level",
+      "tiers": {
+        "engineering": {
+          "energy": {
+            "min": 22,
+            "max": 38,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5,
+          "level": 1
+        },
+        "experimental": {
+          "energy": {
+            "min": 38,
+            "max": 62,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5,
+          "level": 2
+        }
+      }
+    },
+    "minecraft:speed": {
+      "min_area": 2,
+      "weight": 2,
+      "level": 1,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 30,
+            "max": 55,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5
+        },
+        "experimental": {
+          "energy": {
+            "min": 55,
+            "max": 85,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5
+        }
+      }
+    },
+    "minecraft:fire_resistance": {
+      "min_area": 4,
+      "weight": 2,
+      "level": 1,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 45,
+            "max": 72,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 7
+        },
+        "experimental": {
+          "energy": {
+            "min": 62,
+            "max": 100,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 7
+        }
+      }
+    },
+    "minecraft:strength": {
+      "min_area": 4,
+      "weight": 1,
+      "level": 1,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 50,
+            "max": 85,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 6
+        },
+        "experimental": {
+          "energy": {
+            "min": 78,
+            "max": 125,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 6
+        }
+      }
+    },
+    "minecraft:resistance": {
+      "min_area": 6,
+      "weight": 1,
+      "level": 1,
+      "tiers": {
+        "military": {
+          "energy": {
+            "min": 75,
+            "max": 115,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8
+        },
+        "experimental": {
+          "energy": {
+            "min": 110,
+            "max": 165,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8
+        }
+      }
+    },
+    "minecraft:regeneration": {
+      "min_area": 6,
+      "weight": 1,
+      "level": 1,
+      "tiers": {
+        "experimental": {
+          "energy": {
+            "min": 110,
+            "max": 170,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 8
+        }
+      }
+    },
+    "minecraft:invisibility": {
+      "min_area": 4,
+      "weight": 1,
+      "level": 1,
+      "tiers": {
+        "experimental": {
+          "energy": {
+            "min": 50,
+            "max": 85,
+            "step": 1,
+            "distribution": "triangular"
+          },
+          "priority": 5
+        }
+      }
     }
   }
 }

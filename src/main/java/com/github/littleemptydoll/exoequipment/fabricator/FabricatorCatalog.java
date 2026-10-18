@@ -7,8 +7,10 @@ import com.github.littleemptydoll.exoequipment.registry.EquipmentItem;
 import com.github.littleemptydoll.exoequipment.registry.ModItems;
 import com.github.littleemptydoll.exoequipment.registry.types.EquipmentTier;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 /** Derives the Fabricator's choices from registered items, without duplicating item lists. */
@@ -30,6 +32,24 @@ public final class FabricatorCatalog {
             }
         }
         return List.copyOf(result);
+    }
+
+    /**
+     * Only show module subcategories that actually have a Fabricator recipe.
+     * The generated-prototype category is not craftable, but its enum value
+     * must remain registered for generated modules and other systems.
+     */
+    public static List<ModuleCategory> craftableModuleCategories(
+            Iterable<RecipeHolder<FabricatorRecipe>> recipes
+    ) {
+        EnumSet<ModuleCategory> categories = EnumSet.noneOf(ModuleCategory.class);
+        for (RecipeHolder<FabricatorRecipe> holder : recipes) {
+            Item item = holder.value().result().getItem();
+            if (item instanceof ModuleItem module && !(item instanceof GeneratedModuleItem)) {
+                categories.add(module.getDefinition().category());
+            }
+        }
+        return List.copyOf(categories);
     }
 
     public static List<ModuleItem> modules(ModuleCategory category) {

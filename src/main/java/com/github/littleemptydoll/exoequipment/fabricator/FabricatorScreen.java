@@ -81,6 +81,13 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         return list;
     }
 
+    private List<ModuleCategory> moduleCategories() {
+        if (minecraft == null || minecraft.level == null) return List.of();
+        return FabricatorCatalog.craftableModuleCategories(
+                minecraft.level.getRecipeManager().getAllRecipesFor(ModFabricatorRecipes.TYPE.get())
+        );
+    }
+
     private ItemStack tabIcon(FabricatorCategory tab) {
         if (minecraft == null || minecraft.level == null) return ItemStack.EMPTY;
         return minecraft.level.getRecipeManager().getAllRecipesFor(ModFabricatorRecipes.TYPE.get()).stream()
@@ -174,18 +181,26 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
             if (!icon.isEmpty()) graphics.renderItem(icon, leftPos + x + 1, topPos + TAB_Y + 1);
         }
         if (category == FabricatorCategory.MODULE) {
+            List<ModuleCategory> categories = moduleCategories();
+            if (subcategory >= 0 && !categories.contains(ModuleCategory.values()[subcategory])) {
+                subcategory = -1;
+                scroll = selection = ingredientScroll = 0;
+            }
             blit(graphics, 57, 27, 0, 237, 16, 102);
             categoryScroll = Math.min(categoryScroll, maxScroll(MODULE_SCROLL));
-            for (int row = 0; row < CATEGORY_VISIBLE && categoryScroll + row <= ModuleCategory.values().length; row++) {
-                drawCategory(graphics, mx, my, row, categoryScroll + row - 1);
+            for (int row = 0; row < CATEGORY_VISIBLE && categoryScroll + row <= categories.size(); row++) {
+                int index = categoryScroll + row - 1;
+                drawCategory(graphics, mx, my, row, index < 0 ? -1 : categories.get(index).ordinal());
             }
-            int selectedRow = subcategory + 1 - categoryScroll;
-            if (selectedRow >= 0 && selectedRow < CATEGORY_VISIBLE)
+            int selectedIndex = subcategory < 0 ? -1 : categories.indexOf(ModuleCategory.values()[subcategory]);
+            int selectedRow = selectedIndex + 1 - categoryScroll;
+            if (selectedIndex >= -1 && selectedRow >= 0 && selectedRow < CATEGORY_VISIBLE)
                 drawCategory(graphics, mx, my, selectedRow, subcategory);
             if (inside(mx, my, CATEGORY_X, CATEGORY_Y, 50, CATEGORY_VISIBLE * CATEGORY_STEP + 1)) {
                 int hoveredRow = (my - CATEGORY_Y) / CATEGORY_STEP;
-                if (hoveredRow < CATEGORY_VISIBLE && categoryScroll + hoveredRow <= ModuleCategory.values().length)
-                    drawCategory(graphics, mx, my, hoveredRow, categoryScroll + hoveredRow - 1);
+                int index = categoryScroll + hoveredRow - 1;
+                if (hoveredRow < CATEGORY_VISIBLE && index < categories.size())
+                    drawCategory(graphics, mx, my, hoveredRow, index < 0 ? -1 : categories.get(index).ordinal());
             }
             scrollbar(graphics, 58, categoryScroll, maxScroll(MODULE_SCROLL));
         }
@@ -329,8 +344,10 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
         }
         if (category == FabricatorCategory.MODULE && inside(x, y, CATEGORY_X, CATEGORY_Y, 50, 92)) {
             int row = (y - CATEGORY_Y) / CATEGORY_STEP, index = categoryScroll + row - 1;
-            if (row < CATEGORY_VISIBLE && index < ModuleCategory.values().length)
-                graphics.renderTooltip(font, moduleCategoryName(index), mouseX, mouseY);
+            List<ModuleCategory> categories = moduleCategories();
+            if (row < CATEGORY_VISIBLE && index < categories.size())
+                graphics.renderTooltip(font,
+                        moduleCategoryName(index < 0 ? -1 : categories.get(index).ordinal()), mouseX, mouseY);
             return;
         }
         if (inside(x, y, listLeft(), ITEM_Y, 151 - listLeft(), 86)) {
@@ -356,7 +373,7 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
 
     private int maxScroll(int kind) {
         return switch (kind) {
-            case MODULE_SCROLL -> Math.max(0, ModuleCategory.values().length + 1 - CATEGORY_VISIBLE);
+            case MODULE_SCROLL -> Math.max(0, moduleCategories().size() + 1 - CATEGORY_VISIBLE);
             case ITEM_SCROLL -> Math.max(0, recipes().size() - VISIBLE);
             case RESOURCE_SCROLL -> {
                 RecipeHolder<FabricatorRecipe> chosen = selected();
@@ -416,8 +433,9 @@ public final class FabricatorScreen extends AbstractContainerScreen<FabricatorMe
             if (clickScrollbar(x, y, RESOURCE_SCROLL, 218)) return true;
             if (category == FabricatorCategory.MODULE && inside(x, y, CATEGORY_X, CATEGORY_Y, 50, 92)) {
                 int row = (y - CATEGORY_Y) / CATEGORY_STEP, index = categoryScroll + row - 1;
-                if (row < CATEGORY_VISIBLE && index < ModuleCategory.values().length) {
-                    subcategory = index;
+                List<ModuleCategory> categories = moduleCategories();
+                if (row < CATEGORY_VISIBLE && index < categories.size()) {
+                    subcategory = index < 0 ? -1 : categories.get(index).ordinal();
                     selection = scroll = 0;
                     ingredientScroll = 0;
                 }

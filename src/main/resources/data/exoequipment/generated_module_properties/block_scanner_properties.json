@@ -1,5 +1,7 @@
 {
   "container": "exoequipment:block_scanner_properties",
+  "max_rolls": 4,
+  "weight": 4,
   "scanner_targets": {
     "#c:ores": {
       "min_area": 4,

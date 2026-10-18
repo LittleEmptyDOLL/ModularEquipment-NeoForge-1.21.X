@@ -182,6 +182,76 @@ public final class GeneratedModuleGameTests {
         helper.succeed();
     }
 
+    @GameTest(template = "empty")
+    public static void generatedMultipleEffectsConsumeMoreEnergy(GameTestHelper helper) {
+        ModuleSize size = new ModuleSize(4, 4);
+        ResourceLocation haste = id("effects_properties/effects/minecraft/haste");
+        ResourceLocation nightVision = id("effects_properties/effects/minecraft/night_vision");
+        ResourceLocation waterBreathing = id("effects_properties/effects/minecraft/water_breathing");
+
+        helper.assertTrue(GeneratedModulePropertyRegistry.containers().stream().anyMatch(
+                        container -> container.id().equals(id("effects_properties"))
+                                && container.maxRolls() == 3),
+                "Expected a limit of three passive effects");
+
+        ModuleDefinition single = GeneratedModuleDefinitionBuilderV2.build(
+                new GeneratedModulePropertyPlan(EquipmentTier.EXPERIMENTAL, size,
+                        List.of(haste)), 401L
+        );
+        ModuleDefinition combined = GeneratedModuleDefinitionBuilderV2.build(
+                new GeneratedModulePropertyPlan(EquipmentTier.EXPERIMENTAL, size,
+                        List.of(haste, nightVision, waterBreathing)), 401L
+        );
+
+        helper.assertTrue(combined.effects().isPresent()
+                        && combined.effects().get().effects().size() == 3,
+                "All three passive effects must be present");
+        helper.assertTrue(combined.energy().isPresent() && single.energy().isPresent()
+                        && combined.energy().get().consumption() > single.energy().get().consumption(),
+                "Combining effects must increase passive energy consumption");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void generatedMultipleScannerTargetsConsumeMoreEnergy(GameTestHelper helper) {
+        ModuleSize size = new ModuleSize(4, 4);
+        ResourceLocation iron = id("block_scanner_properties/scanner_targets/tag/c/ores/iron");
+        ResourceLocation gold = id("block_scanner_properties/scanner_targets/tag/c/ores/gold");
+        ResourceLocation spawner = id("block_scanner_properties/scanner_targets/minecraft/spawner");
+        ResourceLocation vault = id("block_scanner_properties/scanner_targets/minecraft/vault");
+
+        helper.assertTrue(GeneratedModulePropertyRegistry.containers().stream().anyMatch(
+                        container -> container.id().equals(id("block_scanner_properties"))
+                                && container.maxRolls() == 4),
+                "Expected a limit of four scanner targets");
+        helper.assertTrue(GeneratedModulePropertyRegistry.containers().stream().anyMatch(
+                        container -> container.id().equals(id("attribute_properties"))
+                                && container.maxRolls() == 6),
+                "Expected a limit of six attributes");
+
+        ModuleDefinition single = GeneratedModuleDefinitionBuilderV2.build(
+                new GeneratedModulePropertyPlan(EquipmentTier.EXPERIMENTAL, size,
+                        List.of(iron)), 501L
+        );
+        ModuleDefinition combined = GeneratedModuleDefinitionBuilderV2.build(
+                new GeneratedModulePropertyPlan(EquipmentTier.EXPERIMENTAL, size,
+                        List.of(iron, gold, spawner, vault)), 501L
+        );
+
+        helper.assertTrue(combined.blockScanner().isPresent(),
+                "Multi-target scanner was not generated");
+        helper.assertTrue(combined.blockScanner().get().tags().size() == 2
+                        && combined.blockScanner().get().blocks().size() == 2,
+                "All four scanner targets must be present");
+        helper.assertTrue(combined.blockScanner().get().activeConsumption()
+                        > single.blockScanner().orElseThrow().activeConsumption(),
+                "Combining scanner targets must increase active energy consumption");
+        helper.assertTrue(combined.energy().isPresent() && single.energy().isPresent()
+                        && combined.energy().get().consumption() > single.energy().get().consumption(),
+                "Combining scanner targets must increase passive energy consumption");
+        helper.succeed();
+    }
+
     private static ResourceLocation id(String path) {
         return ResourceLocation.fromNamespaceAndPath(ExoEquipment.MODID, path);
     }

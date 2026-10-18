@@ -125,6 +125,9 @@ For block scanning:
 ```
 
 If more than one scanner entry is generated, the target lists are combined.
+The **active FE/t is the sum** of each selected scanner entry's active cost;
+the passive FE/t is also additive before the integration multiplier. Range uses
+the largest selected range, and the resulting scanner currently shares one color.
 If multiple variants for **the same target** are desired, use an array of
 descriptors under that target key instead of inventing fake registry IDs.
 
@@ -167,6 +170,29 @@ individual attribute, effect, damage type and block identifiers do not.
 
 Use `python3 scripts/check_generated_module_properties.py` to validate
 basic structure and tier references before building.
+
+## Combining multiple selections and energy cost
+
+Container-level `max_rolls` controls how many individual entries of the same
+`ModuleDefinition` property type can appear in a single generated module:
+
+| Container | Max entries | Selection weight |
+| --- | ---: | ---: |
+| `attribute_properties` | 6 | 12 |
+| `conditional_attribute_properties` | 2 | 2 |
+| `effects_properties` | 3 | 5 |
+| `block_scanner_properties` | 4 | 4 |
+
+These are upper limits, not guaranteed counts. The module's rolled size and
+total property-count cap still apply (currently up to six entries overall).
+
+Each selected entry contributes its own passive FE/t requirement. The passive
+requirements are **summed**, then multiplied by the overall
+`integration_multipliers` entry for the total property count. Multi-target
+scanners also **sum** the individual selected active scan costs, with the same
+integration scaling used by other active generated abilities. This means more
+effect choices, attributes, or scanner targets can yield stronger modules, but
+they also incur substantially higher energy demand.
 
 ## Bundled effect and scanner choices
 

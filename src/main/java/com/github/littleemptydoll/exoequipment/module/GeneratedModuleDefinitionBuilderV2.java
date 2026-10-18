@@ -390,7 +390,9 @@ final class GeneratedModuleDefinitionBuilderV2 {
                 blocks.addAll(blockScanner.blocks());
                 tags.addAll(blockScanner.tags());
                 range = Math.max(range, blockScanner.range());
-                active = Math.max(active, blockScanner.activeConsumption());
+                // Multiple scanner targets are separate detection workloads:
+                // charge each target's active energy, not only the most expensive one.
+                active = Math.addExact(active, blockScanner.activeConsumption());
             }
             blockScanner = new BlockScannerProperties(range, List.copyOf(blocks), List.copyOf(tags), active, color);
         }

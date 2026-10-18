@@ -1,6 +1,7 @@
 {
   "container": "exoequipment:effects_properties",
-  "max_rolls": 2,
+  "max_rolls": 3,
+  "weight": 5,
   "effects": {
     "minecraft:night_vision": {
       "min_area": 1,

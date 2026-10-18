@@ -167,3 +167,36 @@ individual attribute, effect, damage type and block identifiers do not.
 
 Use `python3 scripts/check_generated_module_properties.py` to validate
 basic structure and tier references before building.
+
+## Bundled effect and scanner choices
+
+The bundled `effects_properties.json` currently includes:
+
+- **Exploration/survival:** Night Vision, Water Breathing, Slow Falling, Fire Resistance, Invisibility.
+- **Mobility/utility:** Haste, Jump Boost, Speed.
+- **Combat/sustain:** Strength, Resistance, Regeneration.
+
+The same `effects` map accepts any valid modded MobEffect registry ID.
+Choices have per-tier energy requirements and minimum area. Experimental
+Haste and Jump Boost grant level II; Resistance and Regeneration remain
+level I due to their strong permanent effects. Stronger benefits generally
+consume more passive FE/t.
+
+The bundled `block_scanner_properties.json` includes these target choices:
+
+- **Ores:** `#c:ores`, `#c:ores/iron`, `#c:ores/copper`,
+  `#c:ores/gold`, `#c:ores/redstone`, `#c:ores/diamond`,
+  `#c:ores/emerald`, and `#c:ores/netherite_scrap`.
+- **Storage:** `#c:chests`, `#c:barrels`.
+- **Dungeon exploration:** `minecraft:spawner`,
+  `minecraft:trial_spawner`, `minecraft:vault`.
+
+Specialized scanners generally cost less than broad ore scanning at the
+same tier. Dungeon and high-value ore scanners require larger modules and
+more FE/t. Scanner colors are chosen per target; blocks from separate
+scanner modules retain their respective colors. A module with several
+combined scanner targets uses one color for its combined target set.
+
+The target lists can be further extended via datapacks without adding Java
+constants or switch cases. New modded block IDs need to be registered, and
+block tags must exist and contain blocks to yield scanner hits.

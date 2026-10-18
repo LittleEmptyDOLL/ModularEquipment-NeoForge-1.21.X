@@ -115,6 +115,73 @@ public final class GeneratedModuleGameTests {
         helper.succeed();
     }
 
+    @GameTest(template = "empty")
+    public static void generatedEffectVariantsApply(GameTestHelper helper) {
+        ModuleSize size = new ModuleSize(4, 4);
+        ResourceLocation haste = id("effects_properties/effects/minecraft/haste");
+        ResourceLocation regeneration = id("effects_properties/effects/minecraft/regeneration");
+
+        ModuleDefinition engineering = GeneratedModuleDefinitionBuilderV2.build(
+                new GeneratedModulePropertyPlan(EquipmentTier.ENGINEERING, size, List.of(haste)), 201L
+        );
+        helper.assertTrue(engineering.effects().isPresent()
+                        && engineering.effects().get().effects().get(
+                                ResourceLocation.parse("minecraft:haste")) == 0,
+                "Engineering Haste must be effect level I");
+
+        ModuleDefinition experimental = GeneratedModuleDefinitionBuilderV2.build(
+                new GeneratedModulePropertyPlan(EquipmentTier.EXPERIMENTAL, size,
+                        List.of(haste, regeneration)), 202L
+        );
+        helper.assertTrue(experimental.effects().isPresent(),
+                "Experimental effects were not generated");
+        helper.assertTrue(Integer.valueOf(1).equals(experimental.effects().get().effects().get(
+                        ResourceLocation.parse("minecraft:haste"))),
+                "Experimental Haste must be effect level II");
+        helper.assertTrue(Integer.valueOf(0).equals(experimental.effects().get().effects().get(
+                        ResourceLocation.parse("minecraft:regeneration"))),
+                "Experimental Regeneration must be effect level I");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void generatedScannerVariantsResolve(GameTestHelper helper) {
+        ModuleSize size = new ModuleSize(4, 4);
+        ResourceLocation oreSelection = id(
+                "block_scanner_properties/scanner_targets/tag/c/ores/diamond");
+        ResourceLocation spawnerSelection = id(
+                "block_scanner_properties/scanner_targets/minecraft/spawner");
+        ResourceLocation vaultSelection = id(
+                "block_scanner_properties/scanner_targets/minecraft/vault");
+
+        ModuleDefinition ores = GeneratedModuleDefinitionBuilderV2.build(
+                new GeneratedModulePropertyPlan(EquipmentTier.EXPERIMENTAL, size,
+                        List.of(oreSelection)), 301L
+        );
+        ModuleDefinition spawners = GeneratedModuleDefinitionBuilderV2.build(
+                new GeneratedModulePropertyPlan(EquipmentTier.MILITARY, size,
+                        List.of(spawnerSelection)), 302L
+        );
+        ModuleDefinition vaults = GeneratedModuleDefinitionBuilderV2.build(
+                new GeneratedModulePropertyPlan(EquipmentTier.EXPERIMENTAL, size,
+                        List.of(vaultSelection)), 303L
+        );
+
+        helper.assertTrue(ores.blockScanner().isPresent()
+                        && ores.blockScanner().get().tags().contains(
+                                ResourceLocation.parse("c:ores/diamond")),
+                "Specialized ore scanner tag missing");
+        helper.assertTrue(spawners.blockScanner().isPresent()
+                        && spawners.blockScanner().get().blocks().contains(
+                                ResourceLocation.parse("minecraft:spawner")),
+                "Spawner scanner block missing");
+        helper.assertTrue(vaults.blockScanner().isPresent()
+                        && vaults.blockScanner().get().blocks().contains(
+                                ResourceLocation.parse("minecraft:vault")),
+                "Vault scanner block missing");
+        helper.succeed();
+    }
+
     private static ResourceLocation id(String path) {
         return ResourceLocation.fromNamespaceAndPath(ExoEquipment.MODID, path);
     }
